@@ -1,0 +1,114 @@
+"use client";
+
+import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import FeeTableView from "@/core/components/views/fees/FeeTableView";
+import {
+  fetchBusiness,
+  fetchBusinessAccounts,
+} from "@/redux/slices/BusinessSlice";
+import { fetchFeesByMultipleAccountIds } from "@/redux/slices/FeeSlice";
+import { useAppDispatch } from "@/redux/store/store";
+import Box from "@mui/material/Box";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useEffect, useMemo, useState } from "react";
+import ErrorPage from "@/core/components/error_page";
+import { setTitle } from "@/redux/slices/AppSlice";
+
+const FeeTable = () => {
+  const params = useParams();
+
+  const dispatch = useAppDispatch();
+
+  const [accIds, setAccIds] = useState<string[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    dispatch(setTitle("Business Customer"));
+    dispatch(fetchBusiness(parseInt(params.id.toString()))).then(
+      (data: any) => {
+        if (data.payload != null) {
+          dispatch(setTitle(data.payload.name));
+        }
+      }
+    );
+  });
+
+  useEffect(() => {
+    dispatch(fetchBusinessAccounts(parseInt(params.id.toString()))).then(
+      (acc: any) => {
+        let ids: string[] = [];
+        if (acc.payload) {
+          acc.payload.forEach((acc: any) => {
+            ids.push(acc.accountNumber);
+          });
+          console.log(ids);
+          setAccIds(ids);
+        }
+        setLoading(false);
+      }
+    );
+  }, [dispatch, params.id]);
+
+  const fetchDataMemoized = useMemo(
+    () => fetchFeesByMultipleAccountIds(accIds ?? []),
+    [accIds]
+  );
+
+  return (
+    <Box className="flex flex-col">
+      <Box className="w-fit">
+        <Link href={`/businesses/${params.id}/fees/create`}>
+          <MyBlueButton>Add Fee</MyBlueButton>
+        </Link>
+      </Box>
+      <Box className="pb-4"></Box>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center pt-10">
+          <CircularProgress></CircularProgress>
+          <div>Loading...</div>
+        </div>
+      ) : accIds == null ? (
+        <ErrorPage
+          error="Error fetching fees"
+          recoveryButtonOnClick={() => {
+            setLoading(true);
+            dispatch(
+              fetchBusinessAccounts(parseInt(params.id.toString()))
+            ).then((acc: any) => {
+              let ids: string[] = [];
+              if (acc.payload) {
+                acc.payload.forEach((acc: any) => {
+                  ids.push(acc.accountNumber);
+                });
+                console.log(ids);
+                setAccIds(ids);
+              }
+              setLoading(false);
+            });
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : (
+        <div>
+          <FeeTableView
+            fetchData={fetchDataMemoized}
+            pushTo={`/businesses/${params.id}/fees`}
+            extraColumn={[
+              {
+                field: "accountId",
+                headerName: "Account",
+                flex: 1,
+                minWidth: 120,
+                maxWidth: 220,
+              },
+            ]}
+          />
+        </div>
+      )}
+    </Box>
+  );
+};
+
+export default FeeTable;

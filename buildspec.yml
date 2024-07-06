@@ -1,0 +1,43 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+  pre_build:
+    commands:
+    - COMMIT_ID=$CODEBUILD_RESOLVED_SOURCE_VERSION; TIMESTAMP=$(date +%Y%m%d%H%M%S)
+    - IMAGE_TAG="$COMMIT_ID"
+    - echo "Logging in to Amazon ECR" 
+    - aws --version
+    # update the following line with your own region
+    - aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-west-1.amazonaws.com      
+  build:
+    commands:
+     - envsubst '${AWS_PROJECT_REGION} ${AWS_COGNITO_REGION} ${AWS_USER_POOLS_ID} ${AWS_USER_POOLS_WEB_CLIENT_ID}' < amplifyconfiguration.json.template > src/amplifyconfiguration.json
+     - |
+        if [ ! -z ${CUSTOMER_PREFIX+foobar} ]; then
+           envsubst '${ENV_NAME} ${CUSTOMER_PREFIX}' < api-url.json.template > src/url.json
+        else
+           envsubst '${ENV_NAME}' < url.json.template > src/url.json
+        fi
+
+     - echo "Build started on `date`"
+     - echo "Building the Docker image..."
+     # update the following line with the name of your own ECR repository
+     - docker build -f Dockerfile.dev -t ${ENV_NAME}-${app_name}:${IMAGE_TAG} -t ${ENV_NAME}-${app_name}:latest .
+     # update the following line with the URI of your own ECR repository (view the Push Commands in the console)
+     - docker tag ${ENV_NAME}-${app_name}:${IMAGE_TAG} ${account_id}.dkr.ecr.us-west-1.amazonaws.com/${ENV_NAME}-${app_name}:${IMAGE_TAG}
+     - docker tag ${ENV_NAME}-${app_name}:latest ${account_id}.dkr.ecr.us-west-1.amazonaws.com/${ENV_NAME}-${app_name}:latest
+  post_build:
+    commands:
+     - echo "Build completed on `date`"
+     - echo "pushing to repo"
+     # update the following line with the URI of your own ECR repository
+     - docker push ${account_id}.dkr.ecr.us-west-1.amazonaws.com/${ENV_NAME}-${app_name}:${IMAGE_TAG}
+     - docker push ${account_id}.dkr.ecr.us-west-1.amazonaws.com/${ENV_NAME}-${app_name}:latest
+     - echo "Writing image definitions file..."
+     - printf '[{"name":"%s","imageUri":"%s"}]' "${app_name}" "${account_id}.dkr.ecr.us-west-1.amazonaws.com/${ENV_NAME}-${app_name}:${IMAGE_TAG}" > imagedefinitions.json
+     - cat imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json

@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "Gilroy";
+  src: url("../../public/fonts/Gilroy-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Gilroy-SemiBold";
+  src: url("../../public/fonts/Gilroy-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Gilroy-Medium";
+  src: url("../../public/fonts/Gilroy-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Gilroy-Bold";
+  src: url("../../public/fonts/Gilroy-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "AvenirNext LT Pro Regular";
+  src: url("../../public/fonts/Avenir-Next-Font.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro Light";
+  src: url("../../public/fonts/avenirnextltpro-light.woff.ttf")
+    format("truetype");
+}

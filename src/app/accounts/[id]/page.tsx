@@ -1,0 +1,204 @@
+"use client";
+
+import { Account, Business, Individual, Product } from "@/core/api/ApiTypes";
+import {
+  fetchAccount,
+  fetchAccountBalance,
+  fetchIndividualOrBusiness,
+  updateAccountStatus,
+} from "@/redux/slices/AccountSlice";
+import { useAppDispatch } from "@/redux/store/store";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import MyText from "@/core/components/Text/Text";
+import ItemRow from "@/core/components/Text/ItemRow";
+import timestampToDate from "@/core/utils/timestampToDate";
+import { fetchProduct } from "@/redux/slices/ProductSlice";
+import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
+import { SubmitHandler, useForm } from "react-hook-form";
+import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import { enqueueSnackbar } from "notistack";
+import toDollarFormat from "@/core/utils/toDollarFormat";
+import { setTitle } from "@/redux/slices/AppSlice";
+
+const AccountPage = () => {
+  const params = useParams();
+
+  const dispatch = useAppDispatch();
+
+  const [account, setAccount] = useState<Account | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [customer, setCustomer] = useState<Business | Individual | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [editing, setEditing] = useState(false);
+
+  const [balance, setBalance] = useState<{
+    accountBalance: string;
+    availableBalance: string;
+  } | null>(null);
+
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    getValues,
+    handleSubmit,
+    reset,
+  } = useForm<{ status: string }>();
+  const onSubmit: SubmitHandler<{ status: string }> = (data: {
+    status: string;
+  }) => {
+    console.log("Status:", data);
+
+    setSubmitting(true);
+    dispatch(
+      updateAccountStatus({ id: params.id.toString(), status: data.status })
+    ).then((acc: any) => {
+      if (acc.payload) {
+        enqueueSnackbar("Account status updated", { variant: "success" });
+        setAccount(acc.payload);
+        setEditing(false);
+      }
+      setSubmitting(false);
+    });
+  };
+
+  useEffect(() => {
+    dispatch(setTitle("Account"));
+
+    dispatch(fetchAccount(params.id.toString())).then((data: any) => {
+      if (data.payload) {
+        reset({ status: data.payload.status });
+
+        dispatch(fetchAccountBalance(data.payload.accountNumber)).then(
+          (bal: any) => {
+            setBalance(bal.payload);
+          }
+        );
+
+        dispatch(fetchProduct(data.payload.productId)).then((prod: any) => {
+          setProduct(prod.payload);
+        });
+
+        dispatch(fetchIndividualOrBusiness(data.payload.customerId)).then(
+          (cust: any) => {
+            setCustomer(cust.payload);
+          }
+        );
+      }
+      setAccount(data.payload);
+
+      if (data.payload?.accountName != null) {
+        dispatch(setTitle(data.payload.accountName));
+      }
+
+      setLoading(false);
+    });
+  }, [dispatch, params.id, reset]);
+
+  return loading ? (
+    <div className="flex flex-col items-center justify-center pt-10">
+      <CircularProgress></CircularProgress>
+      <div>Loading account...</div>
+    </div>
+  ) : account == null ? (
+    <MyText>Account data not found</MyText>
+  ) : (
+    <div className="flex flex-row w-[650px]">
+      <div className="w-[300px]">
+        <ItemRow title="ID" value={account.id ?? ""}></ItemRow>
+        <ItemRow
+          title="Account number"
+          value={account.accountNumber ?? ""}
+        ></ItemRow>
+        <ItemRow
+          title="Account Name"
+          value={account.accountName ?? ""}
+        ></ItemRow>
+        <ItemRow
+          title="Customer ID"
+          value={
+            customer
+              ? {
+                  value:
+                    customer.type == "BUSINESS"
+                      ? (customer as Business).name
+                      : (customer as Individual).firstName +
+                          " " +
+                          (customer as Individual).firstName ?? "",
+                  link: `${
+                    customer
+                      ? customer.type == "BUSINESS"
+                        ? "/businesses/"
+                        : "/individuals/"
+                      : ""
+                  }/${account.customerId}`,
+                }
+              : account.customerId?.toString() ?? ""
+          }
+        ></ItemRow>
+        <ItemRow
+          title="Product ID"
+          value={
+            product
+              ? {
+                  value: product.productName ?? "",
+                  link: `/configuration/products/${account.productId}`,
+                }
+              : account.productId?.toString() ?? ""
+          }
+        ></ItemRow>
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          name="status"
+          displayName="Status"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: true,
+                }
+          }
+          value={account.status ?? ""}
+          submitting={false}
+          options={["INACTIVE", "BLOCKED", "ACTIVE"]}
+        />
+        <ItemRow
+          title="Created Date"
+          value={account.createdAt ? timestampToDate(account.createdAt) : ""}
+        ></ItemRow>
+        <ItemRow
+          title="Updated Date"
+          value={account.updatedAt ? timestampToDate(account.updatedAt) : ""}
+        ></ItemRow>
+        <div className="w-fit">
+          <MyBlueButton
+            onClick={() => {
+              handleSubmit(onSubmit)();
+            }}
+            submitting={submitting}
+          >
+            Update Status
+          </MyBlueButton>
+        </div>
+      </div>
+      <div className="w-[300px]">
+        <ItemRow
+          title="Account Balance"
+          value={toDollarFormat(balance?.accountBalance ?? "")}
+        ></ItemRow>
+        <ItemRow
+          title="Available Balance"
+          value={toDollarFormat(balance?.availableBalance ?? "")}
+        ></ItemRow>
+      </div>
+    </div>
+  );
+};
+
+export default AccountPage;

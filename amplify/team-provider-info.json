@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-braidfi-dev-214830-authRole",
+      "UnauthRoleArn": "arn:aws:iam::774532976788:role/amplify-braidfi-dev-214830-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::774532976788:role/amplify-braidfi-dev-214830-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-braidfi-dev-214830-deployment",
+      "UnauthRoleName": "amplify-braidfi-dev-214830-unauthRole",
+      "StackName": "amplify-braidfi-dev-214830",
+      "StackId": "arn:aws:cloudformation:us-west-1:774532976788:stack/amplify-braidfi-dev-214830/56753510-8f33-11ee-886d-0234c58463f9",
+      "AmplifyAppId": "d1xr19cmelpahz"
+    }
+  }
+}

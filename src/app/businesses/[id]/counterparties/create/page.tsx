@@ -1,0 +1,793 @@
+"use client";
+
+import { useAppDispatch } from "@/redux/store/store";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
+import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
+import MyText from "@/core/components/Text/Text";
+import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
+import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import { enqueueSnackbar } from "notistack";
+import { useParams, useRouter } from "next/navigation";
+import {
+  CreateCounterPartyWire,
+  CreateCounterparty,
+  CreateCounterpartyACH,
+  CreateCounterpartyBraid,
+} from "@/core/api/ApiTypes";
+import RadioButton from "@/core/components/Button/RadioButton";
+import AddIcon from "@mui/icons-material/Add";
+import MyTextButton from "@/core/components/Button/MyTextButton";
+import ItemRow from "@/core/components/Text/ItemRow";
+import { States } from "@/core/constants";
+import { createCounterparty } from "@/redux/slices/CounterpartySlice";
+
+const CreateCounterpartyPage = () => {
+  const params = useParams();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [submitting, setSubmitting] = useState(false);
+
+  const [counterpartyType, setCounterpartyType] = useState("BUSINESS");
+
+  const [addPaymentInfo, setAddPaymentInfo] = useState(false);
+  const [paymentInfoType, setPaymentInfoType] = useState("ACH");
+  const [achAdded, setACHAdded] = useState(false);
+  const [braidAdded, setBraidAdded] = useState(false);
+  const [wireAdded, setWireAdded] = useState(false);
+
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    handleSubmit,
+  } = useForm<CreateCounterparty>();
+  const onSubmit: SubmitHandler<CreateCounterparty> = (
+    data: CreateCounterparty
+  ) => {
+    if (counterpartyType == null) {
+      enqueueSnackbar("Counterparty type is required", { variant: "error" });
+      return;
+    }
+    data.type = counterpartyType;
+
+    if (achAdded) {
+      const achInfo: CreateCounterpartyACH = {
+        accountNumber: achGetValues("accountNumber"),
+        bankName: achGetValues("bankName"),
+        bankAccountType: achGetValues("bankAccountType"),
+        routingNumber: achGetValues("routingNumber"),
+      };
+
+      data.ach = achInfo;
+    }
+
+    if (braidAdded) {
+      data.braid = { accountNumber: braidGetValues("accountNumber") };
+    }
+
+    if (wireAdded) {
+      data.wire = {
+        accountNumber: wireGetValues("accountNumber"),
+        address: {
+          city: wireGetValues("address.city"),
+          line1: wireGetValues("address.line1"),
+          line2: wireGetValues("address.line2"),
+          state: wireGetValues("address.state"),
+          type: "MAILING",
+          postalCode: wireGetValues("address.postalCode"),
+          countryCode: wireGetValues("address.countryCode"),
+        },
+        routingNumberType: wireGetValues("routingNumberType"),
+        bankName: wireGetValues("bankName"),
+        routingNumber: wireGetValues("routingNumber"),
+      };
+    }
+
+    try {
+      data.businessId = parseInt(params.id.toString());
+      data.productId = undefined;
+      data.accountNumber = undefined;
+      data.individualId = undefined;
+    } catch (e) {
+      enqueueSnackbar("Invalid Business ID", { variant: "error" });
+      return;
+    }
+
+    console.log("data:", data);
+
+    setSubmitting(true);
+    dispatch(createCounterparty(data)).then((data: any) => {
+      if (typeof data.payload == "string") {
+        enqueueSnackbar(data.payload, { variant: "error", persist: true });
+      } else {
+        enqueueSnackbar("Counterparty created!", { variant: "success" });
+        router.replace(`/businesses/${params.id}/counterparties`);
+      }
+      setSubmitting(false);
+    });
+  };
+
+  const {
+    formState: {
+      errors: achErrors,
+      submitCount: achSubmitCount,
+      isSubmitted: achIsSubmitted,
+      isValid: achIsValid,
+    },
+    getValues: achGetValues,
+    control: achControl,
+    handleSubmit: achHandleSubmit,
+  } = useForm<CreateCounterpartyACH>();
+  const achOnSubmit: SubmitHandler<CreateCounterpartyACH> = (
+    data: CreateCounterpartyACH
+  ) => {
+    console.log("ach:", data);
+    if (braidAdded == false) {
+      setPaymentInfoType("Braid");
+    } else if (wireAdded == false) {
+      setPaymentInfoType("Wire");
+    } else {
+      setPaymentInfoType("");
+    }
+
+    setACHAdded(true);
+    setAddPaymentInfo(false);
+  };
+
+  const {
+    formState: {
+      errors: braidErrors,
+      submitCount: braidSubmitCount,
+      isSubmitted: braidIsSubmitted,
+      isValid: braidIsValid,
+    },
+    getValues: braidGetValues,
+    control: braidControl,
+    handleSubmit: braidHandleSubmit,
+  } = useForm<CreateCounterpartyBraid>();
+  const braidOnSubmit: SubmitHandler<CreateCounterpartyBraid> = (
+    data: CreateCounterpartyBraid
+  ) => {
+    console.log("braid:", data);
+    if (achAdded == false) {
+      setPaymentInfoType("ACH");
+    } else if (wireAdded == false) {
+      setPaymentInfoType("Wire");
+    } else {
+      setPaymentInfoType("");
+    }
+
+    setBraidAdded(true);
+    setAddPaymentInfo(false);
+  };
+
+  const {
+    formState: {
+      errors: wireErrors,
+      submitCount: wireSubmitCount,
+      isSubmitted: wireIsSubmitted,
+      isValid: wireIsValid,
+    },
+    getValues: wireGetValues,
+    control: wireControl,
+    handleSubmit: wireHandleSubmit,
+  } = useForm<CreateCounterPartyWire>();
+  const wireOnSubmit: SubmitHandler<CreateCounterPartyWire> = (
+    data: CreateCounterPartyWire
+  ) => {
+    console.log("wire:", data);
+    if (achAdded == false) {
+      setPaymentInfoType("ACH");
+    } else if (braidAdded == false) {
+      setPaymentInfoType("Braid");
+    } else {
+      setPaymentInfoType("");
+    }
+
+    setWireAdded(true);
+    setAddPaymentInfo(false);
+  };
+
+  useEffect(() => {
+    if (isSubmitted && !isValid) {
+      enqueueSnackbar("Invalid Fields", { variant: "error" });
+    }
+  }, [submitCount, isValid, isSubmitted]);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+      <Box className="flex flex-col w-1/3">
+        <MyText>Counterparty Name</MyText>
+        <MyControlledTextField
+          name="name"
+          displayName="Counterparty Name"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: true,
+                }
+          }
+          value=""
+        />
+        <Box className="pb-4"></Box>
+        <RadioButton
+          title="Counterparty Type"
+          value={counterpartyType}
+          setValue={setCounterpartyType}
+          options={["BUSINESS", "INDIVIDUAL"]}
+          layout="horizontal"
+        />
+        <Box className="pb-4"></Box>
+        <MyText>Email</MyText>
+        <MyControlledTextField
+          name="email"
+          displayName={"Email"}
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false, pattern: false, validate: null }
+              : {
+                  required: true,
+                  validate: (value: string, _: any) => {
+                    const chars = value.split("");
+                    if (
+                      !(
+                        chars.filter((c) => c == "@").length == 1 &&
+                        chars.filter((c) => c == ".").length >= 1
+                      )
+                    ) {
+                      return "Invalid Email";
+                    }
+                  },
+                }
+          }
+          value=""
+        />
+        <Box className="pb-4"></Box>
+        <MyText>Phone number</MyText>
+        <MyControlledTextField
+          name="phone"
+          displayName={"Phone number"}
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false, pattern: false, validate: null }
+              : {
+                  required: false,
+                  pattern: /^[0-9]+$/,
+                }
+          }
+          value=""
+        />
+        <Box className="pb-4"></Box>
+        <ItemRow title="Business ID" value={params.id.toString()} />
+        <Box className="pb-4"></Box>
+        <MyText>Payment Information</MyText>
+        {achAdded && (
+          <>
+            <Box className="pb-2"></Box>
+            <Divider className="w-1/2" />
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row items-center">
+              <MyText>ACH payment information</MyText>
+              <IconButton
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  color: "red",
+                }}
+                edge="end"
+                onClick={() => {
+                  setACHAdded(false);
+                }}
+              >
+                <DeleteOutlineRoundedIcon />
+              </IconButton>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Bank Account Type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("bankAccountType")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Account number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("accountNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Routing number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("routingNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Bank Name</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("bankName")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Divider className="w-1/2" />
+            <Box className="pb-2"></Box>
+          </>
+        )}
+        {braidAdded && (
+          <>
+            {!achAdded && (
+              <>
+                <Box className="pb-2"></Box>
+                <Divider className="w-1/2" />
+                <Box className="pb-2"></Box>
+              </>
+            )}
+            <Box className="flex flex-row items-center">
+              <MyText>Braid payment information</MyText>
+              <IconButton
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  color: "red",
+                }}
+                edge="end"
+                onClick={() => {
+                  setBraidAdded(false);
+                }}
+              >
+                <DeleteOutlineRoundedIcon />
+              </IconButton>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Account number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{braidGetValues("accountNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Divider className="w-1/2" />
+            <Box className="pb-2"></Box>
+          </>
+        )}
+        {wireAdded && (
+          <>
+            {!braidAdded && (
+              <>
+                <Box className="pb-2"></Box>
+                <Divider className="w-1/2" />
+                <Box className="pb-2"></Box>
+              </>
+            )}
+            <Box className="flex flex-row items-center">
+              <MyText>Wire payment information</MyText>
+              <IconButton
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  color: "red",
+                }}
+                edge="end"
+                onClick={() => {
+                  setWireAdded(false);
+                }}
+              >
+                <DeleteOutlineRoundedIcon />
+              </IconButton>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Routing Number Type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("routingNumberType")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Account number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("accountNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Routing number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("routingNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Bank Name</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("bankName")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Address type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>Mailing</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>State</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("address.state")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>City</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("address.city")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Address line 1</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("address.line1")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Address line 2</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("address.line2")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Postal Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("address.postalCode")}</MyText>
+            </Box>
+            <Box className="flex flex-row">
+              <MyText>Country Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("address.countryCode")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Divider className="w-1/2" />
+            <Box className="pb-2"></Box>
+          </>
+        )}
+        <Box className="pb-4"></Box>
+        {submitting || (achAdded && braidAdded && wireAdded) ? (
+          <></>
+        ) : !addPaymentInfo ? (
+          <Box className="w-fit">
+            <MyTextButton
+              icon={<AddIcon />}
+              onClick={() => {
+                setAddPaymentInfo(true);
+              }}
+            >
+              Add Payment Information
+            </MyTextButton>
+          </Box>
+        ) : (
+          <>
+            <RadioButton
+              title="Payment Information Type"
+              value={paymentInfoType}
+              setValue={setPaymentInfoType}
+              options={[
+                !achAdded ? "ACH" : "",
+                !braidAdded ? "Braid" : "",
+                !wireAdded ? "Wire" : "",
+              ]}
+              layout="horizontal"
+            />
+            <Box className="pb-4"></Box>
+            {paymentInfoType == "ACH" && (
+              <>
+                <MyText>Bank Account Type</MyText>
+                <MyControlledAutocomplete
+                  name="bankAccountType"
+                  displayName="Bank Account Type"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                  options={["SAVINGS", "CHECKING"]}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Account number</MyText>
+                <MyControlledTextField
+                  name="accountNumber"
+                  displayName="Account Number"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Routing number</MyText>
+                <MyControlledTextField
+                  name="routingNumber"
+                  displayName="Routing Number"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Bank name</MyText>
+                <MyControlledTextField
+                  name="bankName"
+                  displayName="Bank Name"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+              </>
+            )}
+            {paymentInfoType == "Braid" && (
+              <>
+                <MyText>Account number</MyText>
+                <MyControlledTextField
+                  name="accountNumber"
+                  displayName="Account Number"
+                  control={braidControl}
+                  errors={braidErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+              </>
+            )}
+            {paymentInfoType == "Wire" && (
+              <>
+                <MyText>Account Number</MyText>
+                <MyControlledTextField
+                  name="accountNumber"
+                  displayName="Account Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Routing Number</MyText>
+                <MyControlledTextField
+                  name="routingNumber"
+                  displayName="Routing Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Bank Name</MyText>
+                <MyControlledTextField
+                  name="bankName"
+                  displayName="Bank Name"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Routing Number Type</MyText>
+                <MyControlledAutocomplete
+                  value={"ABA"}
+                  displayName="Routing Number Type"
+                  name={"routingNumberType"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  options={["ABA", "BIC"]}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address details</MyText>
+                <Box className="pb-2"></Box>
+                <MyText>State</MyText>
+                <MyControlledAutocomplete
+                  value={States[0]}
+                  displayName="State"
+                  name={"address.state"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  options={States}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>City</MyText>
+                <MyControlledTextField
+                  name="address.city"
+                  displayName="City"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 1</MyText>
+                <MyControlledTextField
+                  name="address.line1"
+                  displayName="Account line 1"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 2</MyText>
+                <MyControlledTextField
+                  name="address.line2"
+                  displayName="Account line 2"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Postal Code</MyText>
+                <MyControlledTextField
+                  name="address.postalCode"
+                  displayName="Postal Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Country Code</MyText>
+                <MyControlledTextField
+                  name="address.countryCode"
+                  displayName="Country Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+              </>
+            )}
+            <Box className="pb-6"></Box>
+            <Box className="flex flex-row">
+              <MyTextButton
+                onClick={() => {
+                  setAddPaymentInfo(false);
+                }}
+                isCancel={true}
+              >
+                Cancel
+              </MyTextButton>
+              <div className="w-2"></div>
+              <Box className="w-fit">
+                <MyBlueButton
+                  onClick={() => {
+                    if (paymentInfoType == "ACH") {
+                      achHandleSubmit(achOnSubmit)();
+                    } else if (paymentInfoType == "Braid") {
+                      braidHandleSubmit(braidOnSubmit)();
+                    } else if (paymentInfoType == "Wire") {
+                      wireHandleSubmit(wireOnSubmit)();
+                    } else {
+                      enqueueSnackbar("Invalid payment information type", {
+                        variant: "error",
+                      });
+                    }
+                  }}
+                >
+                  Add
+                </MyBlueButton>
+              </Box>
+            </Box>
+          </>
+        )}
+        <Box className="pb-10"></Box>
+        <Box className="w-fit">
+          <MyBlueButton
+            onClick={() => {
+              handleSubmit(onSubmit)();
+            }}
+            submitting={submitting}
+          >
+            Create Counterparty
+          </MyBlueButton>
+        </Box>
+      </Box>
+    </form>
+  );
+};
+
+export default CreateCounterpartyPage;
