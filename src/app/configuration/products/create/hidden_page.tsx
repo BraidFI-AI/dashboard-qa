@@ -342,7 +342,7 @@ const CreateProductPage = () => {
                     required: true,
                   }
             }
-            options={["CHECKING", "SAVING", "BOTH"]}
+            options={["CHECKING", "SAVINGS", "BOTH"]}
           />
           <Box className="pb-4"></Box>
           <MyText>Duplicate Payment Days</MyText>

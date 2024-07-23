@@ -17,8 +17,7 @@ import ErrorPage from "@/core/components/error_page";
 const ProductsTable = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
-  const products: Product[] | null = useSelector(
+  const products: "loading" | string | Product[] = useSelector(
     (state: any) => state.product.products
   );
 
@@ -27,10 +26,12 @@ const ProductsTable = () => {
   );
 
   useEffect(() => {
+    dispatch(setRefreshProductsTable(true));
+  }, []);
+
+  useEffect(() => {
     if (refresh == true) {
-      setLoading(true);
       dispatch(fetchProducts()).then(() => {
-        setLoading(false);
         dispatch(setRefreshProductsTable(false));
       });
     }
@@ -40,7 +41,7 @@ const ProductsTable = () => {
     router.push(`/configuration/products/${params.row.id}`);
   };
 
-  return loading ? (
+  return products == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <CircularProgress></CircularProgress>
       <div>Loading products...</div>
@@ -49,10 +50,7 @@ const ProductsTable = () => {
     <ErrorPage
       error="Error loading products"
       recoveryButtonOnClick={() => {
-        setLoading(true);
-        dispatch(fetchProducts()).then(() => {
-          setLoading(false);
-        });
+        dispatch(setRefreshProductsTable(true));
       }}
       recoveryButtonTitle="Retry"
     />

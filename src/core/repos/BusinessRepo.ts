@@ -145,10 +145,18 @@ class BusinessRepo {
     return submission;
   }
 
-  public async fetchBusinessAccounts(id: number) {
+  public async fetchBusinessAccountsBalance(id: number) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,
       `/business/${id}/accounts`
+    );
+
+    return accounts;
+  }
+  public async fetchBusinessAccounts(id: number) {
+    const accounts = await this.apiClient.http<CustomerAccount[]>(
+      Method.GET,
+      `/account?customerId=${id}`
     );
 
     return accounts;
@@ -157,7 +165,7 @@ class BusinessRepo {
   public async fetchBusinessAccountIds(id: string) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,
-      `/business/${id}/accounts`
+      `/account?customerId=${id}`
     );
 
     let idsList: string[] = [];
@@ -172,7 +180,7 @@ class BusinessRepo {
   public async fetchBusinessAccountNumbers(id: string) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,
-      `/business/${id}/accounts`
+      `/account?customerId=${id}`
     );
 
     let idsList: string[] = [];
@@ -303,11 +311,11 @@ class BusinessRepo {
     return url;
   }
 
-  public async approveBusiness(id: number, dateTime: string) {
+  public async approveBusiness(id: number) {
     await this.apiClient.http<BusinessDocument[]>(
       Method.PATCH,
       `/business/${id}`,
-      { customerVerified: dateTime, status: "ACTIVE" }
+      { status: "ACTIVE" }
     );
   }
 
@@ -364,6 +372,17 @@ class BusinessRepo {
     );
 
     return resp;
+  }
+
+  public async updateBusiness(
+    id: string,
+    data: { status: string; cipStatus: string }
+  ) {
+    return await this.apiClient.http<any>(
+      Method.PATCH,
+      `/business/${id}`,
+      data
+    );
   }
 }
 

@@ -345,7 +345,7 @@ const ACHConfigSettings = ({ params }: { params: { id: string } }) => {
         <MyText size="md">No ACH Config found</MyText>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
-          <Box className="flex flex-col w-1/3">
+          <Box className="flex flex-col w-[350px]">
             <MyExpandableButton
               title="ACH Details"
               expand={expandDetails}

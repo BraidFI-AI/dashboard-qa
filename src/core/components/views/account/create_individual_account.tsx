@@ -133,8 +133,8 @@ const CreateIndividualAccount = () => {
                   rules={{
                     required: true,
                   }}
-                  value="SAVING"
-                  options={["SAVING", "CHECKING"]}
+                  value="SAVINGS"
+                  options={["SAVINGS", "CHECKING"]}
                 />
                 <div className="pb-4" />
                 <MyText>Funding Account Number</MyText>
@@ -144,7 +144,7 @@ const CreateIndividualAccount = () => {
                   control={control}
                   errors={errors}
                   rules={{
-                    required: true,
+                    required: false,
                   }}
                   value=""
                 />

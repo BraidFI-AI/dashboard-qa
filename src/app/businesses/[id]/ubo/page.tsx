@@ -102,16 +102,16 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                 <ItemRow
                   title="Name"
                   value={
-                    selectedUBO.details.firstName +
+                    selectedUBO?.details?.firstName +
                     " " +
-                    selectedUBO.details.middleName +
+                    selectedUBO?.details?.middleName +
                     " " +
-                    selectedUBO.details.lastName
+                    selectedUBO?.details?.lastName
                   }
                 ></ItemRow>
                 <ItemRow
                   title="Email"
-                  value={selectedUBO.details.ubo.email}
+                  value={selectedUBO?.details?.ubo?.email}
                 ></ItemRow>
                 <div className="h-1"></div>
                 <Divider />
@@ -124,16 +124,20 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   <>
                     <ItemRow
                       title="Verification Status"
-                      value={selectedUBO.kyc.verificationStatus}
+                      value={selectedUBO?.kyc?.verificationStatus}
                     ></ItemRow>
                     <ItemRow
                       title="Verification Start Date"
-                      value={`${selectedUBO.kyc.startDateTime[0]}-${selectedUBO.kyc.startDateTime[1]}-${selectedUBO.kyc.startDateTime[2]}`}
+                      value={selectedUBO?.kyc?.startDateTime
+                        ?.toString()
+                        ?.replaceAll(",", "-")}
                     ></ItemRow>
                     {selectedUBO.completeDateTime != null && (
                       <ItemRow
                         title="Verification Completion Date"
-                        value={`${selectedUBO.kyc.completeDateTime[0]}-${selectedUBO.kyc.completeDateTime[1]}-${selectedUBO.kyc.completeDateTime[2]}`}
+                        value={selectedUBO?.kyc?.completeDateTime
+                          ?.toString()
+                          ?.replaceAll(",", "-")}
                       ></ItemRow>
                     )}
                   </>

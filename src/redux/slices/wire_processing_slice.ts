@@ -47,11 +47,13 @@ export const uploadInboundWireFile = createAsyncThunk(
   async (inbound: string, thunkAPI: any) => {
     try {
       const ib: any = await wireProcessingRepo.uploadInboundWireFile(inbound);
+
       console.log("Inbound wire processed", ib.errors.join(" "));
-      if (ib.errors && ib.errors.length > 0) {
-        return `Error uploading wire file ${ib.errors.join(" ")}`;
-      } else {
+
+      if (ib.wires != null && ib.wires.length > 0) {
         return ib.wires;
+      } else {
+        return `Error uploading wire file ${ib.errors.join(" ")}`;
       }
     } catch (e: any) {
       return `Error uploading wire file ${generateErrorMessage(e)}`;

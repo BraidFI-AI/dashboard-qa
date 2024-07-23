@@ -21,7 +21,7 @@ class WireProcessingRepo {
     console.log(data);
     const response = await this.apiClient.http(
       Method.POST,
-      "/wire/load/inbound",
+      "/wire/load/inbound?continueWithErrors=true",
       data,
       {
         headers: {

@@ -57,6 +57,7 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
     control,
     getValues,
     reset,
+    setValue,
     handleSubmit,
   } = useForm<Fees>();
   const onSubmit: SubmitHandler<Fees> = (data: Fees) => {
@@ -232,6 +233,9 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
           options={["FLAT", "PERCENT", "MONTHLY"]}
           customOnChange={(val: string) => {
             setFeeType(val);
+            if (val == "MONTHLY") {
+              setValue("tranType", undefined);
+            }
           }}
         />
         {feeType == "MONTHLY" && (

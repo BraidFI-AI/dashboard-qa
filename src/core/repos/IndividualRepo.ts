@@ -42,10 +42,19 @@ class IndividualRepo {
     return individual;
   }
 
-  public async fetchIndividualAccounts(id: number) {
+  public async fetchIndividualAccountsBalance(id: number) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,
       `/individual/${id}/accounts`
+    );
+
+    return accounts;
+  }
+
+  public async fetchIndividualAccounts(id: number) {
+    const accounts = await this.apiClient.http<CustomerAccount[]>(
+      Method.GET,
+      `/account?customerId=${id}`
     );
 
     return accounts;
@@ -116,7 +125,7 @@ class IndividualRepo {
   public async fetchIndividualAccountNumbers(id: string) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,
-      `/individual/${id}/accounts`
+      `/account?customerId=${id}`
     );
 
     let idsList: string[] = [];
@@ -131,7 +140,7 @@ class IndividualRepo {
   public async fetchIndividualAccountIds(id: string) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,
-      `/individual/${id}/accounts`
+      `/account?customerId=${id}`
     );
 
     let idsList: string[] = [];
@@ -187,11 +196,21 @@ class IndividualRepo {
     return data;
   }
 
-  public async approveIndividual(id: number, dateTime: string) {
+  public async approveIndividual(id: number) {
     return await this.apiClient.http<any>(Method.PATCH, `/individual/${id}`, {
-      customerVerified: dateTime,
       status: "ACTIVE",
     });
+  }
+
+  public async updateIndividual(
+    id: string,
+    data: { status: string; cipStatus: string }
+  ) {
+    return await this.apiClient.http<any>(
+      Method.PATCH,
+      `/individual/${id}`,
+      data
+    );
   }
 }
 

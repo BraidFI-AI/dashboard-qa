@@ -111,6 +111,7 @@ export interface Individual {
   lastName: string;
   middleName: string;
   email: string;
+  cipStatus?: string | null;
   mobilePhone: string;
   type: string;
   tcAgreed: boolean;
@@ -212,6 +213,7 @@ export interface CreateUBO {
 
 export interface Business {
   address: BusinessAddress[];
+  cipStatus?: string | null;
   id: number;
   name: string;
   email: string;
@@ -256,6 +258,7 @@ export interface CustomerAccount {
     accountBalance: string;
     availableBalance: string;
   };
+  accountName?: string | null;
   currency: string;
   frozen: boolean;
   active: boolean;
@@ -333,6 +336,9 @@ export interface Account {
   status?: string | null;
   createdAt?: number | null;
   updatedAt?: number | null;
+  canAcceptSweep?: string | null;
+  fundingAccountNumber?: string | null;
+  sweepAccountNumber?: string | null;
 }
 
 export interface AccountCard {
@@ -811,6 +817,11 @@ export interface CounterpartyBraid {
 export interface CounterpartyACH {
   id: number | null;
   custId: number | null;
+  countryCode?: string | null;
+  receiverCity: string | null;
+  receiverPostalCode: string | null;
+  receiverState: string | null;
+  receiverStreetAddress: string | null;
   contactId: number | null;
   routingNumber: string | null;
   accountNumber: string | null;
@@ -820,6 +831,8 @@ export interface CounterpartyACH {
   instrumentType: string | null;
   status: string | null;
   blockedResults: CounterpartyBlockedResults[] | null;
+  gatewayRoutingNumber: string | null;
+  rdfiNumberQualifier: string | null;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -829,6 +842,7 @@ export interface CounterpartyWire {
   custId: number | null;
   contactId: number | null;
   name: string | null;
+  intermediaryRoutingNumber: string | null;
   routingNumber: string | null;
   accountNumber: string | null;
   bankName: string | null;
@@ -850,6 +864,9 @@ export interface CounterpartyWire {
 }
 
 export interface CreateCounterparty {
+  email: string | null;
+  name: string | null;
+  phone: string | null;
   Email: string;
   Phone: string;
   type: string;
@@ -861,7 +878,6 @@ export interface CreateCounterparty {
   firstName: string;
   individualId?: number;
   lastName: string;
-  mobileNumberOrEmail: string;
   productId?: number;
   wire: CreateCounterPartyWire | null;
 }
@@ -879,6 +895,7 @@ export interface CreateCounterPartyWire {
   };
   routingNumberType: string;
   bankName: string;
+  intermediaryRoutingNumber: string;
   routingNumber: string;
 }
 
@@ -891,6 +908,17 @@ export interface CreateCounterpartyACH {
   bankName: string;
   bankAccountType: string;
   routingNumber: string;
+  gatewayRoutingNumber: string | null;
+  rdfiNumberQualifier: string | null;
+  address: {
+    city: string | null;
+    countryCode: string | null;
+    line1: string | null;
+    line2: string | null;
+    postalCode: string | null;
+    state: string | null;
+    type: string | null;
+  };
 }
 
 export interface Developer {

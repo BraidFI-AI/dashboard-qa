@@ -63,6 +63,17 @@ const CreateCounterpartyPage = () => {
         bankName: achGetValues("bankName"),
         bankAccountType: achGetValues("bankAccountType"),
         routingNumber: achGetValues("routingNumber"),
+        gatewayRoutingNumber: achGetValues("gatewayRoutingNumber"),
+        rdfiNumberQualifier: achGetValues("rdfiNumberQualifier"),
+        address: {
+          city: achGetValues("address.city"),
+          line1: achGetValues("address.line1"),
+          line2: achGetValues("address.line2"),
+          state: achGetValues("address.state"),
+          type: "MAILING",
+          postalCode: achGetValues("address.postalCode"),
+          countryCode: achGetValues("address.countryCode"),
+        },
       };
 
       data.ach = achInfo;
@@ -80,12 +91,13 @@ const CreateCounterpartyPage = () => {
           line1: wireGetValues("address.line1"),
           line2: wireGetValues("address.line2"),
           state: wireGetValues("address.state"),
-          type: "MAILING",
+          type: wireGetValues("address.type"),
           postalCode: wireGetValues("address.postalCode"),
           countryCode: wireGetValues("address.countryCode"),
         },
         routingNumberType: wireGetValues("routingNumberType"),
         bankName: wireGetValues("bankName"),
+        intermediaryRoutingNumber: wireGetValues("intermediaryRoutingNumber"),
         routingNumber: wireGetValues("routingNumber"),
       };
     }
@@ -450,6 +462,54 @@ const CreateCounterpartyPage = () => {
               <MyText primary>{achGetValues("bankName")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Gateway Routing Number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("gatewayRoutingNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>RDFI Number Qualifier</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("rdfiNumberQualifier")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Address type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>Mailing</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Country Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("address.countryCode")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>State</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("address.state")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>City</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("address.city")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Street Address</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("address.line1")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Postal Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{achGetValues("address.postalCode")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
             <Divider className="w-1/2" />
             <Box className="pb-2"></Box>
           </>
@@ -541,9 +601,17 @@ const CreateCounterpartyPage = () => {
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
+              <MyText>Intermediary Routing Number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("intermediaryRoutingNumber")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
               <MyText>Address type</MyText>
               <Box className="pr-2" />
-              <MyText primary>Mailing</MyText>
+              <MyText primary>{wireGetValues("address.type")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
@@ -680,6 +748,122 @@ const CreateCounterpartyPage = () => {
                   }
                   value=""
                 />
+                <Box className="pb-4"></Box>
+                <MyText>Gateway Routing Number</MyText>
+                <MyControlledTextField
+                  name="gatewayRoutingNumber"
+                  displayName="Gateway Routing Number"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>RDFI Number Qualifier</MyText>
+                <MyControlledAutocomplete
+                  name="rdfiNumberQualifier"
+                  displayName="RDFI Number Qualifier"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value="NATIONAL_CLEARING_SYSTEM"
+                  options={["NATIONAL_CLEARING_SYSTEM", "IBAN", "BIC"]}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address details</MyText>
+                <Box className="pb-2"></Box>
+                <MyText>Country Code</MyText>
+                <MyControlledTextField
+                  value={""}
+                  displayName="Country Code"
+                  name={"address.countryCode"}
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                />
+                <Box className="pb-4"></Box>
+                <MyText>State</MyText>
+                <MyControlledAutocomplete
+                  value={States[0]}
+                  displayName="State"
+                  name={"address.state"}
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  options={States}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>City</MyText>
+                <MyControlledTextField
+                  name="address.city"
+                  displayName="City"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Street Address</MyText>
+                <MyControlledTextField
+                  name="address.line1"
+                  displayName="Account line 1"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Postal Code</MyText>
+                <MyControlledTextField
+                  name="address.postalCode"
+                  displayName="Postal Code"
+                  control={achControl}
+                  errors={achErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
               </>
             )}
             {paymentInfoType == "Braid" && (
@@ -771,8 +955,41 @@ const CreateCounterpartyPage = () => {
                   options={["ABA", "BIC"]}
                 />
                 <Box className="pb-4"></Box>
+                <MyText>Intermediary Routing Number</MyText>
+                <MyControlledTextField
+                  name="intermediaryRoutingNumber"
+                  displayName="Intermediary Routing Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
                 <MyText>Address details</MyText>
                 <Box className="pb-2"></Box>
+                <MyText>Address Type</MyText>
+                <MyControlledAutocomplete
+                  value={"MAILING"}
+                  displayName="Address Type<"
+                  name={"address.type"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  options={["OTHER", "MAILING", "RESIDENCE", "BUSINESS"]}
+                />
+                <Box className="pb-4"></Box>
                 <MyText>State</MyText>
                 <MyControlledAutocomplete
                   value={States[0]}

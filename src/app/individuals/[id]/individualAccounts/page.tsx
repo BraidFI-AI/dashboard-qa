@@ -119,6 +119,13 @@ const Accounts = () => {
           maxWidth: 300,
         },
         {
+          field: "accountName",
+          headerName: "Account Name",
+          flex: 1,
+          minWidth: 120,
+          maxWidth: 300,
+        },
+        {
           field: "balance.accountBalance",
           headerName: "Account Balance",
           flex: 1,

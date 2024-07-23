@@ -4,12 +4,7 @@ import { Product } from "@/core/api/ApiTypes";
 import DonutChart from "@/core/components/charts/donut_chart";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
-import {
-  fetchAllProductBalance,
-  fetchProductBalance,
-  fetchProducts,
-  fetchProductsNew,
-} from "@/redux/slices/ProductSlice";
+import { fetchAllProductBalance } from "@/redux/slices/ProductSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import React, { useCallback, useEffect, useState } from "react";
 import Products from "../configuration/products/page";

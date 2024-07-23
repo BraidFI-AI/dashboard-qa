@@ -308,7 +308,7 @@ const CreateBusinessPage = () => {
                 <div>
                   <MyText>ID Number type</MyText>
                   <MyControlledAutocomplete
-                    value={"EIN"}
+                    value={""}
                     displayName="ID Number type"
                     name={"businessIdType"}
                     control={control}
@@ -427,7 +427,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: false,
+                        required: true,
                       }
                 }
                 value=""
@@ -459,7 +459,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: false,
+                        required: true,
                       }
                 }
                 value=""
@@ -496,7 +496,7 @@ const CreateBusinessPage = () => {
                       submitting
                         ? { required: false }
                         : {
-                            required: false,
+                            required: true,
                           }
                     }
                     value=""

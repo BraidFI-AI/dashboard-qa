@@ -27,14 +27,14 @@ const counterpartyRepo: CounterpartyRepo = new CounterpartyRepo(apiClient);
 export type ProductCounterpartyType = "loading" | string | Counterparty[];
 
 interface ProductState {
-  products: Product[] | null;
+  products: "loading" | string | Product[];
   counterparties: ProductCounterpartyType;
   refreshProductsTable: boolean;
   counterpartyPagination: PaginationStateType;
 }
 
 const initialState: ProductState = {
-  products: null,
+  products: "loading",
   counterparties: "loading",
   refreshProductsTable: true,
   counterpartyPagination: {
@@ -59,6 +59,9 @@ const ProductSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchProducts.pending, (state, action) => {
+      state.products = "loading";
+    });
     builder.addCase(fetchProducts.fulfilled, (state, action) => {
       state.products = action.payload;
     });
@@ -90,13 +93,8 @@ export const fetchProducts = createAsyncThunk(
       console.log("products", products);
       return products;
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching products ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching products ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 

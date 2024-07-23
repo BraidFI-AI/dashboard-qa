@@ -5,7 +5,7 @@ import {
   fetchAccount,
   fetchAccountBalance,
   fetchIndividualOrBusiness,
-  updateAccountStatus,
+  updateAccount,
 } from "@/redux/slices/AccountSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useParams } from "next/navigation";
@@ -46,23 +46,39 @@ const AccountPage = () => {
     getValues,
     handleSubmit,
     reset,
-  } = useForm<{ status: string }>();
-  const onSubmit: SubmitHandler<{ status: string }> = (data: {
+  } = useForm<{
     status: string;
+    accountName: string;
+    canAcceptSweep: string;
+    fundingAccountNumber: string;
+    sweepAccountNumber: string;
+  }>();
+  const onSubmit: SubmitHandler<{
+    status: string;
+    accountName: string;
+    canAcceptSweep: string;
+    fundingAccountNumber: string;
+    sweepAccountNumber: string;
+  }> = (data: {
+    status: string;
+    accountName: string;
+    canAcceptSweep: string;
+    fundingAccountNumber: string;
+    sweepAccountNumber: string;
   }) => {
     console.log("Status:", data);
 
     setSubmitting(true);
-    dispatch(
-      updateAccountStatus({ id: params.id.toString(), status: data.status })
-    ).then((acc: any) => {
-      if (acc.payload) {
-        enqueueSnackbar("Account status updated", { variant: "success" });
-        setAccount(acc.payload);
-        setEditing(false);
+    dispatch(updateAccount({ id: params.id.toString(), ...data })).then(
+      (acc: any) => {
+        if (acc.payload) {
+          enqueueSnackbar("Account status updated", { variant: "success" });
+          setAccount(acc.payload);
+          setEditing(false);
+        }
+        setSubmitting(false);
       }
-      setSubmitting(false);
-    });
+    );
   };
 
   useEffect(() => {
@@ -106,17 +122,118 @@ const AccountPage = () => {
   ) : account == null ? (
     <MyText>Account data not found</MyText>
   ) : (
-    <div className="flex flex-row w-[650px]">
+    <div className="flex flex-row w-[650px] justify-between">
       <div className="w-[300px]">
         <ItemRow title="ID" value={account.id ?? ""}></ItemRow>
         <ItemRow
           title="Account number"
           value={account.accountNumber ?? ""}
         ></ItemRow>
-        <ItemRow
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          name="accountName"
+          displayName="Account Name"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: true,
+                }
+          }
+          value={account.accountName ?? ""}
+          submitting={false}
+        />
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          name="canAcceptSweep"
+          displayName="Can Accept Sweep"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: false,
+                }
+          }
+          value={account.canAcceptSweep ?? ""}
+          submitting={false}
+          options={["true", "false"]}
+        />
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          name="fundingAccountNumber"
+          displayName="Funding Account Number"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: false,
+                }
+          }
+          value={account.fundingAccountNumber ?? ""}
+          submitting={false}
+        />
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          name="sweepAccountNumber"
+          displayName="Sweep Account Number"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: false,
+                }
+          }
+          value={account.sweepAccountNumber ?? ""}
+          submitting={false}
+        />
+
+        {/* <ItemRow
           title="Account Name"
           value={account.accountName ?? ""}
-        ></ItemRow>
+        ></ItemRow> */}
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          name="status"
+          displayName="Status"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: true,
+                }
+          }
+          value={account.status ?? ""}
+          submitting={false}
+          options={["INACTIVE", "BLOCKED", "ACTIVE"]}
+        />
+        <div className="w-fit">
+          <MyBlueButton
+            onClick={() => {
+              handleSubmit(onSubmit)();
+            }}
+            submitting={submitting}
+          >
+            Update Status
+          </MyBlueButton>
+        </div>
+        <div className="h-10"></div>
+      </div>
+      <div className="w-[300px]">
         <ItemRow
           title="Customer ID"
           value={
@@ -127,7 +244,9 @@ const AccountPage = () => {
                       ? (customer as Business).name
                       : (customer as Individual).firstName +
                           " " +
-                          (customer as Individual).firstName ?? "",
+                          (customer as Individual).middleName +
+                          " " +
+                          (customer as Individual).lastName ?? "",
                   link: `${
                     customer
                       ? customer.type == "BUSINESS"
@@ -150,44 +269,6 @@ const AccountPage = () => {
               : account.productId?.toString() ?? ""
           }
         ></ItemRow>
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          name="status"
-          displayName="Status"
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: true,
-                }
-          }
-          value={account.status ?? ""}
-          submitting={false}
-          options={["INACTIVE", "BLOCKED", "ACTIVE"]}
-        />
-        <ItemRow
-          title="Created Date"
-          value={account.createdAt ? timestampToDate(account.createdAt) : ""}
-        ></ItemRow>
-        <ItemRow
-          title="Updated Date"
-          value={account.updatedAt ? timestampToDate(account.updatedAt) : ""}
-        ></ItemRow>
-        <div className="w-fit">
-          <MyBlueButton
-            onClick={() => {
-              handleSubmit(onSubmit)();
-            }}
-            submitting={submitting}
-          >
-            Update Status
-          </MyBlueButton>
-        </div>
-      </div>
-      <div className="w-[300px]">
         <ItemRow
           title="Account Balance"
           value={toDollarFormat(balance?.accountBalance ?? "")}
@@ -195,6 +276,14 @@ const AccountPage = () => {
         <ItemRow
           title="Available Balance"
           value={toDollarFormat(balance?.availableBalance ?? "")}
+        ></ItemRow>
+        <ItemRow
+          title="Created Date"
+          value={account.createdAt ? timestampToDate(account.createdAt) : ""}
+        ></ItemRow>
+        <ItemRow
+          title="Updated Date"
+          value={account.updatedAt ? timestampToDate(account.updatedAt) : ""}
         ></ItemRow>
       </div>
     </div>

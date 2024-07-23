@@ -5,6 +5,7 @@ import {
   approveIndividual,
   fetchIndividual,
   unblockIndividual,
+  updateIndividual,
 } from "@/redux/slices/IndividualSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import React, { useEffect, useState } from "react";
@@ -21,8 +22,20 @@ import MyLinkText from "@/core/components/Text/LinkText";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import ErrorPage from "@/core/components/error_page";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import { useSelector } from "react-redux";
+import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { ADMIN_ROLE } from "@/core/constants";
+import MyEditButton from "@/core/components/Button/MyEditButton";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
+  const userType = useSelector((state: any) => state.app.userType);
+
+  const [statusValues, setStatusValues] = useState<string[]>([
+    "INACTIVE",
+    "BLOCKED",
+  ]);
+
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [individual, setIndividual] = useState<Individual | null>(null);
@@ -33,6 +46,58 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   const [ofac, setOfac] = useState<"loading" | string | OFAC>("loading");
 
   const [submitting, setSubmitting] = useState(false);
+
+  const [editing, setEditing] = useState(false);
+
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    getValues,
+    reset,
+    handleSubmit,
+  } = useForm<{ status: string; cipStatus: string }>();
+  const onSubmit: SubmitHandler<{
+    status: string;
+    cipStatus: string;
+  }> = (data: { status: string; cipStatus: string }) => {
+    console.log("data", data);
+
+    setSubmitting(true);
+    dispatch(
+      updateIndividual({
+        id: params.id.toString(),
+        status: data.status,
+        cipStatus: data.cipStatus,
+      })
+    ).then((d: any) => {
+      if (typeof d.payload == "string") {
+        enqueueSnackbar(d.payload, { variant: "error", persist: true });
+      } else {
+        enqueueSnackbar("Individual updated successfully", {
+          variant: "success",
+        });
+      }
+      setSubmitting(false);
+      setEditing(false);
+      setRefresh(true);
+    });
+  };
+
+  useEffect(() => {
+    if (userType == ADMIN_ROLE) {
+      setStatusValues([
+        "ACTIVE",
+        "BLOCKED",
+        "INACTIVE",
+        "PENDING_APPROVAL",
+        "PENDING",
+        "INITIALIZED",
+        "PENDING_UNBLOCKED",
+      ]);
+    } else {
+      setStatusValues(["BLOCKED", "INACTIVE"]);
+    }
+  }, [userType]);
 
   useEffect(() => {
     if (refresh) {
@@ -126,45 +191,101 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div className="h-full w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
-            <ItemRow
-              title="Customer Verified"
-              value={
-                individual.customerVerified != null
-                  ? individual.customerVerified.toString()
-                  : ""
-              }
-            ></ItemRow>
-            <div className="flex flex-row">
+            {userType == ADMIN_ROLE ? (
+              <div className="flex flex-row justify-between">
+                <div>
+                  <MyEditableTextField
+                    editing={editing}
+                    setEditing={setEditing}
+                    editable={false}
+                    name="cipStatus"
+                    displayName="CIP Status"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={individual.cipStatus}
+                    options={["NOT_START", "PASS", "FAIL", "IN_REVIEW"]}
+                    submitting={false}
+                  />
+                </div>
+                <MyEditButton editing={editing} setEditing={setEditing} />
+              </div>
+            ) : (
               <ItemRow
+                title="CIP Status"
+                value={
+                  individual.cipStatus != null
+                    ? individual.cipStatus.toString()
+                    : ""
+                }
+              ></ItemRow>
+            )}
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row">
+                <div>
+                  <MyEditableTextField
+                    editing={editing}
+                    setEditing={setEditing}
+                    editable={false}
+                    name="status"
+                    displayName="Status"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={individual.status}
+                    options={statusValues}
+                    submitting={false}
+                  />
+                </div>
+                {/* <ItemRow
                 status={individual.status === "ACTIVE"}
                 title="Status"
                 value={individual.status}
-              ></ItemRow>
-              {individual.status === "BLOCKED" && (
-                <div className="w-fit pl-10">
-                  <MyTextButton
-                    submitting={unblocking}
-                    onClick={() => {
-                      setUnblocking(true);
-                      dispatch(unblockIndividual(individual.id)).then(
-                        (biz: any) => {
-                          if (typeof biz.payload != "string") {
-                            enqueueSnackbar("Business unblocked successfully", {
-                              variant: "success",
-                            });
-                          } else {
-                            enqueueSnackbar(biz.payload, { variant: "error" });
+              ></ItemRow> */}
+                {individual.status === "BLOCKED" && userType == ADMIN_ROLE && (
+                  <div className="w-fit pl-10">
+                    <MyTextButton
+                      submitting={unblocking}
+                      onClick={() => {
+                        setUnblocking(true);
+                        dispatch(unblockIndividual(individual.id)).then(
+                          (biz: any) => {
+                            if (typeof biz.payload != "string") {
+                              enqueueSnackbar(
+                                "Business unblocked successfully",
+                                {
+                                  variant: "success",
+                                }
+                              );
+                            } else {
+                              enqueueSnackbar(biz.payload, {
+                                variant: "error",
+                              });
+                            }
+                            setUnblocking(false);
+                            setRefresh(true);
                           }
-                          setUnblocking(false);
-                          setRefresh(true);
-                        }
-                      );
-                    }}
-                  >
-                    Unblock
-                  </MyTextButton>
-                </div>
-              )}
+                        );
+                      }}
+                    >
+                      Unblock
+                    </MyTextButton>
+                  </div>
+                )}
+              </div>
+              <MyEditButton editing={editing} setEditing={setEditing} />
             </div>
             <ItemRow
               title="CreatedAt"
@@ -212,7 +333,6 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               </>
             )}
             {(individual.status == "PENDING_APPROVAL" ||
-              individual.status == "INACTIVE" ||
               individual.status == "PENDING") && (
               <div className="w-fit pt-2 pb-10">
                 <MyBlueButton
@@ -238,6 +358,16 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   }}
                 >
                   Approve Individual
+                </MyBlueButton>
+              </div>
+            )}
+            {editing && (
+              <div className="w-fit pt-2 pb-10">
+                <MyBlueButton
+                  onClick={handleSubmit(onSubmit)}
+                  submitting={submitting}
+                >
+                  Update Customer
                 </MyBlueButton>
               </div>
             )}

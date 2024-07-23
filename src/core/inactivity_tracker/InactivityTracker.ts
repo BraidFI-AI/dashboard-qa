@@ -10,7 +10,7 @@ export class InactivityTracker {
   }
 
   static isInactive() {
-    const threshold = 15 * 60 * 1000; // 5 minutes
+    const threshold = 15 * 60 * 1000; // 15 minutes
     return InactivityTracker.getInactiveTime() >= threshold;
   }
 }

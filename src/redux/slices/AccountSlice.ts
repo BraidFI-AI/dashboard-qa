@@ -265,14 +265,20 @@ export const fetchAccountBalance = createAsyncThunk(
 //   }
 // );
 
-export const updateAccountStatus = createAsyncThunk(
-  "account/updateAccountStatus",
-  async (data: { id: string; status: string }) => {
+export const updateAccount = createAsyncThunk(
+  "account/updateAccount",
+  async (data: {
+    id: string;
+    status: string;
+    accountName: string;
+    canAcceptSweep: string;
+    fundingAccountNumber: string;
+    sweepAccountNumber: string;
+  }) => {
     try {
-      const account = await accountRepo.updateAccountStatus(
-        data.id,
-        data.status
-      );
+      const account = await accountRepo.updateAccount(data.id, {
+        ...data,
+      });
       console.log("account status", account);
       return account;
     } catch (e: any) {

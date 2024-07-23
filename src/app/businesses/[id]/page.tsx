@@ -11,6 +11,7 @@ import {
   fetchBusiness,
   fetchUboKycStatus,
   unblockBusiness,
+  updateBusiness,
 } from "@/redux/slices/BusinessSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useEffect, useState } from "react";
@@ -24,10 +25,24 @@ import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import MyLinkText from "@/core/components/Text/LinkText";
+import { useSelector } from "react-redux";
+import { ADMIN_ROLE } from "@/core/constants";
+import { SubmitHandler, useForm } from "react-hook-form";
+import MyEditButton from "@/core/components/Button/MyEditButton";
+import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 // import { generatePdf } from "@/core/utils/pdfUtils";
 
 const BusinessDetails = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
+
+  const userType = useSelector((state: any) => state.app.userType);
+
+  const [statusValues, setStatusValues] = useState<string[]>([
+    "INACTIVE",
+    "BLOCKED",
+  ]);
+  const [editing, setEditing] = useState(false);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [business, setBusiness] = useState<Business | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
@@ -38,6 +53,56 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
   const [ofac, setOfac] = useState<"loading" | string | OFAC>("loading");
 
   const [unblocking, setUnblocking] = useState(false);
+
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    getValues,
+    reset,
+    handleSubmit,
+  } = useForm<{ status: string; cipStatus: string }>();
+  const onSubmit: SubmitHandler<{
+    status: string;
+    cipStatus: string;
+  }> = (data: { status: string; cipStatus: string }) => {
+    console.log("data", data);
+
+    setSubmitting(true);
+    dispatch(
+      updateBusiness({
+        id: params.id.toString(),
+        status: data.status,
+        cipStatus: data.cipStatus,
+      })
+    ).then((d: any) => {
+      if (typeof d.payload == "string") {
+        enqueueSnackbar(d.payload, { variant: "error", persist: true });
+      } else {
+        enqueueSnackbar("Individual updated successfully", {
+          variant: "success",
+        });
+      }
+      setSubmitting(false);
+      setEditing(false);
+      setRefresh(true);
+    });
+  };
+
+  useEffect(() => {
+    if (userType == ADMIN_ROLE) {
+      setStatusValues([
+        "ACTIVE",
+        "BLOCKED",
+        "INACTIVE",
+        "PENDING_APPROVAL",
+        "PENDING",
+        "INITIALIZED",
+        "PENDING_UNBLOCKED",
+      ]);
+    } else {
+      setStatusValues(["BLOCKED", "INACTIVE"]);
+    }
+  }, [userType]);
 
   useEffect(() => {
     if (refresh) {
@@ -125,7 +190,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               ></ItemRow>
               <ItemRow
                 title="Formation Date"
-                value={timestampToDate(business.formationDate ?? -1, true)}
+                value={business.formationDate.toString().replaceAll(",", "-")}
               ></ItemRow>
               <ItemRow
                 title="ACH company ID"
@@ -199,42 +264,102 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 link: `/configuration/products/${business.productId}`,
               }}
             />
-            <div className="flex flex-row">
-              <ItemRow
-                status={business.status === "ACTIVE"}
-                title="Status"
-                value={business.status ?? ""}
-              ></ItemRow>
-              {business.status === "BLOCKED" && (
-                <div className="w-fit pl-10">
-                  <MyTextButton
-                    submitting={unblocking}
-                    onClick={() => {
-                      setUnblocking(true);
-                      dispatch(unblockBusiness(business.id ?? -1)).then(
-                        (biz: any) => {
-                          if (typeof biz.payload != "string") {
-                            enqueueSnackbar("Business unblocked successfully", {
-                              variant: "success",
-                            });
-                            setRefresh(true);
-                          } else {
-                            enqueueSnackbar(biz.payload, { variant: "error" });
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row">
+                <div>
+                  <MyEditableTextField
+                    editing={editing}
+                    setEditing={setEditing}
+                    editable={false}
+                    name="status"
+                    displayName="Status"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
                           }
-                          setUnblocking(false);
-                        }
-                      );
-                    }}
-                  >
-                    Unblock
-                  </MyTextButton>
+                    }
+                    value={business.status}
+                    options={statusValues}
+                    submitting={false}
+                  />
                 </div>
-              )}
+                {/* <ItemRow
+                  status={business.status === "ACTIVE"}
+                  title="Status"
+                  value={business.status ?? ""}
+                ></ItemRow> */}
+                {business.status === "BLOCKED" && (
+                  <div className="w-fit pl-10">
+                    <MyTextButton
+                      submitting={unblocking}
+                      onClick={() => {
+                        setUnblocking(true);
+                        dispatch(unblockBusiness(business.id ?? -1)).then(
+                          (biz: any) => {
+                            if (typeof biz.payload != "string") {
+                              enqueueSnackbar(
+                                "Business unblocked successfully",
+                                {
+                                  variant: "success",
+                                }
+                              );
+                              setRefresh(true);
+                            } else {
+                              enqueueSnackbar(biz.payload, {
+                                variant: "error",
+                              });
+                            }
+                            setUnblocking(false);
+                          }
+                        );
+                      }}
+                    >
+                      Unblock
+                    </MyTextButton>
+                  </div>
+                )}
+              </div>
+              <MyEditButton editing={editing} setEditing={setEditing} />
             </div>
-            <ItemRow
-              title="Customer Verified"
-              value={business.customerVerified?.toString() ?? ""}
-            />
+            {userType == ADMIN_ROLE ? (
+              <div className="flex flex-row justify-between">
+                <div>
+                  <MyEditableTextField
+                    editing={editing}
+                    setEditing={setEditing}
+                    editable={false}
+                    name="cipStatus"
+                    displayName="CIP Status"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={business.cipStatus}
+                    options={["NOT_START", "PASS", "FAIL", "IN_REVIEW"]}
+                    submitting={false}
+                  />
+                </div>
+                <MyEditButton editing={editing} setEditing={setEditing} />
+              </div>
+            ) : (
+              <ItemRow
+                title="CIP Status"
+                value={
+                  business.cipStatus != null
+                    ? business.cipStatus.toString()
+                    : ""
+                }
+              ></ItemRow>
+            )}
             <ItemRow
               title="Created Date"
               value={timestampToDate(business.createdAt)}
@@ -277,8 +402,8 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 Last OFAC status
               </MyLinkText>
             )}
+            <div className="pb-4" />
             {(business.status == "PENDING_APPROVAL" ||
-              business.status == "INACTIVE" ||
               business.status == "PENDING") && (
               <div className="w-fit pt-2 pb-10">
                 <MyBlueButton
@@ -293,9 +418,21 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 >
                   Approve Business
                 </MyBlueButton>
+                <div className="pb-6" />
               </div>
             )}
-            <div className="pb-10" />
+            {editing && (
+              <div className="w-fit pt-2 pb-10">
+                <MyBlueButton
+                  onClick={handleSubmit(onSubmit)}
+                  submitting={submitting}
+                >
+                  Update Customer
+                </MyBlueButton>
+                <div className="pb-6" />
+              </div>
+            )}
+
             {/* <MyText size="md">Address Details</MyText>
             <div className="pb-2" />
             <ItemRow

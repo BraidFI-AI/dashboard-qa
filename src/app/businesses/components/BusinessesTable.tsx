@@ -78,8 +78,8 @@ const BusinessesTable = () => {
               valueGetter: (params: any) => params.row.productName,
             },
             {
-              field: "customerVerified",
-              headerName: "Verified",
+              field: "cipStatus",
+              headerName: "CIP status",
               minWidth: 120,
               maxWidth: 200,
             },

@@ -168,6 +168,28 @@ const CounterpartyWireDetailsView: React.FC<
               }
               submitting={false}
             />
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="wire.intermediaryRoutingNumber"
+              displayName="Intermediary Routing Number"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.wire?.intermediaryRoutingNumber
+                  ? counterparty.wire?.intermediaryRoutingNumber
+                  : ""
+              }
+              submitting={false}
+            />
             {/* <ItemRow
               title="Account Number"
               value={counterparty.wire.accountNumber ?? ""}
@@ -279,6 +301,25 @@ const CounterpartyWireDetailsView: React.FC<
               title="Street Address"
               value={counterparty.wire.line1 ?? ""}
             ></ItemRow> */}
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="wire.address.type"
+              displayName="Address Type"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              options={["OTHER", "MAILING", "RESIDENCE", "BUSINESS"]}
+              value={counterparty.wire?.type ? counterparty.wire?.type : ""}
+              submitting={false}
+            />
             <MyEditableTextField
               editing={isEditing}
               setEditing={setIsEditing}

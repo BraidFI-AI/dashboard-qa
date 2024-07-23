@@ -86,8 +86,8 @@ const IndividualsTable = () => {
             params.row.firstName + " " + params.row.lastName,
         },
         {
-          field: "customerVerified",
-          headerName: "Verified",
+          field: "cipStatus",
+          headerName: "CIP Status",
           flex: 1,
           minWidth: 120,
           maxWidth: 220,

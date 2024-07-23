@@ -42,6 +42,24 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
       name={name}
       control={control}
       rules={rules ? rules : {}}
+      // rules={
+      //   rules
+      //     ? rules.pattern == undefined || rules.pattern == null
+      //       ? {
+      //           pattern: {
+      //             value: /^(?=.*[a-zA-Z0-9])[a-zA-Z0-9\s]+$/,
+      //             message: "Invalid input",
+      //           },
+      //           ...rules,
+      //         }
+      //       : rules
+      //     : {
+      //         pattern: {
+      //           value: /^(?=.*[a-zA-Z0-9])[a-zA-Z0-9\s]+$/,
+      //           message: "Invalid input",
+      //         },
+      //       }
+      // }
       defaultValue={val}
       render={({ field: { onChange } }) => (
         <TextField

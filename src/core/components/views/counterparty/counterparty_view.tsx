@@ -80,41 +80,67 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
     setSubmitting(true);
 
     if (counterparty) {
-      const ach = {
-        id: isEditingAch ? data?.ach?.id : counterparty?.ach?.id,
-        custId: isEditingAch ? data?.ach?.custId : counterparty?.ach?.custId,
-        contactId: isEditingAch
-          ? data?.ach?.contactId
-          : counterparty?.ach?.contactId,
-        bankAccountType: isEditingAch
-          ? data?.ach?.bankAccountType
-          : counterparty?.ach?.bankAccountType,
-        routingNumber: isEditingAch
-          ? data?.ach?.routingNumber
-          : counterparty?.ach?.routingNumber,
-        accountNumber: isEditingAch
-          ? data?.ach?.accountNumber
-          : counterparty?.ach?.accountNumber,
-        bankName: isEditingAch
-          ? data?.ach?.bankName
-          : counterparty?.ach?.bankName,
-        type: isEditingAch ? data?.ach?.type : counterparty?.ach?.type,
-        instrumentType: isEditingAch
-          ? data?.ach?.instrumentType
-          : counterparty?.ach?.instrumentType,
-        status: isEditingAch ? data?.ach?.status : counterparty?.ach?.status,
-        blockedResults: isEditingAch
-          ? data?.ach?.blockedResults
-          : counterparty?.ach?.blockedResults,
-        createdAt: isEditingAch
-          ? data?.ach?.createdAt
-          : counterparty?.ach?.createdAt,
-        updatedAt: isEditingAch
-          ? data?.ach?.updatedAt
-          : counterparty?.ach?.updatedAt,
-      };
+      let ach = data.ach == null && counterparty.ach == null ? null : {};
+      if (ach != null) {
+        ach = {
+          id: isEditingAch ? data?.ach?.id : counterparty?.ach?.id,
+          custId: isEditingAch ? data?.ach?.custId : counterparty?.ach?.custId,
+          contactId: isEditingAch
+            ? data?.ach?.contactId
+            : counterparty?.ach?.contactId,
+          bankAccountType: isEditingAch
+            ? data?.ach?.bankAccountType
+            : counterparty?.ach?.bankAccountType,
+          routingNumber: isEditingAch
+            ? data?.ach?.routingNumber
+            : counterparty?.ach?.routingNumber,
+          accountNumber: isEditingAch
+            ? data?.ach?.accountNumber
+            : counterparty?.ach?.accountNumber,
+          bankName: isEditingAch
+            ? data?.ach?.bankName
+            : counterparty?.ach?.bankName,
+          type: isEditingAch ? data?.ach?.type : counterparty?.ach?.type,
+          instrumentType: isEditingAch
+            ? data?.ach?.instrumentType
+            : counterparty?.ach?.instrumentType,
+          status: isEditingAch ? data?.ach?.status : counterparty?.ach?.status,
+          blockedResults: isEditingAch
+            ? data?.ach?.blockedResults
+            : counterparty?.ach?.blockedResults,
+          createdAt: isEditingAch
+            ? data?.ach?.createdAt
+            : counterparty?.ach?.createdAt,
+          updatedAt: isEditingAch
+            ? data?.ach?.updatedAt
+            : counterparty?.ach?.updatedAt,
+          rdfiNumberQualifier: isEditingAch
+            ? data?.ach?.rdfiNumberQualifier
+            : counterparty?.ach?.rdfiNumberQualifier,
+          gatewayRoutingNumber: isEditingAch
+            ? data?.ach?.gatewayRoutingNumber
+            : counterparty?.ach?.gatewayRoutingNumber,
+          address: {
+            countryCode: isEditingAch
+              ? data?.ach?.countryCode
+              : counterparty?.ach?.countryCode,
+            city: isEditingAch
+              ? data?.ach?.receiverCity
+              : counterparty?.ach?.receiverCity,
+            line1: isEditingAch
+              ? data?.ach?.receiverStreetAddress
+              : counterparty?.ach?.receiverStreetAddress,
+            postalCode: isEditingAch
+              ? data?.ach?.receiverPostalCode
+              : counterparty?.ach?.receiverPostalCode,
+            state: isEditingAch
+              ? data?.ach?.receiverState
+              : counterparty?.ach?.receiverState,
+          },
+        };
+      }
 
-      let wire = {};
+      let wire = data.wire == null && counterparty.wire == null ? null : {};
       if (wire != null) {
         wire = {
           id: isEditingWire ? data?.wire?.id : counterparty?.wire?.id,
@@ -128,6 +154,9 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
           routingNumber: isEditingWire
             ? data?.wire?.routingNumber
             : counterparty?.wire?.routingNumber,
+          intermediaryRoutingNumber: isEditingWire
+            ? data?.wire?.intermediaryRoutingNumber
+            : counterparty?.wire?.intermediaryRoutingNumber,
           accountNumber: isEditingWire
             ? data?.wire?.accountNumber
             : counterparty?.wire?.accountNumber,
@@ -180,33 +209,36 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
         };
       }
 
-      const braid = {
-        id: isEditingBraid ? data?.braid?.id : counterparty?.braid?.id,
-        custId: isEditingBraid
-          ? data?.braid?.custId
-          : counterparty?.braid?.custId,
-        contactId: isEditingBraid
-          ? data?.braid?.contactId
-          : counterparty?.braid?.contactId,
-        accountNumber: isEditingBraid
-          ? data?.braid?.accountNumber
-          : counterparty?.braid?.accountNumber,
-        instrumentType: isEditingBraid
-          ? data?.braid?.instrumentType
-          : counterparty?.braid?.instrumentType,
-        status: isEditingBraid
-          ? data?.braid?.status
-          : counterparty?.braid?.status,
-        blockedResults: isEditingBraid
-          ? data?.braid?.blockedResults
-          : counterparty?.braid?.blockedResults,
-        createdAt: isEditingBraid
-          ? data?.braid?.createdAt
-          : counterparty?.braid?.createdAt,
-        updatedAt: isEditingBraid
-          ? data?.braid?.updatedAt
-          : counterparty?.braid?.updatedAt,
-      };
+      let braid = data.braid == null && counterparty.braid == null ? null : {};
+      if (braid != null) {
+        braid = {
+          id: isEditingBraid ? data?.braid?.id : counterparty?.braid?.id,
+          custId: isEditingBraid
+            ? data?.braid?.custId
+            : counterparty?.braid?.custId,
+          contactId: isEditingBraid
+            ? data?.braid?.contactId
+            : counterparty?.braid?.contactId,
+          accountNumber: isEditingBraid
+            ? data?.braid?.accountNumber
+            : counterparty?.braid?.accountNumber,
+          instrumentType: isEditingBraid
+            ? data?.braid?.instrumentType
+            : counterparty?.braid?.instrumentType,
+          status: isEditingBraid
+            ? data?.braid?.status
+            : counterparty?.braid?.status,
+          blockedResults: isEditingBraid
+            ? data?.braid?.blockedResults
+            : counterparty?.braid?.blockedResults,
+          createdAt: isEditingBraid
+            ? data?.braid?.createdAt
+            : counterparty?.braid?.createdAt,
+          updatedAt: isEditingBraid
+            ? data?.braid?.updatedAt
+            : counterparty?.braid?.updatedAt,
+        };
+      }
 
       const blockedResults = counterparty?.blockedResults;
 

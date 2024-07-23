@@ -63,10 +63,10 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.id ? counterparty.ach?.id : ""}
               submitting={false}
             /> */}
-            <ItemRow
+            {/* <ItemRow
               title="Contact ID"
               value={counterparty?.ach?.contactId ?? ""}
-            ></ItemRow>
+            ></ItemRow> */}
             {/* <MyEditableTextField
               editing={isEditing}
               setEditing={setIsEditing}
@@ -111,6 +111,51 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               }
               submitting={false}
             />
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.gatewayRoutingNumber"
+              displayName="Gateway Routing Number"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.gatewayRoutingNumber
+                  ? counterparty.ach?.gatewayRoutingNumber
+                  : ""
+              }
+              submitting={false}
+            />
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.rdfiNumberQualifier"
+              displayName="RDFI Number Qualifier"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.rdfiNumberQualifier
+                  ? counterparty.ach?.rdfiNumberQualifier
+                  : ""
+              }
+              options={["NATIONAL_CLEARING_SYSTEM", "IBAN", "BIC"]}
+              submitting={false}
+            />
             {/* <ItemRow
               title="Account Type"
               value={counterparty?.ach?.bankAccountType ?? ""}
@@ -145,7 +190,7 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               editing={isEditing}
               setEditing={setIsEditing}
               editable={false}
-              name="routingNumber"
+              name="ach.routingNumber"
               displayName="Rounting Number"
               control={control}
               errors={errors}
@@ -171,7 +216,7 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               editing={isEditing}
               setEditing={setIsEditing}
               editable={false}
-              name="accountNumber"
+              name="ach.accountNumber"
               displayName="Account Number"
               control={control}
               errors={errors}
@@ -189,10 +234,139 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               }
               submitting={false}
             />
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.countryCode"
+              displayName="Country Code"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.countryCode
+                  ? counterparty.ach?.countryCode
+                  : ""
+              }
+              submitting={false}
+            />
             <ItemRow
               title="Status"
               value={counterparty?.ach?.status ?? ""}
             ></ItemRow>
+            <MyText size="md">Bank Address</MyText>
+            <div className="pb-4" />
+            {/* <ItemRow
+              title="Street Address"
+              value={counterparty.wire.line1 ?? ""}
+            ></ItemRow> */}
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.receiverStreetAddress"
+              displayName="Street Address"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.receiverStreetAddress
+                  ? counterparty.ach?.receiverStreetAddress
+                  : ""
+              }
+              submitting={false}
+            />
+            {/* <ItemRow
+              title="Apt, Building etc"
+              value={counterparty.wire.line2 ?? ""}
+            ></ItemRow> */}
+            {/* <ItemRow
+              title="City"
+              value={counterparty.wire.city ?? ""}
+            ></ItemRow> */}
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.receiverCity"
+              displayName="City"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.receiverCity
+                  ? counterparty.ach?.receiverCity
+                  : ""
+              }
+              submitting={false}
+            />
+            {/* <ItemRow
+              title="State"
+              value={counterparty.wire.state ?? ""}
+            ></ItemRow> */}
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.receiverState"
+              displayName="State"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.receiverState
+                  ? counterparty.ach?.receiverState
+                  : ""
+              }
+              submitting={false}
+            />
+            {/* <ItemRow title="Postal Code" value={counterparty.wire.postalCode ?? ""}></ItemRow> */}
+            <MyEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="ach.receiverPostalCode"
+              displayName="Postal Code"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                counterparty.ach?.receiverPostalCode
+                  ? counterparty.ach?.receiverPostalCode
+                  : ""
+              }
+              submitting={false}
+            />
             {/* <MyEditableTextField
               editing={isEditing}
               setEditing={setIsEditing}

@@ -188,9 +188,6 @@ const CreateLimitPage = () => {
                   required: true,
                 }
           }
-          customOnChange={(v: string) => {
-            setLimitType(v);
-          }}
           options={["FLAG", "DECLINE"]}
         />
         <Box className="pb-4"></Box>

@@ -309,8 +309,34 @@ export const fetchIndividualAccountsV2 = createAsyncThunk(
   async (id: number) => {
     try {
       const accounts = await individualRepo.fetchIndividualAccounts(id);
+      const accountsBalance =
+        await individualRepo.fetchIndividualAccountsBalance(id);
+
       console.log("accounts", accounts);
-      return accounts;
+      console.log("accounts balance", accountsBalance);
+      let combined = [];
+
+      for (let i = 0; i < accounts.length; i++) {
+        combined.push({
+          ...accounts[i],
+          active: accountsBalance.find(
+            (acc) => acc.accountNumber == accounts[i].accountNumber
+          )?.active,
+          frozen: accountsBalance.find(
+            (acc) => acc.accountNumber == accounts[i].accountNumber
+          )?.frozen,
+          balance: {
+            accountBalance: accountsBalance.find(
+              (acc) => acc.accountNumber == accounts[i].accountNumber
+            )?.balance?.accountBalance,
+            availableBalance: accountsBalance.find(
+              (acc) => acc.accountNumber == accounts[i].accountNumber
+            )?.balance?.availableBalance,
+          },
+        });
+      }
+
+      return combined;
     } catch (e: any) {
       return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
@@ -515,51 +541,25 @@ export const fetchIndividualDocumentUrl = createAsyncThunk(
   }
 );
 
+export const updateIndividual = createAsyncThunk(
+  "individual/updateIndividual",
+  async (data: { id: string; status: string; cipStatus: string }) => {
+    try {
+      return await individualRepo.updateIndividual(data.id, {
+        status: data.status,
+        cipStatus: data.cipStatus,
+      });
+    } catch (e: any) {
+      return `Error updating Individual ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const approveIndividual = createAsyncThunk(
   "individual/approveIndividual",
   async (id: number) => {
     try {
-      ``;
-      //2023-09-19T11:41:22.658Z
-      const date = moment();
-
-      const month: string =
-        date.month() < 9 ? `0${date.month() + 1}` : `${date.month() + 1}`;
-
-      const dat: string =
-        date.date() <= 9 ? `0${date.date()}` : `${date.date()}`;
-
-      const hour: string =
-        date.hours() <= 9 ? `0${date.hours()}` : `${date.hours()}`;
-
-      const minute: string =
-        date.minutes() <= 9 ? `0${date.minutes()}` : `${date.minutes()}`;
-
-      const second: string =
-        date.seconds() <= 9 ? `0${date.seconds()}` : `${date.seconds()}`;
-
-      const ms: string =
-        date.milliseconds() <= 9
-          ? `0${date.milliseconds()}`
-          : `${date.milliseconds()}`;
-
-      let dateTime =
-        date.year() +
-        "-" +
-        month +
-        "-" +
-        dat +
-        "T" +
-        hour +
-        ":" +
-        minute +
-        ":" +
-        second +
-        "." +
-        ms +
-        "Z";
-
-      return await individualRepo.approveIndividual(id, dateTime);
+      return await individualRepo.approveIndividual(id);
     } catch (e: any) {
       return `Error approving Individual ${generateErrorMessage(e)}`;
     }

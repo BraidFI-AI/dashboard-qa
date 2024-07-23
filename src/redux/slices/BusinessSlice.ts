@@ -171,8 +171,37 @@ export const fetchBusinessAccountsV2 = createAsyncThunk(
   async (id: number) => {
     try {
       const accounts = await businessRepo.fetchBusinessAccounts(id);
+
+      const accountsBalance = await businessRepo.fetchBusinessAccountsBalance(
+        id
+      );
+
       console.log("accounts", accounts);
-      return accounts;
+      console.log("accounts balance", accountsBalance);
+
+      let combined = [];
+
+      for (let i = 0; i < accounts.length; i++) {
+        combined.push({
+          ...accounts[i],
+          active: accountsBalance.find(
+            (acc) => acc.accountNumber == accounts[i].accountNumber
+          )?.active,
+          frozen: accountsBalance.find(
+            (acc) => acc.accountNumber == accounts[i].accountNumber
+          )?.frozen,
+          balance: {
+            accountBalance: accountsBalance.find(
+              (acc) => acc.accountNumber == accounts[i].accountNumber
+            )?.balance?.accountBalance,
+            availableBalance: accountsBalance.find(
+              (acc) => acc.accountNumber == accounts[i].accountNumber
+            )?.balance?.availableBalance,
+          },
+        });
+      }
+
+      return combined;
     } catch (e: any) {
       return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
@@ -311,47 +340,7 @@ export const approveBusiness = createAsyncThunk(
   "business/approveBusiness",
   async (id: number) => {
     try {
-      ``;
-      //2023-09-19T11:41:22.658Z
-      const date = moment();
-
-      const month: string =
-        date.month() < 9 ? `0${date.month() + 1}` : `${date.month() + 1}`;
-
-      const dat: string =
-        date.date() <= 9 ? `0${date.date()}` : `${date.date()}`;
-
-      const hour: string =
-        date.hours() <= 9 ? `0${date.hours()}` : `${date.hours()}`;
-
-      const minute: string =
-        date.minutes() <= 9 ? `0${date.minutes()}` : `${date.minutes()}`;
-
-      const second: string =
-        date.seconds() <= 9 ? `0${date.seconds()}` : `${date.seconds()}`;
-
-      const ms: string =
-        date.milliseconds() <= 9
-          ? `0${date.milliseconds()}`
-          : `${date.milliseconds()}`;
-
-      let dateTime =
-        date.year() +
-        "-" +
-        month +
-        "-" +
-        dat +
-        "T" +
-        hour +
-        ":" +
-        minute +
-        ":" +
-        second +
-        "." +
-        ms +
-        "Z";
-
-      await businessRepo.approveBusiness(id, dateTime);
+      await businessRepo.approveBusiness(id);
 
       enqueueSnackbar("Business approved!", { variant: "success" });
     } catch (e: any) {
@@ -749,6 +738,20 @@ export const deletePaymentInstrument = createAsyncThunk(
       return inst;
     } catch (e: any) {
       return `Error deleting payment instrument ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const updateBusiness = createAsyncThunk(
+  "individual/updateBusiness",
+  async (data: { id: string; status: string; cipStatus: string }) => {
+    try {
+      return await businessRepo.updateBusiness(data.id, {
+        status: data.status,
+        cipStatus: data.cipStatus,
+      });
+    } catch (e: any) {
+      return `Error updating Business ${generateErrorMessage(e)}`;
     }
   }
 );
