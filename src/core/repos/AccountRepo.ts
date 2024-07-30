@@ -41,20 +41,30 @@ class AccountRepo {
     return response;
   }
 
+  public async updateAccountStatusDev(id: string, status: string) {
+    const response = await this.apiClient.http<Account[]>(
+      Method.PATCH,
+      `/account/${id}/status`,
+      { status: status }
+    );
+    return response;
+  }
+
   public async updateAccount(
     id: string,
     data: {
       status: string;
-      accountName: string;
-      canAcceptSweep: string;
-      fundingAccountNumber: string;
-      sweepAccountNumber: string;
+      accountName?: string;
+      canAcceptSweep?: string;
+      fundingAccountNumber?: string;
+      sweepAccountNumber?: string;
     }
   ) {
     const response = await this.apiClient.http<Account[]>(
       Method.PATCH,
-      `/account/${id}`,
-      data
+      // `/account/${id}`,
+      `/account/${id}/status`,
+      { status: data.status }
     );
     return response;
   }

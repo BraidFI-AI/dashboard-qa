@@ -265,20 +265,14 @@ export const fetchAccountBalance = createAsyncThunk(
 //   }
 // );
 
-export const updateAccount = createAsyncThunk(
+export const updateAccountStatusDev = createAsyncThunk(
   "account/updateAccount",
-  async (data: {
-    id: string;
-    status: string;
-    accountName: string;
-    canAcceptSweep: string;
-    fundingAccountNumber: string;
-    sweepAccountNumber: string;
-  }) => {
+  async (data: { id: string; status: string }) => {
     try {
-      const account = await accountRepo.updateAccount(data.id, {
-        ...data,
-      });
+      const account = await accountRepo.updateAccountStatusDev(
+        data.id,
+        data.status
+      );
       console.log("account status", account);
       return account;
     } catch (e: any) {
@@ -289,6 +283,33 @@ export const updateAccount = createAsyncThunk(
           persist: true,
         }
       );
+    }
+
+    return null;
+  }
+);
+
+export const updateAccount = createAsyncThunk(
+  "account/updateAccount",
+  async (data: {
+    id: string;
+    status: string;
+    accountName?: string;
+    canAcceptSweep?: string;
+    fundingAccountNumber?: string;
+    sweepAccountNumber?: string;
+  }) => {
+    try {
+      const account = await accountRepo.updateAccount(data.id, {
+        ...data,
+      });
+      console.log("account status", account);
+      return account;
+    } catch (e: any) {
+      enqueueSnackbar(`Error updating account s ${generateErrorMessage(e)}`, {
+        variant: "error",
+        persist: true,
+      });
     }
 
     return null;

@@ -6,6 +6,7 @@ import {
   fetchAccountBalance,
   fetchIndividualOrBusiness,
   updateAccount,
+  updateAccountStatusDev,
 } from "@/redux/slices/AccountSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useParams } from "next/navigation";
@@ -21,6 +22,8 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { enqueueSnackbar } from "notistack";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { setTitle } from "@/redux/slices/AppSlice";
+import { useSelector } from "react-redux";
+import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
 
 const AccountPage = () => {
   const params = useParams();
@@ -40,6 +43,8 @@ const AccountPage = () => {
     availableBalance: string;
   } | null>(null);
 
+  const userType = useSelector((state: any) => state.app.userType);
+
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
@@ -48,37 +53,54 @@ const AccountPage = () => {
     reset,
   } = useForm<{
     status: string;
-    accountName: string;
-    canAcceptSweep: string;
-    fundingAccountNumber: string;
-    sweepAccountNumber: string;
+    accountName?: string;
+    canAcceptSweep?: string;
+    fundingAccountNumber?: string;
+    sweepAccountNumber?: string;
   }>();
   const onSubmit: SubmitHandler<{
     status: string;
-    accountName: string;
-    canAcceptSweep: string;
-    fundingAccountNumber: string;
-    sweepAccountNumber: string;
+    accountName?: string;
+    canAcceptSweep?: string;
+    fundingAccountNumber?: string;
+    sweepAccountNumber?: string;
   }> = (data: {
     status: string;
-    accountName: string;
-    canAcceptSweep: string;
-    fundingAccountNumber: string;
-    sweepAccountNumber: string;
+    accountName?: string;
+    canAcceptSweep?: string;
+    fundingAccountNumber?: string;
+    sweepAccountNumber?: string;
   }) => {
     console.log("Status:", data);
 
     setSubmitting(true);
-    dispatch(updateAccount({ id: params.id.toString(), ...data })).then(
-      (acc: any) => {
+
+    if (userType == DEVELOPER_ROLE) {
+      dispatch(
+        updateAccountStatusDev({
+          id: params.id.toString(),
+          status: data.status,
+        })
+      ).then((acc: any) => {
         if (acc.payload) {
           enqueueSnackbar("Account status updated", { variant: "success" });
           setAccount(acc.payload);
           setEditing(false);
         }
         setSubmitting(false);
-      }
-    );
+      });
+    } else {
+      dispatch(updateAccount({ id: params.id.toString(), ...data })).then(
+        (acc: any) => {
+          if (acc.payload) {
+            enqueueSnackbar("Account status updated", { variant: "success" });
+            setAccount(acc.payload);
+            setEditing(false);
+          }
+          setSubmitting(false);
+        }
+      );
+    }
   };
 
   useEffect(() => {
@@ -129,75 +151,103 @@ const AccountPage = () => {
           title="Account number"
           value={account.accountNumber ?? ""}
         ></ItemRow>
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          name="accountName"
-          displayName="Account Name"
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: true,
-                }
-          }
-          value={account.accountName ?? ""}
-          submitting={false}
-        />
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          name="canAcceptSweep"
-          displayName="Can Accept Sweep"
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: false,
-                }
-          }
-          value={account.canAcceptSweep ?? ""}
-          submitting={false}
-          options={["true", "false"]}
-        />
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          name="fundingAccountNumber"
-          displayName="Funding Account Number"
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: false,
-                }
-          }
-          value={account.fundingAccountNumber ?? ""}
-          submitting={false}
-        />
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          name="sweepAccountNumber"
-          displayName="Sweep Account Number"
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: false,
-                }
-          }
-          value={account.sweepAccountNumber ?? ""}
-          submitting={false}
-        />
+        {userType == ADMIN_ROLE ? (
+          <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            name="accountName"
+            displayName="Account Name"
+            control={control}
+            errors={errors}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: true,
+                  }
+            }
+            value={account.accountName ?? ""}
+            submitting={false}
+          />
+        ) : (
+          <ItemRow
+            title="Account Name"
+            value={account.accountName ?? ""}
+          ></ItemRow>
+        )}
+        {userType == ADMIN_ROLE ? (
+          <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            name="canAcceptSweep"
+            displayName="Can Accept Sweep"
+            control={control}
+            errors={errors}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: false,
+                  }
+            }
+            value={account.canAcceptSweep ?? ""}
+            submitting={false}
+            options={["true", "false"]}
+          />
+        ) : (
+          <ItemRow
+            title="Can Accept Sweep"
+            value={account.canAcceptSweep ?? ""}
+          ></ItemRow>
+        )}
+        {userType == ADMIN_ROLE ? (
+          <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            name="fundingAccountNumber"
+            displayName="Funding Account Number"
+            control={control}
+            errors={errors}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: false,
+                  }
+            }
+            value={account.fundingAccountNumber ?? ""}
+            submitting={false}
+          />
+        ) : (
+          <ItemRow
+            title="Funding Account Number"
+            value={account.fundingAccountNumber ?? ""}
+          ></ItemRow>
+        )}
+        {userType == ADMIN_ROLE ? (
+          <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            name="sweepAccountNumber"
+            displayName="Sweep Account Number"
+            control={control}
+            errors={errors}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: false,
+                  }
+            }
+            value={account.sweepAccountNumber ?? ""}
+            submitting={false}
+          />
+        ) : (
+          <ItemRow
+            title="Sweep Account Number"
+            value={account.sweepAccountNumber ?? ""}
+          ></ItemRow>
+        )}
 
         {/* <ItemRow
           title="Account Name"
@@ -217,9 +267,19 @@ const AccountPage = () => {
                   required: true,
                 }
           }
-          value={account.status ?? ""}
+          value={
+            editing &&
+            userType == DEVELOPER_ROLE &&
+            account.status == "INACTIVE"
+              ? "ACTIVE"
+              : account.status ?? ""
+          }
           submitting={false}
-          options={["INACTIVE", "BLOCKED", "ACTIVE"]}
+          options={
+            userType == DEVELOPER_ROLE
+              ? ["BLOCKED"]
+              : ["INACTIVE", "BLOCKED", "ACTIVE"]
+          }
         />
         <div className="w-fit">
           <MyBlueButton
@@ -243,10 +303,10 @@ const AccountPage = () => {
                     customer.type == "BUSINESS"
                       ? (customer as Business).name
                       : (customer as Individual).firstName +
-                          " " +
-                          (customer as Individual).middleName +
-                          " " +
-                          (customer as Individual).lastName ?? "",
+                        " " +
+                        (customer as Individual).middleName +
+                        " " +
+                        (customer as Individual).lastName,
                   link: `${
                     customer
                       ? customer.type == "BUSINESS"
