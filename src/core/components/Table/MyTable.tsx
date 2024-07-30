@@ -34,6 +34,7 @@ type MyTableProps = {
   hideFilterButton?: boolean;
   hideDensityButton?: boolean;
   hideSearch?: boolean;
+  filterModel?: any;
 };
 
 const MyTable: React.FC<MyTableProps> = ({
@@ -52,6 +53,7 @@ const MyTable: React.FC<MyTableProps> = ({
   hideFilterButton = false,
   hideDensityButton = false,
   hideSearch = false,
+  filterModel,
 }) => {
   return (
     <DataGrid
@@ -121,6 +123,9 @@ const MyTable: React.FC<MyTableProps> = ({
       initialState={{
         columns: {
           columnVisibilityModel: columnVisibilityModel,
+        },
+        filter: {
+          filterModel: filterModel,
         },
         sorting: {
           sortModel: sortModel,

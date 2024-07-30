@@ -74,7 +74,7 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
         {
           field: "status",
           headerName: "Status",
-          width: 100,
+          width: 120,
         },
         {
           field: "amount",
@@ -95,6 +95,9 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
           valueGetter: (params: any) => params.row.createdAt,
         },
       ]}
+      filterModel={{
+        items: [{ field: "status", operator: "equals", value: "ACTIVE" }],
+      }}
       rows={limits}
     />
   );
