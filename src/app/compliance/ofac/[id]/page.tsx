@@ -16,7 +16,7 @@ import {
 } from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { useParams, useRouter } from "next/navigation";
-import { ADMIN_ROUTE } from "@/core/constants";
+import { ADMIN_ROUTE, DEVELOPER_ROUTE } from "@/core/constants";
 import RequireRole from "@/core/components/RequireRole";
 import { JSONTree } from "react-json-tree";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
@@ -307,4 +307,4 @@ const OFACHitDetails = () => {
   );
 };
 
-export default RequireRole(OFACHitDetails, ADMIN_ROUTE);
+export default RequireRole(OFACHitDetails, DEVELOPER_ROUTE);

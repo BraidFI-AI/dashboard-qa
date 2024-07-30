@@ -5,6 +5,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ADMIN_ROLE } from "@/core/constants";
+import { useSelector } from "react-redux";
 
 const TabsProvider = (props: any) => {
   const router = useRouter();
@@ -12,19 +14,62 @@ const TabsProvider = (props: any) => {
   const params = useParams();
   const pathname = usePathname();
 
+  const userType = useSelector((state: any) => state.app.userType);
+
+  const tabs = [
+    {
+      name: "Individual Details",
+      path: `/individuals/${parseInt(params.id.toString())}`,
+    },
+    {
+      name: "External Account",
+      path: `/individuals/${parseInt(params.id.toString())}/externalAccount`,
+    },
+    {
+      name: "Accounts",
+      path: `/individuals/${parseInt(params.id.toString())}/individualAccounts`,
+    },
+    {
+      name: "Counterparties",
+      path: `/individuals/${parseInt(params.id.toString())}/counterparties`,
+    },
+    {
+      name: "Documents",
+      path: `/individuals/${parseInt(params.id.toString())}/documents`,
+    },
+    {
+      name: "Limits",
+      path: `/individuals/${parseInt(params.id.toString())}/limits`,
+    },
+    {
+      name: "Fees",
+      path: `/individuals/${parseInt(params.id.toString())}/fees`,
+    },
+  ];
+
+  if (userType != ADMIN_ROLE) {
+    tabs.splice(5, 1);
+  }
+
   useEffect(() => {
     if (pathname.includes("externalAccount")) {
-      setCurrentTab(1);
+      setCurrentTab(
+        tabs.findIndex((tab) => tab.path.includes("externalAccount"))
+      );
     } else if (pathname.includes("individualAccounts")) {
-      setCurrentTab(2);
+      setCurrentTab(
+        tabs.findIndex((tab) => tab.path.includes("individualAccounts"))
+      );
     } else if (pathname.includes("counterparties")) {
-      setCurrentTab(3);
+      setCurrentTab(
+        tabs.findIndex((tab) => tab.path.includes("counterparties"))
+      );
     } else if (pathname.includes("documents")) {
-      setCurrentTab(4);
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("documents")));
     } else if (pathname.includes("limits")) {
-      setCurrentTab(5);
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("limits")));
     } else if (pathname.includes("fees")) {
-      setCurrentTab(6);
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("fees")));
     } else {
       setCurrentTab(0);
     }
@@ -41,7 +86,17 @@ const TabsProvider = (props: any) => {
           variant="scrollable"
           scrollButtons="auto"
         >
-          <Tab
+          {tabs.map((tab, index) => (
+            <Tab
+              key={index}
+              label={tab.name}
+              style={{ textTransform: "none" }}
+              onClick={() => {
+                router.replace(tab.path);
+              }}
+            />
+          ))}
+          {/* <Tab
             label="Individual Details"
             style={{ textTransform: "none" }}
             onClick={() => {
@@ -56,8 +111,8 @@ const TabsProvider = (props: any) => {
                 `/individuals/${parseInt(params.id.toString())}/externalAccount`
               );
             }}
-          />
-          <Tab
+          /> */}
+          {/* <Tab
             label="Accounts"
             style={{ textTransform: "none" }}
             onClick={() => {
@@ -67,8 +122,8 @@ const TabsProvider = (props: any) => {
                 )}/individualAccounts`
               );
             }}
-          />
-          <Tab
+          /> */}
+          {/* <Tab
             label="Counterparties"
             style={{ textTransform: "none" }}
             onClick={() => {
@@ -76,8 +131,8 @@ const TabsProvider = (props: any) => {
                 `/individuals/${parseInt(params.id.toString())}/counterparties`
               );
             }}
-          />
-          <Tab
+          /> */}
+          {/* <Tab
             label="Documents"
             style={{ textTransform: "none" }}
             onClick={() => {
@@ -85,8 +140,8 @@ const TabsProvider = (props: any) => {
                 `/individuals/${parseInt(params.id.toString())}/documents`
               );
             }}
-          />
-          <Tab
+          /> */}
+          {/* <Tab
             label="Limits"
             style={{ textTransform: "none" }}
             onClick={() => {
@@ -103,7 +158,7 @@ const TabsProvider = (props: any) => {
                 `/individuals/${parseInt(params.id.toString())}/fees`
               );
             }}
-          />
+          /> */}
         </Tabs>
       </Box>
       <div className="pb-6"></div>
