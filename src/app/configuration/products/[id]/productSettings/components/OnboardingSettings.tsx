@@ -169,7 +169,7 @@ const OnbaordingSettings: React.FC<OnbaordingSettingsProps> = ({ product }) => {
                   setColorPickerHexError(false);
                   dispatch(
                     updateOnboardingConfigButtonColor({
-                      productId: product.id,
+                      productId: product.id ?? 0,
                       hex: colorPickerHex.toLowerCase(),
                     })
                   ).then(() => {
@@ -231,7 +231,7 @@ const OnbaordingSettings: React.FC<OnbaordingSettingsProps> = ({ product }) => {
             } else {
               dispatch(
                 uploadOnboardingConfigLogo({
-                  productId: product.id,
+                  productId: product.id ?? 0,
                   file: logo,
                 })
               ).then((data: any) => {

@@ -370,27 +370,27 @@ export interface Program {
 }
 
 export interface Product {
-  id: number;
-  productId: string | null;
-  productName: string | null;
-  isActive: boolean | null;
-  prefix: string | null;
-  suffix: string | null;
-  length: number | null;
-  currency: string | null;
-  accountingCurrency: string | null;
-  programId: number | null;
-  type: string | null;
-  customerAccountType: string | null;
-  defaultCardManagementId: number | null;
-  onboardingConfig: OnboardingConfig | null;
-  tenantId: string | null;
-  bankName: string | null;
-  settlementPhoneNumber: string | null;
-  settlementEmail: string | null;
-  duplicatePaymentDays: null;
-  createdAt: number | null;
-  updatedAt: number | null;
+  id?: number;
+  productId?: string | null;
+  productName?: string | null;
+  isActive?: boolean | null;
+  prefix?: string | null;
+  suffix?: string | null;
+  length?: number | null;
+  currency?: string | null;
+  accountingCurrency?: string | null;
+  programId?: number | null;
+  type?: string | null;
+  customerAccountType?: string | null;
+  defaultCardManagementId?: number | null;
+  onboardingConfig?: OnboardingConfig | null;
+  tenantId?: string | null;
+  bankName?: string | null;
+  settlementPhoneNumber?: string | null;
+  settlementEmail?: string | null;
+  duplicatePaymentDays?: null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
 }
 
 export interface CreateProduct {

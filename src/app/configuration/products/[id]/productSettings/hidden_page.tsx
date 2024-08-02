@@ -66,10 +66,12 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
     if (product != null) {
       setSubmitting(true);
 
-      dispatch(updateProduct({ id: product.id, product: data })).then(() => {
-        setRefresh(true);
-        setSubmitting(false);
-      });
+      dispatch(updateProduct({ id: product.id ?? 0, product: data })).then(
+        () => {
+          setRefresh(true);
+          setSubmitting(false);
+        }
+      );
     }
   };
 
@@ -92,7 +94,10 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
       setSubmitting(true);
 
       dispatch(
-        updateFundsAvailability({ id: product.id, fundsAvailability: data })
+        updateFundsAvailability({
+          id: product.id ?? 0,
+          fundsAvailability: data,
+        })
       ).then(() => {
         setRefresh(true);
         setSubmitting(false);

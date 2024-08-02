@@ -302,11 +302,11 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
               />
               <ItemRow
                 title="Created Date"
-                value={timestampToDate(product.createdAt)}
+                value={timestampToDate(product.createdAt ?? 0)}
               ></ItemRow>
               <ItemRow
                 title="Updated Date"
-                value={timestampToDate(product.updatedAt)}
+                value={timestampToDate(product.updatedAt ?? 0)}
               ></ItemRow>
             </div>
           </div>
