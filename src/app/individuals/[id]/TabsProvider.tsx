@@ -5,7 +5,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import { useSelector } from "react-redux";
 
 const TabsProvider = (props: any) => {
@@ -47,7 +47,7 @@ const TabsProvider = (props: any) => {
     },
   ];
 
-  if (userType != ADMIN_ROLE) {
+  if (userType != ADMIN_ROLE && userType != ADMIN_OPS_ROLE) {
     tabs.splice(5, 1);
   }
 

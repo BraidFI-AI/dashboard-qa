@@ -13,7 +13,7 @@ import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import ErrorPage from "@/core/components/error_page";
-import { ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import timestampToDate from "@/core/utils/timestampToDate";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { fetchCard } from "@/redux/slices/CardManagementSlice";
@@ -115,7 +115,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
             productId: data.payload.productId,
           });
 
-          if (userType == ADMIN_ROLE) {
+          if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
             dispatch(fetchProgram(data.payload.programId)).then((prg: any) => {
               if (prg.payload) {
                 setProgram(prg.payload);
@@ -249,29 +249,30 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
               ></ItemRow>
             </div>
             <div className="w-[300px]">
-              {userType == ADMIN_ROLE && (
-                <>
-                  <ItemRow
-                    title="Program"
-                    value={{
-                      value:
-                        program == null
-                          ? product.programId?.toString()
-                          : program.name == null
-                          ? product.programId?.toString()
-                          : program.name,
-                      link: `/configuration/programs/${product.programId}`,
-                    }}
-                  ></ItemRow>
-                  <ItemRow
-                    title="Tenant"
-                    value={{
-                      value: developer ? developer.name : product.tenantId,
-                      link: `/configuration/developers/${product.tenantId}`,
-                    }}
-                  ></ItemRow>
-                </>
-              )}
+              {userType == ADMIN_ROLE ||
+                (userType == ADMIN_OPS_ROLE && (
+                  <>
+                    <ItemRow
+                      title="Program"
+                      value={{
+                        value:
+                          program == null
+                            ? product.programId?.toString()
+                            : program.name == null
+                            ? product.programId?.toString()
+                            : program.name,
+                        link: `/configuration/programs/${product.programId}`,
+                      }}
+                    ></ItemRow>
+                    <ItemRow
+                      title="Tenant"
+                      value={{
+                        value: developer ? developer.name : product.tenantId,
+                        link: `/configuration/developers/${product.tenantId}`,
+                      }}
+                    ></ItemRow>
+                  </>
+                ))}
               <ItemRow
                 title="Customer Account Type"
                 value={product.customerAccountType ?? ""}

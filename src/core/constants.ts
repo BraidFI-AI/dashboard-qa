@@ -16,13 +16,26 @@ export const APP_TIMEZONE = "America/Los_Angeles";
 export const ADMIN_SPECIFIC_FEATURE_MESSAGE =
   "This feature is only available for Bank";
 
-export const ADMIN_ROLE = "admins";
-export const DEVELOPER_ROLE = "developers";
+export const ADMIN_ROLE = "admin-admin";
+export const ADMIN_OPS_ROLE = "admin-ops";
+export const DEVELOPER_ROLE = "developer-developer";
+export const DEVELOPER_OPS_ROLE = "developer-ops";
 export const CUSTOMER_ROLE = "customers";
 
-export const ADMIN_ROUTE = [ADMIN_ROLE];
-export const DEVELOPER_ROUTE = [DEVELOPER_ROLE, ADMIN_ROLE];
-export const CUSTOMER_ROUTE = [CUSTOMER_ROLE, DEVELOPER_ROLE, ADMIN_ROLE];
+export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE];
+export const DEVELOPER_ROUTE = [
+  DEVELOPER_ROLE,
+  DEVELOPER_OPS_ROLE,
+  ADMIN_ROLE,
+  ADMIN_OPS_ROLE,
+];
+export const CUSTOMER_ROUTE = [
+  CUSTOMER_ROLE,
+  DEVELOPER_ROLE,
+  DEVELOPER_OPS_ROLE,
+  ADMIN_ROLE,
+  ADMIN_OPS_ROLE,
+];
 
 export const States = [
   "Alabama",

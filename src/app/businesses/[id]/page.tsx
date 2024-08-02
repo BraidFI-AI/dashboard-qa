@@ -26,7 +26,7 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import MyLinkText from "@/core/components/Text/LinkText";
 import { useSelector } from "react-redux";
-import { ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import { SubmitHandler, useForm } from "react-hook-form";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
@@ -89,7 +89,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
   };
 
   useEffect(() => {
-    if (userType == ADMIN_ROLE) {
+    if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
       setStatusValues([
         "ACTIVE",
         "BLOCKED",
@@ -325,7 +325,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               </div>
               <MyEditButton editing={editing} setEditing={setEditing} />
             </div>
-            {userType == ADMIN_ROLE ? (
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
               <div className="flex flex-row justify-between">
                 <div>
                   <MyEditableTextField

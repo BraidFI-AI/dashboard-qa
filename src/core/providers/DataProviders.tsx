@@ -12,6 +12,13 @@ import { useAppDispatch } from "@/redux/store/store";
 import { Auth } from "aws-amplify";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_ROLE,
+  CUSTOMER_ROLE,
+  DEVELOPER_OPS_ROLE,
+  DEVELOPER_ROLE,
+} from "../constants";
 
 const DataProviders = (props: any) => {
   const dispatch = useAppDispatch();
@@ -20,11 +27,28 @@ const DataProviders = (props: any) => {
     const setUser = async () => {
       const user = await Auth.currentAuthenticatedUser();
 
-      dispatch(
-        setUserType(
-          user?.signInUserSession?.accessToken?.payload?.["cognito:groups"]?.[0]
-        )
-      );
+      const groups: String[] =
+        user?.signInUserSession?.accessToken?.payload?.["cognito:groups"];
+      console.log(groups);
+
+      let userType = null;
+
+      if (groups?.includes("admins") || groups?.includes("admin-admin")) {
+        userType = ADMIN_ROLE;
+      } else if (groups?.includes("admin-ops")) {
+        userType = ADMIN_OPS_ROLE;
+      } else if (
+        groups?.includes("developers") ||
+        groups?.includes("developer-admin")
+      ) {
+        userType = DEVELOPER_ROLE;
+      } else if (groups?.includes("developer-ops")) {
+        userType = DEVELOPER_OPS_ROLE;
+      } else if (groups?.includes("customers")) {
+        userType = CUSTOMER_ROLE;
+      }
+
+      dispatch(setUserType(userType));
       dispatch(setUsername(user?.username));
     };
 

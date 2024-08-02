@@ -17,17 +17,7 @@ const RequireRole = (
 
     useEffect(() => {
       const checkUserType = async () => {
-        let type = null;
-        if (userType != null) {
-          type = userType;
-        } else {
-          const user = await Auth.currentAuthenticatedUser();
-
-          type =
-            user?.signInUserSession?.accessToken?.payload?.[
-              "cognito:groups"
-            ]?.[0];
-        }
+        let type = userType;
 
         console.log("USERTYPE:", type);
 

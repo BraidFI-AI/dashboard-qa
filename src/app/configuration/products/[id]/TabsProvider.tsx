@@ -6,7 +6,7 @@ import Tab from "@mui/material/Tab";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 
 const TabsProvider = (props: any) => {
   const router = useRouter();
@@ -48,7 +48,7 @@ const TabsProvider = (props: any) => {
     },
   ];
 
-  if (userType != ADMIN_ROLE) {
+  if (userType != ADMIN_ROLE && userType != ADMIN_OPS_ROLE) {
     tabs.splice(0, 3);
   }
 
@@ -148,7 +148,7 @@ const TabsProvider = (props: any) => {
               );
             }}
           />
-          {userType == ADMIN_ROLE && (
+          {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE && (
             <Tab
               label="Limits"
               style={{ textTransform: "none" }}

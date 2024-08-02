@@ -23,7 +23,12 @@ import { enqueueSnackbar } from "notistack";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useSelector } from "react-redux";
-import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_ROLE,
+  DEVELOPER_OPS_ROLE,
+  DEVELOPER_ROLE,
+} from "@/core/constants";
 
 const AccountPage = () => {
   const params = useParams();
@@ -75,7 +80,7 @@ const AccountPage = () => {
 
     setSubmitting(true);
 
-    if (userType == DEVELOPER_ROLE) {
+    if (userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE) {
       dispatch(
         updateAccountStatusDev({
           id: params.id.toString(),
@@ -151,7 +156,7 @@ const AccountPage = () => {
           title="Account number"
           value={account.accountNumber ?? ""}
         ></ItemRow>
-        {userType == ADMIN_ROLE ? (
+        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
           <MyEditableTextField
             editing={editing}
             setEditing={setEditing}
@@ -175,7 +180,7 @@ const AccountPage = () => {
             value={account.accountName ?? ""}
           ></ItemRow>
         )}
-        {userType == ADMIN_ROLE ? (
+        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
           <MyEditableTextField
             editing={editing}
             setEditing={setEditing}
@@ -200,7 +205,7 @@ const AccountPage = () => {
             value={account.canAcceptSweep ?? ""}
           ></ItemRow>
         )}
-        {userType == ADMIN_ROLE ? (
+        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
           <MyEditableTextField
             editing={editing}
             setEditing={setEditing}
@@ -224,7 +229,7 @@ const AccountPage = () => {
             value={account.fundingAccountNumber ?? ""}
           ></ItemRow>
         )}
-        {userType == ADMIN_ROLE ? (
+        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
           <MyEditableTextField
             editing={editing}
             setEditing={setEditing}
@@ -269,15 +274,15 @@ const AccountPage = () => {
           }
           value={
             editing &&
-            userType == DEVELOPER_ROLE &&
+            (userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE) &&
             account.status == "INACTIVE"
               ? "ACTIVE"
               : account.status ?? ""
           }
           submitting={false}
           options={
-            userType == DEVELOPER_ROLE
-              ? ["BLOCKED"]
+            userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE
+              ? ["INACTIVE", "BLOCKED"]
               : ["INACTIVE", "BLOCKED", "ACTIVE"]
           }
         />

@@ -25,7 +25,7 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useSelector } from "react-redux";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
@@ -84,7 +84,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    if (userType == ADMIN_ROLE) {
+    if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
       setStatusValues([
         "ACTIVE",
         "BLOCKED",
@@ -191,7 +191,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div className="h-full w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
-            {userType == ADMIN_ROLE ? (
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
               <div className="flex flex-row justify-between">
                 <div>
                   <MyEditableTextField
@@ -254,36 +254,37 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                 title="Status"
                 value={individual.status}
               ></ItemRow> */}
-                {individual.status === "BLOCKED" && userType == ADMIN_ROLE && (
-                  <div className="w-fit pl-10">
-                    <MyTextButton
-                      submitting={unblocking}
-                      onClick={() => {
-                        setUnblocking(true);
-                        dispatch(unblockIndividual(individual.id)).then(
-                          (biz: any) => {
-                            if (typeof biz.payload != "string") {
-                              enqueueSnackbar(
-                                "Business unblocked successfully",
-                                {
-                                  variant: "success",
-                                }
-                              );
-                            } else {
-                              enqueueSnackbar(biz.payload, {
-                                variant: "error",
-                              });
+                {individual.status === "BLOCKED" &&
+                  (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) && (
+                    <div className="w-fit pl-10">
+                      <MyTextButton
+                        submitting={unblocking}
+                        onClick={() => {
+                          setUnblocking(true);
+                          dispatch(unblockIndividual(individual.id)).then(
+                            (biz: any) => {
+                              if (typeof biz.payload != "string") {
+                                enqueueSnackbar(
+                                  "Business unblocked successfully",
+                                  {
+                                    variant: "success",
+                                  }
+                                );
+                              } else {
+                                enqueueSnackbar(biz.payload, {
+                                  variant: "error",
+                                });
+                              }
+                              setUnblocking(false);
+                              setRefresh(true);
                             }
-                            setUnblocking(false);
-                            setRefresh(true);
-                          }
-                        );
-                      }}
-                    >
-                      Unblock
-                    </MyTextButton>
-                  </div>
-                )}
+                          );
+                        }}
+                      >
+                        Unblock
+                      </MyTextButton>
+                    </div>
+                  )}
               </div>
               <MyEditButton editing={editing} setEditing={setEditing} />
             </div>

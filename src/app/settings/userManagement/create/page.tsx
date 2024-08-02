@@ -14,6 +14,8 @@ import { fetchTenetIdsList } from "@/redux/slices/DeveloperSlice";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { createUser } from "@/redux/slices/UsermanagementSlice";
 import { enqueueSnackbar } from "notistack";
+import RequireRole from "@/core/components/RequireRole";
+import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
 
 const CreateUserPage = () => {
   const router = useRouter();
@@ -184,4 +186,4 @@ const CreateUserPage = () => {
   );
 };
 
-export default CreateUserPage;
+export default RequireRole(CreateUserPage, [ADMIN_ROLE, DEVELOPER_ROLE]);

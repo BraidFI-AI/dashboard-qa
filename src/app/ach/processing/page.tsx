@@ -4,7 +4,7 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyCheckbox from "@/core/components/Button/MyCheckbox ";
 import RadioButton from "@/core/components/Button/RadioButton";
 import MyText from "@/core/components/Text/Text";
-import { ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import { getTextFromFile } from "@/core/utils/file_processing_util";
 import {
   uploadInboundFile,
@@ -39,7 +39,7 @@ const ProcessingPage = () => {
         value={fileType}
         setValue={setFileType}
         options={
-          userType == ADMIN_ROLE
+          userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE
             ? ["Receiving", "Originating"]
             : ["Originating"]
         }

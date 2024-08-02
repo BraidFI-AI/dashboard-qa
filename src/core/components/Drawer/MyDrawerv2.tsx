@@ -51,7 +51,11 @@ import ConfigurationIcon from "./../../../../public/icons/configuration";
 import SettingsIcon from "./../../../../public/icons/settings";
 import { usePathname } from "next/navigation";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import { ADMIN_ROLE } from "@/core/constants";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_ROLE,
+  DEVELOPER_OPS_ROLE,
+} from "@/core/constants";
 import DrawerHeaderButtons from "./drawer_header_buttons";
 import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
@@ -189,7 +193,32 @@ export default function PersistentDrawerLeft(props: any) {
     },
   ].filter((item) => item !== null);
 
-  if (userType == ADMIN_ROLE) {
+  const settingsOptions = [
+    {
+      name: "User Management",
+      icon: (
+        <PersonAddAltOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+      ),
+      iconFocused: (
+        <PersonAddAltOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+      ),
+      path: "/settings/userManagement",
+    },
+    {
+      name: "API Key",
+      icon: <KeyOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />,
+      iconFocused: (
+        <KeyOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+      ),
+      path: "/settings/apikey",
+    },
+  ];
+
+  if (userType == ADMIN_OPS_ROLE || userType == DEVELOPER_OPS_ROLE) {
+    settingsOptions.splice(0, 1);
+  }
+
+  if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
     achOptions.splice(1, 0, {
       name: "Settlement",
       icon: (
@@ -235,7 +264,7 @@ export default function PersistentDrawerLeft(props: any) {
     // },
   ];
 
-  if (userType == ADMIN_ROLE) {
+  if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
     configurationOptions.splice(0, 0, {
       name: "Programs",
       icon: (
@@ -435,38 +464,39 @@ export default function PersistentDrawerLeft(props: any) {
                   iconFocused={<ACHIcon focused={true} />}
                   options={achOptions}
                 />
-                {userType == ADMIN_ROLE && (
-                  <MyExpandableListItem
-                    name="Wire"
-                    path={"/wire"}
-                    selected={selected}
-                    setSelected={setSelcted}
-                    icon={<WireIcon />}
-                    iconFocused={<WireIcon focused={true} />}
-                    options={[
-                      {
-                        name: "Processing",
-                        icon: (
-                          <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                        ),
-                        iconFocused: (
-                          <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                        ),
-                        path: "/wire/processing",
-                      },
-                      {
-                        name: "Settlement",
-                        icon: (
-                          <AccountBalanceOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                        ),
-                        iconFocused: (
-                          <AccountBalanceOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                        ),
-                        path: "/wire/settlement",
-                      },
-                    ]}
-                  />
-                )}
+                {userType == ADMIN_ROLE ||
+                  (userType == ADMIN_OPS_ROLE && (
+                    <MyExpandableListItem
+                      name="Wire"
+                      path={"/wire"}
+                      selected={selected}
+                      setSelected={setSelcted}
+                      icon={<WireIcon />}
+                      iconFocused={<WireIcon focused={true} />}
+                      options={[
+                        {
+                          name: "Processing",
+                          icon: (
+                            <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                          ),
+                          iconFocused: (
+                            <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                          ),
+                          path: "/wire/processing",
+                        },
+                        {
+                          name: "Settlement",
+                          icon: (
+                            <AccountBalanceOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                          ),
+                          iconFocused: (
+                            <AccountBalanceOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                          ),
+                          path: "/wire/settlement",
+                        },
+                      ]}
+                    />
+                  ))}
                 <MyExpandableListItem
                   name="Configurations"
                   path={"/configuration"}
@@ -483,28 +513,7 @@ export default function PersistentDrawerLeft(props: any) {
                   setSelected={setSelcted}
                   icon={<SettingsIcon />}
                   iconFocused={<SettingsIcon focused={true} />}
-                  options={[
-                    {
-                      name: "User Management",
-                      icon: (
-                        <PersonAddAltOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                      ),
-                      iconFocused: (
-                        <PersonAddAltOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                      ),
-                      path: "/settings/userManagement",
-                    },
-                    {
-                      name: "API Key",
-                      icon: (
-                        <KeyOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                      ),
-                      iconFocused: (
-                        <KeyOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                      ),
-                      path: "/settings/apikey",
-                    },
-                  ]}
+                  options={settingsOptions}
                 />
               </List>
             </div>

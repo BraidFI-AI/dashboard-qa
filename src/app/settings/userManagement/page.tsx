@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import Link from "next/link";
 import UsersTable from "./UsersTable";
+import RequireRole from "@/core/components/RequireRole";
+import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
 
 const UserManagement = () => {
   return (
@@ -19,4 +21,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default RequireRole(UserManagement, [ADMIN_ROLE, DEVELOPER_ROLE]);
