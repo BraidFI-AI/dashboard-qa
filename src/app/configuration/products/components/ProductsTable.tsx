@@ -41,6 +41,8 @@ const ProductsTable = () => {
     router.push(`/configuration/products/${params.row.id}`);
   };
 
+  console.log("asdasdsddssadds", products);
+
   return products == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <CircularProgress></CircularProgress>
@@ -49,6 +51,14 @@ const ProductsTable = () => {
   ) : products == null ? (
     <ErrorPage
       error="Error loading products"
+      recoveryButtonOnClick={() => {
+        dispatch(setRefreshProductsTable(true));
+      }}
+      recoveryButtonTitle="Retry"
+    />
+  ) : typeof products === "string" ? (
+    <ErrorPage
+      error={products}
       recoveryButtonOnClick={() => {
         dispatch(setRefreshProductsTable(true));
       }}
