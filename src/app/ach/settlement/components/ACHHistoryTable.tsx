@@ -17,6 +17,8 @@ import MyText from "@/core/components/Text/Text";
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import { enqueueSnackbar } from "notistack";
 import toDollarFormat from "@/core/utils/toDollarFormat";
+import MyLinkText from "@/core/components/Text/LinkText";
+import ItemRow from "@/core/components/Text/ItemRow";
 
 const ACHHistoryTable = () => {
   const dispatch = useAppDispatch();
@@ -81,6 +83,13 @@ const ACHHistoryTable = () => {
               value={selectedACH.extracted ? selectedACH.extracted : null}
             ></ItemRow>
             <ItemRow
+              title="Product"
+              value={{
+                value: selectedACH.productName,
+                link: `/configuration/products/${selectedACH.productId}`,
+              }}
+            ></ItemRow>
+            <ItemRow
               title="instruction Count"
               value={selectedACH.instructionCount}
             ></ItemRow>
@@ -111,7 +120,11 @@ const ACHHistoryTable = () => {
             params: GridCellParams,
             event: MuiEvent<React.MouseEvent>
           ) => {
-            if (params.field == "status" || params.field == "file") {
+            if (
+              params.field == "status" ||
+              params.field == "file" ||
+              params.field == "productName"
+            ) {
               event.stopPropagation();
             }
           }}
@@ -131,6 +144,19 @@ const ACHHistoryTable = () => {
                 return `${moment(params.value)}`;
               },
               valueGetter: (params: any) => params.row.extracted,
+            },
+            {
+              field: "productName",
+              headerName: "Product Name",
+              flex: 1,
+              minWidth: 120,
+              renderCell: (params: any) => (
+                <MyLinkText
+                  link={`/configuration/products/${params.row.productId}`}
+                >
+                  {params.row.productName}
+                </MyLinkText>
+              ),
             },
             {
               field: "instructionCount",
@@ -259,21 +285,4 @@ const ACHHistoryTable = () => {
     </>
   );
 };
-
-type ItemRowProps = {
-  title: any;
-  value: any;
-};
-const ItemRow: React.FC<ItemRowProps> = ({ title, value }) => {
-  return (
-    <Box className="flex flex-row justify-between pb-2">
-      <MyText size="sm">{title}</MyText>
-
-      <div className="w-2/3 break-all">
-        <MyText size="sm">{value}</MyText>
-      </div>
-    </Box>
-  );
-};
-
 export default ACHHistoryTable;
