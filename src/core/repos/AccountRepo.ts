@@ -62,9 +62,8 @@ class AccountRepo {
   ) {
     const response = await this.apiClient.http<Account[]>(
       Method.PATCH,
-      // `/account/${id}`,
-      `/account/${id}/status`,
-      { status: data.status }
+      `/account/${id}`,
+      { ...data }
     );
     return response;
   }

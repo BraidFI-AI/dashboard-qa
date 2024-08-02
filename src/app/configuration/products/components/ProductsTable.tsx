@@ -59,7 +59,6 @@ const ProductsTable = () => {
       handleRowClick={handleRowClick}
       columns={[
         { field: "id", headerName: "ID", minWidth: 80 },
-        { field: "productId", headerName: "Product ID", minWidth: 80 },
         {
           field: "productName",
           headerName: "Product Name",

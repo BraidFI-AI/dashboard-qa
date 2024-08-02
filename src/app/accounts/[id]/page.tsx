@@ -76,7 +76,7 @@ const AccountPage = () => {
     fundingAccountNumber?: string;
     sweepAccountNumber?: string;
   }) => {
-    console.log("Status:", data);
+    console.log("data:", data);
 
     setSubmitting(true);
 
@@ -95,6 +95,19 @@ const AccountPage = () => {
         setSubmitting(false);
       });
     } else {
+      if (data.canAcceptSweep == null || data.canAcceptSweep == "") {
+        data.canAcceptSweep = undefined;
+      }
+      if (data.sweepAccountNumber == null || data.sweepAccountNumber == "") {
+        data.sweepAccountNumber = undefined;
+      }
+      if (
+        data.fundingAccountNumber == null ||
+        data.fundingAccountNumber == ""
+      ) {
+        data.fundingAccountNumber = undefined;
+      }
+
       dispatch(updateAccount({ id: params.id.toString(), ...data })).then(
         (acc: any) => {
           if (acc.payload) {
