@@ -65,28 +65,25 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
       handleRowClick={handleRowClick}
       customId={(row: Fees) => row.id}
       columns={[
-        { field: "id", headerName: "ID", width: 120 },
+        { field: "id", headerName: "ID", flex: 1, minWidth: 120 },
         ...extraColumn,
         {
           field: "feeType",
           headerName: "Fee Type",
-          flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          fflex: 1,
+          minWidth: 160,
         },
         {
           field: "tranType",
           headerName: "Transaction Type",
           flex: 1,
-          minWidth: 140,
-          maxWidth: 220,
+          minWidth: 180,
         },
         {
           field: "amount",
           headerName: "Fee amount",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 160,
           valueGetter: (params: any) =>
             params.row.feeType == "PERCENT"
               ? params.row.amount
@@ -96,15 +93,13 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
           field: "feeChargingAccountNumber",
           headerName: "Charging Account",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 160,
         },
         {
           field: "settlementAccountNumber",
           headerName: "Settlement Account",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 160,
         },
       ]}
       rows={fee}

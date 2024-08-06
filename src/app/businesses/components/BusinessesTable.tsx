@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
+import {
+  GridCellParams,
+  GridEventListener,
+  MuiEvent,
+} from "@mui/x-data-grid-pro";
 import { useSelector } from "react-redux";
 import { Business } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -50,20 +54,19 @@ const BusinessesTable = () => {
             {
               field: "id",
               headerName: "Business ID",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
             },
             {
               field: "name",
               headerName: "Business Name",
-              flex: 2,
-              minWidth: 120,
-              maxWidth: 220,
+              flex: 1,
+              minWidth: 150,
             },
             {
               field: "productName",
               headerName: "Product Name",
               minWidth: 140,
-              maxWidth: 160,
               flex: 1,
               renderCell: (params: any) => (
                 <Link
@@ -80,14 +83,15 @@ const BusinessesTable = () => {
             {
               field: "cipStatus",
               headerName: "CIP status",
+              flex: 1,
               minWidth: 120,
-              maxWidth: 200,
             },
             { field: "status", headerName: "Status", width: 120 },
             {
               field: "createdAt",
               headerName: "Created",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
               valueFormatter: (params: any) => {
                 return `${timestampToDate(params.value)}`;
               },
@@ -96,7 +100,8 @@ const BusinessesTable = () => {
             {
               field: "updatedAt",
               headerName: "Modified",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
               valueFormatter: (params: any) => {
                 return `${timestampToDate(params.value)}`;
               },

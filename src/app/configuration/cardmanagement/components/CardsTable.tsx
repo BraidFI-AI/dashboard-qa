@@ -41,20 +41,19 @@ const CardsTable = () => {
               field: "name",
               headerName: "Name",
               flex: 1,
-              minWidth: 120,
-              maxWidth: 220,
+              minWidth: 160,
             },
             {
               field: "bin",
               headerName: "Bin",
               flex: 1,
-              minWidth: 120,
-              maxWidth: 220,
+              minWidth: 160,
             },
             {
               field: "startDate",
               headerName: "Start Date",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
               valueGetter(params: any) {
                 if (!params.value) {
                   return params.value;
@@ -87,7 +86,8 @@ const CardsTable = () => {
             {
               field: "endDate",
               headerName: "End Date",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
               valueGetter(params: any) {
                 if (!params.value) {
                   return params.value;

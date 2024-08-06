@@ -105,12 +105,12 @@ const UsersTable = () => {
         handleRowClick={handleRowClick}
         customId={(user: User) => user.Username}
         columns={[
-          { field: "Username", headerName: "Username", width: 120 },
+          { field: "Username", headerName: "Username", flex: 1, minWidth: 160 },
           {
             field: "Attributes[3].name",
             headerName: "Email",
             flex: 1,
-            minWidth: 150,
+            minWidth: 200,
             renderCell: (params: any) => (
               <div>
                 {
@@ -128,7 +128,8 @@ const UsersTable = () => {
           {
             field: "Attributes[0].name",
             headerName: "Tenant ID",
-            width: 120,
+            flex: 1,
+            minWidth: 120,
             renderCell: (params: any) => (
               <div>
                 {
@@ -146,7 +147,8 @@ const UsersTable = () => {
           {
             field: "Enabled",
             headerName: "Enabled",
-            minWidth: 100,
+            flex: 1,
+            minWidth: 120,
             renderCell: (params: any) => (
               <div>
                 {params.row.Enabled?.toString()?.[0]?.toUpperCase() +
@@ -166,7 +168,8 @@ const UsersTable = () => {
           {
             field: "resetPassword",
             headerName: "Password",
-            width: 90,
+            flex: 1,
+            minWidth: 90,
             renderCell: (params: any) =>
               resettingPassword.includes(params.row.Username ?? "") ? (
                 <CircularProgress size="25px" />
@@ -208,7 +211,8 @@ const UsersTable = () => {
           {
             field: "changeStatus",
             headerName: "Status",
-            width: 70,
+            flex: 1,
+            minWidth: 70,
             renderCell: (params: any) =>
               updatingStatus.includes(params.row.Username) ? (
                 <CircularProgress size="25px" />
@@ -280,7 +284,8 @@ const UsersTable = () => {
           {
             field: "deleteUser",
             headerName: "Delete",
-            width: 70,
+            flex: 1,
+            minWidth: 70,
             renderCell: (params: any) =>
               deleting.includes(params.row.Username) ? (
                 <CircularProgress size="25px" />

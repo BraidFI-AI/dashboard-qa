@@ -104,27 +104,32 @@ const CasesTablePage = () => {
                 {
                   field: "id",
                   headerName: "Case ID",
-                  width: 80,
+                  flex: 1,
+                  minWidth: 120,
                 },
                 {
                   field: "name",
                   headerName: "Case Name",
-                  width: 200,
+                  flex: 1,
+                  minWidth: 200,
                 },
                 {
                   field: "status",
                   headerName: "Status",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                 },
                 {
                   field: "tenantId",
                   headerName: "Tenant ID",
-                  width: 140,
+                  flex: 1,
+                  minWidth: 140,
                 },
                 {
                   field: "description",
                   headerName: "Description",
-                  width: 200,
+                  flex: 1,
+                  minWidth: 200,
                 },
               ]}
               rows={cases}

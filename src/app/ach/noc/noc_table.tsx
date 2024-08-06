@@ -108,13 +108,13 @@ const NocTable = () => {
             {
               field: "id",
               headerName: "ID",
-              minWidth: 160,
-              maxWidth: 300,
               flex: 1,
+              minWidth: 200,
             },
             {
               field: "businessName",
               headerName: "Business Name",
+              flex: 1,
               minWidth: 160,
               renderCell: (params: any) => (
                 <MyLinkText
@@ -135,6 +135,7 @@ const NocTable = () => {
             {
               field: "counterpartyName",
               headerName: "Counterparty",
+              flex: 1,
               minWidth: 160,
               renderCell: (params: any) => (
                 <div
@@ -160,18 +161,23 @@ const NocTable = () => {
               ),
               valueGetter: (params: any) => params.row.counterpartyName,
             },
-            { field: "changeCode", headerName: "Change Code", width: 120 },
+            {
+              field: "changeCode",
+              headerName: "Change Code",
+              flex: 1,
+              minWidth: 120,
+            },
             {
               field: "changeReason",
               headerName: "Change Reason",
-              minWidth: 160,
-              maxWidth: 300,
               flex: 1,
+              minWidth: 160,
             },
             {
               field: "effectiveDate",
               headerName: "Effective Date",
-              width: 160,
+              flex: 1,
+              minWidth: 160,
               renderCell: (params: any) => (
                 <div>{`${params.row.effective_date?.[0]
                   .toString()
@@ -193,7 +199,8 @@ const NocTable = () => {
             {
               field: "updatedAt",
               headerName: "Updated at",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
               valueFormatter: (params: any) => {
                 return `${timestampToDate(params.value)}`;
               },
@@ -202,7 +209,8 @@ const NocTable = () => {
             {
               field: "change",
               headerName: "Change",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
               renderCell: (params: any) => (
                 <div className="flex justify-center items-center">
                   <MyBlueButton

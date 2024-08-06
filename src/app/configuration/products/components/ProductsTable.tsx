@@ -73,25 +73,32 @@ const ProductsTable = () => {
           field: "productName",
           headerName: "Product Name",
           flex: 1,
-          minWidth: 100,
-          maxWidth: 160,
+          minWidth: 120,
         },
         {
           field: "accountingCurrency",
           headerName: "Accounting Currency",
-          width: 160,
+          flex: 1,
+          minWidth: 160,
         },
-        { field: "programId", headerName: "Program ID", width: 120 },
-        { field: "tenantId", headerName: "Tenant ID", minWidth: 120 },
+        {
+          field: "programId",
+          headerName: "Program ID",
+          flex: 1,
+          minWidth: 120,
+        },
+        { field: "tenantId", headerName: "Tenant ID", flex: 1, minWidth: 120 },
         {
           field: "type",
           headerName: "Type",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "isActive",
           headerName: "Active",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           valueFormatter: (params: GridValueFormatterParams<any>) => {
             if (params.value == null) {
               return "";

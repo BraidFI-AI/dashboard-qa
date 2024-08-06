@@ -61,8 +61,7 @@ const IndividualsTable = () => {
           field: "name",
           headerName: "Name",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 200,
           renderCell: (params: any) => (
             <div>{params.row.firstName + " " + params.row.lastName}</div>
           ),
@@ -73,8 +72,7 @@ const IndividualsTable = () => {
           field: "productName",
           headerName: "Product Name",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 160,
           renderCell: (params: any) => (
             <MyLinkText
               link={`/configuration/products/${params.row.productId}`}
@@ -89,14 +87,14 @@ const IndividualsTable = () => {
           field: "cipStatus",
           headerName: "CIP Status",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 160,
         },
-        { field: "status", headerName: "Status", width: 120 },
+        { field: "status", headerName: "Status", flex: 1, minWidth: 120 },
         {
           field: "createdAt",
           headerName: "Created",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           valueFormatter: (params: any) => {
             return `${timestampToDate(params.value)}`;
           },
@@ -105,7 +103,8 @@ const IndividualsTable = () => {
         {
           field: "updatedAt",
           headerName: "Modified",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           valueFormatter: (params: any) => {
             return `${timestampToDate(params.value)}`;
           },

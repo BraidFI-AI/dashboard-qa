@@ -224,24 +224,26 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                   {
                     field: "transactionType",
                     headerName: "Transaction Type",
-                    flex: 2,
-                    minWidth: 140,
+                    flex: 1,
+                    minWidth: 180,
                   },
                   {
                     field: "limitType",
                     headerName: "Limit Type",
-                    flex: 2,
-                    minWidth: 160,
+                    flex: 1,
+                    minWidth: 180,
                   },
                   {
                     field: "status",
                     headerName: "Status",
-                    width: 100,
+                    flex: 1,
+                    minWidth: 120,
                   },
                   {
                     field: "amount",
                     headerName: "Amount",
-                    width: 100,
+                    flex: 1,
+                    minWidth: 120,
                     renderCell: (params: any) => (
                       <div>{toDollarFormat(params.row.amount)}</div>
                     ),
@@ -250,6 +252,7 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                   {
                     field: "createdAt",
                     headerName: "Created At",
+                    flex: 1,
                     minWidth: 120,
                     valueFormatter: (params: any) => {
                       return `${timestampToDate(params.value)}`;

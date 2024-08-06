@@ -25,6 +25,7 @@ import moment from "moment-timezone";
 import { APP_TIMEZONE } from "../constants";
 import IconButton from "@mui/material/IconButton";
 import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
+import { LicenseInfo } from "@mui/x-license";
 
 /// setting default timezone to PACIFIC timezone
 dayjs.extend(utc);
@@ -38,6 +39,10 @@ interface ProvidersProps {
 }
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
+  LicenseInfo.setLicenseKey(
+    "79c6ff80a9eed9ffc5824ac6cfbd7f5eTz05NTY4NyxFPTE3NTQ1NzY1MTEwMDAsUz1wcm8sTE09c3Vic2NyaXB0aW9uLFBWPWluaXRpYWwsS1Y9Mg=="
+  );
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
 

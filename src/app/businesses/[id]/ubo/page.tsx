@@ -162,7 +162,8 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                 {
                   field: "uboId",
                   headerName: "UBO ID",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                   valueGetter(params: any) {
                     if (!params.value) {
                       return params.row.ubo.id;
@@ -173,7 +174,8 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                 {
                   field: "id",
                   headerName: "Customer ID",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                   renderCell: (params: any) => (
                     <Link href={`/individuals/${params.row.id}`}>
                       <div className="underline text-[#12A7FF]">
@@ -187,8 +189,7 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   field: "name",
                   headerName: "Name",
                   flex: 1,
-                  minWidth: 120,
-                  maxWidth: 300,
+                  minWidth: 160,
                   valueGetter(params: any) {
                     if (!params.value) {
                       return params.row.firstName + " " + params.row.lastName;
@@ -200,8 +201,7 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   field: "email",
                   headerName: "Email",
                   flex: 1,
-                  minWidth: 150,
-                  maxWidth: 300,
+                  minWidth: 180,
                   valueGetter(params: any) {
                     if (!params.value) {
                       return params.row.ubo.email;
@@ -212,7 +212,8 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                 {
                   field: "uboTitle",
                   headerName: "Title",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                   valueGetter(params: any) {
                     if (!params.value) {
                       return params.row.ubo.title;
@@ -223,7 +224,8 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                 {
                   field: "uboOwnership",
                   headerName: "Ownership",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                   valueGetter(params: any) {
                     if (!params.value) {
                       return `${params.row.ubo.ownership}%`;
@@ -234,7 +236,8 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                 {
                   field: "customerVerified",
                   headerName: "KYC Status",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                 },
               ]}
               handleRowClick={handleRowClick}

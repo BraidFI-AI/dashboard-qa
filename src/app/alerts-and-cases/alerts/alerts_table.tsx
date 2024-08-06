@@ -89,27 +89,32 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
           {
             field: "id",
             headerName: "Alert ID",
-            width: 80,
+            flex: 1,
+            minWidth: 120,
           },
           {
             field: "type",
             headerName: "Type",
-            width: 200,
+            flex: 1,
+            minWidth: 200,
           },
           {
             field: "status",
             headerName: "Status",
-            width: 120,
+            flex: 1,
+            minWidth: 120,
           },
           {
             field: "contextType",
             headerName: "Context Type",
-            width: 140,
+            flex: 1,
+            minWidth: 140,
           },
           {
             field: "contextId",
             headerName: "Context ID",
-            width: 140,
+            flex: 1,
+            minWidth: 140,
             renderCell: (params: any) => {
               return params.row.contextType == "TRANSACTION" ? (
                 <div

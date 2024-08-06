@@ -56,7 +56,8 @@ const ProgramsTable = () => {
         {
           field: "isActive",
           headerName: "Status",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           valueFormatter: (params: GridValueFormatterParams<any>) => {
             if (params.value == null) {
               return "";

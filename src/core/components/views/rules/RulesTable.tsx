@@ -47,7 +47,7 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
     <MyTable
       handleRowClick={handleRowClick}
       columns={[
-        { field: "id", headerName: "ID", width: 80 },
+        { field: "id", headerName: "ID", flex: 1, minWidth: 120 },
         {
           field: "limitName",
           headerName: "Limit Name",
@@ -57,29 +57,32 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
         {
           field: "transactionType",
           headerName: "Transaction Type",
-          flex: 2,
+          flex: 1,
           minWidth: 140,
         },
         {
           field: "limitType",
           headerName: "Limit Type",
-          flex: 2,
+          flex: 1,
           minWidth: 160,
         },
         {
           field: "action",
           headerName: "Action",
-          width: 100,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "status",
           headerName: "Status",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "amount",
           headerName: "Amount",
-          width: 100,
+          flex: 1,
+          minWidth: 120,
           renderCell: (params: any) => (
             <div>{toDollarFormat(params.row.amount)}</div>
           ),
@@ -88,6 +91,7 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
         {
           field: "createdAt",
           headerName: "Created At",
+          flex: 1,
           minWidth: 120,
           valueFormatter: (params: any) => {
             return `${timestampToDate(params.value)}`;

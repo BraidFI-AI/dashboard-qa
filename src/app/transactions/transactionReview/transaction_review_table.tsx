@@ -113,14 +113,14 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "id",
             headerName: "ID",
-            minWidth: 120,
-            maxWidth: 280,
             flex: 1,
+            minWidth: 180,
           },
           {
             field: "createdAt",
             headerName: "Created at",
-            width: 130,
+            flex: 1,
+            minWidth: 130,
             valueFormatter: (params: any) => {
               return `${moment(params.value * 1000).year()}-${(
                 moment(params.value * 1000).month() + 1
@@ -142,7 +142,8 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "productId",
             headerName: "Product ID",
-            width: 100,
+            flex: 1,
+            minWidth: 120,
             renderCell: (params: any) => (
               <MyLinkText
                 link={`/configuration/products/${params.row.productId}`}
@@ -155,9 +156,8 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "customerName",
             headerName: "Customer",
-            minWidth: 150,
-            maxWidth: 200,
             flex: 1,
+            minWidth: 180,
             renderCell: (params: any) => (
               <MyLinkText link={`/businesses/${params.row.customerId}`}>
                 {params.row.customerName}
@@ -168,9 +168,8 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "counterpartyName",
             headerName: "Counterparty",
-            minWidth: 120,
-            maxWidth: 200,
             flex: 1,
+            minWidth: 180,
             renderCell: (params: any) => (
               <div
                 onClick={() => {
@@ -198,9 +197,8 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "accountNumber",
             headerName: "Account number",
-            minWidth: 120,
-            maxWidth: 140,
             flex: 1,
+            minWidth: 140,
             renderCell: (params: any) => (
               <MyLinkText link={`/accounts/${params.row.accountNumber}`}>
                 {params.row.accountNumber}
@@ -211,7 +209,8 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "amount",
             headerName: "Amount",
-            width: 150,
+            flex: 1,
+            minWidth: 150,
             renderCell: (params: any) => (
               <div>{toDollarFormat(params.row.amount)}</div>
             ),
@@ -221,7 +220,8 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           {
             field: "review",
             headerName: "Review",
-            width: 150,
+            flex: 1,
+            minWidth: 150,
             renderCell: (params: any) => (
               <div className="flex items-center justify-center">
                 <MyBlueButton

@@ -132,13 +132,13 @@ const ACHHistoryTable = () => {
             {
               field: "filename",
               headerName: "File Name",
-              flex: 2,
-              minWidth: 140,
+              flex: 1,
+              minWidth: 200,
             },
             {
               field: "extracted",
               headerName: "Extracted at",
-              flex: 2,
+              flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
                 return `${moment(params.value)}`;

@@ -270,13 +270,13 @@ const WireSettlement = () => {
               {
                 field: "filename",
                 headerName: "File Name",
-                flex: 2,
+                flex: 1,
                 minWidth: 140,
               },
               {
                 field: "createdAt",
                 headerName: "Created",
-                flex: 2,
+                flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
                   return `${moment(params.value * 1000).year()}-${(
@@ -299,7 +299,7 @@ const WireSettlement = () => {
               {
                 field: "updatedAt",
                 headerName: "Updated",
-                flex: 2,
+                flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
                   return `${moment(params.value * 1000).year()}-${(
@@ -374,7 +374,8 @@ const WireSettlement = () => {
               {
                 field: "file",
                 headerName: "FedWire File",
-                width: 82,
+                flex: 1,
+                minWidth: 82,
                 renderCell: (params: any) => (
                   <Tooltip
                     title="Download Wire Setllment File"

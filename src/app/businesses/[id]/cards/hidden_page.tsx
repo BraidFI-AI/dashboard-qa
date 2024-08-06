@@ -159,37 +159,39 @@ const CardsPage = ({ params }: { params: { id: string } }) => {
               {
                 field: "id",
                 headerName: "ID",
-                width: 120,
+                flex: 1,
+                minWidth: 120,
               },
               { field: "accountId", headerName: "Account ID", width: 120 },
               {
                 field: "embossingName",
                 headerName: "Embossing Name",
                 flex: 1,
-                minWidth: 150,
-                maxWidth: 300,
+                minWidth: 180,
               },
               {
                 field: "lastFour",
                 headerName: "Last Four",
                 flex: 1,
-                minWidth: 150,
-                maxWidth: 300,
+                minWidth: 180,
               },
               {
                 field: "expiration",
                 headerName: "Expiration",
-                width: 120,
+                flex: 1,
+                minWidth: 120,
               },
               {
                 field: "status",
                 headerName: "Status",
-                width: 100,
+                flex: 1,
+                minWidth: 120,
               },
               {
                 field: "maskedPan",
                 headerName: "Masked Pan",
-                width: 180,
+                flex: 1,
+                minWidth: 180,
               },
             ]}
             handleRowClick={handleRowClick}

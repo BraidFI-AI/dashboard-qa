@@ -55,34 +55,31 @@ const AccountsTable = () => {
           field: "accountNumber",
           headerName: "Account Number",
           flex: 1,
-          minWidth: 140,
-          maxWidth: 220,
+          minWidth: 180,
         },
         {
           field: "accountName",
           headerName: "Account Name",
-          width: 210,
+          flex: 1,
+          minWidth: 210,
         },
         {
           field: "customerId",
           headerName: "Customer ID",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 150,
         },
         {
           field: "status",
           headerName: "Status",
           flex: 1,
           minWidth: 120,
-          maxWidth: 220,
         },
         {
           field: "createdAt",
           headerName: "Created At",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 150,
           valueFormatter: (params: any) => {
             return `${timestampToDate(params.value)}`;
           },
@@ -92,8 +89,7 @@ const AccountsTable = () => {
           field: "upadtedAt",
           headerName: "Updated At",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 220,
+          minWidth: 150,
           valueFormatter: (params: any) => {
             return `${timestampToDate(params.value)}`;
           },

@@ -1,6 +1,6 @@
 "use client";
 
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import MyTableToolbar from "./MyTableToolbar";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -56,7 +56,7 @@ const MyTable: React.FC<MyTableProps> = ({
   filterModel,
 }) => {
   return (
-    <DataGrid
+    <DataGridPro
       /// for pagination
       pageSizeOptions={[100]}
       paginationMode={pagination ? "server" : "client"}
@@ -118,7 +118,10 @@ const MyTable: React.FC<MyTableProps> = ({
           hideSearch: hideSearch,
         },
       }}
-      columns={columns}
+      columns={columns.map((column: any) => ({
+        ...column,
+        resizable: true,
+      }))}
       rows={rows}
       initialState={{
         columns: {

@@ -123,13 +123,15 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         {
           field: "paymentId",
           headerName: "Payment ID",
-          width: 160,
+          flex: 1,
+          minWidth: 160,
           hide: true,
         },
         {
           field: "createdAt",
           headerName: "Created",
-          width: 140,
+          flex: 1,
+          minWidth: 140,
           valueFormatter: (params: any) => {
             return `${moment(params.value * 1000).year()}-${(
               moment(params.value * 1000).month() + 1
@@ -151,12 +153,14 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         {
           field: "accountNumber",
           headerName: "Account Number",
-          width: 160,
+          flex: 1,
+          minWidth: 200,
         },
         {
           field: "amount",
           headerName: "Amount",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           align: "right",
           renderCell: (params: any) => (
             <div>{toDollarFormat(params.row.amount)}</div>
@@ -165,7 +169,8 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         {
           field: "ach.customerId",
           headerName: "Customer",
-          width: 120,
+          flex: 1,
+          minWidth: 200,
           renderCell: (params: any) => (
             <MyLinkText
               link={
@@ -183,7 +188,8 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         {
           field: "ach.counterparty.id",
           headerName: "Counterparty",
-          width: 160,
+          flex: 1,
+          minWidth: 200,
           renderCell: (params: any) => (
             <MyText primary={true} underline={true} size="md">
               {params.row?.ach?.counterpartyName}
@@ -194,22 +200,26 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         {
           field: "description",
           headerName: "Description",
-          width: 200,
+          flex: 1,
+          minWidth: 200,
         },
         {
           field: "transactionType",
           headerName: "Transaction Type",
-          width: 250,
+          flex: 1,
+          minWidth: 250,
         },
         {
           field: "status",
           headerName: "Status",
-          width: 130,
+          flex: 1,
+          minWidth: 140,
         },
         {
           field: "updatedAt",
           headerName: "Updated",
-          width: 140,
+          flex: 1,
+          minWidth: 140,
           valueFormatter: (params: any) => {
             return `${moment(params.value * 1000).year()}-${(
               moment(params.value * 1000).month() + 1

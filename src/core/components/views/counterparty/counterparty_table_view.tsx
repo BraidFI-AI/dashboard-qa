@@ -49,33 +49,32 @@ const CounterpartyTableView: React.FC<CounterpartyTableViewProps> = ({
         }}
         handleRowClick={handleRowClick}
         columns={[
-          { field: "id", headerName: "ID", width: 120 },
+          { field: "id", headerName: "ID", flex: 1, minWidth: 120 },
           {
             field: "name",
             headerName: "Name",
-            minWidth: 120,
-            maxWidth: 220,
             flex: 1,
+            minWidth: 180,
           },
           {
             field: "email",
             headerName: "Email",
-            minWidth: 180,
-            maxWidth: 220,
+            flex: 1,
+            minWidth: 200,
           },
           {
             field: "phone",
             headerName: "Phone number",
-            minWidth: 180,
-            maxWidth: 220,
+            flex: 1,
+            minWidth: 200,
           },
           {
             field: "type",
             headerName: "Type",
-            minWidth: 180,
-            maxWidth: 220,
+            flex: 1,
+            minWidth: 200,
           },
-          { field: "status", headerName: "Status", width: 120 },
+          { field: "status", headerName: "Status", flex: 1, minWidth: 120 },
         ]}
         rows={counterparties}
       />

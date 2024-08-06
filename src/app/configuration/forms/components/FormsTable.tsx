@@ -46,26 +46,26 @@ const FormsTable = () => {
             {
               field: "questionSetId",
               headerName: "Form ID",
-              minWidth: 120,
-              maxWidth: 150,
+              flex: 1,
+              minWidth: 150,
             },
             {
               field: "version",
               headerName: "Version",
-              maxWidth: 150,
-              minWidth: 120,
+              flex: 1,
+              minWidth: 150,
             },
             {
               field: "programId",
               headerName: "Program ID",
-              maxWidth: 150,
-              minWidth: 120,
+              flex: 1,
+              minWidth: 150,
             },
             {
               field: "productId",
               headerName: "Product ID",
-              maxWidth: 150,
-              minWidth: 120,
+              flex: 1,
+              minWidth: 150,
             },
           ]}
           rows={forms}

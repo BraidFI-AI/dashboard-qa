@@ -46,15 +46,14 @@ const DevelopersTable = () => {
             {
               field: "tenantId",
               headerName: "Developer ID",
-              minWidth: 160,
-              maxWidth: 200,
+              flex: 1,
+              minWidth: 200,
             },
             {
               field: "name",
               headerName: "Name",
               flex: 1,
-              minWidth: 160,
-              maxWidth: 200,
+              minWidth: 200,
             },
           ]}
           rows={developers}

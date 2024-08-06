@@ -61,17 +61,20 @@ const CaseNotesPage = () => {
             {
               field: "id",
               headerName: "Note ID",
-              width: 100,
+              flex: 1,
+              minWidth: 120,
             },
             {
               field: "username",
               headerName: "Username",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
             },
             {
               field: "noteDateTime",
               headerName: "Created",
-              width: 140,
+              flex: 1,
+              minWidth: 140,
               renderCell: (params: any) => (
                 <div>{timestampToDate(params.row.noteDateTime)}</div>
               ),

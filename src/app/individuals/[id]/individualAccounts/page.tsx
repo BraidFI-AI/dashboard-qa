@@ -109,28 +109,26 @@ const Accounts = () => {
         {
           field: "id",
           headerName: "Account ID",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "accountNumber",
           headerName: "Account Number",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 300,
+          minWidth: 200,
         },
         {
           field: "accountName",
           headerName: "Account Name",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 300,
+          minWidth: 180,
         },
         {
           field: "balance.accountBalance",
           headerName: "Account Balance",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 300,
+          minWidth: 160,
           valueGetter(params: any) {
             if (!params.value) {
               return params.row.balance?.accountBalance;
@@ -147,8 +145,7 @@ const Accounts = () => {
           field: "balance.availableBalance",
           headerName: "Available Balance",
           flex: 1,
-          minWidth: 120,
-          maxWidth: 300,
+          minWidth: 160,
           valueGetter(params: any) {
             if (!params.value) {
               return params.row.balance?.availableBalance;
@@ -164,7 +161,8 @@ const Accounts = () => {
         {
           field: "active",
           headerName: "Active",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           valueFormatter: (params: GridValueFormatterParams<any>) => {
             if (params.value == null) {
               return "";
@@ -178,7 +176,8 @@ const Accounts = () => {
         {
           field: "frozen",
           headerName: "Frozen",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           valueFormatter: (params: GridValueFormatterParams<any>) => {
             if (params.value == null) {
               return "";

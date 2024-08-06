@@ -121,12 +121,14 @@ const OFACHitsTable = () => {
             {
               field: "ofacId",
               headerName: "ID",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
             },
             {
               field: "createdAt",
               headerName: "Created",
-              width: 140,
+              flex: 1,
+              minWidth: 140,
               valueFormatter: (params: any) => {
                 return `${timestampToDate(params.value)}`;
               },
@@ -135,9 +137,8 @@ const OFACHitsTable = () => {
             {
               field: "entity",
               headerName: "Entity",
-              minWidth: 140,
-              maxWidth: 240,
               flex: 1,
+              minWidth: 160,
               renderCell: (params: any) => (
                 <MyText
                   primary={
@@ -171,7 +172,8 @@ const OFACHitsTable = () => {
             {
               field: "entityType",
               headerName: "Entity Type",
-              width: 140,
+              flex: 1,
+              minWidth: 140,
               renderCell: (params: any) => (
                 <div>
                   {params.row.uboId
@@ -199,12 +201,14 @@ const OFACHitsTable = () => {
             {
               field: "status",
               headerName: "Status",
-              width: 120,
+              flex: 1,
+              minWidth: 120,
             },
             {
               field: "updatedAt",
               headerName: "Updated",
-              width: 140,
+              flex: 1,
+              minWidth: 140,
               valueFormatter: (params: any) => {
                 return `${timestampToDate(params.value)}`;
               },
@@ -213,12 +217,14 @@ const OFACHitsTable = () => {
             {
               field: "updatedBy",
               headerName: "Updated By",
-              width: 160,
+              flex: 1,
+              minWidth: 160,
             },
             {
               field: "note",
               headerName: "Note",
-              width: 140,
+              flex: 1,
+              minWidth: 140,
               renderCell: (params: any) =>
                 params.row.note != undefined && params.row.note != null ? (
                   <IconButton className="text-[#12A7FF]">

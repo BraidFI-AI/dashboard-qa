@@ -34,9 +34,8 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
         {
           field: "name",
           headerName: "Name",
-          minWidth: 160,
-          maxWidth: 260,
           flex: 1,
+          minWidth: 200,
           renderCell: (params: any) => (
             <div>
               {
@@ -51,22 +50,26 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
         {
           field: "unauthCount",
           headerName: "Unauthorized return",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "adminCount",
           headerName: "Administrative return",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "otherCount",
           headerName: "Other return",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "totalReturn",
           headerName: "Total Return",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           renderCell: (params: any) => (
             <div>
               {params.row.unauthCount +
@@ -82,12 +85,14 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
         {
           field: "totalCount",
           headerName: "Total Origination",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
         },
         {
           field: "unauthReturnRate",
           headerName: "Unauthized return rate",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           renderCell: (params: any) => (
             <div>{toPercentage(params.row.unauthReturnRate)}</div>
           ),
@@ -97,7 +102,8 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
         {
           field: "adminReturnRate",
           headerName: "Administrative return rate",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           renderCell: (params: any) => (
             <div>{toPercentage(params.row.adminReturnRate)}</div>
           ),
@@ -107,7 +113,8 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
         {
           field: "totalReturnRate",
           headerName: "Total return rate",
-          width: 120,
+          flex: 1,
+          minWidth: 120,
           renderCell: (params: any) => (
             <div>{toPercentage(params.row.totalReturnRate)}</div>
           ),

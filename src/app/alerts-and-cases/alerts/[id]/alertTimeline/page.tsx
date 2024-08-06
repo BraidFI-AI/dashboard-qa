@@ -61,17 +61,20 @@ const AlertsTimelinesPage = () => {
                 {
                   field: "id",
                   headerName: "Timeline ID",
-                  width: 100,
+                  flex: 1,
+                  minWidth: 120,
                 },
                 {
                   field: "username",
                   headerName: "Username",
-                  width: 120,
+                  flex: 1,
+                  minWidth: 120,
                 },
                 {
                   field: "actionDateTime",
                   headerName: "Action Time",
-                  width: 140,
+                  flex: 1,
+                  minWidth: 140,
                   renderCell: (params: any) => (
                     <div>{timestampToDate(params.row.actionDateTime)}</div>
                   ),
@@ -81,7 +84,8 @@ const AlertsTimelinesPage = () => {
                 {
                   field: "action",
                   headerName: "Action",
-                  width: 160,
+                  flex: 1,
+                  minWidth: 160,
                 },
               ]}
               rows={alert.alertTimelines}

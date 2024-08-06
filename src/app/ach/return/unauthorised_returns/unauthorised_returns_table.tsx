@@ -66,13 +66,13 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
           {
             field: "id",
             headerName: "ID",
-            minWidth: 160,
-            maxWidth: 300,
             flex: 1,
+            minWidth: 160,
           },
           {
             field: "productId",
             headerName: "Product ID",
+            flex: 1,
             minWidth: 120,
             renderCell: (params: any) => (
               <MyLinkText
@@ -90,6 +90,7 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
           {
             field: "customerName",
             headerName: "Customer Name",
+            flex: 1,
             minWidth: 160,
             renderCell: (params: any) => (
               <MyLinkText
@@ -109,6 +110,7 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
           {
             field: "counterpartyName",
             headerName: "Counterparty Name",
+            flex: 1,
             minWidth: 160,
             renderCell: (params: any) => (
               <MyLinkText
@@ -124,7 +126,8 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
           {
             field: "amount",
             headerName: "Amount",
-            width: 120,
+            flex: 1,
+            minWidth: 120,
             renderCell: (params: any) => (
               <div>{toDollarFormat(params.row.amount)}</div>
             ),
@@ -133,7 +136,8 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
           {
             field: "effectiveDate",
             headerName: "Effective Date",
-            width: 160,
+            flex: 1,
+            minWidth: 160,
             renderCell: (params: any) => (
               <div>{`${params.row.effective_date?.[0]
                 .toString()
