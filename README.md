@@ -1,8 +1,10 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Overview
 
-## Getting Started
+This project uses the [Next.js](https://nextjs.org/) framework, created with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-First, run the development server:
+## How to Start Locally
+
+To run the development server locally, use one of the following commands:
 
 ```bash
 npm run dev
@@ -10,25 +12,30 @@ npm run dev
 yarn dev
 # or
 pnpm dev
+# or
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+After running the command, open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to Build Docker Image
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+To ensure everything is working correctly before pushing changes, build the Docker image with the following command:
 
-## Learn More
+```sh
+docker build -f .aws/code_build/Dockerfile -t braid_web_dashboard:latest . 2>&1 | tee build.log
+```
 
-To learn more about Next.js, take a look at the following resources:
+Once the build is successful, run the Docker image to verify the site is functioning as expected:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```sh
+docker run -it -p 8081:3000 \
+-e AWS_PROJECT_REGION="us-east-1" \
+-e AWS_COGNITO_REGION="us-east-1" \
+-e AWS_USER_POOLS_ID="us-east-1_dk3Mva3rd" \
+-e AWS_USER_POOLS_WEB_CLIENT_ID="3t7snj79liboijrt6qa4v00l3h" \
+-e API_URL="https://api.development.braid.zone" \
+braid_web_dashboard:latest
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This will start the application on port 8081, allowing you to test the environment locally.
