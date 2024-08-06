@@ -49,7 +49,8 @@ const TabsProvider = (props: any) => {
   ];
 
   if (userType != ADMIN_ROLE && userType != ADMIN_OPS_ROLE) {
-    tabs.splice(0, 3);
+    tabs.splice(1, 2);
+    tabs.splice(2, 1);
   }
 
   useEffect(() => {

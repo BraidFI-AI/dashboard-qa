@@ -16,13 +16,19 @@ import {
 } from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { useParams, useRouter } from "next/navigation";
-import { ADMIN_ROUTE, DEVELOPER_ROUTE } from "@/core/constants";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_ROLE,
+  ADMIN_ROUTE,
+  DEVELOPER_ROUTE,
+} from "@/core/constants";
 import RequireRole from "@/core/components/RequireRole";
 import { JSONTree } from "react-json-tree";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
+import { useSelector } from "react-redux";
 
 const OFACHitDetails = () => {
   const router = useRouter();
@@ -37,6 +43,8 @@ const OFACHitDetails = () => {
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(true);
   const [editing, setEditing] = useState(false);
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const navigateToEntity = async (row: any) => {
     if (row.uboId) {
@@ -180,25 +188,29 @@ const OFACHitDetails = () => {
                   : "Unknown"
               }
             ></ItemRow>
-            <MyEditableTextField
-              editing={editing}
-              setEditing={setEditing}
-              name="status"
-              displayName="Status"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={ofacHit.status ?? ""}
-              submitting={false}
-              clearable={false}
-              options={["CLEARED", "CONFIRMED"]}
-            />
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="status"
+                displayName="Status"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={ofacHit.status ?? ""}
+                submitting={false}
+                clearable={false}
+                options={["CLEARED", "CONFIRMED"]}
+              />
+            ) : (
+              <ItemRow title="Status" value={ofacHit.status ?? ""}></ItemRow>
+            )}
             <ItemRow
               title="Updated"
               value={timestampToDate(ofacHit.updatedAt ?? 0)}
@@ -220,23 +232,28 @@ const OFACHitDetails = () => {
             )}
           </div>
           <div className="w-[500px]">
-            <MyEditableTextField
-              editing={editing}
-              setEditing={setEditing}
-              name="note"
-              displayName="Note"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={ofacHit.note ?? ""}
-              submitting={false}
-            />
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="note"
+                displayName="Note"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={ofacHit.note ?? ""}
+                submitting={false}
+              />
+            ) : (
+              <ItemRow title="Note" value={ofacHit.note ?? ""}></ItemRow>
+            )}
+
             {ofacHit.rawResults && (
               <>
                 <MyText>Results</MyText>
