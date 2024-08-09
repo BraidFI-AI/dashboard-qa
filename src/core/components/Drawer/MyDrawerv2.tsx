@@ -231,6 +231,43 @@ export default function PersistentDrawerLeft(props: any) {
     });
   }
 
+  let wire = null;
+
+  if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
+    wire = (
+      <MyExpandableListItem
+        name="Wire"
+        path={"/wire"}
+        selected={selected}
+        setSelected={setSelcted}
+        icon={<WireIcon />}
+        iconFocused={<WireIcon focused={true} />}
+        options={[
+          {
+            name: "Processing",
+            icon: (
+              <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/wire/processing",
+          },
+          {
+            name: "Settlement",
+            icon: (
+              <AccountBalanceOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <AccountBalanceOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/wire/settlement",
+          },
+        ]}
+      />
+    );
+  }
+
   const configurationOptions = [
     {
       name: "Products",
@@ -464,39 +501,7 @@ export default function PersistentDrawerLeft(props: any) {
                   iconFocused={<ACHIcon focused={true} />}
                   options={achOptions}
                 />
-                {userType == ADMIN_ROLE ||
-                  (userType == ADMIN_OPS_ROLE && (
-                    <MyExpandableListItem
-                      name="Wire"
-                      path={"/wire"}
-                      selected={selected}
-                      setSelected={setSelcted}
-                      icon={<WireIcon />}
-                      iconFocused={<WireIcon focused={true} />}
-                      options={[
-                        {
-                          name: "Processing",
-                          icon: (
-                            <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                          ),
-                          iconFocused: (
-                            <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                          ),
-                          path: "/wire/processing",
-                        },
-                        {
-                          name: "Settlement",
-                          icon: (
-                            <AccountBalanceOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                          ),
-                          iconFocused: (
-                            <AccountBalanceOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                          ),
-                          path: "/wire/settlement",
-                        },
-                      ]}
-                    />
-                  ))}
+                {wire}
                 <MyExpandableListItem
                   name="Configurations"
                   path={"/configuration"}
