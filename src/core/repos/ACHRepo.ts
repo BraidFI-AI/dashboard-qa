@@ -1,6 +1,11 @@
 import { method } from "lodash";
 import ApiClient, { Method } from "../api/ApiClient";
-import { ACH, ACHSettlementHistory, ReturnRate } from "../api/ApiTypes";
+import {
+  ACH,
+  ACHSettlementHistory,
+  ACHTransactionStatus,
+  ReturnRate,
+} from "../api/ApiTypes";
 import { v4 as uuidv4 } from "uuid";
 
 class ACHRepo {
@@ -117,6 +122,28 @@ class ACHRepo {
     response.forEach((ret) => {
       ret.id = uuidv4();
     });
+
+    return response;
+  }
+
+  public async fetchACHTransactionStatus() {
+    const response = await this.apiClient.http<ACHTransactionStatus[]>(
+      Method.GET,
+      `/ach/file/status`
+    );
+
+    return response;
+  }
+
+  public async fetchACHFileErrors(
+    filename: String,
+    pageSize: number,
+    pageNumber: number
+  ) {
+    const response = await this.apiClient.http<any>(
+      Method.GET,
+      `/product/globalErrors/achfile/${filename}?pageSize=${pageSize}&pageNumber=${pageNumber}`
+    );
 
     return response;
   }

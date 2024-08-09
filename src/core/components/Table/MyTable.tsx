@@ -57,6 +57,8 @@ const MyTable: React.FC<MyTableProps> = ({
 }) => {
   return (
     <DataGridPro
+      /// need to enable pagination for pro (disabled in pro by default)
+      pagination
       /// for pagination
       pageSizeOptions={[100]}
       paginationMode={pagination ? "server" : "client"}

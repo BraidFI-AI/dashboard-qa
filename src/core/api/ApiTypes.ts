@@ -445,6 +445,35 @@ export interface ACHConfig {
   windows?: ACHConfigWindow[];
 }
 
+export interface ACHTransactionStatus {
+  fileName?: string | null;
+  processingDate: "2024-07-17";
+  errorTransactions?: number | null;
+  pendingTransactions?: number | null;
+  offsetTransactions?: number | null;
+  postedTransactions?: number | null;
+  rejectedTransactions?: number | null;
+  manualReviewTransactions?: number | null;
+  duplicateTransactions?: number | null;
+  totalTransactions?: number | null;
+}
+
+export interface ACHFileError {
+  id?: number | null;
+  createdAt?: number | null;
+  reference?: string | null;
+  paymentId?: number | null;
+  linkedPaymentId?: string | null;
+  productId?: number | null;
+  accountId?: number | null;
+  customerId?: number | null;
+  achId?: number | null;
+  summary?: string | null;
+  filename?: string | null;
+  externalId?: string | null;
+  details?: string | null;
+}
+
 export interface ACHConfigCalendarHoliday {
   day: number;
   month: number;
