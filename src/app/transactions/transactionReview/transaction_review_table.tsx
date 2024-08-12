@@ -77,6 +77,7 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
       {reviewModalOpen && selectedTransaction != null && (
         <ReviewTransactionModal
           paymentId={selectedTransaction.paymentId ?? ""}
+          alertId={(selectedTransaction as any).alertId ?? ""}
           modalOpen={reviewModalOpen}
           handleModalClose={handleReviewModalClose}
         />
@@ -109,10 +110,11 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           }
         }}
         handleRowClick={handleRowClick}
+        customId={(params: any) => params.paymentId}
         columns={[
           {
-            field: "id",
-            headerName: "ID",
+            field: "paymentId",
+            headerName: "Payment ID",
             flex: 1,
             minWidth: 180,
           },
@@ -216,7 +218,11 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
             ),
             valueGetter: (params: any) => params.row.amount,
           },
-          { field: "inbound", headerName: "Inbound", width: 120 },
+          {
+            field: "transactionType",
+            headerName: "Transaction Type",
+            width: 120,
+          },
           {
             field: "review",
             headerName: "Review",

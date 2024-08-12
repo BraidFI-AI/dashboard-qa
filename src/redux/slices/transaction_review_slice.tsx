@@ -7,12 +7,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import AccountRepo from "@/core/repos/AccountRepo";
 import IndividualRepo from "@/core/repos/IndividualRepo";
 import BusinessRepo from "@/core/repos/BusinessRepo";
+import AlertsRepo from "@/core/repos/alerts_repo";
 
 const apiClient = ApiClient.getInstance();
 const transactionRepo: TransactionRepo = new TransactionRepo(apiClient);
 const accountRepo: AccountRepo = new AccountRepo(apiClient);
 const individualRepo: IndividualRepo = new IndividualRepo(apiClient);
 const businessRepo: BusinessRepo = new BusinessRepo(apiClient);
+const alertsRepo: AlertsRepo = new AlertsRepo(apiClient);
 
 interface TransactionReviewState {
   loading: boolean;
@@ -109,34 +111,28 @@ export const fetchBreachedLimits = createAsyncThunk(
   }
 );
 
-export const approveTransaction = createAsyncThunk(
+export const updateTransactionStatus = createAsyncThunk(
   "program/approveTransaction",
-  async (id: string, thunkApi: any) => {
+  async (
+    data: { alertId: string; action: string; note: string },
+    thunkApi: any
+  ) => {
     try {
-      const trans = await transactionRepo.approveTransaction(id);
-      console.log("transaction approved:", trans);
+      const trans = await alertsRepo.resolveAlert(data);
+      console.log(
+        `transaction ${
+          data.action.toLowerCase() == "approve" ? "approved" : "rejected"
+        }:`,
+        trans
+      );
 
       thunkApi.dispatch(fetchToReviewACHTransactions({}));
 
       return trans;
     } catch (e: any) {
-      return `Error approving transaction ${generateErrorMessage(e)}`;
-    }
-  }
-);
-
-export const rejectTransaction = createAsyncThunk(
-  "program/rejectTransaction",
-  async (id: string, thunkApi: any) => {
-    try {
-      const trans = await transactionRepo.rejectTransaction(id);
-      console.log("transaction rejected:", trans);
-
-      thunkApi.dispatch(fetchToReviewACHTransactions({}));
-
-      return trans;
-    } catch (e: any) {
-      return `Error rejecting transaction ${generateErrorMessage(e)}`;
+      return `Error ${
+        data.action.toLowerCase() == "approve" ? "approving" : "rejecting"
+      } transaction ${generateErrorMessage(e)}`;
     }
   }
 );

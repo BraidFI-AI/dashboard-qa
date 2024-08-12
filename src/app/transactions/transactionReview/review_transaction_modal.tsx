@@ -14,9 +14,8 @@ import timestampToDate from "@/core/utils/timestampToDate";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { fetchTransactionByPaymentId } from "@/redux/slices/TransactionSlice";
 import {
-  approveTransaction,
+  updateTransactionStatus,
   fetchBreachedLimits,
-  rejectTransaction,
 } from "@/redux/slices/transaction_review_slice";
 import { useAppDispatch } from "@/redux/store/store";
 import { GridEventListener } from "@mui/x-data-grid";
@@ -24,17 +23,22 @@ import { set } from "lodash";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 type ReviewTransactionModalProps = {
   modalOpen: boolean;
   handleModalClose: () => void;
   paymentId: string;
+  alertId: string;
+  customActionOnCompletion?: any;
 };
 
 const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   modalOpen,
   handleModalClose,
   paymentId,
+  alertId,
+  customActionOnCompletion,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -49,6 +53,9 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   const [transaction, setTransaction] = useState<
     "loading" | string | Transaction
   >("loading");
+
+  const userType = useSelector((state: any) => state.app.userType);
+  const username = useSelector((state: any) => state.app.username);
 
   useEffect(() => {
     dispatch(fetchTransactionByPaymentId(paymentId)).then((result: any) => {
@@ -92,96 +99,109 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
             recoveryButtonTitle="Retry"
           />
         ) : (
-          <div className="flex flex-row justify-between">
-            <div className="w-[300px]">
-              <ItemRow
-                boxValues={true}
-                title="Transaction Type"
-                value={transaction.transactionType ?? ""}
-              />
-              <ItemRow
-                boxValues={true}
-                title="Created"
-                value={`${moment(
-                  (transaction as any).createdAt * 1000
-                ).year()}-${(
-                  moment((transaction as any).createdAt * 1000).month() + 1
-                )
-                  .toString()
-                  .padStart(2, "0")}-${moment(
-                  (transaction as any).createdAt * 1000
-                )
-                  .date()
-                  .toString()
-                  .padStart(2, "0")} ${moment(
-                  (transaction as any).createdAt * 1000
-                )
-                  .hour()
-                  .toString()
-                  .padStart(2, "0")}:${moment(
-                  (transaction as any).createdAt * 1000
-                )
-                  .minute()
-                  .toString()
-                  .padStart(2, "0")}`}
-              />
+          <>
+            <div className="flex flex-row justify-between">
+              <div className="w-[300px]">
+                <ItemRow
+                  boxValues={true}
+                  title="Transaction Type"
+                  value={transaction.transactionType ?? ""}
+                />
+                <ItemRow
+                  boxValues={true}
+                  title="Created"
+                  value={`${moment(
+                    (transaction as any).createdAt * 1000
+                  ).year()}-${(
+                    moment((transaction as any).createdAt * 1000).month() + 1
+                  )
+                    .toString()
+                    .padStart(2, "0")}-${moment(
+                    (transaction as any).createdAt * 1000
+                  )
+                    .date()
+                    .toString()
+                    .padStart(2, "0")} ${moment(
+                    (transaction as any).createdAt * 1000
+                  )
+                    .hour()
+                    .toString()
+                    .padStart(2, "0")}:${moment(
+                    (transaction as any).createdAt * 1000
+                  )
+                    .minute()
+                    .toString()
+                    .padStart(2, "0")}`}
+                />
+              </div>
+              <div className="w-[250px]">
+                <ItemRow
+                  boxValues={true}
+                  title="Account Number"
+                  value={{
+                    link: `/accounts/${transaction.accountNumber}`,
+                    value: transaction.accountNumber,
+                  }}
+                />
+                <ItemRow
+                  boxValues={true}
+                  title="Amount"
+                  value={toDollarFormat(transaction.amount)}
+                />
+              </div>
+              <div className="w-[250px]">
+                {transaction.ach?.customerType != null &&
+                  transaction.ach.customerName != null &&
+                  transaction.ach.customerId != null && (
+                    <ItemRow
+                      boxValues={true}
+                      title="Customer"
+                      value={{
+                        link:
+                          transaction.ach?.customerType == "BUSINESS"
+                            ? `/businesses/${transaction.ach?.customerId}`
+                            : `/individuals/${transaction.ach?.customerId}`,
+                        value: transaction.ach?.customerName ?? "",
+                      }}
+                    />
+                  )}{" "}
+                {transaction.ach?.counterpartyAssociatedEntityType != null &&
+                  transaction.ach.counterpartyAssociatedEntityId != null &&
+                  transaction.ach.counterpartyName != null &&
+                  transaction.ach.counterpartyId != null && (
+                    <ItemRow
+                      boxValues={true}
+                      title="Counterparty"
+                      value={{
+                        link:
+                          transaction.ach?.counterpartyAssociatedEntityType ==
+                          "BUSINESS"
+                            ? `/businesses/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
+                            : transaction.ach
+                                ?.counterpartyAssociatedEntityType ==
+                              "INDIVIDUAL"
+                            ? `/individuals/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
+                            : transaction.ach
+                                ?.counterpartyAssociatedEntityType == "PRODUCT"
+                            ? `/configuration/products/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
+                            : `/accounts/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`,
+                        value: transaction.ach?.counterpartyName ?? "",
+                      }}
+                    />
+                  )}
+              </div>
             </div>
             <div className="w-[250px]">
               <ItemRow
                 boxValues={true}
-                title="Account Number"
+                title="OFAC ID"
                 value={{
-                  link: `/accounts/${transaction.accountNumber}`,
-                  value: transaction.accountNumber,
+                  link: `/compliance/ofac/${transaction.ach?.ofacId}`,
+                  value: transaction?.ach?.ofacId ?? "",
                 }}
               />
-              <ItemRow
-                boxValues={true}
-                title="Amount"
-                value={toDollarFormat(transaction.amount)}
-              />
             </div>
-            <div className="w-[250px]">
-              {transaction.ach?.customerType != null &&
-                transaction.ach.customerName != null &&
-                transaction.ach.customerId != null && (
-                  <ItemRow
-                    boxValues={true}
-                    title="Customer"
-                    value={{
-                      link:
-                        transaction.ach?.customerType == "BUSINESS"
-                          ? `/businesses/${transaction.ach?.customerId}`
-                          : `/individuals/${transaction.ach?.customerId}`,
-                      value: transaction.ach?.customerName ?? "",
-                    }}
-                  />
-                )}{" "}
-              {transaction.ach?.counterpartyAssociatedEntityType != null &&
-                transaction.ach.counterpartyAssociatedEntityId != null &&
-                transaction.ach.counterpartyName != null &&
-                transaction.ach.counterpartyId != null && (
-                  <ItemRow
-                    boxValues={true}
-                    title="Counterparty"
-                    value={{
-                      link:
-                        transaction.ach?.counterpartyAssociatedEntityType ==
-                        "BUSINESS"
-                          ? `/businesses/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                          : transaction.ach?.counterpartyAssociatedEntityType ==
-                            "INDIVIDUAL"
-                          ? `/individuals/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                          : transaction.ach?.counterpartyAssociatedEntityType ==
-                            "PRODUCT"
-                          ? `/configuration/products/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                          : `/accounts/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`,
-                      value: transaction.ach?.counterpartyName ?? "",
-                    }}
-                  />
-                )}
-            </div>
-          </div>
+          </>
         )}
         <MyText size="md">Breached Limits</MyText>
         <div className="h-1" />
@@ -269,27 +289,32 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                 <MyRedButton
                   submitting={submitting}
                   onClick={() => {
-                    if (paymentId != null) {
+                    if (alertId != null) {
                       setSubmitting(true);
-                      dispatch(rejectTransaction(paymentId)).then(
-                        (rej: any) => {
-                          if (typeof rej.payload === "string") {
-                            enqueueSnackbar(rej.payload, {
-                              variant: "error",
-                              persist: true,
-                            });
-                          } else {
-                            enqueueSnackbar(
-                              "Transaction rejected successfully",
-                              {
-                                variant: "success",
-                              }
-                            );
+                      dispatch(
+                        updateTransactionStatus({
+                          alertId: alertId,
+                          action: "DECLINE",
+                          note: `Transaction rejected by ${userType} ${username}`,
+                        })
+                      ).then((rej: any) => {
+                        if (typeof rej.payload === "string") {
+                          enqueueSnackbar(rej.payload, {
+                            variant: "error",
+                            persist: true,
+                          });
+                        } else {
+                          enqueueSnackbar("Transaction rejected successfully", {
+                            variant: "success",
+                          });
+
+                          if (customActionOnCompletion) {
+                            customActionOnCompletion();
                           }
-                          setSubmitting(false);
-                          handleModalClose();
                         }
-                      );
+                        setSubmitting(false);
+                        handleModalClose();
+                      });
                     }
                   }}
                 >
@@ -303,25 +328,30 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                   onClick={() => {
                     if (paymentId) {
                       setSubmitting(true);
-                      dispatch(approveTransaction(paymentId)).then(
-                        (rej: any) => {
-                          if (typeof rej.payload === "string") {
-                            enqueueSnackbar(rej.payload, {
-                              variant: "error",
-                              persist: true,
-                            });
-                          } else {
-                            enqueueSnackbar(
-                              "Transaction approved successfully",
-                              {
-                                variant: "success",
-                              }
-                            );
+                      dispatch(
+                        updateTransactionStatus({
+                          alertId: alertId,
+                          action: "APPROVE",
+                          note: `Transaction approved by ${userType} ${username}`,
+                        })
+                      ).then((rej: any) => {
+                        if (typeof rej.payload === "string") {
+                          enqueueSnackbar(rej.payload, {
+                            variant: "error",
+                            persist: true,
+                          });
+                        } else {
+                          enqueueSnackbar("Transaction approved successfully", {
+                            variant: "success",
+                          });
+
+                          if (customActionOnCompletion) {
+                            customActionOnCompletion();
                           }
-                          setSubmitting(false);
-                          handleModalClose();
                         }
-                      );
+                        setSubmitting(false);
+                        handleModalClose();
+                      });
                     }
                   }}
                 >

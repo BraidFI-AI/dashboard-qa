@@ -97,9 +97,9 @@ class ACHRepo {
       number: number;
     }>(
       Method.POST,
-      `/transaction/ach/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      `/transaction/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
       {
-        status: "RETURNED",
+        achStatus: "RETURNED",
       }
     );
 
