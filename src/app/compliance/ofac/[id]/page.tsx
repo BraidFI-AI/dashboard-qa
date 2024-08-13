@@ -9,11 +9,7 @@ import { useAppDispatch } from "@/redux/store/store";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import {
-  fetchOFACHit,
-  fetchOFACHits,
-  updateOFACHit,
-} from "@/redux/slices/OFACSlice";
+import { fetchOFACHit, updateOFACHit } from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { useParams, useRouter } from "next/navigation";
 import {

@@ -9,7 +9,10 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
 import timestampToDate from "@/core/utils/timestampToDate";
-import { fetchOFACHits } from "@/redux/slices/OFACSlice";
+import {
+  fetchOFACHits,
+  setOFACTablePageNumber,
+} from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import ErrorPage from "@/core/components/error_page";
@@ -17,13 +20,17 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import IconButton from "@mui/material/IconButton";
 import MyText from "@/core/components/Text/Text";
 import MyModal from "@/core/components/my_modal";
+import { paginationPageSize, PaginationStateType } from "@/core/constants";
 
 const OFACHitsTable = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
-  const ofacsHits: OFAC[] | null = useSelector(
+  const ofacsHits: "loading" | string | OFAC[] = useSelector(
     (state: any) => state.ofac.OFACs
+  );
+
+  const pagination: PaginationStateType = useSelector(
+    (state: any) => state.ofac.pagination
   );
 
   const [navigating, setNavigating] = useState(false);
@@ -39,9 +46,7 @@ const OFACHitsTable = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOFACHits()).then(() => {
-      setLoading(false);
-    });
+    dispatch(fetchOFACHits(true));
   }, [dispatch]);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
@@ -69,19 +74,15 @@ const OFACHitsTable = () => {
     }
   };
 
-  return loading ? (
+  return ofacsHits == "loading" ? (
     <div className="flex flex-col items-center justify-center">
-      <CircularProgress></CircularProgress>
       <div>Loading OFAC checks...</div>
     </div>
-  ) : ofacsHits == null ? (
+  ) : typeof ofacsHits == "string" ? (
     <ErrorPage
       error="Error loading OFAC checks"
       recoveryButtonOnClick={() => {
-        setLoading(true);
-        dispatch(fetchOFACHits()).then(() => {
-          setLoading(false);
-        });
+        dispatch(fetchOFACHits(true));
       }}
       recoveryButtonTitle="Retry"
     />
@@ -100,6 +101,18 @@ const OFACHitsTable = () => {
         className="h-full"
       >
         <MyTable
+          pagination={{
+            rowCount: pagination.rowCount,
+            loading: pagination.loadingPage,
+            paginationModel: {
+              page: pagination.pageNumber,
+              pageSize: paginationPageSize,
+            },
+            setPaginationModel: (page: number) => {
+              dispatch(setOFACTablePageNumber(page));
+              dispatch(fetchOFACHits(false));
+            },
+          }}
           customId={(row: OFAC) => row.ofacId}
           handleRowClick={handleRowClick}
           handleCellClick={(
