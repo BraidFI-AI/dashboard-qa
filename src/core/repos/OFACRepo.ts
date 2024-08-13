@@ -8,8 +8,11 @@ class OFACRepo {
     this.apiClient = apiClient;
   }
 
-  public async fetchOFACHits() {
-    const response = await this.apiClient.http<OFAC[]>(Method.GET, `/OFAC`);
+  public async fetchOFACHits(pageSize: number, pageNumber: number) {
+    const response = await this.apiClient.http<any>(
+      Method.GET,
+      `/OFAC?pageSize=${pageSize}&pageNumber=${pageNumber}`
+    );
     return response;
   }
 

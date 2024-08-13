@@ -1,5 +1,6 @@
 import ApiClient from "@/core/api/ApiClient";
 import { OFAC } from "@/core/api/ApiTypes";
+import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import OFACRepo from "@/core/repos/OFACRepo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -9,11 +10,17 @@ const apiClient = ApiClient.getInstance();
 const ofacRepo: OFACRepo = new OFACRepo(apiClient);
 //
 interface OFACState {
-  OFACs: OFAC[] | null;
+  OFACs: "loading" | string | OFAC[];
+  pagination: PaginationStateType;
 }
 
 const initialState: OFACState = {
-  OFACs: null,
+  OFACs: "loading",
+  pagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+  },
 };
 
 const OFACSlice = createSlice({
@@ -23,29 +30,50 @@ const OFACSlice = createSlice({
     setInitialOFACState(state) {
       Object.assign(state, initialState);
     },
+    setOFACTablePageNumber(state, action) {
+      state.pagination.pageNumber = action.payload;
+    },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchOFACHits.pending, (state, action) => {
+      if (state.pagination.pageNumber == -1 || action.meta.arg == true) {
+        state.OFACs = "loading";
+      }
+      state.pagination.loadingPage = true;
+    });
     builder.addCase(fetchOFACHits.fulfilled, (state, action) => {
-      state.OFACs = action.payload;
+      if (typeof action.payload == "string") {
+        state.OFACs = action.payload;
+      } else {
+        state.OFACs = action.payload.transactions;
+        state.pagination.rowCount = action.payload.rowCount;
+        state.pagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.pagination.loadingPage = false;
     });
   },
 });
 
 export const fetchOFACHits = createAsyncThunk(
   "individual/fetchOFACHits",
-  async () => {
+  async (refresh: boolean, thunkApi: any) => {
     try {
-      const ofacs = await ofacRepo.fetchOFACHits();
+      const ofacs = await ofacRepo.fetchOFACHits(
+        paginationPageSize,
+        thunkApi.getState().ofac.pagination.pageNumber == -1 || refresh
+          ? 0
+          : thunkApi.getState().transaction.pagination.pageNumber
+      );
       console.log("OFACs", ofacs);
-      return ofacs;
+      return {
+        transactions: ofacs.content,
+        rowCount: ofacs.totalElements,
+        pageNumber: ofacs.number,
+      };
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching OFAC hits ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching OFAC hits ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
@@ -97,4 +125,5 @@ export const fetchOFACHitNew = createAsyncThunk(
 );
 
 export default OFACSlice;
-export const { setInitialOFACState } = OFACSlice.actions;
+export const { setInitialOFACState, setOFACTablePageNumber } =
+  OFACSlice.actions;
