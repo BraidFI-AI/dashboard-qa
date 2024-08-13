@@ -55,6 +55,11 @@ const CreateDeveloperPage = () => {
               ? { required: false }
               : {
                   required: true,
+                  validate: (value: string, _: any) => {
+                    if (value.length > 10) {
+                      return "Tenant ID must be less then 10 characters";
+                    }
+                  },
                 }
           }
           value=""

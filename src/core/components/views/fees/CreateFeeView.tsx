@@ -23,6 +23,10 @@ import {
 import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
+import IconButton from "@mui/material/IconButton";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { Tooltip } from "@mui/material";
+import ItemRow from "../../Text/ItemRow";
 
 type CreateFeeViewProps = {
   level: "Product" | "Account";
@@ -57,6 +61,8 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const [feeType, setFeeType] = useState("FLAT");
+
+  const [tranType, setTranType] = useState("");
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -120,7 +126,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
-      <Box className="flex flex-col w-[300px]">
+      <Box className="flex flex-col w-[420px]">
         <MyText>Fee amount/ Percentage</MyText>
         <MyControlledTextField
           name="amount"
@@ -158,22 +164,32 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
           }}
         />
         <Box className="pb-4"></Box>
-        <MyText>Same day</MyText>
-        <MyControlledAutocomplete
-          value={"False"}
-          displayName="Same day"
-          name={"sameDay"}
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: true,
-                }
-          }
-          options={["False", "True"]}
-        />
+        {tranType?.toLowerCase()?.includes("ach") ? (
+          <>
+            <MyText>Same day</MyText>
+            <MyControlledAutocomplete
+              value={"False"}
+              displayName="Same day"
+              name={"sameDay"}
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              options={["False", "True"]}
+            />
+          </>
+        ) : (
+          <div className="flex flex-row items-center">
+            <MyText>Same Day:</MyText>
+            <div className="pr-2" />
+            <MyText size="md">False</MyText>
+          </div>
+        )}
         <Box className="pb-4"></Box>
         {feeType == "MONTHLY" && (
           <>
@@ -224,6 +240,9 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
                       }
                 }
                 options={transactionTypes}
+                customOnChange={(val: any) => {
+                  setTranType(val);
+                }}
               />
             )}
             <Box className="pb-4"></Box>
@@ -231,7 +250,14 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
         )}
         {feeType != "MONTHLY" && (
           <>
-            <MyText>Charging Account</MyText>
+            <div className="flex flex-row items-center">
+              <MyText>Charging Account</MyText>
+              <Tooltip title="Leave this field empty if the account owner pays the fee. If someone else pays, their information should be entered">
+                <ErrorOutlineIcon
+                  style={{ height: "16px", color: "#12A7FF" }}
+                />
+              </Tooltip>
+            </div>
             <MyControlledTextField
               value={""}
               displayName="Charging Account"

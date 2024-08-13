@@ -953,7 +953,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
