@@ -12,6 +12,8 @@ import MyText from "@/core/components/Text/Text";
 import { fetchDevelopersNew } from "@/redux/slices/DeveloperSlice";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 
 const ProductsChart = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +28,8 @@ const ProductsChart = () => {
   const [chartData, setChartData] = useState<
     "loading" | string | { name: string; value: string; hover: string }[]
   >("loading");
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const topNumber = 5;
 
@@ -117,14 +121,18 @@ const ProductsChart = () => {
   }, [dispatch, developerId]);
 
   useEffect(() => {
-    fetchDevelopersCallback();
-  }, [dispatch, fetchDevelopersCallback]);
+    console.log("userType:", userType);
+    if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
+      console.log("userType 2222:", userType);
+      fetchDevelopersCallback();
+    }
+  }, [dispatch, fetchDevelopersCallback, userType]);
 
   useEffect(() => {
     fetchChartDataCallback();
-  }, [dispatch, developerId, fetchChartDataCallback]);
+  }, [dispatch, developerId, fetchChartDataCallback, userType]);
 
-  return (
+  return userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
     <>
       <MyText size="md">Products balance</MyText>
       <div className="pb-4"></div>
@@ -191,6 +199,20 @@ const ProductsChart = () => {
         )}
       </div>
     </>
+  ) : chartData == "loading" ? (
+    <MyCircularProgressIndicator />
+  ) : typeof chartData == "string" ? (
+    <ErrorPage
+      error={chartData}
+      recoveryButtonOnClick={() => {
+        fetchChartDataCallback();
+      }}
+      recoveryButtonTitle="Retry"
+    />
+  ) : chartData.length == 0 ? (
+    <MyText>No data found!</MyText>
+  ) : (
+    <DonutChart data={chartData} />
   );
 };
 

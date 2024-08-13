@@ -15,7 +15,8 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import DivergingStackChart from "@/core/components/charts/diverging_stack_chart";
-import { SCROLLBAR_STYLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE, SCROLLBAR_STYLE } from "@/core/constants";
+import { useSelector } from "react-redux";
 
 const TransactionsChart = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +39,8 @@ const TransactionsChart = () => {
     | string
     | { date: string; type: string; volume: number; isDebit: boolean }[]
   >("loading");
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const topNumber = 5;
 
@@ -110,18 +113,20 @@ const TransactionsChart = () => {
   }, [dispatch, productId, products, duration]);
 
   useEffect(() => {
-    fetchDevelopersCallback();
-  }, [dispatch, fetchDevelopersCallback]);
+    if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
+      fetchDevelopersCallback();
+    }
+  }, [dispatch, fetchDevelopersCallback, userType]);
 
   useEffect(() => {
     fetchProductsCallback();
-  }, [dispatch, fetchProductsCallback]);
+  }, [dispatch, fetchProductsCallback, userType]);
 
   useEffect(() => {
     fetchChartDataCallback();
-  }, [dispatch, fetchChartDataCallback]);
+  }, [dispatch, fetchChartDataCallback, userType]);
 
-  return (
+  return userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
     <>
       <MyText size="md">Transactions volume</MyText>
       <div className="pb-4"></div>
@@ -272,6 +277,100 @@ const TransactionsChart = () => {
           )}
         </>
       </div>
+    </>
+  ) : (
+    <>
+      <div className="flex flex-row">
+        <div>
+          <MyText>Products</MyText>
+          <div className="pb-1"></div>
+          {products == "loading" ? (
+            <MyCircularProgressIndicator />
+          ) : typeof products == "string" ? (
+            <ErrorPage
+              error={products}
+              recoveryButtonOnClick={() => {
+                fetchProductsCallback();
+              }}
+              recoveryButtonTitle="Retry"
+            />
+          ) : (
+            <>
+              <div className="w-[300px]">
+                <MyControlledAutocomplete
+                  clearable={false}
+                  value={`All`}
+                  displayName="Product ID"
+                  name={"productId"}
+                  control={control}
+                  errors={errors}
+                  rules={{ required: true }}
+                  options={products?.map((prod) => {
+                    return typeof prod == "string"
+                      ? prod
+                      : `${prod.id} - ${prod.name}`;
+                  })}
+                  customOnChange={(val: string) => {
+                    const id = val?.split(" - ")[0];
+                    const name = val?.split(" - ")[1];
+                    if (val == "All") {
+                      setProductId("-1");
+                    }
+                    if (id) {
+                      setProductId(id);
+                    }
+                  }}
+                />
+              </div>
+            </>
+          )}
+        </div>
+        <div className="w-4"></div>
+        <div>
+          <MyText>Duration</MyText>
+          <div className="pb-1"></div>
+          <div className="w-[300px]">
+            <MyControlledAutocomplete
+              clearable={false}
+              value={duration}
+              displayName="Duration"
+              name={"duration"}
+              control={control}
+              errors={errors}
+              rules={{ required: true }}
+              options={["Week", "Month", "Year"]}
+              customOnChange={(val: "Week" | "Month" | "Year") => {
+                setDuration(val);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="pb-6"></div>
+      {typeof products != "string" && (
+        <>
+          {chartData == "loading" ? (
+            <MyCircularProgressIndicator />
+          ) : typeof chartData == "string" ? (
+            <ErrorPage
+              error={chartData}
+              recoveryButtonOnClick={() => {
+                fetchChartDataCallback();
+              }}
+              recoveryButtonTitle="Retry"
+            />
+          ) : chartData.length == 0 ? (
+            <MyText>No data found!</MyText>
+          ) : (
+            <div className={`w-[1000px] overflow-auto ${SCROLLBAR_STYLE}`}>
+              <DivergingStackChart
+                data={chartData}
+                length={duration == "Week" ? 7 : duration == "Month" ? 31 : 12}
+              />
+            </div>
+          )}
+        </>
+      )}
     </>
   );
 };
