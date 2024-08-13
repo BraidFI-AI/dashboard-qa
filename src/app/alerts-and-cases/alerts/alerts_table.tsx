@@ -49,6 +49,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
           paymentId={selectedAlert.contextId}
           modalOpen={reviewModalOpen}
           handleModalClose={handleReviewModalClose}
+          alertId={selectedAlert.id?.toString() ?? ""}
         />
       )}
       <MyTable

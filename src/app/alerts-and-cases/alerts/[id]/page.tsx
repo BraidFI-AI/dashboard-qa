@@ -32,30 +32,35 @@ const AlertsPage = () => {
 
   const [context, setContext] = useState<any>("loading");
 
+  const [refresh, setRefresh] = useState<boolean>(true);
+
   useEffect(() => {
-    dispatch(setTitle("Alert"));
-    dispatch(fetchAlert(params.id.toString())).then((data: any) => {
-      if (typeof data.payload != "string") {
-        dispatch(setTitle(data.payload.type?.replaceAll("_", " ")));
+    if (refresh) {
+      setRefresh(false);
+      dispatch(setTitle("Alert"));
+      dispatch(fetchAlert(params.id.toString())).then((data: any) => {
+        if (typeof data.payload != "string") {
+          dispatch(setTitle(data.payload.type?.replaceAll("_", " ")));
 
-        if (data.payload.contextType == "VELOCITY_LIMIT") {
-          dispatch(fetchLimit(data.payload.contextId.toString())).then(
-            (data: any) => {
-              setContext(data.payload);
-            }
-          );
-        }
+          if (data.payload.contextType == "VELOCITY_LIMIT") {
+            dispatch(fetchLimit(data.payload.contextId.toString())).then(
+              (data: any) => {
+                setContext(data.payload);
+              }
+            );
+          }
 
-        if (data.payload.caseId != null) {
-          dispatch(fetchCase(data.payload.caseId.toString())).then(
-            (cas: any) => {
-              setCase(cas.payload);
-            }
-          );
+          if (data.payload.caseId != null) {
+            dispatch(fetchCase(data.payload.caseId.toString())).then(
+              (cas: any) => {
+                setCase(cas.payload);
+              }
+            );
+          }
         }
-      }
-    });
-  }, [dispatch, params.id]);
+      });
+    }
+  }, [dispatch, params.id, refresh]);
 
   return alert == "loading" ? (
     <MyCircularProgressIndicator />
@@ -77,6 +82,8 @@ const AlertsPage = () => {
         paymentId={alert.contextId}
         modalOpen={reviewModalOpen}
         handleModalClose={handleReviewModalClose}
+        alertId={alert.id}
+        customActionOnCompletion={() => setRefresh(true)}
       />
       <ItemRow title="Alert ID" value={alert.id ?? ""} />
       {alert.caseId != null && (

@@ -66,10 +66,8 @@ class TransactionRepo {
       number: number;
     }>(
       Method.POST,
-      `/transaction/ach/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      {
-        status: "MANUAL_REVIEW",
-      }
+      `/transaction/manual-review?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      {}
     );
 
     const transactions = resp.content;
@@ -95,23 +93,6 @@ class TransactionRepo {
     }
 
     return limits;
-  }
-
-  public async rejectTransaction(id: string) {
-    const trans = await this.apiClient.http<any>(
-      Method.PUT,
-      `/transaction/pending/review/reject/${id}`
-    );
-
-    return trans;
-  }
-  public async approveTransaction(id: string) {
-    const trans = await this.apiClient.http<any>(
-      Method.PUT,
-      `/transaction/pending/review/approve/${id}`
-    );
-
-    return trans;
   }
 }
 
