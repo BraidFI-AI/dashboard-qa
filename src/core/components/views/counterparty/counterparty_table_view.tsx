@@ -43,7 +43,7 @@ const CounterpartyTableView: React.FC<CounterpartyTableViewProps> = ({
             pageSize: paginationPageSize,
           },
           setPaginationModel: (page: number) => {
-            setPageNumber(page);
+            dispatch(setPageNumber(page));
             dispatch(fetchData);
           },
         }}

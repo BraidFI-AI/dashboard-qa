@@ -21,6 +21,7 @@ import IconButton from "@mui/material/IconButton";
 import MyText from "@/core/components/Text/Text";
 import MyModal from "@/core/components/my_modal";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 
 const OFACHitsTable = () => {
   const router = useRouter();
@@ -46,8 +47,8 @@ const OFACHitsTable = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOFACHits(true));
-  }, [dispatch]);
+    dispatch(fetchOFACHits(false));
+  }, []);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/compliance/ofac/${params.row.ofacId}`);
@@ -75,9 +76,7 @@ const OFACHitsTable = () => {
   };
 
   return ofacsHits == "loading" ? (
-    <div className="flex flex-col items-center justify-center">
-      <div>Loading OFAC checks...</div>
-    </div>
+    <MyCircularProgressIndicator />
   ) : typeof ofacsHits == "string" ? (
     <ErrorPage
       error="Error loading OFAC checks"
