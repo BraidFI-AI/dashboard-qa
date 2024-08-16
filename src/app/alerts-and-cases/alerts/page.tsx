@@ -15,7 +15,6 @@ import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import ReviewTransactionModal from "../../transactions/transactionReview/review_transaction_modal";
 import AlertsTable from "./alerts_table";
 import { setTitle } from "@/redux/slices/AppSlice";
 

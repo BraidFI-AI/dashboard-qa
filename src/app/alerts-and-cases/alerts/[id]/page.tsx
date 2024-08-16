@@ -83,6 +83,7 @@ const AlertsPage = () => {
         modalOpen={reviewModalOpen}
         handleModalClose={handleReviewModalClose}
         alertId={alert.id}
+        ofacId={alert.ofacId ?? ""}
         customActionOnCompletion={() => setRefresh(true)}
       />
       <ItemRow title="Alert ID" value={alert.id ?? ""} />
