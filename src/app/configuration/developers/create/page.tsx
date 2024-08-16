@@ -47,7 +47,7 @@ const CreateDeveloperPage = () => {
         <MyText>Developer ID</MyText>
         <MyControlledTextField
           name="tenantId"
-          displayName="Tenant ID"
+          displayName="Developer ID"
           control={control}
           errors={errors}
           rules={
@@ -57,7 +57,7 @@ const CreateDeveloperPage = () => {
                   required: true,
                   validate: (value: string, _: any) => {
                     if (value.length > 10) {
-                      return "Tenant ID must be less then 10 characters";
+                      return "Developer ID must be less then 10 characters";
                     }
                   },
                 }
