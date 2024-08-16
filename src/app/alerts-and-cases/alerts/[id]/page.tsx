@@ -78,15 +78,14 @@ const AlertsPage = () => {
     />
   ) : (
     <>
-      {reviewModalOpen && (
-        <ReviewTransactionModal
-          paymentId={alert.contextId}
-          modalOpen={reviewModalOpen}
-          handleModalClose={handleReviewModalClose}
-          alertId={alert.id}
-          customActionOnCompletion={() => setRefresh(true)}
-        />
-      )}
+      <ReviewTransactionModal
+        paymentId={alert.contextId}
+        modalOpen={reviewModalOpen}
+        handleModalClose={handleReviewModalClose}
+        alertId={alert.id}
+        ofacId={alert.ofacId ?? ""}
+        customActionOnCompletion={() => setRefresh(true)}
+      />
       <ItemRow title="Alert ID" value={alert.id ?? ""} />
       {alert.caseId != null && (
         <ItemRow
