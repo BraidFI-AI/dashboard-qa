@@ -924,7 +924,7 @@ export interface CreateCounterPartyWire {
   };
   routingNumberType: string;
   bankName: string;
-  intermediaryRoutingNumber: string;
+  intermediaryRoutingNumber?: string;
   routingNumber: string;
 }
 

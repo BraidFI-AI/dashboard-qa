@@ -49,6 +49,21 @@ export const createCounterparty = createAsyncThunk(
   "Counterparty/createCounterparty",
   async (counterparty: CreateCounterparty) => {
     try {
+      if (counterparty.wire != null) {
+        if (
+          counterparty.wire.intermediaryRoutingNumber == null ||
+          counterparty.wire.intermediaryRoutingNumber === ""
+        ) {
+          counterparty = {
+            ...counterparty,
+            wire: {
+              ...counterparty.wire,
+              intermediaryRoutingNumber: undefined,
+            },
+          };
+        }
+      }
+
       const resp = await counterpartyRepo.createCounterparty(counterparty);
       console.log("counterparty created:", resp);
       return resp;
