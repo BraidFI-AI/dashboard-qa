@@ -17,7 +17,7 @@ import { enqueueSnackbar } from "notistack";
 import { useAppDispatch } from "@/redux/store/store";
 import moment from "moment";
 import MyText from "@/core/components/Text/Text";
-import { States } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE, States } from "@/core/constants";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
@@ -29,9 +29,12 @@ import {
   setRefreshProductsTable,
 } from "@/redux/slices/ProductSlice";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const CreateProductPage = () => {
   const dispatch = useAppDispatch();
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -108,7 +111,9 @@ const CreateProductPage = () => {
     }
   }, [submitCount, errors, isSubmitted, isValid]);
 
-  return (
+  return !(userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) ? (
+    <></>
+  ) : (
     <React.Fragment key="right">
       <Box className="w-auto">
         {!drawerOpen && (
