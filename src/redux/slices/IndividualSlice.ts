@@ -73,6 +73,14 @@ const IndividualSlice = createSlice({
     builder.addCase(fetchIndividualV2.fulfilled, (state, action) => {
       state.individual = action.payload;
     });
+    builder.addCase(fetchIndividual.pending, (state, action) => {
+      state.individual = "loading";
+    });
+    builder.addCase(fetchIndividual.fulfilled, (state, action) => {
+      if (action.payload != null) {
+        state.individual = action.payload;
+      }
+    });
     builder.addCase(fetchIndividuals.fulfilled, (state, action) => {
       state.individuals = action.payload;
     });
