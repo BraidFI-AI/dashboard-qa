@@ -24,7 +24,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "braidcustomerdocuments.s3.us-west-1.amazonaws.com",
+        hostname: "**",
       },
     ],
   },

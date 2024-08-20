@@ -157,7 +157,9 @@ const Documents = ({ params }: { params: { id: string } }) => {
                           <Link
                             href={`/individuals/${parseInt(
                               params.id.toString()
-                            )}/documents/${document.document.id}`}
+                            )}/documents/${document.document.id}?url=${
+                              document.link
+                            }`}
                           >
                             <MyText size="md">View PDF</MyText>
                           </Link>
