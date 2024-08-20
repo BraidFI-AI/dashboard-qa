@@ -282,6 +282,7 @@ export interface BusinessDocument {
   fileType: string;
   fileExtension: string;
   createdAt: number;
+  documentUrl: string | null;
   updatedAt: number;
 }
 
@@ -321,6 +322,7 @@ export interface IndividualDocument {
   reason: string | null;
   fileType: string;
   fileExtension: string;
+  documentUrl: string | null;
   createdAt: number;
   updatedAt: number;
 }
