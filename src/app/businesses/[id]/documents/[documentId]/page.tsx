@@ -104,6 +104,7 @@ const ViewDocument = ({
           >
             <div className={`h-full w-full mx-auto overflow-y-auto`}>
               <Document
+                options={{ isEvalSupported: false }}
                 loading={
                   <div className="flex items-center justify-center text-black text-md">
                     Loading...
