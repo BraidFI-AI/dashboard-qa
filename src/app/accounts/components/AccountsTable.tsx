@@ -6,48 +6,66 @@ import { DataGrid, GridEventListener, GridToolbar } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Account } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
-import { fetchAccounts } from "@/redux/slices/AccountSlice";
+import {
+  fetchAccounts,
+  setAccountsPaginationPageNumber,
+} from "@/redux/slices/AccountSlice";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
 import timestampToDate from "@/core/utils/timestampToDate";
 import ErrorPage from "@/core/components/error_page";
+import Link from "next/link";
+import MyText from "@/core/components/Text/Text";
+import { paginationPageSize, PaginationStateType } from "@/core/constants";
 
 const AccountsTable = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
-  const accounts: Account[] | null = useSelector(
+  const accounts: "loading" | string | Account[] = useSelector(
     (state: any) => state.account.accounts
   );
 
+  const pagination: PaginationStateType = useSelector(
+    (state: any) => state.account.accontsPagination
+  );
+
   useEffect(() => {
-    dispatch(fetchAccounts()).then(() => {
-      setLoading(false);
-    });
+    dispatch(fetchAccounts(true));
   }, [dispatch]);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/accounts/${params.row.accountNumber}`);
   };
 
-  return loading ? (
+  return accounts == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <CircularProgress></CircularProgress>
       <div>Loading accounts...</div>
     </div>
-  ) : accounts == null ? (
+  ) : typeof accounts == "string" ? (
     <ErrorPage
-      error="Error loading accounts or no accounts found"
+      error={accounts}
       recoveryButtonOnClick={() => {
-        setLoading(true);
-        dispatch(fetchAccounts()).then(() => {
-          setLoading(false);
-        });
+        dispatch(fetchAccounts(true));
       }}
       recoveryButtonTitle="Retry"
     />
+  ) : accounts.length == 0 ? (
+    <MyText>No accounts found</MyText>
   ) : (
     <MyTable
+      pagination={{
+        rowCount: pagination.rowCount,
+        loading: pagination.loadingPage,
+        paginationModel: {
+          page: pagination.pageNumber,
+          pageSize: paginationPageSize,
+        },
+        setPaginationModel: (page: number) => {
+          setAccountsPaginationPageNumber(page);
+          dispatch(fetchAccounts(false));
+        },
+      }}
       handleRowClick={handleRowClick}
       columns={[
         { field: "id", headerName: "ID", width: 120 },
@@ -68,6 +86,23 @@ const AccountsTable = () => {
           headerName: "Customer ID",
           flex: 1,
           minWidth: 150,
+        },
+        {
+          field: "customerName",
+          headerName: "Customer Name",
+          flex: 1,
+          minWidth: 150,
+          renderCell: (params: any) => (
+            <Link
+              href={
+                params.row.customerType == "BUSINESS"
+                  ? `/businesses/${params.row.customerId}`
+                  : `/individuals/${params.row.customerId}`
+              }
+            >
+              {params.row.customerName}
+            </Link>
+          ),
         },
         {
           field: "status",

@@ -8,10 +8,10 @@ class AccountRepo {
     this.apiClient = apiClient;
   }
 
-  public async fetchAccounts() {
-    const response = await this.apiClient.http<Account[]>(
+  public async fetchAccounts(pageSize: number, pageNumber: number) {
+    const response = await this.apiClient.http<any>(
       Method.GET,
-      "/account"
+      `/account?pageSize=${pageSize}&pageNumber=${pageNumber}`
     );
     return response;
   }
