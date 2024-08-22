@@ -177,7 +177,7 @@ export const fetchAccounts = createAsyncThunk(
     try {
       const accounts = await accountRepo.fetchAccounts(
         paginationPageSize,
-        thunkApi.getState().account.accontsPagination == -1 || refresh
+        thunkApi.getState().account.accontsPagination == -1 || refresh == true
           ? 0
           : thunkApi.getState().account.accontsPagination
       );

@@ -38,13 +38,13 @@ const AccountsTable = () => {
 
   useEffect(() => {
     dispatch(fetchAccounts(true));
-  }, [dispatch]);
+  }, []);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/accounts/${params.row.accountNumber}`);
   };
 
-  return accounts == null || accounts == "loading" ? (
+  return accounts == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <CircularProgress></CircularProgress>
       <div>Loading accounts...</div>
