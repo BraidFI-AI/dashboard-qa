@@ -74,7 +74,7 @@ const OFACHitsTable = () => {
     }
   };
 
-  return ofacsHits == "loading" ? (
+  return ofacsHits == null || ofacsHits == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <div>Loading OFAC checks...</div>
     </div>

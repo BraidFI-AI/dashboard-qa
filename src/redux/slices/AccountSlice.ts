@@ -65,7 +65,10 @@ const AccountSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAccounts.pending, (state, action) => {
-      state.accounts = "loading";
+      if (state.accontsPagination.pageNumber == -1 || action.meta.arg == true) {
+        state.accounts = "loading";
+      }
+      state.accontsPagination.loadingPage = true;
     });
     builder.addCase(fetchAccounts.fulfilled, (state, action) => {
       if (typeof action.payload == "string") {
@@ -75,6 +78,8 @@ const AccountSlice = createSlice({
         state.accontsPagination.rowCount = action.payload.rowCount;
         state.accontsPagination.pageNumber = action.payload.pageNumber;
       }
+
+      state.accontsPagination.loadingPage = false;
     });
     // builder.addCase(fetchAccountTransactionsData.pending, (state, action) => {
     //   state.accountTransactions = "loading";
