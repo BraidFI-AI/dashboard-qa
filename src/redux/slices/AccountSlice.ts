@@ -24,7 +24,8 @@ export type AccountCounterpartyType = "loading" | string | Counterparty[];
 export type AccountCounterpartyIdsType = "loading" | string | IdsListType[];
 
 interface AccountState {
-  accounts: Account[] | null;
+  accounts: "loading" | string | Account[];
+  accontsPagination: PaginationStateType;
   accountTransactions: AccountTransactionsType;
   counterparties: AccountCounterpartyType;
   counterpartyIds: AccountCounterpartyIdsType;
@@ -32,10 +33,15 @@ interface AccountState {
 }
 
 const initialState: AccountState = {
-  accounts: null,
+  accounts: "loading",
   accountTransactions: "loading",
   counterparties: "loading",
   counterpartyIds: "loading",
+  accontsPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+  },
   counterpartyPagination: {
     rowCount: 0,
     pageNumber: -1,
@@ -50,13 +56,25 @@ const AccountSlice = createSlice({
     setInitialAccountState(state) {
       Object.assign(state, initialState);
     },
+    setAccountsPaginationPageNumber(state, action) {
+      state.accontsPagination.pageNumber = action.payload;
+    },
     setAccountCounterpartyPaginationPageNumber(state, action) {
       state.counterpartyPagination.pageNumber = action.payload;
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchAccounts.pending, (state, action) => {
+      state.accounts = "loading";
+    });
     builder.addCase(fetchAccounts.fulfilled, (state, action) => {
-      state.accounts = action.payload;
+      if (typeof action.payload == "string") {
+        state.accounts = action.payload;
+      } else {
+        state.accounts = action.payload.accounts;
+        state.accontsPagination.rowCount = action.payload.rowCount;
+        state.accontsPagination.pageNumber = action.payload.pageNumber;
+      }
     });
     // builder.addCase(fetchAccountTransactionsData.pending, (state, action) => {
     //   state.accountTransactions = "loading";
@@ -150,19 +168,23 @@ export const fetchAccountCounterpartyIds = createAsyncThunk(
 
 export const fetchAccounts = createAsyncThunk(
   "account/fetchAccounts",
-  async () => {
+  async (refresh: boolean, thunkApi: any) => {
     try {
-      const accounts = await accountRepo.fetchAccounts();
+      const accounts = await accountRepo.fetchAccounts(
+        paginationPageSize,
+        thunkApi.getState().account.accontsPagination == -1 || refresh
+          ? 0
+          : thunkApi.getState().account.accontsPagination
+      );
       console.log("accounts", accounts);
-      return accounts;
+      return {
+        accounts: accounts.content,
+        rowCount: accounts.totalElements,
+        pageNumber: accounts.number,
+      };
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching accounts ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
@@ -372,4 +394,5 @@ export default AccountSlice;
 export const {
   setInitialAccountState,
   setAccountCounterpartyPaginationPageNumber,
+  setAccountsPaginationPageNumber,
 } = AccountSlice.actions;

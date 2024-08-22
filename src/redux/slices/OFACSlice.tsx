@@ -63,7 +63,7 @@ export const fetchOFACHits = createAsyncThunk(
         paginationPageSize,
         thunkApi.getState().ofac.pagination.pageNumber == -1 || refresh
           ? 0
-          : thunkApi.getState().transaction.pagination.pageNumber
+          : thunkApi.getState().ofac.pagination.pageNumber
       );
       console.log("OFACs", ofacs);
       return {
