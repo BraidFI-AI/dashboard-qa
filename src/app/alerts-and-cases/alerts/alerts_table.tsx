@@ -50,6 +50,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
           modalOpen={reviewModalOpen}
           handleModalClose={handleReviewModalClose}
           alertId={selectedAlert.id?.toString() ?? ""}
+          ofacId={(selectedAlert as any).ofacId ?? ""}
         />
       )}
       <MyTable

@@ -4,32 +4,17 @@ import { CustomerAccount, Individual } from "@/core/api/ApiTypes";
 import MyTable from "@/core/components/Table/MyTable";
 import MyText from "@/core/components/Text/Text";
 import { useAppDispatch } from "@/redux/store/store";
-import CircularProgress from "@mui/material/CircularProgress";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Tooltip from "@mui/material/Tooltip";
-import {
-  GridCellParams,
-  GridEventListener,
-  GridValueFormatterParams,
-  MuiEvent,
-} from "@mui/x-data-grid";
+import { GridEventListener, GridValueFormatterParams } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useParams, useRouter } from "next/navigation";
-import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import { enqueueSnackbar } from "notistack";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import {
-  createIndividualAccount,
   fetchIndividualV2,
   fetchIndividualAccountsV2,
   setRefreshIndividual,
+  setInitialIndividualState,
 } from "@/redux/slices/IndividualSlice";
-import MyModal from "@/core/components/my_modal";
-import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
-import { SubmitHandler, useForm } from "react-hook-form";
-import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";

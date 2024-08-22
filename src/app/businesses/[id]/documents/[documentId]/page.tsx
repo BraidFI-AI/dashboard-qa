@@ -10,6 +10,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import CircularProgress from "@mui/material/CircularProgress";
 import MyText from "@/core/components/Text/Text";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import { useSearchParams } from "next/navigation";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const ViewDocument = ({
@@ -17,37 +18,33 @@ const ViewDocument = ({
 }: {
   params: { id: string; documentId: number };
 }) => {
+  const qParams = useSearchParams();
+
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(true);
-  const [documnetUrl, setDocumnetUrl] = useState<string | null>(null);
+  const [documnetUrl, setDocumnetUrl] = useState<string>("");
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(
-      fetchBusinessDocumentUrl({
-        businessId: parseInt(params.id),
-        documentId: params.documentId,
-      })
-    ).then((data: any) => {
-      if (data.payload) {
-        setDocumnetUrl(data.payload);
-        axios({
-          method: "GET",
-          url: data.payload,
-          responseType: "blob",
-        })
-          .then((response) => setPdfResponse(response.data))
-          .then(() => {
-            setLoading(false);
-          });
-      } else {
+    setDocumnetUrl(qParams.get("url") ?? "");
+
+    axios({
+      method: "GET",
+      url: qParams.get("url") ?? "",
+      responseType: "blob",
+    })
+      .then((response) => {
+        setPdfResponse(response.data);
         setLoading(false);
-      }
-    });
-  }, [dispatch, params.id, params.documentId]);
+      })
+      .catch((error) => {
+        console.log("Error fetching document", error);
+        setLoading(false);
+      });
+  }, [dispatch, params.id, params.documentId, qParams]);
 
   const defaultScale = 1;
-  const [pdfResponse, setPdfResponse] = useState();
+  const [pdfResponse, setPdfResponse] = useState<any>();
   const [numPages, setNumPages] = useState(-1);
   const [scale, setScale] = useState(defaultScale);
 
@@ -107,6 +104,7 @@ const ViewDocument = ({
           >
             <div className={`h-full w-full mx-auto overflow-y-auto`}>
               <Document
+                options={{ isEvalSupported: false }}
                 loading={
                   <div className="flex items-center justify-center text-black text-md">
                     Loading...

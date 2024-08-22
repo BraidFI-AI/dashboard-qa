@@ -80,6 +80,7 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           alertId={(selectedTransaction as any).alertId ?? ""}
           modalOpen={reviewModalOpen}
           handleModalClose={handleReviewModalClose}
+          ofacId={(selectedTransaction as any).ofacId ?? ""}
         />
       )}
       <MyTable

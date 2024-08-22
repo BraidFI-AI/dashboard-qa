@@ -606,43 +606,55 @@ export const fetchBusinessDocuments = createAsyncThunk(
       const documents: BusinessDocument[] =
         await businessRepo.fetchBusinessDocuments(id);
 
+      const docs: BusinessDocumentWithLink[] = [];
+
       if (documents.length > 0) {
-        const urls: any[] = [];
-        documents.forEach((document: BusinessDocument) => {
-          if (document.status !== "REQUIRED") {
-            urls.push(businessRepo.fetchBusinessDocumentUrl(id, document.id));
-          } else {
-            urls.push("No Doc");
-          }
+        documents.forEach((document: any, index: number) => {
+          docs.push({
+            document: document,
+            link:
+              document.documentUrl == null ? "No Doc" : document.documentUrl,
+          });
         });
-        // for (let i = 0; i < documents.length; i++) {
-        //   if (documents[i].status !== "REQUIRED") {
-        //     urls.push(
-        //       businessRepo.fetchBusinessDocumentUrl(id, documents[i].id)
-        //     );
+        return docs;
+
+        // const urls: any[] = [];
+        // documents.forEach((document: BusinessDocument) => {
+        //   if (document.status !== "REQUIRED") {
+        //     urls.push(businessRepo.fetchBusinessDocumentUrl(id, document.id));
         //   } else {
         //     urls.push("No Doc");
         //   }
+        // });
+        // // for (let i = 0; i < documents.length; i++) {
+        // //   if (documents[i].status !== "REQUIRED") {
+        // //     urls.push(
+        // //       businessRepo.fetchBusinessDocumentUrl(id, documents[i].id)
+        // //     );
+        // //   } else {
+        // //     urls.push("No Doc");
+        // //   }
+        // // }
+
+        // try {
+        //   const data: any = await Promise.all(urls);
+        //   const docs: BusinessDocumentWithLink[] = [];
+
+        //   documents.forEach((document: any, index: number) => {
+        //     docs.push({ document: document, link: data[String(index)] });
+        //   });
+
+        //   // for (let i = 0; i < documents.length; i++) {
+        //   //   docs.push({ document: documents[i], link: data[i] });
+        //   // }
+
+        // } catch (e: any) {
+        //   enqueueSnackbar(`Error (Document Link): ${e.message}`, {
+        //     variant: "error",
+        //   });
         // }
-
-        try {
-          const data: any = await Promise.all(urls);
-          const docs: BusinessDocumentWithLink[] = [];
-
-          documents.forEach((document: any, index: number) => {
-            docs.push({ document: document, link: data[String(index)] });
-          });
-
-          // for (let i = 0; i < documents.length; i++) {
-          //   docs.push({ document: documents[i], link: data[i] });
-          // }
-
-          return docs;
-        } catch (e: any) {
-          enqueueSnackbar(`Error (Document Link): ${e.message}`, {
-            variant: "error",
-          });
-        }
+      } else {
+        return [];
       }
     } catch (e: any) {
       enqueueSnackbar(`Error fetching documents ${generateErrorMessage(e)}`, {

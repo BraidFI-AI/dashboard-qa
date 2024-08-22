@@ -31,6 +31,7 @@ type ReviewTransactionModalProps = {
   paymentId: string;
   alertId: string;
   customActionOnCompletion?: any;
+  ofacId: string;
 };
 
 const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
@@ -39,7 +40,10 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   paymentId,
   alertId,
   customActionOnCompletion,
+  ofacId,
 }) => {
+  console.log("asdasdssadsa", ofacId);
+
   const dispatch = useAppDispatch();
 
   const [limits, setLimits] = useState<"loading" | string | RulesAndLimits[]>(
@@ -57,9 +61,20 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   const userType = useSelector((state: any) => state.app.userType);
   const username = useSelector((state: any) => state.app.username);
 
+  const [sOfacId, setSOfacId] = useState<null | string>(null);
+
   useEffect(() => {
+    setSOfacId(ofacId);
     dispatch(fetchTransactionByPaymentId(paymentId)).then((result: any) => {
       setTransaction(result.payload);
+      if (ofacId == null || ofacId == "") {
+        if (result.payload.ach != null) {
+          setSOfacId(result.payload.ach?.ofacId);
+        }
+        if (result.payload.wire) {
+          setSOfacId(result.payload.wire?.ofacId);
+        }
+      }
     });
   }, [dispatch, paymentId]);
 
@@ -196,8 +211,8 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                 boxValues={true}
                 title="OFAC ID"
                 value={{
-                  link: `/compliance/ofac/${transaction.ach?.ofacId}`,
-                  value: transaction?.ach?.ofacId ?? "",
+                  link: `/compliance/ofac/${sOfacId}`,
+                  value: sOfacId ?? "",
                 }}
               />
             </div>

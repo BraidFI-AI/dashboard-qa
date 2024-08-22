@@ -45,7 +45,7 @@ const OFACSlice = createSlice({
       if (typeof action.payload == "string") {
         state.OFACs = action.payload;
       } else {
-        state.OFACs = action.payload.transactions;
+        state.OFACs = action.payload.ofacs;
         state.pagination.rowCount = action.payload.rowCount;
         state.pagination.pageNumber = action.payload.pageNumber;
       }
@@ -61,13 +61,13 @@ export const fetchOFACHits = createAsyncThunk(
     try {
       const ofacs = await ofacRepo.fetchOFACHits(
         paginationPageSize,
-        thunkApi.getState().ofac.pagination.pageNumber == -1 || refresh
+        thunkApi.getState().ofac.pagination.pageNumber == -1 || refresh == true
           ? 0
           : thunkApi.getState().ofac.pagination.pageNumber
       );
       console.log("OFACs", ofacs);
       return {
-        transactions: ofacs.content,
+        ofacs: ofacs.content,
         rowCount: ofacs.totalElements,
         pageNumber: ofacs.number,
       };

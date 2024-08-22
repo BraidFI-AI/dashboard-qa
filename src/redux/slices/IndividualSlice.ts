@@ -73,6 +73,14 @@ const IndividualSlice = createSlice({
     builder.addCase(fetchIndividualV2.fulfilled, (state, action) => {
       state.individual = action.payload;
     });
+    builder.addCase(fetchIndividual.pending, (state, action) => {
+      state.individual = "loading";
+    });
+    builder.addCase(fetchIndividual.fulfilled, (state, action) => {
+      if (action.payload != null) {
+        state.individual = action.payload;
+      }
+    });
     builder.addCase(fetchIndividuals.fulfilled, (state, action) => {
       state.individuals = action.payload;
     });
@@ -437,31 +445,19 @@ export const fetchIndividualDocuments = createAsyncThunk(
       const documents: IndividualDocument[] =
         await individualRepo.fetchIndividualDocuments(id);
 
+      const docs: IndividualDocumentWithLink[] = [];
+
       if (documents.length > 0) {
-        const urls: any[] = [];
-        documents.forEach((document: IndividualDocument) => {
-          if (document.status !== "REQUIRED") {
-            urls.push(
-              individualRepo.fetchIndividualDocumentUrl(id, document.id)
-            );
-          } else {
-            urls.push("No Doc");
-          }
+        documents.forEach((document: any, index: number) => {
+          docs.push({
+            document: document,
+            link:
+              document.documentUrl == null ? "No Doc" : document.documentUrl,
+          });
         });
-
-        try {
-          const data: any = await Promise.all(urls);
-          const docs: IndividualDocumentWithLink[] = [];
-
-          documents.forEach((document: any, index: number) => {
-            docs.push({ document: document, link: data[String(index)] });
-          });
-          return docs;
-        } catch (e: any) {
-          enqueueSnackbar(`Error (Document Link): ${e.message}`, {
-            variant: "error",
-          });
-        }
+        return docs;
+      } else {
+        return [];
       }
     } catch (e: any) {
       enqueueSnackbar(`Error fetching documents ${generateErrorMessage(e)}`, {
