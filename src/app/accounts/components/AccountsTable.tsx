@@ -44,7 +44,7 @@ const AccountsTable = () => {
     router.push(`/accounts/${params.row.accountNumber}`);
   };
 
-  return accounts == "loading" ? (
+  return accounts == null || accounts == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <CircularProgress></CircularProgress>
       <div>Loading accounts...</div>
