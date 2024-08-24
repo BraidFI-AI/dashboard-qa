@@ -12,7 +12,6 @@ import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlle
 import RadioButton from "@/core/components/Button/RadioButton";
 import { fetchProductIdsList } from "@/redux/slices/ProductSlice";
 import CircularProgress from "@mui/material/CircularProgress";
-import { fetchAccountNumbersList } from "@/redux/slices/AccountSlice";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { createFee } from "@/redux/slices/FeeSlice";
 import { enqueueSnackbar } from "notistack";
@@ -27,6 +26,8 @@ import IconButton from "@mui/material/IconButton";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Tooltip } from "@mui/material";
 import ItemRow from "../../Text/ItemRow";
+import { fetchAccountNumbersList } from "@/redux/slices/AccountSlice";
+import MyControlledAsyncAutocomplete from "../../Autocomplete/MyControlledAsyncAutocomplete";
 
 type CreateFeeViewProps = {
   level: "Product" | "Account";
@@ -96,12 +97,12 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
 
     setSubmitting(true);
     dispatch(createFee(data)).then((d: any) => {
-      if (d.payload) {
+      if (typeof d.payload != "string") {
         enqueueSnackbar("Fee added successfully", { variant: "success" });
         router.back();
         return;
       }
-      enqueueSnackbar("Error adding fee", { variant: "error" });
+      enqueueSnackbar(d.payload, { variant: "error" });
       setSubmitting(false);
     });
   };
@@ -115,10 +116,10 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
       setLoadingProdIds(false);
     });
 
-    dispatch(fetchAccountNumbersList()).then((acc: any) => {
-      setSAccIds(acc.payload);
-      setLoadingSAccIds(false);
-    });
+    // dispatch(fetchAccountNumbersList()).then((acc: any) => {
+    //   setSAccIds(acc.payload);
+    //   setLoadingSAccIds(false);
+    // });
 
     setAccIds(ids);
     setLoadingAccIds(false);
@@ -277,28 +278,33 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
           </>
         )}
         <MyText>Settlement Account</MyText>
-        {loadingSAccds ? (
-          <CircularProgress size="25px" />
-        ) : sAccIds == null ? (
-          <MyText>No Account found</MyText>
-        ) : (
-          <MyControlledAutocomplete
-            value={sAccIds[0]}
-            displayName="Account"
-            name={"settlementAccountNumber"}
-            control={control}
-            errors={errors}
-            // disabled={true}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: true,
-                  }
+        <MyControlledAsyncAutocomplete
+          displayName="Account"
+          name={"settlementAccountNumber"}
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: true,
+                }
+          }
+          fetchOptions={async (query: any, page: any) => {
+            const accNumbers: any = await dispatch(
+              fetchAccountNumbersList(page)
+            );
+
+            if (typeof accNumbers.payload == "string") {
+              return accNumbers.payload;
+            } else {
+              return {
+                data: accNumbers.payload.accountIds,
+                totalPages: accNumbers.payload.totalPages,
+              };
             }
-            options={sAccIds}
-          />
-        )}
+          }}
+        />
         <Box className="pb-4"></Box>
         <RadioButton
           title="Fee Level"

@@ -20,6 +20,7 @@ import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import MyRedButton from "../../Button/MyRedButton";
 import { enqueueSnackbar } from "notistack";
+import MyBlueButton from "../../Button/MyBlueButton";
 
 type LimitsViewProps = {
   id: string;
@@ -31,7 +32,9 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
   const limit: LimitType = useSelector((state: any) => state.limits.limit);
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [account, setAccount] = useState<Account | null>(null);
+  const [account, setAccount] = useState<"loading" | string | Account>(
+    "loading"
+  );
   const [counterparty, setCounterparty] = useState<Counterparty | null>(null);
 
   const [deactivating, setDeactivating] = useState(false);
@@ -46,8 +49,9 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
         } else {
         }
 
-        if (d.payload.accountId != null) {
-          dispatch(fetchAccount(d.payload.accountId)).then((acc: any) => {
+        if (d.payload.accountNumber != null) {
+          setAccount("loading");
+          dispatch(fetchAccount(d.payload.accountNumber)).then((acc: any) => {
             setAccount(acc.payload);
           });
         }
@@ -68,7 +72,7 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
   ) : typeof limit == "string" ? (
     <MyText>{limit}</MyText>
   ) : (
-    <div className="flex flex-row w-[650px] justify-between">
+    <div className="flex flex-row w-[750px] justify-between">
       <div className="w-[300px]">
         <ItemRow title="ID" value={limit.id?.toString() ?? ""} />
         <ItemRow title="Name" value={limit.limitName ?? ""} />
@@ -78,7 +82,7 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
         <ItemRow title="Duration (days)" value={limit.durationDays ?? "-"} />
         <ItemRow title="Frequency" value={limit.frequencyMax ?? "-"} />
       </div>
-      <div className="w-[300px]">
+      <div className="w-[400px]">
         {limit.productId && (
           <ItemRow
             title="Product"
@@ -88,9 +92,30 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
             }}
           />
         )}
-        {limit.accountId && (
+        {limit.accountNumber && (
           <>
-            {account != null ? (
+            {account == "loading" ? (
+              <ItemRow title="Account" value={limit.accountNumber ?? ""} />
+            ) : typeof account == "string" ? (
+              <div className="flex flex-row ">
+                <ItemRow title="Account" value={limit.accountNumber ?? ""} />
+                <div className="pl-4 w-fit">
+                  <MyBlueButton
+                    onClick={() => {
+                      if (limit.accountNumber == null) return;
+                      setAccount("loading");
+                      dispatch(fetchAccount(limit.accountNumber)).then(
+                        (acc: any) => {
+                          setAccount(acc.payload);
+                        }
+                      );
+                    }}
+                  >
+                    Retry fetching account details
+                  </MyBlueButton>
+                </div>
+              </div>
+            ) : (
               <ItemRow
                 title="Account"
                 value={{
@@ -98,8 +123,6 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
                   link: `/accounts/${account.accountNumber}`,
                 }}
               />
-            ) : (
-              <ItemRow title="Account" value={limit.accountId ?? ""} />
             )}
           </>
         )}

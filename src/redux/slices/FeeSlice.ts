@@ -129,13 +129,8 @@ export const createFee = createAsyncThunk(
       console.log("fees", fee);
       return fee;
     } catch (e: any) {
-      enqueueSnackbar(`Error creating fee ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error creating fee ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 

@@ -14,6 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useAppDispatch } from "@/redux/store/store";
 import { chargeOneTimeFee, fetchAccount } from "@/redux/slices/AccountSlice";
 import { enqueueSnackbar } from "notistack";
+import ErrorPage from "@/core/components/error_page";
 
 const ModalBoxstyle = {
   position: "absolute" as any as "absolute",
@@ -39,9 +40,10 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [accNumber, setAccNumber] = useState(-1);
+  const [accNumber, setAccNumber] = useState<"loading" | string | number>(
+    "loading"
+  );
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -67,11 +69,12 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
   };
 
   useEffect(() => {
+    setAccNumber("loading");
     dispatch(fetchAccount(accountId)).then((acc: any) => {
-      if (acc.payload) {
+      if (typeof acc.payload != "string") {
         setAccNumber(acc.payload.accountNumber);
-        setLoading(false);
       } else {
+        setAccNumber(acc.payload);
         setIsOpen(false);
       }
     });
@@ -90,8 +93,24 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
         sx={ModalBoxstyle}
       >
         <>
-          {loading ? (
+          {accNumber == "loading" ? (
             <CircularProgress />
+          ) : typeof accNumber == "string" ? (
+            <ErrorPage
+              error={accNumber}
+              recoveryButtonTitle="Retry"
+              recoveryButtonOnClick={() => {
+                setAccNumber("loading");
+                dispatch(fetchAccount(accountId)).then((acc: any) => {
+                  if (typeof acc.payload != "string") {
+                    setAccNumber(acc.payload.accountNumber);
+                  } else {
+                    setAccNumber(acc.payload);
+                    setIsOpen(false);
+                  }
+                });
+              }}
+            />
           ) : (
             <div className="">
               <MyText size="md">Charge one time fee</MyText>

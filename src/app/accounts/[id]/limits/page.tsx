@@ -8,7 +8,7 @@ import Link from "next/link";
 import { fetchAccountLimits } from "@/redux/slices/RulesAndLimitsSlice";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { fetchAccountv2 } from "@/redux/slices/AccountSlice";
+import { fetchAccount } from "@/redux/slices/AccountSlice";
 import { Account } from "@/core/api/ApiTypes";
 import ErrorPage from "@/core/components/error_page";
 import { setTitle } from "@/redux/slices/AppSlice";
@@ -29,7 +29,7 @@ const Rules = () => {
 
   useEffect(() => {
     dispatch(setTitle("Account"));
-    dispatch(fetchAccountv2(params.id.toString())).then((d: any) => {
+    dispatch(fetchAccount(params.id.toString())).then((d: any) => {
       setAccount(d.payload);
 
       if (d.payload.accountName != null) {
@@ -53,7 +53,7 @@ const Rules = () => {
             error={account}
             recoveryButtonOnClick={() => {
               setAccount("initial");
-              dispatch(fetchAccountv2(params.id.toString())).then((d: any) => {
+              dispatch(fetchAccount(params.id.toString())).then((d: any) => {
                 setAccount(d.payload);
               });
             }}

@@ -23,7 +23,6 @@ import {
 import RadioButton from "@/core/components/Button/RadioButton";
 import { fetchBusinessIdsList } from "@/redux/slices/BusinessSlice";
 import { fetchIndividualIdsList } from "@/redux/slices/IndividualSlice";
-import { fetchAccountIdsList } from "@/redux/slices/AccountSlice";
 import AddIcon from "@mui/icons-material/Add";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import ItemRow from "@/core/components/Text/ItemRow";

@@ -42,6 +42,8 @@ interface BusinessState {
   counterpartyPagination: PaginationStateType;
   refresh: boolean;
   business: "loading" | string | Business;
+  businessAccounts: "loading" | string | CustomerAccount[];
+  businessAccountsPagination: PaginationStateType;
 }
 
 const initialState: BusinessState = {
@@ -49,6 +51,12 @@ const initialState: BusinessState = {
   counterparties: "loading",
   accountIds: "loading",
   business: "loading",
+  businessAccounts: "loading",
+  businessAccountsPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+  },
   counterpartyPagination: {
     rowCount: 0,
     pageNumber: -1,
@@ -66,6 +74,9 @@ const BusinessSlice = createSlice({
     },
     setBusinessCounterpartyPaginationPageNumber(state, action) {
       state.counterpartyPagination.pageNumber = action.payload;
+    },
+    setBusinessAccountsPageNumber(state, action) {
+      state.businessAccountsPagination.pageNumber = action.payload;
     },
     setRefresh(state, action) {
       state.refresh = action.payload;
@@ -99,17 +110,41 @@ const BusinessSlice = createSlice({
       state.counterpartyPagination.loadingPage = false;
     });
     //========================== accounts
-    builder.addCase(fetchBusinessAccountIds.pending, (state, action) => {
+    builder.addCase(fetchBusinessAccounts.pending, (state, action) => {
+      if (
+        state.businessAccountsPagination.pageNumber == -1 ||
+        action.meta.arg.refresh == true
+      ) {
+        state.businessAccounts = "loading";
+      }
+      state.businessAccountsPagination.loadingPage = true;
+    });
+    builder.addCase(fetchBusinessAccounts.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.businessAccounts = action.payload;
+      } else {
+        state.businessAccounts = action.payload.accounts;
+        state.businessAccountsPagination.rowCount = action.payload.rowCount;
+        state.businessAccountsPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.businessAccountsPagination.loadingPage = false;
+    });
+    builder.addCase(fetchAllBusinessAccounts.pending, (state, action) => {
       state.accountIds = "loading";
     });
-    builder.addCase(fetchBusinessAccountIds.fulfilled, (state, action) => {
-      state.accountIds = action.payload;
-    });
-    builder.addCase(fetchBusinessAccountNumbers.pending, (state, action) => {
-      state.accountIds = "loading";
-    });
-    builder.addCase(fetchBusinessAccountNumbers.fulfilled, (state, action) => {
-      state.accountIds = action.payload;
+    builder.addCase(fetchAllBusinessAccounts.fulfilled, (state, action) => {
+      if (typeof action.payload != "string") {
+        let idsList: string[] = [];
+
+        action.payload.forEach((acc: CustomerAccount) => {
+          idsList.push(acc.accountNumber);
+        });
+
+        state.accountIds = idsList;
+      } else {
+        state.accountIds = action.payload;
+      }
     });
     //========================== accounts END
   },
@@ -166,14 +201,21 @@ export const createUBO = createAsyncThunk(
 
 // ========================== accounts
 
-export const fetchBusinessAccountsV2 = createAsyncThunk(
+export const fetchBusinessAccounts = createAsyncThunk(
   "business/fetchBusinessAccounts",
-  async (id: number) => {
+  async (data: { id: number; refresh: boolean }, thunkApi: any) => {
     try {
-      const accounts = await businessRepo.fetchBusinessAccounts(id);
+      const accounts = await businessRepo.fetchBusinessAccounts(
+        data.id,
+        paginationPageSize,
+        thunkApi.getState().business.businessAccountsPagination.pageNumber ==
+          -1 || data.refresh == true
+          ? 0
+          : thunkApi.getState().business.businessAccountsPagination.pageNumber
+      );
 
       const accountsBalance = await businessRepo.fetchBusinessAccountsBalance(
-        id
+        data.id
       );
 
       console.log("accounts", accounts);
@@ -181,79 +223,45 @@ export const fetchBusinessAccountsV2 = createAsyncThunk(
 
       let combined = [];
 
-      for (let i = 0; i < accounts.length; i++) {
+      for (let i = 0; i < accounts.content.length; i++) {
         combined.push({
-          ...accounts[i],
+          ...accounts.content[i],
           active: accountsBalance.find(
-            (acc) => acc.accountNumber == accounts[i].accountNumber
+            (acc) => acc.accountNumber == accounts.content[i].accountNumber
           )?.active,
           frozen: accountsBalance.find(
-            (acc) => acc.accountNumber == accounts[i].accountNumber
+            (acc) => acc.accountNumber == accounts.content[i].accountNumber
           )?.frozen,
           balance: {
             accountBalance: accountsBalance.find(
-              (acc) => acc.accountNumber == accounts[i].accountNumber
+              (acc) => acc.accountNumber == accounts.content[i].accountNumber
             )?.balance?.accountBalance,
             availableBalance: accountsBalance.find(
-              (acc) => acc.accountNumber == accounts[i].accountNumber
+              (acc) => acc.accountNumber == accounts.content[i].accountNumber
             )?.balance?.availableBalance,
           },
         });
       }
 
-      return combined;
+      return {
+        accounts: combined,
+        rowCount: accounts.totalElements,
+        pageNumber: accounts.number,
+      };
     } catch (e: any) {
       return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
   }
 );
 
-export const fetchBusinessAccounts = createAsyncThunk(
-  "business/fetchBusinessAccounts",
+export const fetchAllBusinessAccounts = createAsyncThunk(
+  "business/fetchAllBusinessAccounts",
   async (id: number) => {
     try {
-      const accounts = await businessRepo.fetchBusinessAccounts(id);
+      const accounts = await businessRepo.fetchAllBusinessAccounts(id);
+
       console.log("accounts", accounts);
       return accounts;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching accounts ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
-
-    return null;
-  }
-);
-
-export const fetchBusinessAccountIds = createAsyncThunk(
-  "business/fetchBusinessAccountIds",
-  async (id: string) => {
-    try {
-      const ids = await businessRepo.fetchBusinessAccountIds(id);
-      console.log("account ids", ids);
-      if (ids.length == 0) {
-        return "No accounts found";
-      } else {
-        return ids;
-      }
-    } catch (e: any) {
-      return `Error fetching accounts ${generateErrorMessage(e)}`;
-    }
-  }
-);
-
-export const fetchBusinessAccountNumbers = createAsyncThunk(
-  "business/fetchBusinessAccountNumbers",
-  async (id: string) => {
-    try {
-      const ids = await businessRepo.fetchBusinessAccountNumbers(id);
-      console.log("account ids", ids);
-      if (ids.length == 0) {
-        return "No accounts found";
-      } else {
-        return ids;
-      }
     } catch (e: any) {
       return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
@@ -438,38 +446,40 @@ export const fetchUboKycStatus = createAsyncThunk(
   }
 );
 
-export const fetchBusinessAccountsCards = createAsyncThunk(
-  "business/fetchBusinessAccountsCards",
-  async (business: Business) => {
-    try {
-      const accounts: CustomerAccount[] =
-        await businessRepo.fetchBusinessAccounts(business.id ?? -1);
+// leaving the following code here to have as a starting point for future use
 
-      const accountCardApis: any = [];
-      const cards: AccountCard[] = [];
+// export const fetchBusinessAccountsCards = createAsyncThunk(
+//   "business/fetchBusinessAccountsCards",
+//   async (business: Business) => {
+//     try {
+//       const accounts: CustomerAccount[] =
+//         await businessRepo.fetchBusinessAccounts(business.id ?? -1, 100, 0);
 
-      accounts.forEach((account: CustomerAccount) => {
-        accountCardApis.push(
-          businessRepo.fetchBusinessAccountCards(account.accountNumber)
-        );
-      });
+//       const accountCardApis: any = [];
+//       const cards: AccountCard[] = [];
 
-      const data = await Promise.all(accountCardApis);
-      data.forEach((card: AccountCard) => {
-        cards.push(card);
-      });
+//       accounts.forEach((account: CustomerAccount) => {
+//         accountCardApis.push(
+//           businessRepo.fetchBusinessAccountCards(account.accountNumber)
+//         );
+//       });
 
-      return cards;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching cards ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
+//       const data = await Promise.all(accountCardApis);
+//       data.forEach((card: AccountCard) => {
+//         cards.push(card);
+//       });
 
-    return null;
-  }
-);
+//       return cards;
+//     } catch (e: any) {
+//       enqueueSnackbar(`Error fetching cards ${generateErrorMessage(e)}`, {
+//         variant: "error",
+//         persist: true,
+//       });
+//     }
+
+//     return null;
+//   }
+// );
 
 export const downloadBusinessPdf = createAsyncThunk(
   "business/downloadBusinessPdf",
@@ -770,6 +780,7 @@ export const updateBusiness = createAsyncThunk(
 
 export default BusinessSlice;
 export const {
+  setBusinessAccountsPageNumber,
   setInitialBusinessState,
   setBusinessCounterpartyPaginationPageNumber,
   setRefresh,

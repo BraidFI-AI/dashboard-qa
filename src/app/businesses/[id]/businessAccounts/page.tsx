@@ -6,8 +6,9 @@ import MyText from "@/core/components/Text/Text";
 import {
   creatBusinessAccount,
   fetchBusinessV2,
-  fetchBusinessAccountsV2,
+  fetchBusinessAccounts,
   setRefresh,
+  setBusinessAccountsPageNumber,
 } from "@/redux/slices/BusinessSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -29,6 +30,7 @@ import toDollarFormat from "@/core/utils/toDollarFormat";
 import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
+import { paginationPageSize, PaginationStateType } from "@/core/constants";
 
 const Accounts = () => {
   const params = useParams();
@@ -36,9 +38,6 @@ const Accounts = () => {
   const dispatch = useAppDispatch();
   const [status, setstatus] = useState("");
   const [refreshAccounts, setRefreshAccounts] = useState(true);
-  const [accounts, setAccounts] = useState<
-    "loading" | string | CustomerAccount[]
-  >("loading");
 
   const business: "loading" | string | Business = useSelector(
     (state: any) => state.business.business
@@ -46,11 +45,18 @@ const Accounts = () => {
 
   const refresh = useSelector((state: any) => state.business.refresh);
 
+  const accounts: "loading" | string | CustomerAccount[] = useSelector(
+    (state: any) => state.business.businessAccounts
+  );
+
+  const pagination: PaginationStateType = useSelector(
+    (state: any) => state.business.businessAccountsPagination
+  );
+
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Business Customer"));
       dispatch(fetchBusinessV2(parseInt(params.id.toString())));
-      setAccounts("loading");
       dispatch(setRefresh(false));
     }
   }, [dispatch, params.id, refresh]);
@@ -65,10 +71,11 @@ const Accounts = () => {
 
   useEffect(() => {
     if (typeof business != "string" && refreshAccounts) {
-      dispatch(fetchBusinessAccountsV2(business.id)).then((data: any) => {
-        setAccounts(data.payload);
-        setRefreshAccounts(false);
-      });
+      dispatch(fetchBusinessAccounts({ id: business.id, refresh: true })).then(
+        (data: any) => {
+          setRefreshAccounts(false);
+        }
+      );
     }
   }, [business, refreshAccounts]);
 
@@ -76,7 +83,7 @@ const Accounts = () => {
     router.push(`/accounts/${params.row.accountNumber}/`);
   };
 
-  return business == "loading" || accounts == "loading" ? (
+  return business == "loading" || accounts == null || accounts == "loading" ? (
     <MyCircularProgressIndicator />
   ) : typeof business == "string" ? (
     <ErrorPage
@@ -109,6 +116,20 @@ const Accounts = () => {
         //     event.stopPropagation();
         //   }
         // }}
+        pagination={{
+          rowCount: pagination.rowCount,
+          loading: pagination.loadingPage,
+          paginationModel: {
+            page: pagination.pageNumber,
+            pageSize: paginationPageSize,
+          },
+          setPaginationModel: (page: number) => {
+            dispatch(setBusinessAccountsPageNumber(page));
+            dispatch(
+              fetchBusinessAccounts({ id: business.id, refresh: false })
+            );
+          },
+        }}
         handleRowClick={handleRowClick}
         columns={[
           {

@@ -26,7 +26,7 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import {
   fetchIndividualAccountCounterpartiesIds,
-  fetchIndividualAccountNumbers,
+  fetchAllIndividualAccounts,
   IndividualAccountIdsType,
 } from "@/redux/slices/IndividualSlice";
 
@@ -41,6 +41,7 @@ const CreateLimitPage = () => {
   );
 
   const [accountId, setAccountId] = useState<string | null>(null);
+  const [account, setAccount] = useState<"loading" | string | any>("loading");
 
   const [counterpartyIds, setCounterpartyIds] = useState<
     "loading" | string | IdsListType[]
@@ -93,7 +94,7 @@ const CreateLimitPage = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchIndividualAccountNumbers(params.id.toString())).then(
+    dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
       (accs: any) => {
         if (typeof accs.payload != "string") {
           setAccountId(accs.payload[0]);
@@ -104,9 +105,11 @@ const CreateLimitPage = () => {
 
   useEffect(() => {
     if (accountId) {
+      setAccount("loading");
       setCounterpartyIds("loading");
       dispatch(fetchAccount(accountId)).then((acc: any) => {
-        if (acc.payload) {
+        setAccount(acc.payload);
+        if (typeof acc.payload != "string") {
           dispatch(
             fetchIndividualAccountCounterpartiesIds(acc.payload.id)
           ).then((cps: any) => {
@@ -259,10 +262,43 @@ const CreateLimitPage = () => {
         {limitType == "ACCOUNT_TO_COUNTERPARTY" && (
           <>
             <MyText>Counterparty</MyText>
-            {counterpartyIds == "loading" ? (
+            {counterpartyIds == "loading" || account == "loading" ? (
               <CircularProgress size={24} />
-            ) : typeof counterpartyIds == "string" ? (
-              <MyText>{counterpartyIds}</MyText>
+            ) : typeof counterpartyIds == "string" ||
+              typeof account == "string" ? (
+              <ErrorPage
+                error={
+                  typeof counterpartyIds == "string" ? counterpartyIds : account
+                }
+                recoveryButtonTitle="Retry"
+                recoveryButtonOnClick={() => {
+                  if (accountId) {
+                    setAccount("loading");
+                    setCounterpartyIds("loading");
+                    dispatch(fetchAccount(accountId)).then((acc: any) => {
+                      setAccount(acc.payload);
+                      if (typeof acc.payload != "string") {
+                        dispatch(
+                          fetchIndividualAccountCounterpartiesIds(
+                            acc.payload.id
+                          )
+                        ).then((cps: any) => {
+                          setCounterpartyIds(cps.payload);
+                          if (
+                            typeof cps.payload != "string" &&
+                            cps.payload.length > 0
+                          ) {
+                            const id = cps.payload[0].id;
+                            if (id) {
+                              setCounterpartyId(parseInt(id));
+                            }
+                          }
+                        });
+                      }
+                    });
+                  }
+                }}
+              />
             ) : (
               <MyControlledAutocomplete
                 value={

@@ -75,8 +75,10 @@ const OFACHitsTable = () => {
     }
   };
 
-  return ofacsHits == "loading" ? (
-    <MyCircularProgressIndicator />
+  return ofacsHits == null || ofacsHits == "loading" ? (
+    <div className="flex flex-col items-center justify-center">
+      <div>Loading OFAC checks...</div>
+    </div>
   ) : typeof ofacsHits == "string" ? (
     <ErrorPage
       error="Error loading OFAC checks"

@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { DataGrid, GridEventListener, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridCellParams,
+  GridEventListener,
+  GridToolbar,
+  MuiEvent,
+} from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Account } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,6 +23,7 @@ import ErrorPage from "@/core/components/error_page";
 import Link from "next/link";
 import MyText from "@/core/components/Text/Text";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import MyLinkText from "@/core/components/Text/LinkText";
 
 const AccountsTable = () => {
   const router = useRouter();
@@ -31,13 +38,13 @@ const AccountsTable = () => {
 
   useEffect(() => {
     dispatch(fetchAccounts(true));
-  }, [dispatch]);
+  }, []);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/accounts/${params.row.accountNumber}`);
   };
 
-  return accounts == "loading" ? (
+  return accounts == null || accounts == "loading" ? (
     <div className="flex flex-col items-center justify-center">
       <CircularProgress></CircularProgress>
       <div>Loading accounts...</div>
@@ -62,11 +69,19 @@ const AccountsTable = () => {
           pageSize: paginationPageSize,
         },
         setPaginationModel: (page: number) => {
-          setAccountsPaginationPageNumber(page);
+          dispatch(setAccountsPaginationPageNumber(page));
           dispatch(fetchAccounts(false));
         },
       }}
       handleRowClick={handleRowClick}
+      handleCellClick={(
+        params: GridCellParams,
+        event: MuiEvent<React.MouseEvent>
+      ) => {
+        if (params.field == "customerName") {
+          event.stopPropagation();
+        }
+      }}
       columns={[
         { field: "id", headerName: "ID", width: 120 },
         {
@@ -93,15 +108,15 @@ const AccountsTable = () => {
           flex: 1,
           minWidth: 150,
           renderCell: (params: any) => (
-            <Link
-              href={
+            <MyLinkText
+              link={
                 params.row.customerType == "BUSINESS"
                   ? `/businesses/${params.row.customerId}`
                   : `/individuals/${params.row.customerId}`
               }
             >
               {params.row.customerName}
-            </Link>
+            </MyLinkText>
           ),
         },
         {
@@ -131,7 +146,7 @@ const AccountsTable = () => {
           valueGetter: (params: any) => params.row.updatedAt,
         },
       ]}
-      sortModel={[{ field: "createdAt", sort: "desc" }]}
+      // sortModel={[{ field: "createdAt", sort: "desc" }]}
       rows={accounts}
     />
   );

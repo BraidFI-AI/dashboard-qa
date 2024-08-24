@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import ErrorPage from "@/core/components/error_page";
 import {
   fetchIndividual,
-  fetchIndividualAccounts,
+  fetchAllIndividualAccounts,
 } from "@/redux/slices/IndividualSlice";
 import { setTitle } from "@/redux/slices/AppSlice";
 
@@ -21,8 +21,9 @@ const FeeTable = () => {
 
   const dispatch = useAppDispatch();
 
-  const [accIds, setAccIds] = useState<string[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [accIds, setAccIds] = useState<"loading" | string | string[]>(
+    "loading"
+  );
 
   useEffect(() => {
     dispatch(setTitle("Individual Customer"));
@@ -38,23 +39,26 @@ const FeeTable = () => {
   }, [dispatch, params.id]);
 
   useEffect(() => {
-    dispatch(fetchIndividualAccounts(parseInt(params.id.toString()))).then(
+    setAccIds("loading");
+    dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
       (acc: any) => {
         let ids: string[] = [];
-        if (acc.payload) {
+        if (typeof acc.payload != "string") {
           acc.payload.forEach((acc: any) => {
             ids.push(acc.accountNumber);
           });
-          console.log(ids);
+          console.log("accids:", ids);
           setAccIds(ids);
+        } else {
+          setAccIds(acc.payload);
         }
-        setLoading(false);
       }
     );
   }, [dispatch, params.id]);
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByMultipleAccountIds(accIds ?? []),
+    () =>
+      fetchFeesByMultipleAccountIds(typeof accIds != "string" ? accIds : []),
     [accIds]
   );
 
@@ -66,7 +70,7 @@ const FeeTable = () => {
         </Link>
       </Box>
       <Box className="pb-4"></Box>
-      {loading ? (
+      {accIds == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
           <div>Loading...</div>
@@ -75,20 +79,21 @@ const FeeTable = () => {
         <ErrorPage
           error="Error fetching fees"
           recoveryButtonOnClick={() => {
-            setLoading(true);
-            dispatch(
-              fetchIndividualAccounts(parseInt(params.id.toString()))
-            ).then((acc: any) => {
-              let ids: string[] = [];
-              if (acc.payload) {
-                acc.payload.forEach((acc: any) => {
-                  ids.push(acc.accountNumber);
-                });
-                console.log(ids);
-                setAccIds(ids);
+            setAccIds("loading");
+            dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
+              (acc: any) => {
+                let ids: string[] = [];
+                if (typeof acc.payload != "string") {
+                  acc.payload.forEach((acc: any) => {
+                    ids.push(acc.accountNumber);
+                  });
+                  console.log("accids:", ids);
+                  setAccIds(ids);
+                } else {
+                  setAccIds(acc.payload);
+                }
               }
-              setLoading(false);
-            });
+            );
           }}
           recoveryButtonTitle="Retry"
         />

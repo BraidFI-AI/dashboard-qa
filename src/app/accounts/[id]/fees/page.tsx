@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import OneTimeFeeModal from "./one_time_fee_modal";
 import { useAppDispatch } from "@/redux/store/store";
 import { setTitle } from "@/redux/slices/AppSlice";
-import { fetchAccountv2 } from "@/redux/slices/AccountSlice";
+import { fetchAccount } from "@/redux/slices/AccountSlice";
 
 const FeeTable = () => {
   const params = useParams();
@@ -21,7 +21,7 @@ const FeeTable = () => {
 
   useEffect(() => {
     dispatch(setTitle("Account"));
-    dispatch(fetchAccountv2(params.id.toString())).then((account: any) => {
+    dispatch(fetchAccount(params.id.toString())).then((account: any) => {
       if (
         typeof account.payload != "string" &&
         account.payload.accountName != null

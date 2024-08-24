@@ -6,7 +6,7 @@ import MyText from "@/core/components/Text/Text";
 import timestampToDate from "@/core/utils/timestampToDate";
 import {
   fetchBusiness,
-  fetchBusinessAccountsCards,
+  // fetchBusinessAccountsCards,
 } from "@/redux/slices/BusinessSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import Divider from "@mui/material/Divider";
@@ -65,30 +65,27 @@ const CardsPage = ({ params }: { params: { id: string } }) => {
   const handleCardModalClose = () => setCardModalOpen(false);
 
   useEffect(() => {
-    dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id))).then((business: any) => {
-      dispatch(setTitle(business.payload.name));
-      if (business.payload != null) {
-        dispatch(fetchBusinessAccountsCards(business.payload)).then(
-          (data: any) => {
-            if (data.payload) {
-              const cards2d = data.payload.filter((cArr: any) => {
-                return cArr.length != 0;
-              });
-
-              const cards = cards2dTo1d(cards2d);
-
-              setCards(cards);
-
-              console.log(cards);
-            }
-            setLoading(false);
-          }
-        );
-      } else {
-        setLoading(false);
-      }
-    });
+    // dispatch(setTitle("Business Customer"));
+    // dispatch(fetchBusiness(parseInt(params.id))).then((business: any) => {
+    //   dispatch(setTitle(business.payload.name));
+    //   if (business.payload != null) {
+    //     dispatch(fetchBusinessAccountsCards(business.payload)).then(
+    //       (data: any) => {
+    //         if (data.payload) {
+    //           const cards2d = data.payload.filter((cArr: any) => {
+    //             return cArr.length != 0;
+    //           });
+    //           const cards = cards2dTo1d(cards2d);
+    //           setCards(cards);
+    //           console.log(cards);
+    //         }
+    //         setLoading(false);
+    //       }
+    //     );
+    //   } else {
+    //     setLoading(false);
+    //   }
+    // });
   }, [dispatch, params.id]);
 
   return (
