@@ -37,6 +37,8 @@ interface IndividualState {
   counterpartyPagination: PaginationStateType;
   refresh: boolean;
   individual: "loading" | string | Individual;
+  individualAccounts: "loading" | string | CustomerAccount[];
+  individualAccountsPagination: PaginationStateType;
 }
 
 const initialState: IndividualState = {
@@ -45,6 +47,12 @@ const initialState: IndividualState = {
   accountIds: "loading",
   refresh: true,
   individual: "loading",
+  individualAccounts: "loading",
+  individualAccountsPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+  },
   counterpartyPagination: {
     rowCount: 0,
     pageNumber: -1,
@@ -104,21 +112,43 @@ const IndividualSlice = createSlice({
         state.counterpartyPagination.loadingPage = false;
       }
     );
-    builder.addCase(fetchIndividualAccountIds.pending, (state, action) => {
+    builder.addCase(fetchIndividualAccounts.pending, (state, action) => {
+      if (
+        state.individualAccountsPagination.pageNumber == -1 ||
+        action.meta.arg.refresh == true
+      ) {
+        state.individualAccounts = "loading";
+      }
+      state.individualAccountsPagination.loadingPage = true;
+    });
+    builder.addCase(fetchIndividualAccounts.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.individualAccounts = action.payload;
+      } else {
+        state.individualAccounts = action.payload.accounts;
+        state.individualAccountsPagination.rowCount = action.payload.rowCount;
+        state.individualAccountsPagination.pageNumber =
+          action.payload.pageNumber;
+      }
+
+      state.individualAccountsPagination.loadingPage = false;
+    });
+    builder.addCase(fetchAllIndividualAccounts.pending, (state, action) => {
       state.accountIds = "loading";
     });
-    builder.addCase(fetchIndividualAccountIds.fulfilled, (state, action) => {
-      state.accountIds = action.payload;
-    });
-    builder.addCase(fetchIndividualAccountNumbers.pending, (state, action) => {
-      state.accountIds = "loading";
-    });
-    builder.addCase(
-      fetchIndividualAccountNumbers.fulfilled,
-      (state, action) => {
+    builder.addCase(fetchAllIndividualAccounts.fulfilled, (state, action) => {
+      if (typeof action.payload != "string") {
+        let idsList: string[] = [];
+
+        action.payload.forEach((acc: CustomerAccount) => {
+          idsList.push(acc.accountNumber);
+        });
+
+        state.accountIds = idsList;
+      } else {
         state.accountIds = action.payload;
       }
-    );
+    });
   },
 });
 
@@ -228,38 +258,40 @@ export const fetchIndividual = createAsyncThunk(
   }
 );
 
-export const fetchIndividualAccountsCards = createAsyncThunk(
-  "individual/fetchIndividualAccountsCards",
-  async (individual: Individual) => {
-    try {
-      const accounts: CustomerAccount[] =
-        await individualRepo.fetchIndividualAccounts(individual.id);
+// leaving the following code here to have as a starting point for future use
 
-      const accountCardApis: any = [];
-      const cards: AccountCard[] = [];
+// export const fetchIndividualAccountsCards = createAsyncThunk(
+//   "individual/fetchIndividualAccountsCards",
+//   async (individual: Individual) => {
+//     try {
+//       const accounts: CustomerAccount[] =
+//         await individualRepo.fetchIndividualAccounts(individual.id);
 
-      accounts.forEach((account: CustomerAccount) => {
-        accountCardApis.push(
-          individualRepo.fetchIndividualAccountCards(account.id)
-        );
-      });
+//       const accountCardApis: any = [];
+//       const cards: AccountCard[] = [];
 
-      const data = await Promise.all(accountCardApis);
-      data.forEach((card: AccountCard) => {
-        cards.push(card);
-      });
+//       accounts.forEach((account: CustomerAccount) => {
+//         accountCardApis.push(
+//           individualRepo.fetchIndividualAccountCards(account.id)
+//         );
+//       });
 
-      return cards;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching cards ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
+//       const data = await Promise.all(accountCardApis);
+//       data.forEach((card: AccountCard) => {
+//         cards.push(card);
+//       });
 
-    return null;
-  }
-);
+//       return cards;
+//     } catch (e: any) {
+//       enqueueSnackbar(`Error fetching cards ${generateErrorMessage(e)}`, {
+//         variant: "error",
+//         persist: true,
+//       });
+//     }
+
+//     return null;
+//   }
+// );
 
 export const createIndividual = createAsyncThunk(
   "account/individual",
@@ -296,55 +328,64 @@ export const fetchIndividualIdsList = createAsyncThunk(
 
 export const fetchIndividualAccounts = createAsyncThunk(
   "individual/fetchBusinessAccounts",
-  async (id: number) => {
+  async (data: { id: number; refresh: boolean }, thunkApi: any) => {
     try {
-      const accounts = await individualRepo.fetchIndividualAccounts(id);
-      console.log("accounts", accounts);
-      return accounts;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching accounts ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
-
-    return null;
-  }
-);
-
-export const fetchIndividualAccountsV2 = createAsyncThunk(
-  "individual/fetchBusinessAccounts",
-  async (id: number) => {
-    try {
-      const accounts = await individualRepo.fetchIndividualAccounts(id);
+      const accounts = await individualRepo.fetchIndividualAccounts(
+        data.id,
+        paginationPageSize,
+        thunkApi.getState().business.businessAccountsPagination.pageNumber ==
+          -1 || data.refresh == true
+          ? 0
+          : thunkApi.getState().business.businessAccountsPagination.pageNumber
+      );
       const accountsBalance =
-        await individualRepo.fetchIndividualAccountsBalance(id);
+        await individualRepo.fetchIndividualAccountsBalance(data.id);
 
       console.log("accounts", accounts);
       console.log("accounts balance", accountsBalance);
       let combined = [];
 
-      for (let i = 0; i < accounts.length; i++) {
+      for (let i = 0; i < accounts.content.length; i++) {
         combined.push({
-          ...accounts[i],
+          ...accounts.content[i],
           active: accountsBalance.find(
-            (acc) => acc.accountNumber == accounts[i].accountNumber
+            (acc) => acc.accountNumber == accounts.content[i].accountNumber
           )?.active,
           frozen: accountsBalance.find(
-            (acc) => acc.accountNumber == accounts[i].accountNumber
+            (acc) => acc.accountNumber == accounts.content[i].accountNumber
           )?.frozen,
           balance: {
-            accountBalance: accountsBalance.find(
-              (acc) => acc.accountNumber == accounts[i].accountNumber
-            )?.balance?.accountBalance,
-            availableBalance: accountsBalance.find(
-              (acc) => acc.accountNumber == accounts[i].accountNumber
-            )?.balance?.availableBalance,
+            accountBalance:
+              accountsBalance.find(
+                (acc) => acc.accountNumber == accounts.content[i].accountNumber
+              )?.balance?.accountBalance ?? "",
+            availableBalance:
+              accountsBalance.find(
+                (acc) => acc.accountNumber == accounts.content[i].accountNumber
+              )?.balance?.availableBalance ?? "",
           },
         });
       }
 
-      return combined;
+      return {
+        accounts: combined,
+        rowCount: accounts.totalElements,
+        pageNumber: accounts.number,
+      };
+    } catch (e: any) {
+      return `Error fetching accounts ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchAllIndividualAccounts = createAsyncThunk(
+  "business/fetchAllIndividualAccounts",
+  async (id: string) => {
+    try {
+      const accounts = await individualRepo.fetchAllIndividualAccounts(id);
+
+      console.log("accounts", accounts);
+      return accounts;
     } catch (e: any) {
       return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
@@ -367,40 +408,6 @@ export const createIndividualAccount = createAsyncThunk(
       return acc;
     } catch (e: any) {
       return `Error creating Individual account ${generateErrorMessage(e)}`;
-    }
-  }
-);
-
-export const fetchIndividualAccountIds = createAsyncThunk(
-  "business/fetchIndividualAccountIds",
-  async (id: string) => {
-    try {
-      const ids = await individualRepo.fetchIndividualAccountIds(id);
-      console.log("account ids", ids);
-      if (ids.length == 0) {
-        return "No accounts found";
-      } else {
-        return ids;
-      }
-    } catch (e: any) {
-      return `Error fetching accounts ${generateErrorMessage(e)}`;
-    }
-  }
-);
-
-export const fetchIndividualAccountNumbers = createAsyncThunk(
-  "individindividualual/fetchBusinessAccountNumbers",
-  async (id: string) => {
-    try {
-      const ids = await individualRepo.fetchIndividualAccountNumbers(id);
-      console.log("account ids", ids);
-      if (ids.length == 0) {
-        return "No accounts found";
-      } else {
-        return ids;
-      }
-    } catch (e: any) {
-      return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
   }
 );

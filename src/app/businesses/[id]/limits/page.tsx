@@ -8,10 +8,7 @@ import Link from "next/link";
 import { useAppDispatch } from "@/redux/store/store";
 import { useEffect, useMemo, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  fetchBusiness,
-  fetchBusinessAccounts,
-} from "@/redux/slices/BusinessSlice";
+import { fetchBusiness } from "@/redux/slices/BusinessSlice";
 import { fetchBusinessLimits } from "@/redux/slices/RulesAndLimitsSlice";
 import { setTitle } from "@/redux/slices/AppSlice";
 

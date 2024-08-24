@@ -7,7 +7,7 @@ import ErrorPage from "@/core/components/error_page";
 import TransactionTableView from "@/core/components/views/transactions/transactions_table_view";
 import {
   AccountTransactionsType,
-  fetchAccountv2,
+  fetchAccount,
   // fetchAccountTransactionsData,
 } from "@/redux/slices/AccountSlice";
 import { setTitle } from "@/redux/slices/AppSlice";
@@ -33,7 +33,7 @@ const AccountTransactionsPage = () => {
 
   useEffect(() => {
     dispatch(setTitle("Account"));
-    dispatch(fetchAccountv2(params.id.toString())).then((account: any) => {
+    dispatch(fetchAccount(params.id.toString())).then((account: any) => {
       if (
         typeof account.payload != "string" &&
         account.payload.accountName != null

@@ -42,6 +42,8 @@ const CreateLimitPage = () => {
     "MAX_SINGLE_TRANSACTION_ACCOUNT"
   );
 
+  const [account, setAcount] = useState<"loading" | string | any>("loading");
+
   const transactionTypes: TransactionTypesType = useSelector(
     (state: any) => state.app.transactionTypes
   );
@@ -83,8 +85,10 @@ const CreateLimitPage = () => {
   };
 
   useEffect(() => {
+    setAcount("loading");
     dispatch(fetchAccount(params.id.toString())).then((acc: any) => {
-      if (acc.payload) {
+      setAcount(acc.payload);
+      if (typeof acc.payload != "string") {
         dispatch(fetchAccountCounterpartyIds(acc.payload.id.toString())).then(
           (cps: any) => {
             if (typeof cps.payload != "string" && cps.payload.length > 0) {
@@ -211,15 +215,20 @@ const CreateLimitPage = () => {
         {limitType == "ACCOUNT_TO_COUNTERPARTY" && (
           <>
             <MyText>Counterparty</MyText>
-            {counterpartyIds == "loading" ? (
+            {counterpartyIds == "loading" || account == "loading" ? (
               <CircularProgress size={24} />
-            ) : typeof counterpartyIds == "string" ? (
+            ) : typeof counterpartyIds == "string" ||
+              typeof account == "string" ? (
               <ErrorPage
-                error={counterpartyIds}
+                error={
+                  typeof counterpartyIds == "string" ? counterpartyIds : account
+                }
                 recoveryButtonOnClick={() => {
+                  setAcount("loading");
                   dispatch(fetchAccount(params.id.toString())).then(
                     (acc: any) => {
-                      if (acc.payload) {
+                      setAcount(acc.payload);
+                      if (typeof acc.payload != "string") {
                         dispatch(
                           fetchAccountCounterpartyIds(acc.payload.id.toString())
                         ).then((cps: any) => {

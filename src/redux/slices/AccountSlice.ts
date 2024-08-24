@@ -177,9 +177,10 @@ export const fetchAccounts = createAsyncThunk(
     try {
       const accounts = await accountRepo.fetchAccounts(
         paginationPageSize,
-        thunkApi.getState().account.accontsPagination == -1 || refresh == true
+        thunkApi.getState().account.accontsPagination.pageNumber == -1 ||
+          refresh == true
           ? 0
-          : thunkApi.getState().account.accontsPagination
+          : thunkApi.getState().account.accontsPagination.pageNumber
       );
       console.log("accounts", accounts);
       return {
@@ -215,8 +216,8 @@ export const chargeOneTimeFee = createAsyncThunk(
   }
 );
 
-export const fetchAccountv2 = createAsyncThunk(
-  "account/fetchAccountv2",
+export const fetchAccount = createAsyncThunk(
+  "account/fetchAccount",
   async (id: string) => {
     try {
       const accounts = await accountRepo.fetchAccount(id);
@@ -225,24 +226,6 @@ export const fetchAccountv2 = createAsyncThunk(
     } catch (e: any) {
       return `Error fetching account ${generateErrorMessage(e)}`;
     }
-  }
-);
-
-export const fetchAccount = createAsyncThunk(
-  "account/fetchAccounts",
-  async (id: string) => {
-    try {
-      const accounts = await accountRepo.fetchAccount(id);
-      console.log("account", accounts);
-      return accounts;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching account ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
-
-    return null;
   }
 );
 
@@ -363,35 +346,23 @@ export const fetchIndividualOrBusiness = createAsyncThunk(
 
 export const fetchAccountNumbersList = createAsyncThunk(
   "account/fetchAccountlIdsList",
-  async () => {
+  async (pageNumber: number) => {
     try {
-      const accountIds = await accountRepo.fetchAccountNumbersList();
-      return accountIds;
+      const accountIds = await accountRepo.fetchAccountNumbersList(
+        //paginationPageSize,
+        500,
+        pageNumber
+      );
+      return {
+        accountIds: accountIds.accountIds,
+        totalPages: accountIds.totalPages,
+        totalElements: accountIds.totalElements,
+        pageNumber: accountIds.pageNumber,
+        pageSize: accountIds.pageSize,
+      };
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching accounts ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching accounts ${generateErrorMessage(e)}`;
     }
-
-    return null;
-  }
-);
-
-export const fetchAccountIdsList = createAsyncThunk(
-  "account/fetchAccountlIdsList",
-  async () => {
-    try {
-      const accountIds = await accountRepo.fetchAccountIdsList();
-      return accountIds;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching accounts ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
-
-    return null;
   }
 );
 

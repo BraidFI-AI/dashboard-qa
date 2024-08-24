@@ -4,7 +4,7 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import FeeTableView from "@/core/components/views/fees/FeeTableView";
 import {
   fetchBusiness,
-  fetchBusinessAccounts,
+  fetchAllBusinessAccounts,
 } from "@/redux/slices/BusinessSlice";
 import { fetchFeesByMultipleAccountIds } from "@/redux/slices/FeeSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -21,8 +21,9 @@ const FeeTable = () => {
 
   const dispatch = useAppDispatch();
 
-  const [accIds, setAccIds] = useState<string[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [accIds, setAccIds] = useState<"loading" | string | string[]>(
+    "loading"
+  );
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
@@ -36,23 +37,26 @@ const FeeTable = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchBusinessAccounts(parseInt(params.id.toString()))).then(
+    setAccIds("loading");
+    dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
       (acc: any) => {
         let ids: string[] = [];
-        if (acc.payload) {
+        if (typeof acc.payload != "string") {
           acc.payload.forEach((acc: any) => {
             ids.push(acc.accountNumber);
           });
-          console.log(ids);
+          console.log("accids:", ids);
           setAccIds(ids);
+        } else {
+          setAccIds(acc.payload);
         }
-        setLoading(false);
       }
     );
   }, [dispatch, params.id]);
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByMultipleAccountIds(accIds ?? []),
+    () =>
+      fetchFeesByMultipleAccountIds(typeof accIds != "string" ? accIds : []),
     [accIds]
   );
 
@@ -64,18 +68,18 @@ const FeeTable = () => {
         </Link>
       </Box>
       <Box className="pb-4"></Box>
-      {loading ? (
+      {accIds == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
           <div>Loading...</div>
         </div>
-      ) : accIds == null ? (
+      ) : accIds == null || typeof accIds == "string" ? (
         <ErrorPage
           error="Error fetching fees"
           recoveryButtonOnClick={() => {
-            setLoading(true);
+            setAccIds("loading");
             dispatch(
-              fetchBusinessAccounts(parseInt(params.id.toString()))
+              fetchAllBusinessAccounts(parseInt(params.id.toString()))
             ).then((acc: any) => {
               let ids: string[] = [];
               if (acc.payload) {
@@ -85,7 +89,6 @@ const FeeTable = () => {
                 console.log(ids);
                 setAccIds(ids);
               }
-              setLoading(false);
             });
           }}
           recoveryButtonTitle="Retry"

@@ -161,7 +161,7 @@ export const fetchBusinessLimits = createAsyncThunk(
       }
 
       const businessAccounts: CustomerAccount[] =
-        await businessRepo.fetchBusinessAccounts(business.id);
+        await businessRepo.fetchAllBusinessAccounts(business.id);
 
       const businessAccountLimitsApis: any = [];
       businessAccounts.forEach((acc: CustomerAccount) => {
@@ -232,7 +232,9 @@ export const fetchIndividualLimits = createAsyncThunk(
       }
 
       const individualAccounts: CustomerAccount[] =
-        await individualRepo.fetchIndividualAccounts(individual.id);
+        await individualRepo.fetchAllIndividualAccounts(
+          individual.id.toString()
+        );
 
       const individualAccountLimitsApis: any = [];
       individualAccounts.forEach((acc: CustomerAccount) => {

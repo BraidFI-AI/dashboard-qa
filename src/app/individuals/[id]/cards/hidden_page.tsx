@@ -13,7 +13,7 @@ import MyTable from "@/core/components/Table/MyTable";
 import { GridEventListener } from "@mui/x-data-grid";
 import {
   fetchIndividual,
-  fetchIndividualAccountsCards,
+  // fetchIndividualAccountsCards,
 } from "@/redux/slices/IndividualSlice";
 
 const CardsPage = ({ params }: { params: { id: string } }) => {
@@ -51,20 +51,20 @@ const CardsPage = ({ params }: { params: { id: string } }) => {
   const handleCardModalClose = () => setCardModalOpen(false);
 
   useEffect(() => {
-    dispatch(setTitle("Individual Customer"));
-    dispatch(fetchIndividual(parseInt(params.id))).then((individual: any) => {
-      dispatch(setTitle(individual.payload.name));
-      if (individual.payload != null) {
-        dispatch(fetchIndividualAccountsCards(individual.payload)).then(
-          (data: any) => {
-            setCards(data.payload);
-            setLoading(false);
-          }
-        );
-      } else {
-        setLoading(false);
-      }
-    });
+    // dispatch(setTitle("Individual Customer"));
+    // dispatch(fetchIndividual(parseInt(params.id))).then((individual: any) => {
+    //   dispatch(setTitle(individual.payload.name));
+    //   if (individual.payload != null) {
+    //     dispatch(fetchIndividualAccountsCards(individual.payload)).then(
+    //       (data: any) => {
+    //         setCards(data.payload);
+    //         setLoading(false);
+    //       }
+    //     );
+    //   } else {
+    //     setLoading(false);
+    //   }
+    // });
   }, [dispatch, params.id]);
 
   return (

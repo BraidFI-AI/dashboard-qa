@@ -11,13 +11,14 @@ import { useParams, useRouter } from "next/navigation";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import {
   fetchIndividualV2,
-  fetchIndividualAccountsV2,
+  fetchIndividualAccounts,
   setRefreshIndividual,
   setInitialIndividualState,
 } from "@/redux/slices/IndividualSlice";
 import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
+import { PaginationStateType } from "@/core/constants";
 
 const Accounts = () => {
   const params = useParams();
@@ -25,12 +26,17 @@ const Accounts = () => {
   const dispatch = useAppDispatch();
   const [status, setstatus] = useState("");
   const [refreshAccounts, setRefreshAccounts] = useState(true);
-  const [accounts, setAccounts] = useState<
-    "loading" | string | CustomerAccount[]
-  >("loading");
 
   const individual: "loading" | string | Individual = useSelector(
     (state: any) => state.individual.individual
+  );
+
+  const accounts: "loading" | string | CustomerAccount[] = useSelector(
+    (state: any) => state.individual.individualAccounts
+  );
+
+  const pagination: PaginationStateType = useSelector(
+    (state: any) => state.individual.individualAccountsPagination
   );
 
   const refresh = useSelector((state: any) => state.individual.refresh);
@@ -39,7 +45,6 @@ const Accounts = () => {
     if (refresh) {
       dispatch(setTitle("Individual Customer"));
       dispatch(fetchIndividualV2(parseInt(params.id.toString())));
-      setAccounts("loading");
       dispatch(setRefreshIndividual(false));
     }
   }, [dispatch, params.id, refresh]);
@@ -54,8 +59,9 @@ const Accounts = () => {
 
   useEffect(() => {
     if (typeof individual != "string" && refreshAccounts) {
-      dispatch(fetchIndividualAccountsV2(individual.id)).then((data: any) => {
-        setAccounts(data.payload);
+      dispatch(
+        fetchIndividualAccounts({ id: individual.id, refresh: true })
+      ).then((data: any) => {
         setRefreshAccounts(false);
       });
     }
@@ -65,7 +71,9 @@ const Accounts = () => {
     router.push(`/accounts/${params.row.accountNumber}/`);
   };
 
-  return individual == "loading" || accounts == "loading" ? (
+  return individual == "loading" ||
+    accounts == null ||
+    accounts == "loading" ? (
     <MyCircularProgressIndicator />
   ) : typeof individual == "string" ? (
     <ErrorPage

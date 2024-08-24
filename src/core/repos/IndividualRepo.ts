@@ -51,10 +51,19 @@ class IndividualRepo {
     return accounts;
   }
 
-  public async fetchIndividualAccounts(id: number) {
-    const accounts = await this.apiClient.http<CustomerAccount[]>(
+  public async fetchIndividualAccounts(
+    id: number,
+    pageSize: number,
+    pageNumber: number
+  ) {
+    const accounts = await this.apiClient.http<{
+      content: CustomerAccount[];
+      number: number;
+      totalElements: number;
+      nextPage: boolean;
+    }>(
       Method.GET,
-      `/account?customerId=${id}`
+      `/account?customerId=${id}&pageSize=${pageSize}&pageNumber=${pageNumber}`
     );
 
     return accounts;
@@ -122,34 +131,28 @@ class IndividualRepo {
     return resp;
   }
 
-  public async fetchIndividualAccountNumbers(id: string) {
-    const accounts = await this.apiClient.http<CustomerAccount[]>(
-      Method.GET,
-      `/account?customerId=${id}`
-    );
+  public async fetchAllIndividualAccounts(id: string) {
+    const allAccounts: CustomerAccount[] = [];
+    let nextPage = true;
+    let currentPage = 0;
 
-    let idsList: string[] = [];
+    while (nextPage) {
+      const accounts = await this.apiClient.http<{
+        content: any[];
+        number: number;
+        totalElements: number;
+        nextPage: boolean;
+      }>(
+        Method.GET,
+        `/account?customerId=${id}&pageSize=${500}&pageNumber=${currentPage}`
+      );
 
-    accounts.forEach((acc: CustomerAccount) => {
-      idsList.push(acc.accountNumber);
-    });
+      allAccounts.push(...accounts.content);
+      nextPage = accounts.nextPage;
+    }
 
-    return idsList;
-  }
-
-  public async fetchIndividualAccountIds(id: string) {
-    const accounts = await this.apiClient.http<CustomerAccount[]>(
-      Method.GET,
-      `/account?customerId=${id}`
-    );
-
-    let idsList: string[] = [];
-
-    accounts.forEach((acc: CustomerAccount) => {
-      idsList.push(acc.id);
-    });
-
-    return idsList;
+    console.log("accounts", allAccounts);
+    return allAccounts;
   }
 
   public async fetchIndividualDocuments(id: number) {

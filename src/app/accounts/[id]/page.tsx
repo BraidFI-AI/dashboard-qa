@@ -29,17 +29,19 @@ import {
   DEVELOPER_OPS_ROLE,
   DEVELOPER_ROLE,
 } from "@/core/constants";
+import ErrorPage from "@/core/components/error_page";
 
 const AccountPage = () => {
   const params = useParams();
 
   const dispatch = useAppDispatch();
 
-  const [account, setAccount] = useState<Account | null>(null);
+  const [account, setAccount] = useState<"loading" | string | Account>(
+    "loading"
+  );
   const [product, setProduct] = useState<Product | null>(null);
   const [customer, setCustomer] = useState<Business | Individual | null>(null);
 
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -122,45 +124,74 @@ const AccountPage = () => {
   };
 
   useEffect(() => {
+    setAccount("loading");
     dispatch(setTitle("Account"));
+    dispatch(fetchAccount(params.id.toString())).then((acc: any) => {
+      setAccount(acc.payload);
 
-    dispatch(fetchAccount(params.id.toString())).then((data: any) => {
-      if (data.payload) {
-        reset({ status: data.payload.status });
+      if (typeof acc.payload != "string") {
+        reset({ status: acc.payload.status });
 
-        dispatch(fetchAccountBalance(data.payload.accountNumber)).then(
+        dispatch(setTitle(acc.payload.accountName));
+
+        dispatch(fetchAccountBalance(acc.payload.accountNumber)).then(
           (bal: any) => {
             setBalance(bal.payload);
           }
         );
 
-        dispatch(fetchProduct(data.payload.productId)).then((prod: any) => {
+        dispatch(fetchProduct(acc.payload.productId)).then((prod: any) => {
           setProduct(prod.payload);
         });
 
-        dispatch(fetchIndividualOrBusiness(data.payload.customerId)).then(
+        dispatch(fetchIndividualOrBusiness(acc.payload.customerId)).then(
           (cust: any) => {
             setCustomer(cust.payload);
           }
         );
       }
-      setAccount(data.payload);
-
-      if (data.payload?.accountName != null) {
-        dispatch(setTitle(data.payload.accountName));
-      }
-
-      setLoading(false);
     });
   }, [dispatch, params.id, reset]);
 
-  return loading ? (
+  return account == "loading" ? (
     <div className="flex flex-col items-center justify-center pt-10">
       <CircularProgress></CircularProgress>
       <div>Loading account...</div>
     </div>
-  ) : account == null ? (
-    <MyText>Account data not found</MyText>
+  ) : typeof account == "string" ? (
+    <ErrorPage
+      error={account}
+      recoveryButtonOnClick={() => {
+        setAccount("loading");
+        dispatch(setTitle("Account"));
+        dispatch(fetchAccount(params.id.toString())).then((acc: any) => {
+          setAccount(acc.payload);
+
+          if (typeof acc.payload != "string") {
+            reset({ status: acc.payload.status });
+
+            dispatch(setTitle(acc.payload.accountName));
+
+            dispatch(fetchAccountBalance(acc.payload.accountNumber)).then(
+              (bal: any) => {
+                setBalance(bal.payload);
+              }
+            );
+
+            dispatch(fetchProduct(acc.payload.productId)).then((prod: any) => {
+              setProduct(prod.payload);
+            });
+
+            dispatch(fetchIndividualOrBusiness(acc.payload.customerId)).then(
+              (cust: any) => {
+                setCustomer(cust.payload);
+              }
+            );
+          }
+        });
+      }}
+      recoveryButtonTitle="Retry"
+    />
   ) : (
     <div className="flex flex-row w-[650px] justify-between">
       <div className="w-[300px]">

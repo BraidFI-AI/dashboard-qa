@@ -5,10 +5,7 @@ import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlle
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyText from "@/core/components/Text/Text";
 import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
-import {
-  AccountCounterpartyIdsType,
-  fetchAccount,
-} from "@/redux/slices/AccountSlice";
+import { fetchAccount } from "@/redux/slices/AccountSlice";
 import { createLimit } from "@/redux/slices/RulesAndLimitsSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -21,7 +18,7 @@ import { useSelector } from "react-redux";
 import {
   BusinessAccountIdsType,
   fetchBusinessAccountCounterpartiesIds,
-  fetchBusinessAccountNumbers,
+  fetchAllBusinessAccounts,
 } from "@/redux/slices/BusinessSlice";
 import {
   TransactionTypesType,
@@ -41,6 +38,7 @@ const CreateLimitPage = () => {
   );
 
   const [accountId, setAccountId] = useState<string | null>(null);
+  const [account, setAccount] = useState<"loading" | string | any>("loading");
 
   const [counterpartyIds, setCounterpartyIds] = useState<
     "loading" | string | IdsListType[]
@@ -93,7 +91,7 @@ const CreateLimitPage = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchBusinessAccountNumbers(params.id.toString())).then(
+    dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
       (accs: any) => {
         if (typeof accs.payload != "string") {
           setAccountId(accs.payload[0]);
@@ -104,9 +102,11 @@ const CreateLimitPage = () => {
 
   useEffect(() => {
     if (accountId) {
+      setAccount("loading");
       setCounterpartyIds("loading");
       dispatch(fetchAccount(accountId)).then((acc: any) => {
-        if (acc.payload) {
+        setAccount(acc.payload);
+        if (typeof acc.payload != "string") {
           dispatch(fetchBusinessAccountCounterpartiesIds(acc.payload.id)).then(
             (cps: any) => {
               setCounterpartyIds(cps.payload);
@@ -259,10 +259,41 @@ const CreateLimitPage = () => {
         {limitType == "ACCOUNT_TO_COUNTERPARTY" && (
           <>
             <MyText>Counterparty</MyText>
-            {counterpartyIds == "loading" ? (
+            {counterpartyIds == "loading" || account == "loading" ? (
               <CircularProgress size={24} />
-            ) : typeof counterpartyIds == "string" ? (
-              <MyText>{counterpartyIds}</MyText>
+            ) : typeof counterpartyIds == "string" ||
+              typeof account == "string" ? (
+              <ErrorPage
+                error={
+                  typeof counterpartyIds == "string" ? counterpartyIds : account
+                }
+                recoveryButtonTitle="Refresh"
+                recoveryButtonOnClick={() => {
+                  if (accountId) {
+                    setAccount("loading");
+                    setCounterpartyIds("loading");
+                    dispatch(fetchAccount(accountId)).then((acc: any) => {
+                      setAccount(acc.payload);
+                      if (typeof acc.payload != "string") {
+                        dispatch(
+                          fetchBusinessAccountCounterpartiesIds(acc.payload.id)
+                        ).then((cps: any) => {
+                          setCounterpartyIds(cps.payload);
+                          if (
+                            typeof cps.payload != "string" &&
+                            cps.payload.length > 0
+                          ) {
+                            const id = cps.payload[0].id;
+                            if (id) {
+                              setCounterpartyId(parseInt(id));
+                            }
+                          }
+                        });
+                      }
+                    });
+                  }
+                }}
+              />
             ) : (
               <MyControlledAutocomplete
                 value={

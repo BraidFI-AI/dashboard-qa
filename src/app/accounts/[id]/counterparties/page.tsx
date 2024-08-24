@@ -15,7 +15,7 @@ import {
 import CounterpartyTableView from "@/core/components/views/counterparty/counterparty_table_view";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PaginationStateType } from "@/core/constants";
 import { setTitle } from "@/redux/slices/AppSlice";
 
@@ -23,6 +23,8 @@ const CounterpartyPage = () => {
   const params = useParams();
 
   const dispatch = useAppDispatch();
+
+  const [account, setAccount] = useState<"loading" | string | any>(null);
 
   const counterparties: AccountCounterpartyType = useSelector(
     (state: any) => state.account.counterparties
@@ -33,10 +35,11 @@ const CounterpartyPage = () => {
   );
 
   useEffect(() => {
+    setAccount("loading");
     dispatch(setTitle("Account"));
-
     dispatch(fetchAccount(params.id.toString())).then((result: any) => {
-      if (result.payload) {
+      setAccount(result.payload);
+      if (typeof result.payload != "string") {
         if (result.payload.accountName != null) {
           dispatch(setTitle(result.payload.accountName));
         }
@@ -56,15 +59,22 @@ const CounterpartyPage = () => {
         </Link>
       </Box>
       <Box className="pb-4"></Box>
-      {counterparties == "loading" ? (
+      {counterparties == "loading" || account == "loading" ? (
         <MyCircularProgressIndicator />
-      ) : typeof counterparties == "string" ? (
+      ) : typeof counterparties == "string" || typeof account == "string" ? (
         <ErrorPage
-          error={counterparties}
+          error={typeof counterparties == "string" ? counterparties : account}
           recoveryButtonTitle="Retry"
           recoveryButtonOnClick={() => {
+            setAccount("loading");
+            dispatch(setTitle("Account"));
             dispatch(fetchAccount(params.id.toString())).then((result: any) => {
-              if (result.payload) {
+              setAccount(result.payload);
+              if (typeof result.payload != "string") {
+                if (result.payload.accountName != null) {
+                  dispatch(setTitle(result.payload.accountName));
+                }
+
                 dispatch(
                   fetchAccountCounterparties({
                     id: result.payload.id,
@@ -80,8 +90,15 @@ const CounterpartyPage = () => {
           error={"No counterparties found"}
           recoveryButtonTitle="Refresh"
           recoveryButtonOnClick={() => {
+            setAccount("loading");
+            dispatch(setTitle("Account"));
             dispatch(fetchAccount(params.id.toString())).then((result: any) => {
-              if (result.payload) {
+              setAccount(result.payload);
+              if (typeof result.payload != "string") {
+                if (result.payload.accountName != null) {
+                  dispatch(setTitle(result.payload.accountName));
+                }
+
                 dispatch(
                   fetchAccountCounterparties({
                     id: result.payload.id,

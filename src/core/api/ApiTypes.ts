@@ -260,8 +260,8 @@ export interface CustomerAccount {
   };
   accountName?: string | null;
   currency: string;
-  frozen: boolean;
-  active: boolean;
+  frozen?: boolean;
+  active?: boolean;
   customerId: string;
   accountCode: string;
   accountNumber: string;
@@ -980,7 +980,7 @@ export interface RulesAndLimits {
   limitName: string | null;
   limitType: string | null;
   productId: number | null;
-  accountId: string | null;
+  accountNumber: string | null;
   counterpartyId: number | null;
   durationDays: number | null;
   amount: number | null;

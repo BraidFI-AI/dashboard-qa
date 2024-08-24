@@ -68,6 +68,7 @@ class AccountRepo {
     return response;
   }
 
+  /// down below to remove
   public async fetchIndividualOrBusiness(id: string) {
     try {
       const business = await this.apiClient.http<Business[]>(
@@ -89,36 +90,26 @@ class AccountRepo {
     }
   }
 
-  public async fetchAccountNumbersList() {
-    const accounts = await this.apiClient.http<Account[]>(
+  public async fetchAccountNumbersList(pageSize: number, pageNumber: number) {
+    const accounts = await this.apiClient.http<any>(
       Method.GET,
-      `/account`
+      `/account?pageSize=${pageSize}&pageNumber=${pageNumber}`
     );
 
     const accountIds: string[] = [];
-    accounts.map((account: Account) => {
+    accounts.content.map((account: Account) => {
       if (account && account.id) {
         accountIds.push(account.accountNumber?.toString() ?? "");
       }
     });
 
-    return accountIds;
-  }
-
-  public async fetchAccountIdsList() {
-    const accounts = await this.apiClient.http<Account[]>(
-      Method.GET,
-      `/account`
-    );
-
-    const accountIds: string[] = [];
-    accounts.map((account: Account) => {
-      if (account && account.id) {
-        accountIds.push(account.id.toString());
-      }
-    });
-
-    return accountIds;
+    return {
+      accountIds: accountIds,
+      totalPages: accounts.totalPages,
+      totalElements: accounts.totalElements,
+      pageNumber: accounts.pageNumber,
+      pageSize: accounts.pageSize,
+    };
   }
 }
 

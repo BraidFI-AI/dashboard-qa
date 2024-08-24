@@ -7,8 +7,9 @@ import Chip from "@mui/material/Chip";
 import { Controller } from "react-hook-form";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
+import CircularProgress from "@mui/material/CircularProgress";
 
-interface MyControlledAutocompleteProps {
+export interface MyControlledAutocompleteProps {
   name: string;
   displayName?: string;
   control: any;
@@ -19,6 +20,9 @@ interface MyControlledAutocompleteProps {
   value: string;
   clearable?: boolean;
   disabled?: boolean;
+  loading?: boolean;
+  loadingText?: string;
+  onScroll?: any;
 }
 function getErrorByNameString(errors: any, name: string) {
   const properties = name.split(".");
@@ -45,6 +49,9 @@ const MyControlledAutocomplete: React.FC<MyControlledAutocompleteProps> = ({
   customOnChange,
   value: val,
   disabled,
+  loading,
+  loadingText,
+  onScroll,
 }) => {
   return (
     <Controller
@@ -54,6 +61,13 @@ const MyControlledAutocomplete: React.FC<MyControlledAutocompleteProps> = ({
       defaultValue={val}
       render={({ field: { onChange, value } }) => (
         <Autocomplete
+          /// async changes
+          loading={loading}
+          loadingText={loadingText}
+          ListboxProps={{
+            onScroll: onScroll,
+          }}
+          /// async changes ^^^
           sx={{ "& fieldset": { borderRadius: "5px" } }}
           onChange={(event: any, item) => {
             onChange(item || null);
@@ -88,6 +102,17 @@ const MyControlledAutocomplete: React.FC<MyControlledAutocompleteProps> = ({
           renderInput={(params) => (
             <TextField
               {...params}
+              /// Async changes
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <React.Fragment>
+                    {loading ? <CircularProgress size={20} /> : null}
+                    {params.InputProps.endAdornment}
+                  </React.Fragment>
+                ),
+              }}
+              /// Async changes ^^^
               inputProps={{
                 ...params.inputProps,
                 className: "font-avenir-regular text-[15px] py-0 h-[30px]",
