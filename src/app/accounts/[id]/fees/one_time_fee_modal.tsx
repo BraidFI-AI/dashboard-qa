@@ -72,7 +72,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
     setAccNumber("loading");
     dispatch(fetchAccount(accountId)).then((acc: any) => {
       if (typeof acc.payload != "string") {
-        setAccNumber(acc.payload.accountNumber);
+        setAccNumber(parseInt(acc.payload.accountNumber));
       } else {
         setAccNumber(acc.payload);
         setIsOpen(false);
@@ -103,7 +103,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
                 setAccNumber("loading");
                 dispatch(fetchAccount(accountId)).then((acc: any) => {
                   if (typeof acc.payload != "string") {
-                    setAccNumber(acc.payload.accountNumber);
+                    setAccNumber(parseInt(acc.payload.accountNumber));
                   } else {
                     setAccNumber(acc.payload);
                     setIsOpen(false);
@@ -166,7 +166,12 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
                         required: true,
                       }
                 }
-                options={["SETUP_FEE", "TERMINATION_FEE"]}
+                options={[
+                  "SETUP_FEE",
+                  "TERMINATION_FEE",
+                  "WIRE_RETURN_FEE",
+                  "MONTHLY_MINIMUM_FEE",
+                ]}
               />
               <div className="pb-4"></div>
               <MyText>Note</MyText>
