@@ -49,10 +49,12 @@ const TransactionsChart = () => {
     control,
     handleSubmit,
     getValues,
+    setValue,
   } = useForm();
   const onSubmit: SubmitHandler<{
     tenantId: string;
-  }> = (data: { tenantId: string }) => {};
+    productId: string;
+  }> = (data: { tenantId: string; productId: string }) => {};
 
   const fetchDevelopersCallback = useCallback(() => {
     setDevelopers("loading");
@@ -90,8 +92,13 @@ const TransactionsChart = () => {
           });
         });
 
-        setProducts(["All", ...prodIds]);
-        setProductId("All");
+        if (prodIds.length == 0) {
+          setProducts("No products found for this developer");
+        } else {
+          setProducts(["All", ...prodIds]);
+          setProductId("All");
+          setValue("productId", "All");
+        }
       } else {
         setProducts(d.payload);
       }
@@ -197,7 +204,7 @@ const TransactionsChart = () => {
                     <div className="w-[300px]">
                       <MyControlledAutocomplete
                         clearable={false}
-                        value={`All`}
+                        value={getValues("productId") ?? ""}
                         displayName="Product ID"
                         name={"productId"}
                         control={control}
@@ -299,7 +306,7 @@ const TransactionsChart = () => {
               <div className="w-[300px]">
                 <MyControlledAutocomplete
                   clearable={false}
-                  value={`All`}
+                  value={getValues("productId") ?? ""}
                   displayName="Product ID"
                   name={"productId"}
                   control={control}
