@@ -43,7 +43,9 @@ const OFACHitDetails = () => {
   const userType = useSelector((state: any) => state.app.userType);
 
   const navigateToEntity = async (row: any) => {
-    if (row.uboId) {
+    if (row.transactionPaymentId) {
+      router.push(`/alerts-and-cases/alerts/${row.alertId}`);
+    } else if (row.uboId) {
       router.push(`/individuals/${row.individualId}`);
     } else if (row.businessName) {
       router.push(`/businesses/${row.businessId}`);
@@ -187,7 +189,16 @@ const OFACHitDetails = () => {
                   : "Unknown"
               }
             ></ItemRow>
-            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+            <ItemRow
+              title="Alert ID"
+              value={{
+                value: ofacHit.alertId ?? "",
+                link: `/alerts-and-cases/alerts/${ofacHit.alertId}`,
+              }}
+            ></ItemRow>
+            <ItemRow title="Status" value={ofacHit.status ?? ""}></ItemRow>
+            {/* Hiding the update option from ofac page to make it centeralized on alerts*/}
+            {/* {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
@@ -209,7 +220,7 @@ const OFACHitDetails = () => {
               />
             ) : (
               <ItemRow title="Status" value={ofacHit.status ?? ""}></ItemRow>
-            )}
+            )} */}
             <ItemRow
               title="Updated"
               value={timestampToDate(ofacHit.updatedAt ?? 0)}
@@ -231,7 +242,9 @@ const OFACHitDetails = () => {
             )}
           </div>
           <div className="w-[500px]">
-            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+            <ItemRow title="Note" value={ofacHit.note ?? ""}></ItemRow>
+            {/* Hiding the update option from ofac page to make it centeralized on alerts*/}
+            {/* {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
@@ -251,7 +264,7 @@ const OFACHitDetails = () => {
               />
             ) : (
               <ItemRow title="Note" value={ofacHit.note ?? ""}></ItemRow>
-            )}
+            )} */}
 
             {ofacHit.rawResults && (
               <>

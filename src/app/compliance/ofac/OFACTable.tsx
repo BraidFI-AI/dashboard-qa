@@ -55,7 +55,9 @@ const OFACHitsTable = () => {
   };
 
   const navigateToEntity = async (row: any) => {
-    if (row.uboId) {
+    if (row.transactionPaymentId) {
+      router.push(`/alerts-and-cases/alerts/${row.alertId}`);
+    } else if (row.uboId) {
       router.push(`/individuals/${row.individualId}`);
     } else if (row.businessName) {
       router.push(`/businesses/${row.businessId}`);
@@ -219,6 +221,12 @@ const OFACHitsTable = () => {
                   : params.row.transactionPaymentId
                   ? "Transaction"
                   : "Unknown",
+            },
+            {
+              field: "alertId",
+              headerName: "Alert ID",
+              flex: 1,
+              minWidth: 120,
             },
             {
               field: "status",

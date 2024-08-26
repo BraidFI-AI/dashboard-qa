@@ -78,7 +78,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
       if (typeof d.payload == "string") {
         enqueueSnackbar(d.payload, { variant: "error", persist: true });
       } else {
-        enqueueSnackbar("Individual updated successfully", {
+        enqueueSnackbar("Business updated successfully", {
           variant: "success",
         });
       }
@@ -266,64 +266,76 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
             />
             <div className="flex flex-row justify-between">
               <div className="flex flex-row">
-                <div>
-                  <MyEditableTextField
-                    editing={editing}
-                    setEditing={setEditing}
-                    editable={false}
-                    name="status"
-                    displayName="Status"
-                    control={control}
-                    errors={errors}
-                    rules={
-                      submitting
-                        ? { required: false }
-                        : {
-                            required: true,
-                          }
-                    }
-                    value={business.status}
-                    options={statusValues}
-                    submitting={false}
-                  />
-                </div>
+                {typeof ofac != "string" && ofac.status != "REVIEW" ? (
+                  <div>
+                    <MyEditableTextField
+                      editing={editing}
+                      setEditing={setEditing}
+                      editable={false}
+                      name="status"
+                      displayName="Status"
+                      control={control}
+                      errors={errors}
+                      rules={
+                        submitting
+                          ? { required: false }
+                          : {
+                              required: true,
+                            }
+                      }
+                      value={business.status}
+                      options={statusValues}
+                      submitting={false}
+                    />
+                  </div>
+                ) : (
+                  <ItemRow
+                    title="Status"
+                    value={business.status ?? ""}
+                  ></ItemRow>
+                )}
+
                 {/* <ItemRow
                   status={business.status === "ACTIVE"}
                   title="Status"
                   value={business.status ?? ""}
                 ></ItemRow> */}
-                {business.status === "BLOCKED" && (
-                  <div className="w-fit pl-10">
-                    <MyTextButton
-                      submitting={unblocking}
-                      onClick={() => {
-                        setUnblocking(true);
-                        dispatch(unblockBusiness(business.id ?? -1)).then(
-                          (biz: any) => {
-                            if (typeof biz.payload != "string") {
-                              enqueueSnackbar(
-                                "Business unblocked successfully",
-                                {
-                                  variant: "success",
-                                }
-                              );
-                              setRefresh(true);
-                            } else {
-                              enqueueSnackbar(biz.payload, {
-                                variant: "error",
-                              });
+                {typeof ofac != "string" &&
+                  ofac.status != "REVIEW" &&
+                  business.status === "BLOCKED" && (
+                    <div className="w-fit pl-10">
+                      <MyTextButton
+                        submitting={unblocking}
+                        onClick={() => {
+                          setUnblocking(true);
+                          dispatch(unblockBusiness(business.id ?? -1)).then(
+                            (biz: any) => {
+                              if (typeof biz.payload != "string") {
+                                enqueueSnackbar(
+                                  "Business unblocked successfully",
+                                  {
+                                    variant: "success",
+                                  }
+                                );
+                                setRefresh(true);
+                              } else {
+                                enqueueSnackbar(biz.payload, {
+                                  variant: "error",
+                                });
+                              }
+                              setUnblocking(false);
                             }
-                            setUnblocking(false);
-                          }
-                        );
-                      }}
-                    >
-                      Unblock
-                    </MyTextButton>
-                  </div>
-                )}
+                          );
+                        }}
+                      >
+                        Unblock
+                      </MyTextButton>
+                    </div>
+                  )}
               </div>
-              <MyEditButton editing={editing} setEditing={setEditing} />
+              {typeof ofac != "string" && ofac.status != "REVIEW" && (
+                <MyEditButton editing={editing} setEditing={setEditing} />
+              )}
             </div>
             {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
               <div className="flex flex-row justify-between">

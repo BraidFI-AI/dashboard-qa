@@ -1009,6 +1009,7 @@ export interface OFAC {
   status: string | null;
   individualName: string | null;
   key: string | null;
+  alertId?: string | null;
   value: string | null;
   createdAt?: number | null;
   updatedAt: number | null;
