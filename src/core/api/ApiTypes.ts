@@ -1013,6 +1013,7 @@ export interface OFAC {
   createdAt?: number | null;
   updatedAt: number | null;
   updatedBy: string | null;
+  transactionPaymentId?: string | null;
   results: {
     altNames: null;
     sdns: [

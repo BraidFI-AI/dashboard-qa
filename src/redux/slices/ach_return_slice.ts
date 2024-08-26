@@ -134,11 +134,11 @@ export const fetchUnauthorizedReturns = createAsyncThunk(
           : thunkApi.getState().return.pagination.pageNumber
       );
 
-      const filtered = returns.content.filter((ret: ACH) => {
-        if (UnauthorisedReturnCodes.includes(ret.returnCode ?? "")) {
-          return true;
-        } else {
-          return false;
+      const filtered: ACH[] = [];
+
+      returns.content.forEach((ret: any) => {
+        if (UnauthorisedReturnCodes.includes(ret?.ach?.returnCode ?? "")) {
+          filtered.push(ret.ach);
         }
       });
 

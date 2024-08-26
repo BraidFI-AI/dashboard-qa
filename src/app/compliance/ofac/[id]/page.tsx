@@ -164,6 +164,7 @@ const OFACHitDetails = () => {
                       ofacHit.businessName ??
                       ofacHit.individualName ??
                       ofacHit.counterpartyName ??
+                      ofacHit.transactionPaymentId ??
                       "Unknown",
                     link: "asd",
                   }}
@@ -181,6 +182,8 @@ const OFACHitDetails = () => {
                   ? "Individual"
                   : ofacHit.counterpartyName
                   ? "Counterparty"
+                  : ofacHit.transactionPaymentId
+                  ? "Transaction"
                   : "Unknown"
               }
             ></ItemRow>

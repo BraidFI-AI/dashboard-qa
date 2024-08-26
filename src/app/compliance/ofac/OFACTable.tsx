@@ -158,14 +158,16 @@ const OFACHitsTable = () => {
                   primary={
                     params.row.businessName == null &&
                     params.row.individualName == null &&
-                    params.row.counterpartyName == null
+                    params.row.counterpartyName == null &&
+                    params.row.transactionPaymentId == null
                       ? false
                       : true
                   }
                   underline={
                     params.row.businessName == null &&
                     params.row.individualName == null &&
-                    params.row.counterpartyName == null
+                    params.row.counterpartyName == null &&
+                    params.row.transactionPaymentId == null
                       ? false
                       : true
                   }
@@ -174,6 +176,7 @@ const OFACHitsTable = () => {
                   {params.row.businessName ??
                     params.row.individualName ??
                     params.row.counterpartyName ??
+                    params.row.transactionPaymentId ??
                     "Unknown"}
                 </MyText>
               ),
@@ -181,6 +184,7 @@ const OFACHitsTable = () => {
                 params.row.businessName ??
                 params.row.individualName ??
                 params.row.counterpartyName ??
+                params.row.transactionPaymentId ??
                 "Unknown",
             },
             {
@@ -198,6 +202,8 @@ const OFACHitsTable = () => {
                     ? "Individual"
                     : params.row.counterpartyName
                     ? "Counterparty"
+                    : params.row.transactionPaymentId
+                    ? "Transaction"
                     : "Unknown"}
                 </div>
               ),
@@ -210,6 +216,8 @@ const OFACHitsTable = () => {
                   ? "Individual"
                   : params.row.counterpartyName
                   ? "Counterparty"
+                  : params.row.transactionPaymentId
+                  ? "Transaction"
                   : "Unknown",
             },
             {
