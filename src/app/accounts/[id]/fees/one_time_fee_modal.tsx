@@ -55,7 +55,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
     if (typeof accNumber == "string") {
       return;
     }
-    data = { ...data, accountNumber: accNumber.accNumber };
+    data = { ...data, accountNumber: accNumber?.accNumber };
     console.log("data", data);
 
     setSubmitting(true);
