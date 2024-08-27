@@ -94,7 +94,7 @@ const CreateLimitPage = () => {
     dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
       (accs: any) => {
         if (typeof accs.payload != "string") {
-          setAccountId(accs.payload[0]);
+          setAccountId(accs.payload[0].accountNumber);
         }
       }
     );
@@ -146,7 +146,19 @@ const CreateLimitPage = () => {
         {accountIds == "loading" ? (
           <CircularProgress size={24} />
         ) : typeof accountIds == "string" ? (
-          <MyText>{accountIds}</MyText>
+          <ErrorPage
+            error={accountIds}
+            recoveryButtonOnClick={() => {
+              dispatch(
+                fetchAllBusinessAccounts(parseInt(params.id.toString()))
+              ).then((accs: any) => {
+                if (typeof accs.payload != "string") {
+                  setAccountId(accs.payload[0].accountNumber);
+                }
+              });
+            }}
+            recoveryButtonTitle="Retry"
+          />
         ) : (
           <MyControlledAutocomplete
             value={accountIds[0]}
