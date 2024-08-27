@@ -41,9 +41,9 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
   const dispatch = useAppDispatch();
 
   const [submitting, setSubmitting] = useState(false);
-  const [accNumber, setAccNumber] = useState<"loading" | string | number>(
-    "loading"
-  );
+  const [accNumber, setAccNumber] = useState<
+    "loading" | string | { accNumber: string }
+  >("loading");
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -52,7 +52,10 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
     handleSubmit,
   } = useForm<OneTimeFees>();
   const onSubmit: SubmitHandler<OneTimeFees> = (data: OneTimeFees) => {
-    data = { ...data, accountNumber: accNumber.toString() };
+    if (typeof accNumber == "string") {
+      return;
+    }
+    data = { ...data, accountNumber: accNumber.accNumber };
     console.log("data", data);
 
     setSubmitting(true);
@@ -72,7 +75,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
     setAccNumber("loading");
     dispatch(fetchAccount(accountId)).then((acc: any) => {
       if (typeof acc.payload != "string") {
-        setAccNumber(parseInt(acc.payload.accountNumber));
+        setAccNumber({ accNumber: acc.payload.accountNumber });
       } else {
         setAccNumber(acc.payload);
         setIsOpen(false);
@@ -103,7 +106,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
                 setAccNumber("loading");
                 dispatch(fetchAccount(accountId)).then((acc: any) => {
                   if (typeof acc.payload != "string") {
-                    setAccNumber(parseInt(acc.payload.accountNumber));
+                    setAccNumber({ accNumber: acc.payload.accountNumber });
                   } else {
                     setAccNumber(acc.payload);
                     setIsOpen(false);
@@ -133,7 +136,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
               />
               <div className="pb-4"></div>
               <MyText>Account number</MyText>
-              <MyText size="md">{accNumber}</MyText>
+              <MyText size="md">{accNumber.accNumber}</MyText>
               <div className="pb-4"></div>
               <MyText>Settlement account number</MyText>
               <MyControlledTextField
