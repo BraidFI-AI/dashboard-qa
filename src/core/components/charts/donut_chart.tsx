@@ -12,12 +12,12 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
   const svgRef = React.useRef(null);
 
   useEffect(() => {
-    const chartWidth = 700;
+    const chartWidth = 1500;
 
     d3.select(svgRef.current).selectAll("*").remove();
 
     const height = Math.min(chartWidth, 320);
-    const radius = Math.min(chartWidth, height) / 1.4;
+    const radius = 200; //Math.min(chartWidth, height) / 1.4;
 
     const arc = d3
       .arc()
@@ -53,8 +53,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .select(svgRef.current)
       .attr("width", chartWidth)
       .attr("height", height)
-      .attr("viewBox", `-250 -220 ${1080} ${height * 1.2 + radius * 0.2}`);
-
+      .attr("viewBox", `-20 -220 ${chartWidth} ${height * 1.2 + radius * 0.2}`);
     svg
       .append("g")
       .selectAll()
@@ -67,7 +66,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
 
     const legend = svg
       .append("g")
-      .attr("transform", `translate(${chartWidth / 2.3}, 0)`)
+      .attr("transform", `translate(${radius + 80}, 0)`)
       .selectAll(".legend")
       .data(pie(data as any))
       .enter()
