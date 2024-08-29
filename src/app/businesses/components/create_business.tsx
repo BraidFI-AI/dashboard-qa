@@ -353,18 +353,22 @@ const CreateBusinessPage = () => {
                 rules={{
                   required: false,
                   validate: (value: any) => {
-                    const dateObject = moment(value.toString());
-                    if (dateObject.toString() === "Invalid Date") {
-                      return "Invalid Date";
+                    if (value != null) {
+                      const dateObject = moment(value.toString());
+                      if (dateObject.toString() === "Invalid Date") {
+                        return "Invalid Date";
+                      } else {
+                        // const now = moment();
+                        // dateObject.setHours(0, 0, 0, 0);
+                        // today.setHours(0, 0, 0, 0);
+                        // if (dateObject > today) {
+                        //   return "Date cannot be greater the today's date";
+                        // }
+                      }
+                      return true;
                     } else {
-                      // const now = moment();
-                      // dateObject.setHours(0, 0, 0, 0);
-                      // today.setHours(0, 0, 0, 0);
-                      // if (dateObject > today) {
-                      //   return "Date cannot be greater the today's date";
-                      // }
+                      return "Please select a date";
                     }
-                    return true;
                   },
                 }}
                 value=""

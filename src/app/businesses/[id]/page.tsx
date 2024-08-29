@@ -190,7 +190,9 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               ></ItemRow>
               <ItemRow
                 title="Formation Date"
-                value={business.formationDate.toString().replaceAll(",", "-")}
+                value={
+                  business.formationDate?.toString()?.replaceAll(",", "-") ?? ""
+                }
               ></ItemRow>
               <ItemRow
                 title="ACH company ID"
@@ -367,7 +369,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 title="CIP Status"
                 value={
                   business.cipStatus != null
-                    ? business.cipStatus.toString()
+                    ? business.cipStatus?.toString()
                     : ""
                 }
               ></ItemRow>
@@ -390,7 +392,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 recoveryButtonOnClick={() => {
                   if (business.ofacId) {
                     setOfac("loading");
-                    dispatch(fetchOFACHitNew(business.ofacId.toString())).then(
+                    dispatch(fetchOFACHitNew(business.ofacId?.toString())).then(
                       (o: any) => {
                         setOfac(o.payload);
                       }
