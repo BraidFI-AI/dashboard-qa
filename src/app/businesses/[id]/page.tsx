@@ -19,7 +19,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import { enqueueSnackbar } from "notistack";
-import { PDFDocument } from "pdf-lib";
+// import { PDFDocument } from "pdf-lib";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
