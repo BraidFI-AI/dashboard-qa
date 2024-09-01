@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import { fetchCase } from "@/redux/slices/cases_slice";
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const ViewDocument = () => {
   const dispatch = useAppDispatch();

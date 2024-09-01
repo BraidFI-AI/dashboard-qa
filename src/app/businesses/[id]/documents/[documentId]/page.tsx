@@ -11,7 +11,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import MyText from "@/core/components/Text/Text";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import { useSearchParams } from "next/navigation";
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const ViewDocument = ({
   params,
