@@ -28,7 +28,6 @@ import Link from "next/link";
 import { enqueueSnackbar } from "notistack";
 import React, { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { PDFDocument } from "pdf-lib";
 
 const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
@@ -342,33 +341,33 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
     }
   }, [dispatch, params.id, refresh]);
 
-  useEffect(() => {
-    const checkPDFFields = async () => {
-      console.log("checking if pdf values are provided");
+  // useEffect(() => {
+  //   const checkPDFFields = async () => {
+  //     console.log("checking if pdf values are provided");
 
-      const form = (
-        await PDFDocument.load(await pdfTemplate.arrayBuffer())
-      ).getForm();
+  //     const form = (
+  //       await PDFDocument.load(await pdfTemplate.arrayBuffer())
+  //     ).getForm();
 
-      let missingFields = "";
+  //     let missingFields = "";
 
-      const bizName = form.getFieldMaybe("bizName");
-      const dba = form.getFieldMaybe("CharacterName 2");
+  //     const bizName = form.getFieldMaybe("bizName");
+  //     const dba = form.getFieldMaybe("CharacterName 2");
 
-      if (!bizName) {
-        missingFields += "bizName ";
-      }
-      if (!dba) {
-        missingFields += "dba ";
-      }
+  //     if (!bizName) {
+  //       missingFields += "bizName ";
+  //     }
+  //     if (!dba) {
+  //       missingFields += "dba ";
+  //     }
 
-      setMissingPDFFields(missingFields == "" ? null : missingFields);
-    };
+  //     setMissingPDFFields(missingFields == "" ? null : missingFields);
+  //   };
 
-    if (pdfTemplate != null) {
-      checkPDFFields();
-    }
-  }, [pdfTemplate]);
+  //   if (pdfTemplate != null) {
+  //     checkPDFFields();
+  //   }
+  // }, [pdfTemplate]);
 
   return (
     <div className="pb-10">
