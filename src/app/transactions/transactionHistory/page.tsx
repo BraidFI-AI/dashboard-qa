@@ -17,9 +17,11 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import { enqueueSnackbar } from "notistack";
 import { useSelector } from "react-redux";
+import { useSearchParams } from "next/navigation";
 
 const Transactions = () => {
   const dispatch = useAppDispatch();
+  const qParams = useSearchParams();
 
   const [submitting, setSubmitting] = useState(true);
 
@@ -31,28 +33,72 @@ const Transactions = () => {
 
   const [expandTable, toggleExpandTable] = useState<boolean>(false);
 
-  const fetchTransactionsHelperCallback = useCallback(() => {
-    setSubmitting(true);
-
-    dispatch(
-      fetchTransactions({
-        criteria: { ...filters },
-        refresh: true,
-      })
-    ).then((data: any) => {
-      console.log(data.payload);
-      setSubmitting(false);
-    });
-  }, [dispatch, filters]);
-
   useEffect(() => {
-    fetchTransactionsHelperCallback();
-  }, [dispatch, fetchTransactionsHelperCallback]);
+    const params: { [anyProp: string]: string | string[] } = {};
+
+    qParams.forEach((value, key) => {
+      if (value.includes(",")) {
+        params[key] = value.split(",");
+      } else {
+        params[key] = value;
+      }
+    });
+
+    setFilters(params as TransactionSearch);
+
+    console.log("params:", params);
+
+    const fetchTransactionsHelper = () => {
+      setSubmitting(true);
+      console.log("filters:", params);
+      dispatch(
+        fetchTransactions({
+          criteria: { ...params },
+          refresh: true,
+        })
+      ).then((data: any) => {
+        console.log(data.payload);
+        setSubmitting(false);
+      });
+    };
+
+    fetchTransactionsHelper();
+  }, [dispatch, qParams]);
+
+  // useEffect(() => {
+  //   const params: { [anyProp: string]: string } = {};
+
+  //   qParams.forEach((value, key) => {
+  //     params[key] = value;
+  //   });
+
+  //   setFilters(params as TransactionSearch);
+
+  //   console.log("params:", params);
+  // }, [qParams]);
+
+  // const fetchTransactionsHelperCallback = useCallback(() => {
+  //   setSubmitting(true);
+  //   console.log("filters:", filters);
+  //   dispatch(
+  //     fetchTransactions({
+  //       criteria: { ...filters },
+  //       refresh: true,
+  //     })
+  //   ).then((data: any) => {
+  //     console.log(data.payload);
+  //     setSubmitting(false);
+  //   });
+  // }, [dispatch, filters]);
+
+  // useEffect(() => {
+  //   fetchTransactionsHelperCallback();
+  // }, [dispatch, fetchTransactionsHelperCallback]);
 
   return (
     <div className="flex flex-col h-full">
       <div className="pb-2 w-fit">
-        <TransactionFilter setFilters={setFilters} />
+        <TransactionFilter />
       </div>
       {transactions == "loading" ? (
         <MyCircularProgressIndicator />
@@ -64,7 +110,31 @@ const Transactions = () => {
             <ErrorPage
               error={transactions}
               recoveryButtonOnClick={() => {
-                fetchTransactionsHelperCallback();
+                const params: { [anyProp: string]: string } = {};
+
+                qParams.forEach((value, key) => {
+                  params[key] = value;
+                });
+
+                setFilters(params as TransactionSearch);
+
+                console.log("params:", params);
+
+                const fetchTransactionsHelper = () => {
+                  setSubmitting(true);
+                  console.log("filters:", params);
+                  dispatch(
+                    fetchTransactions({
+                      criteria: { ...params },
+                      refresh: true,
+                    })
+                  ).then((data: any) => {
+                    console.log(data.payload);
+                    setSubmitting(false);
+                  });
+                };
+
+                fetchTransactionsHelper();
               }}
               recoveryButtonTitle="Retry"
             />

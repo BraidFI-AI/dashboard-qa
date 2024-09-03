@@ -23,14 +23,13 @@ import { useAppDispatch } from "@/redux/store/store";
 import MyControlledMultiAutocomplete from "@/core/components/Autocomplete/MyControlledMultiAutocomplete";
 import { fetchProductIdsList } from "@/redux/slices/ach_return_slice";
 import MyTextButton from "@/core/components/Button/MyTextButton";
+import { useRouter, useSearchParams } from "next/navigation";
 
-type TransactionFilterProps = {
-  setFilters: any;
-};
+type TransactionFilterProps = {};
 
-const TransactionFilter: React.FC<TransactionFilterProps> = ({
-  setFilters,
-}) => {
+const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
+  const router = useRouter();
+  const qParams = useSearchParams();
   const dispatch = useAppDispatch();
   const transactionTypes: TransactionTypesType = useSelector(
     (state: any) => state.app.transactionTypes
@@ -60,6 +59,10 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({
 
     if (data.accountNumber == null || data.accountNumber == "") {
       data.accountNumber = undefined;
+    }
+
+    if (data.paymentId == null || data.paymentId == "") {
+      data.paymentId = undefined;
     }
 
     if (data.achStatus == null || data.achStatus == "") {
@@ -94,7 +97,19 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({
       data.transactionType = undefined;
     }
 
-    setFilters(data);
+    let params = "?";
+
+    for (const key in data) {
+      if (data[key] !== undefined) {
+        params += `${key}=${data[key]}&`;
+      }
+    }
+
+    // remove the last &
+    params = params.slice(0, -1);
+
+    router.replace(`/transactions/transactionHistory${params}`);
+
     setDrawerOpen(false);
   };
 
@@ -109,6 +124,22 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({
       }
       setDrawerOpen(open);
     };
+
+  useEffect(() => {
+    reset({
+      accountNumber: qParams.get("accountNumber") ?? "",
+      achStatus: qParams.get("achStatus") ?? "",
+      beginDate: qParams.get("beginDate") ?? undefined,
+      endDate: qParams.get("endDate") ?? undefined,
+      maxAmount: qParams.get("maxAmount") ?? "",
+      minAmount: qParams.get("minAmount") ?? "",
+      productId: qParams.get("productId") ?? "",
+      transactionStatus: qParams.getAll("transactionStatus") ?? [],
+      transactionType: qParams.getAll("transactionType") ?? [],
+      paymentId: qParams.get("paymentId") ?? "",
+    });
+    setProductId(undefined);
+  }, [qParams]);
 
   useEffect(() => {
     dispatch(fetchProductIdsList()).then((data: any) => {
@@ -178,6 +209,17 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({
                 />
               )}
             </Box>
+          </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Payment ID</MyText>
+            <MyControlledTextField
+              name="paymentId"
+              displayName="Payment ID"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("paymentId")}
+            />
           </Box>
           <Box className="pb-4">
             <MyText>Transaction Type</MyText>
@@ -339,7 +381,6 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({
             <Box className="w-32 pt-6">
               <MyTextButton
                 onClick={() => {
-                  setFilters(null);
                   reset({
                     accountNumber: "",
                     achStatus: "",
@@ -350,9 +391,12 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({
                     productId: "",
                     transactionStatus: [],
                     transactionType: [],
+                    paymentId: "",
                   });
                   setProductId(undefined);
                   setDrawerOpen(false);
+
+                  router.replace(`/transactions/transactionHistory`);
                 }}
               >
                 Reset Filters

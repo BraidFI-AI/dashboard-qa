@@ -123,7 +123,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
         const hoverData = (d.data as any).hover;
 
         t.selectAll("tspan")
-          .data(hoverData.split(" "))
+          .data(hoverData?.split(" "))
           .join("tspan")
           .attr("x", 0)
           .attr("dy", "0em")

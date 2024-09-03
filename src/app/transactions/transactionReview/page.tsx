@@ -13,8 +13,10 @@ import {
   fetchToReviewACHTransactions,
   setLoadingTransactions,
 } from "@/redux/slices/transaction_review_slice";
+import { useSearchParams } from "next/navigation";
 
 const TransactionReviewPage = () => {
+  const qParams = useSearchParams();
   const dispatch = useAppDispatch();
 
   const [init, setInit] = useState(true);
@@ -28,8 +30,19 @@ const TransactionReviewPage = () => {
     if (init) {
       setInit(false);
     }
-    dispatch(fetchToReviewACHTransactions({ refresh: true }));
-  }, [dispatch, init]);
+
+    const params: { [anyProp: string]: string | string[] } = {};
+
+    qParams.forEach((value, key) => {
+      if (value.includes(",")) {
+        params[key] = value.split(",");
+      } else {
+        params[key] = value;
+      }
+    });
+
+    dispatch(fetchToReviewACHTransactions({ refresh: true, filter: params }));
+  }, [dispatch, init, qParams]);
 
   return transactions === "loading" || init == true ? (
     <MyCircularProgressIndicator />
@@ -37,7 +50,18 @@ const TransactionReviewPage = () => {
     <ErrorPage
       error={transactions}
       recoveryButtonOnClick={() => {
-        dispatch(fetchToReviewACHTransactions({ refresh: true }));
+        const params: { [anyProp: string]: string | string[] } = {};
+
+        qParams.forEach((value, key) => {
+          if (value.includes(",")) {
+            params[key] = value.split(",");
+          } else {
+            params[key] = value;
+          }
+        });
+        dispatch(
+          fetchToReviewACHTransactions({ refresh: true, filter: params })
+        );
       }}
       recoveryButtonTitle="Retry"
     />

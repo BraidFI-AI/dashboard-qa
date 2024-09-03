@@ -104,7 +104,16 @@ const AlertsPage = () => {
       />
       <ItemRow title="Description" value={alert.description ?? ""} />
       <ItemRow title="Entity Type" value={alert.contextType ?? ""} />
-      {alert.contextType == "TRANSACTION" ? (
+      {alert.type == "OFAC" ? (
+        <ItemRow
+          title="Entity ID"
+          value={{
+            value: alert.contextId,
+            link: `/compliance/ofac/${alert.contextId}`,
+          }}
+        />
+      ) : alert.type == "TRANSACTION_MONITORING" ||
+        alert.type == "TRANSACTION_REVIEW" ? (
         <div
           className="cursor-pointer"
           onClick={(e: any) => {
@@ -117,14 +126,18 @@ const AlertsPage = () => {
         >
           <ItemRow title="Entity ID" value={alert.contextId} primary={true} />
         </div>
-      ) : alert.contextType == "VELOCITY_LIMIT" ? (
+      ) : alert.type == "DUAL_APPROVAL" ? (
         <>
           {context == "loading" ? (
             <ItemRow title="Entity ID" value={alert.contextId} />
           ) : context == null || typeof context == "string" ? (
             <ErrorPage
               error={
-                typeof context == "string" ? context : "Failed to fetch limit"
+                typeof context == "string"
+                  ? context
+                  : `Failed to fetch ${alert.contextType
+                      ?.toLowerCase()
+                      ?.replaceAll("_", " ")}`
               }
               recoveryButtonTitle="Retry"
               recoveryButtonOnClick={() => {
@@ -141,21 +154,21 @@ const AlertsPage = () => {
               value={{
                 value: context.limitName,
                 link:
-                  context.productId != null
-                    ? `/configuration/products/${context.productId}/limits/${context.id}`
-                    : `/accounts/${context.accountNumber}/limits/${context.id}`,
+                  alert.contextType == "VELOCITY_LIMIT"
+                    ? context.productId != null
+                      ? `/configuration/products/${context.productId}/limits/${context.id}`
+                      : `/accounts/${context.accountNumber}/limits/${context.id}`
+                    : alert.contextType == "PRODUCT"
+                    ? `/configuration/products/${alert.contextId}`
+                    : alert.contextType == "FILE_NAME"
+                    ? `transactions/transactionReview?includeWire=true&includeAch=false&wireFileHandle=${alert.contextId}`
+                    : "",
               }}
             />
           )}
         </>
       ) : (
-        <ItemRow
-          title="Entity ID"
-          value={{
-            value: alert.contextId,
-            link: `/compliance/ofac/${alert.contextId}`,
-          }}
-        />
+        <ItemRow title="Entity ID" value={alert.contextId} />
       )}
       <div className="h-10" />
     </>
