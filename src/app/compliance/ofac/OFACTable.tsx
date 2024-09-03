@@ -47,7 +47,7 @@ const OFACHitsTable = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOFACHits(false));
+    dispatch(fetchOFACHits(true));
   }, []);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
@@ -56,7 +56,9 @@ const OFACHitsTable = () => {
 
   const navigateToEntity = async (row: any) => {
     if (row.transactionPaymentId) {
-      router.push(`/alerts-and-cases/alerts/${row.alertId}`);
+      router.push(
+        `/transactions/transactionHistory?paymentId=${row.transactionPaymentId}`
+      );
     } else if (row.uboId) {
       router.push(`/individuals/${row.individualId}`);
     } else if (row.businessName) {

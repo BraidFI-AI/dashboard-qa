@@ -58,7 +58,12 @@ class TransactionRepo {
 
   public async fetchToReviewACHTransactions(
     pageSize: number,
-    pageNumber: number
+    pageNumber: number,
+    filter: {
+      includeWire?: boolean;
+      includeAch?: boolean;
+      wireFileHandle?: string;
+    }
   ) {
     const resp = await this.apiClient.http<{
       content: Transaction[];
@@ -67,7 +72,7 @@ class TransactionRepo {
     }>(
       Method.POST,
       `/transaction/manual-review?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      {}
+      filter
     );
 
     const transactions = resp.content;

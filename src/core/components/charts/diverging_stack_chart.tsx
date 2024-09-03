@@ -179,7 +179,9 @@ const DivergingStackChart: React.FC<DivergingStackChartProps> = ({
         transactions.forEach((transaction, index) => {
           tooltipText += `${
             transaction.type != "" ? transaction.type : "N/a"
-          } : ${toDollarFormat(transaction.volume)}<br/>`;
+          } : ${transaction.isDebit ? "-" : ""}${toDollarFormat(
+            transaction.volume
+          )}<br/>`;
         });
 
         // Show the tooltip and set its text
