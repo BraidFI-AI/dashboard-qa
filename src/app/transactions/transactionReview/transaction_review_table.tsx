@@ -251,24 +251,24 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
             headerName: "Transaction Type",
             width: 120,
           },
-          {
-            field: "review",
-            headerName: "Review",
-            flex: 1,
-            minWidth: 150,
-            renderCell: (params: any) => (
-              <div className="flex items-center justify-center">
-                <MyBlueButton
-                  onClick={() => {
-                    setSelectedTransaction(params.row);
-                    handleReviewModalOpen();
-                  }}
-                >
-                  Review
-                </MyBlueButton>
-              </div>
-            ),
-          },
+          // {
+          //   field: "review",
+          //   headerName: "Review",
+          //   flex: 1,
+          //   minWidth: 150,
+          //   renderCell: (params: any) => (
+          //     <div className="flex items-center justify-center">
+          //       <MyBlueButton
+          //         onClick={() => {
+          //           setSelectedTransaction(params.row);
+          //           handleReviewModalOpen();
+          //         }}
+          //       >
+          //         Review
+          //       </MyBlueButton>
+          //     </div>
+          //   ),
+          // },
         ]}
         rows={transactions}
       />

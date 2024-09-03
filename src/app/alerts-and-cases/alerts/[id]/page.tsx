@@ -129,7 +129,18 @@ const AlertsPage = () => {
       ) : alert.type == "DUAL_APPROVAL" ? (
         <>
           {context == "loading" ? (
-            <ItemRow title="Entity ID" value={alert.contextId} />
+            <ItemRow
+              title="Entity ID"
+              value={{
+                value: alert.contextId,
+                link:
+                  alert.contextType == "PRODUCT"
+                    ? `/configuration/products/${alert.contextId}`
+                    : alert.contextType == "FILE_NAME"
+                    ? `/transactions/transactionReview?includeWire=true&includeAch=false&wireFileHandle=${alert.contextId}`
+                    : "",
+              }}
+            />
           ) : context == null || typeof context == "string" ? (
             <ErrorPage
               error={
@@ -152,7 +163,10 @@ const AlertsPage = () => {
             <ItemRow
               title="Entity ID"
               value={{
-                value: context.limitName,
+                value:
+                  alert.contextType == "VELOCITY_LIMIT"
+                    ? context.limitName
+                    : alert.contextId,
                 link:
                   alert.contextType == "VELOCITY_LIMIT"
                     ? context.productId != null
@@ -161,7 +175,7 @@ const AlertsPage = () => {
                     : alert.contextType == "PRODUCT"
                     ? `/configuration/products/${alert.contextId}`
                     : alert.contextType == "FILE_NAME"
-                    ? `transactions/transactionReview?includeWire=true&includeAch=false&wireFileHandle=${alert.contextId}`
+                    ? `/transactions/transactionReview?includeWire=true&includeAch=false&wireFileHandle=${alert.contextId}`
                     : "",
               }}
             />
