@@ -107,10 +107,9 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
 
     // remove the last &
     params = params.slice(0, -1);
+    setDrawerOpen(false);
 
     router.replace(`/transactions/transactionHistory${params}`);
-
-    setDrawerOpen(false);
   };
 
   const toggleDrawer =
