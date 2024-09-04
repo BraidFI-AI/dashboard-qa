@@ -128,6 +128,20 @@ export const fetchTransactions = createAsyncThunk(
     if (data.criteria.recepientNote == "") {
       data.criteria.recepientNote = undefined;
     }
+    if (
+      data.criteria.transactionType != null &&
+      data.criteria.transactionType != "" &&
+      typeof data.criteria.transactionType == "string"
+    ) {
+      data.criteria.transactionType = [data.criteria.transactionType];
+    }
+    if (
+      data.criteria.transactionStatus != null &&
+      data.criteria.transactionStatus != "" &&
+      typeof data.criteria.transactionStatus == "string"
+    ) {
+      data.criteria.transactionStatus = [data.criteria.transactionStatus];
+    }
 
     try {
       if (data.criteria.beginDate) {
