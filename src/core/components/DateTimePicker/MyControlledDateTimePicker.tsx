@@ -56,7 +56,7 @@ const MyControlledDatePicker: React.FC<MyControlledDateTimePickerProps> = ({
                 // fontFamily: "AvenirNext LT Pro Regular",
               },
             }}
-            value={value}
+            value={typeof value == "string" ? moment(value) : value}
             onChange={(event) => {
               onChange(event ? event : undefined);
             }}
