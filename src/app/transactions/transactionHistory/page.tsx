@@ -65,36 +65,6 @@ const Transactions = () => {
     fetchTransactionsHelper();
   }, [dispatch, qParams]);
 
-  // useEffect(() => {
-  //   const params: { [anyProp: string]: string } = {};
-
-  //   qParams.forEach((value, key) => {
-  //     params[key] = value;
-  //   });
-
-  //   setFilters(params as TransactionSearch);
-
-  //   console.log("params:", params);
-  // }, [qParams]);
-
-  // const fetchTransactionsHelperCallback = useCallback(() => {
-  //   setSubmitting(true);
-  //   console.log("filters:", filters);
-  //   dispatch(
-  //     fetchTransactions({
-  //       criteria: { ...filters },
-  //       refresh: true,
-  //     })
-  //   ).then((data: any) => {
-  //     console.log(data.payload);
-  //     setSubmitting(false);
-  //   });
-  // }, [dispatch, filters]);
-
-  // useEffect(() => {
-  //   fetchTransactionsHelperCallback();
-  // }, [dispatch, fetchTransactionsHelperCallback]);
-
   return (
     <div className="flex flex-col h-full">
       <div className="pb-2 w-fit">
