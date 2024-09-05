@@ -699,6 +699,7 @@ export interface TransactionSearch {
   maxAmount?: string;
   minAmount?: string;
   productId?: string;
+  paymentId?: string;
   transactionStatus?: string[];
   transactionType?: string[];
 }

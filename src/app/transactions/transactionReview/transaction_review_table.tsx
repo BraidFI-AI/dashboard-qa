@@ -8,12 +8,12 @@ import timestampToDate from "@/core/utils/timestampToDate";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ACHModelView from "@/core/components/views/ach/ach_modal_view";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import MyText from "@/core/components/Text/Text";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/redux/store/store";
 import ReviewTransactionModal from "./review_transaction_modal";
 import { useSelector } from "react-redux";
@@ -27,6 +27,7 @@ type TransactionReviewTableProps = {};
 
 const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
   const router = useRouter();
+  const qParams = useSearchParams();
 
   const dispatch = useAppDispatch();
 
@@ -37,6 +38,12 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
   const pagination: PaginationStateType = useSelector(
     (state: any) => state.transactionReview.pagination
   );
+
+  const [filters, setFilters] = useState<{
+    includeWire?: boolean;
+    includeAch?: boolean;
+    wireFileHandle?: string;
+  }>({});
 
   const [navigating, setNavigating] = useState(false);
 
@@ -64,6 +71,26 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
       handleModalOpen();
     }
   };
+
+  useEffect(() => {
+    const params: { [anyProp: string]: string | string[] } = {};
+
+    qParams.forEach((value, key) => {
+      if (value.includes(",")) {
+        params[key] = value.split(",");
+      } else {
+        params[key] = value;
+      }
+    });
+
+    setFilters(
+      params as {
+        includeWire?: boolean;
+        includeAch?: boolean;
+        wireFileHandle?: string;
+      }
+    );
+  }, [qParams]);
 
   return (
     <div className="h-full">
@@ -93,7 +120,7 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
           },
           setPaginationModel: (page: number) => {
             dispatch(setPaginationPageNumber(page));
-            dispatch(fetchToReviewACHTransactions({}));
+            dispatch(fetchToReviewACHTransactions({ filter: filters }));
           },
         }}
         handleCellClick={(
@@ -224,24 +251,24 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
             headerName: "Transaction Type",
             width: 120,
           },
-          {
-            field: "review",
-            headerName: "Review",
-            flex: 1,
-            minWidth: 150,
-            renderCell: (params: any) => (
-              <div className="flex items-center justify-center">
-                <MyBlueButton
-                  onClick={() => {
-                    setSelectedTransaction(params.row);
-                    handleReviewModalOpen();
-                  }}
-                >
-                  Review
-                </MyBlueButton>
-              </div>
-            ),
-          },
+          // {
+          //   field: "review",
+          //   headerName: "Review",
+          //   flex: 1,
+          //   minWidth: 150,
+          //   renderCell: (params: any) => (
+          //     <div className="flex items-center justify-center">
+          //       <MyBlueButton
+          //         onClick={() => {
+          //           setSelectedTransaction(params.row);
+          //           handleReviewModalOpen();
+          //         }}
+          //       >
+          //         Review
+          //       </MyBlueButton>
+          //     </div>
+          //   ),
+          // },
         ]}
         rows={transactions}
       />

@@ -63,6 +63,10 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
 
   const [sOfacId, setSOfacId] = useState<null | string>(null);
 
+  const [duplicatePaymentId, setDuplicatePaymentId] = useState<null | string>(
+    null
+  );
+
   useEffect(() => {
     setSOfacId(ofacId);
     dispatch(fetchTransactionByPaymentId(paymentId)).then((result: any) => {
@@ -70,9 +74,11 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
       if (ofacId == null || ofacId == "") {
         if (result.payload.ach != null) {
           setSOfacId(result.payload.ach?.ofacId);
+          setDuplicatePaymentId(result.payload.ach?.duplicateOfPaymentId);
         }
         if (result.payload.wire) {
           setSOfacId(result.payload.wire?.ofacId);
+          setDuplicatePaymentId(result.payload.wire?.duplicateOfPaymentId);
         }
       }
     });
@@ -90,7 +96,7 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   return (
     <MyModal
       width="800px"
-      height="630px"
+      height={sOfacId != null || duplicatePaymentId != null ? "400px" : "630px"}
       modalOpen={modalOpen}
       handleModalClose={handleModalClose}
     >
@@ -148,6 +154,16 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                     .toString()
                     .padStart(2, "0")}`}
                 />
+                {sOfacId != null && (
+                  <ItemRow
+                    boxValues={true}
+                    title="OFAC ID"
+                    value={{
+                      link: `/compliance/ofac/${sOfacId}`,
+                      value: sOfacId ?? "",
+                    }}
+                  />
+                )}
               </div>
               <div className="w-[250px]">
                 <ItemRow
@@ -163,6 +179,16 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                   title="Amount"
                   value={toDollarFormat(transaction.amount)}
                 />
+                {duplicatePaymentId != null && (
+                  <ItemRow
+                    boxValues={true}
+                    title="Duplicate Payment ID"
+                    value={{
+                      link: `/transactions/transactionHistory?paymentId=${duplicatePaymentId}`,
+                      value: duplicatePaymentId ?? "",
+                    }}
+                  />
+                )}
               </div>
               <div className="w-[250px]">
                 {transaction.ach?.customerType != null &&
@@ -206,177 +232,172 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                   )}
               </div>
             </div>
-            <div className="w-[250px]">
-              <ItemRow
-                boxValues={true}
-                title="OFAC ID"
-                value={{
-                  link: `/compliance/ofac/${sOfacId}`,
-                  value: sOfacId ?? "",
-                }}
-              />
-            </div>
           </>
         )}
-        <MyText size="md">Breached Limits</MyText>
-        <div className="h-1" />
-        {limits === "loading" ? (
-          <MyCircularProgressIndicator />
-        ) : typeof limits === "string" ? (
-          <ErrorPage
-            error={limits}
-            recoveryButtonOnClick={() => {
-              if (!paymentId) {
-                setLimits("No payment ID found");
-              } else {
-                setLimits("loading");
-                dispatch(fetchBreachedLimits(paymentId ?? "")).then(
-                  (result: any) => {
-                    setLimits(result.payload);
-                  }
-                );
-              }
-            }}
-            recoveryButtonTitle="Retry"
-          />
-        ) : (
-          <div>
-            <div className="h-[270px]">
-              <MyTable
-                hideColumnsButton
-                hideDensityButton
-                hideFilterButton
-                hideSearch
-                handleRowClick={handleRowClick}
-                columns={[
-                  { field: "id", headerName: "ID", width: 80 },
-                  {
-                    field: "limitName",
-                    headerName: "Limit Name",
-                    flex: 1,
-                    minWidth: 120,
-                  },
-                  {
-                    field: "transactionType",
-                    headerName: "Transaction Type",
-                    flex: 1,
-                    minWidth: 180,
-                  },
-                  {
-                    field: "limitType",
-                    headerName: "Limit Type",
-                    flex: 1,
-                    minWidth: 180,
-                  },
-                  {
-                    field: "status",
-                    headerName: "Status",
-                    flex: 1,
-                    minWidth: 120,
-                  },
-                  {
-                    field: "amount",
-                    headerName: "Amount",
-                    flex: 1,
-                    minWidth: 120,
-                    renderCell: (params: any) => (
-                      <div>{toDollarFormat(params.row.amount)}</div>
-                    ),
-                    valueGetter: (params: any) => params.row.amount,
-                  },
-                  {
-                    field: "createdAt",
-                    headerName: "Created At",
-                    flex: 1,
-                    minWidth: 120,
-                    valueFormatter: (params: any) => {
-                      return `${timestampToDate(params.value)}`;
-                    },
-                    valueGetter: (params: any) => params.row.createdAt,
-                  },
-                ]}
-                rows={limits}
-              />
-            </div>
-            <div className="h-6" />
-            <div className="flex flex-row justify-end">
-              <div className="w-fit">
-                <MyRedButton
-                  submitting={submitting}
-                  onClick={() => {
-                    if (alertId != null) {
-                      setSubmitting(true);
-                      dispatch(
-                        updateTransactionStatus({
-                          alertId: alertId,
-                          action: "DECLINE",
-                          note: `Transaction rejected by ${userType} ${username}`,
-                        })
-                      ).then((rej: any) => {
-                        if (typeof rej.payload === "string") {
-                          enqueueSnackbar(rej.payload, {
-                            variant: "error",
-                            persist: true,
-                          });
-                        } else {
-                          enqueueSnackbar("Transaction rejected successfully", {
-                            variant: "success",
-                          });
-
-                          if (customActionOnCompletion) {
-                            customActionOnCompletion();
-                          }
+        {(duplicatePaymentId == null || duplicatePaymentId == "") &&
+          (sOfacId == null || sOfacId == "") && (
+            <>
+              <MyText size="md">Breached Limits</MyText>
+              <div className="h-1" />
+              {limits === "loading" ? (
+                <MyCircularProgressIndicator />
+              ) : typeof limits === "string" ? (
+                <ErrorPage
+                  error={limits}
+                  recoveryButtonOnClick={() => {
+                    if (!paymentId) {
+                      setLimits("No payment ID found");
+                    } else {
+                      setLimits("loading");
+                      dispatch(fetchBreachedLimits(paymentId ?? "")).then(
+                        (result: any) => {
+                          setLimits(result.payload);
                         }
-                        setSubmitting(false);
-                        handleModalClose();
-                      });
+                      );
                     }
                   }}
-                >
-                  Reject
-                </MyRedButton>
-              </div>
-              <div className="w-4" />
-              <div className="w-fit">
-                <MyBlueButton
-                  submitting={submitting}
-                  onClick={() => {
-                    if (paymentId) {
-                      setSubmitting(true);
-                      dispatch(
-                        updateTransactionStatus({
-                          alertId: alertId,
-                          action: "APPROVE",
-                          note: `Transaction approved by ${userType} ${username}`,
-                        })
-                      ).then((rej: any) => {
-                        if (typeof rej.payload === "string") {
-                          enqueueSnackbar(rej.payload, {
-                            variant: "error",
-                            persist: true,
-                          });
-                        } else {
-                          enqueueSnackbar("Transaction approved successfully", {
-                            variant: "success",
-                          });
-
-                          if (customActionOnCompletion) {
-                            customActionOnCompletion();
-                          }
-                        }
-                        setSubmitting(false);
-                        handleModalClose();
+                  recoveryButtonTitle="Retry"
+                />
+              ) : (
+                <div>
+                  <div className="h-[270px]">
+                    <MyTable
+                      hideColumnsButton
+                      hideDensityButton
+                      hideFilterButton
+                      hideSearch
+                      handleRowClick={handleRowClick}
+                      columns={[
+                        { field: "id", headerName: "ID", width: 80 },
+                        {
+                          field: "limitName",
+                          headerName: "Limit Name",
+                          flex: 1,
+                          minWidth: 120,
+                        },
+                        {
+                          field: "transactionType",
+                          headerName: "Transaction Type",
+                          flex: 1,
+                          minWidth: 180,
+                        },
+                        {
+                          field: "limitType",
+                          headerName: "Limit Type",
+                          flex: 1,
+                          minWidth: 180,
+                        },
+                        {
+                          field: "status",
+                          headerName: "Status",
+                          flex: 1,
+                          minWidth: 120,
+                        },
+                        {
+                          field: "amount",
+                          headerName: "Amount",
+                          flex: 1,
+                          minWidth: 120,
+                          renderCell: (params: any) => (
+                            <div>{toDollarFormat(params.row.amount)}</div>
+                          ),
+                          valueGetter: (params: any) => params.row.amount,
+                        },
+                        {
+                          field: "createdAt",
+                          headerName: "Created At",
+                          flex: 1,
+                          minWidth: 120,
+                          valueFormatter: (params: any) => {
+                            return `${timestampToDate(params.value)}`;
+                          },
+                          valueGetter: (params: any) => params.row.createdAt,
+                        },
+                      ]}
+                      rows={limits}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        <div className="h-6" />
+        <div className="flex flex-row justify-end">
+          <div className="w-fit">
+            <MyRedButton
+              submitting={submitting}
+              onClick={() => {
+                if (alertId != null) {
+                  setSubmitting(true);
+                  dispatch(
+                    updateTransactionStatus({
+                      alertId: alertId,
+                      action: "DECLINE",
+                      note: `Transaction rejected by ${userType} ${username}`,
+                    })
+                  ).then((rej: any) => {
+                    if (typeof rej.payload === "string") {
+                      enqueueSnackbar(rej.payload, {
+                        variant: "error",
+                        persist: true,
                       });
+                    } else {
+                      enqueueSnackbar("Transaction rejected successfully", {
+                        variant: "success",
+                      });
+
+                      if (customActionOnCompletion) {
+                        customActionOnCompletion();
+                      }
                     }
-                  }}
-                >
-                  Approve
-                </MyBlueButton>
-              </div>
-            </div>
-            <div className="h-6" />
+                    setSubmitting(false);
+                    handleModalClose();
+                  });
+                }
+              }}
+            >
+              Reject
+            </MyRedButton>
           </div>
-        )}
+          <div className="w-4" />
+          <div className="w-fit">
+            <MyBlueButton
+              submitting={submitting}
+              onClick={() => {
+                if (paymentId) {
+                  setSubmitting(true);
+                  dispatch(
+                    updateTransactionStatus({
+                      alertId: alertId,
+                      action: "APPROVE",
+                      note: `Transaction approved by ${userType} ${username}`,
+                    })
+                  ).then((rej: any) => {
+                    if (typeof rej.payload === "string") {
+                      enqueueSnackbar(rej.payload, {
+                        variant: "error",
+                        persist: true,
+                      });
+                    } else {
+                      enqueueSnackbar("Transaction approved successfully", {
+                        variant: "success",
+                      });
+
+                      if (customActionOnCompletion) {
+                        customActionOnCompletion();
+                      }
+                    }
+                    setSubmitting(false);
+                    handleModalClose();
+                  });
+                }
+              }}
+            >
+              Approve
+            </MyBlueButton>
+          </div>
+        </div>
+        <div className="h-6" />
       </>
     </MyModal>
   );

@@ -76,7 +76,17 @@ const TransactionReviewSlice = createSlice({
 
 export const fetchToReviewACHTransactions = createAsyncThunk(
   "program/fetchToReviewACHTransactions",
-  async (data: { refresh?: boolean }, thunkApi: any) => {
+  async (
+    data: {
+      refresh?: boolean;
+      filter: {
+        includeWire?: boolean;
+        includeAch?: boolean;
+        wireFileHandle?: string;
+      };
+    },
+    thunkApi: any
+  ) => {
     try {
       const transactions = await transactionRepo.fetchToReviewACHTransactions(
         paginationPageSize,
@@ -84,7 +94,8 @@ export const fetchToReviewACHTransactions = createAsyncThunk(
           ? 0
           : thunkApi.getState().transactionReview.pagination.pageNumber == -1
           ? 0
-          : thunkApi.getState().transactionReview.pagination.pageNumber
+          : thunkApi.getState().transactionReview.pagination.pageNumber,
+        data.filter
       );
       console.log("transactions to review:", transactions.content);
       return {
@@ -114,7 +125,16 @@ export const fetchBreachedLimits = createAsyncThunk(
 export const updateTransactionStatus = createAsyncThunk(
   "program/approveTransaction",
   async (
-    data: { alertId: string; action: string; note: string },
+    data: {
+      alertId: string;
+      action: string;
+      note: string;
+      filter?: {
+        includeWire?: boolean;
+        includeAch?: boolean;
+        wireFileHandle?: string;
+      };
+    },
     thunkApi: any
   ) => {
     try {
@@ -126,7 +146,9 @@ export const updateTransactionStatus = createAsyncThunk(
         trans
       );
 
-      thunkApi.dispatch(fetchToReviewACHTransactions({}));
+      thunkApi.dispatch(
+        fetchToReviewACHTransactions({ filter: data.filter ?? {} })
+      );
 
       return trans;
     } catch (e: any) {

@@ -136,7 +136,10 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
         // Convert timestamp to date
         const date = moment(curr.created_at).format(format);
         const type = curr.label;
-        const isDebit = curr.label.includes("Debit");
+        let isDebit = curr.label.includes("Debit");
+        if (curr.label?.toLowerCase()?.includes("originator")) {
+          isDebit = isDebit ? false : true;
+        }
         const volume = parseFloat(curr.value.toFixed(2));
 
         if (!acc[date]) {

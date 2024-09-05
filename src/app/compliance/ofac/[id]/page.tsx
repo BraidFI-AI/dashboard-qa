@@ -44,8 +44,11 @@ const OFACHitDetails = () => {
 
   const navigateToEntity = async (row: any) => {
     if (row.transactionPaymentId) {
-      router.push(`/alerts-and-cases/alerts/${row.alertId}`);
-    } else if (row.uboId) {
+      router.push(
+        `/transactions/transactionHistory?paymentId=${row.transactionPaymentId}`
+      );
+    }
+    if (row.uboId) {
       router.push(`/individuals/${row.individualId}`);
     } else if (row.businessName) {
       router.push(`/businesses/${row.businessId}`);

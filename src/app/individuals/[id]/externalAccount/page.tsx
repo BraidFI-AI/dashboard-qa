@@ -12,13 +12,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import { enqueueSnackbar } from "notistack";
-import { PDFDocument } from "pdf-lib";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import ErrorPage from "@/core/components/error_page";
 import { useRouter } from "next/navigation";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import { fetchIndividual } from "@/redux/slices/IndividualSlice";
-// import { generatePdf } from "@/core/utils/pdfUtils";
 
 const IndividualACHPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
