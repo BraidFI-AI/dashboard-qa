@@ -36,7 +36,7 @@ const ViewDocument = ({
         const blobUrl = URL.createObjectURL(
           new Blob([response.data], { type: "application/pdf" })
         );
-        setDocumnetUrl(blobUrl);
+        setDocumnetUrl(blobUrl + "#toolbar=0&navpanes=0&scrollbar=0");
         setPdfResponse(response.data);
         setLoading(false);
       })
@@ -116,37 +116,10 @@ const ViewDocument = ({
                 data={documnetUrl}
                 type="application/pdf"
                 width="100%"
-                height="600px"
+                height="100%"
                 // style="width:600px; height:500px;"
                 // frameborder="0"
               ></object>
-
-              {/* <Document
-                options={{ isEvalSupported: false }}
-                options={{ isEvalSupported: false }}
-                loading={
-                  <div className="flex items-center justify-center text-black text-md">
-                    Loading...
-                  </div>
-                }
-                file={pdfResponse}
-                onLoadSuccess={(pdf) => {
-                  setNumPages(pdf.numPages);
-                }}
-              >
-                {Array.from({ length: numPages }, (_, index) => (
-                  <div key={`page_container_${index + 1}`} className="m-4">
-                    <Page
-                      key={`page_${index + 1}`}
-                      pageNumber={index + 1}
-                      className="border"
-                      scale={scale}
-                      renderTextLayer={false}
-                      //   noData
-                    />
-                  </div>
-                ))}
-              </Document> */}
             </div>
           </div>
           <div className={`absolute ${"right-[8%]"} top-[17%]`}>
@@ -156,20 +129,6 @@ const ViewDocument = ({
                 className="p-3 mt-10 rounded-full bg-slate-600 text-slate-200 flex justify-center items-center"
               >
                 <BsArrowsFullscreen />
-              </button>
-              <div className="h-2"></div>
-              <button
-                onClick={handleZoomIn}
-                className="p-3  rounded-full bg-slate-600 text-slate-200 flex justify-center items-center"
-              >
-                <BsPlus size={20} />
-              </button>
-              <div className="h-2"></div>
-              <button
-                onClick={handleZoomOut}
-                className="p-3 rounded-full bg-slate-600 text-slate-200 flex justify-center items-center"
-              >
-                <BsDash size={20} />
               </button>
             </div>
           </div>
