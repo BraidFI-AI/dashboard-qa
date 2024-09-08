@@ -151,13 +151,11 @@ const Documents = ({ params }: { params: { id: string } }) => {
                           ></Image>
                         </div>
                       ) : (
-                        <div className=" underline text-[#12A7FF]">
+                        <div className="underline text-[#12A7FF]">
                           <Link
                             href={`/businesses/${parseInt(
                               params.id.toString()
-                            )}/documents/${document.document.id}?url=${
-                              document.link
-                            }`}
+                            )}/documents/${encodeURIComponent(document.link)}`}
                           >
                             <MyText size="md">View PDF</MyText>
                           </Link>
