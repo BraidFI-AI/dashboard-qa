@@ -1,24 +1,18 @@
 "use client";
 
 import { setTitle } from "@/redux/slices/AppSlice";
-import { fetchBusinessDocumentUrl } from "@/redux/slices/BusinessSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { BsPlus, BsArrowsFullscreen, BsDash } from "react-icons/bs";
-import { Document, Page, pdfjs } from "react-pdf";
+import { BsArrowsFullscreen } from "react-icons/bs";
 import CircularProgress from "@mui/material/CircularProgress";
 import MyText from "@/core/components/Text/Text";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import { useSearchParams } from "next/navigation";
-// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+import { useParams, useSearchParams } from "next/navigation";
+import { SCROLLBAR_STYLE } from "@/core/constants";
 
-const ViewDocument = ({
-  params,
-}: {
-  params: { id: string; documentId: number };
-}) => {
-  const qParams = useSearchParams();
+const ViewDocument = () => {
+  const params = useParams();
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(true);
@@ -26,40 +20,40 @@ const ViewDocument = ({
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    setDocumnetUrl(qParams.get("url") ?? "");
 
     axios({
       method: "GET",
-      url: qParams.get("url") ?? "",
+      url: decodeURIComponent(params.documentId.toString() ?? ""),
       responseType: "blob",
     })
       .then((response) => {
-        setPdfResponse(response.data);
+        const blobUrl = URL.createObjectURL(
+          new Blob([response.data], { type: "application/pdf" })
+        );
+        setDocumnetUrl(blobUrl + "#toolbar=0&navpanes=0&scrollbar=0");
         setLoading(false);
       })
       .catch((error) => {
         console.log("Error fetching document", error);
+        setDocumnetUrl("Error fetching document: " + error);
         setLoading(false);
       });
-  }, [dispatch, params.id, params.documentId, qParams]);
 
-  const defaultScale = 1;
-  const [pdfResponse, setPdfResponse] = useState<any>();
-  const [numPages, setNumPages] = useState(-1);
-  const [scale, setScale] = useState(defaultScale);
+    return () => {
+      if (documnetUrl) {
+        URL.revokeObjectURL(documnetUrl);
+      }
+    };
+  }, [dispatch, params.id, params.documentId, params]);
 
   const handleFullscreen = () => {
     const container = document.getElementById("pdf-container");
 
     if (container) {
       if (!document.fullscreenElement) {
-        setScale(1.4);
-        container.requestFullscreen().catch(() => {
-          setScale(scale);
-        });
+        container.requestFullscreen();
       } else {
         document.exitFullscreen();
-        setScale(scale);
       }
     }
   };
@@ -78,14 +72,6 @@ const ViewDocument = ({
     };
   }, [handleEscapeKey]);
 
-  const handleZoomIn = () => {
-    setScale((prevScale) => prevScale + 0.1);
-  };
-
-  const handleZoomOut = () => {
-    setScale((prevScale) => prevScale - 0.1);
-  };
-
   return (
     <div className="h-[75vh]">
       {loading ? (
@@ -95,39 +81,22 @@ const ViewDocument = ({
         </div>
       ) : documnetUrl == null ? (
         <MyText size="md">Document Not Found</MyText>
+      ) : documnetUrl.includes("Error fetching document:") ? (
+        <MyText size="md">{documnetUrl}</MyText>
       ) : (
         <div className="h-full w-full flex flex-row justify-between py-4">
           <div
             id="pdf-container"
-            className="w-3/4 h-full justify-center items-center overflow-auto
-           mx-auto border-2 border-slate-400 bg-white"
+            className={`w-3/4 h-full justify-center items-center overflow-auto
+           mx-auto border-2 border-slate-400 bg-white ${SCROLLBAR_STYLE}`}
           >
-            <div className={`h-full w-full mx-auto overflow-y-auto`}>
-              <Document
-                options={{ isEvalSupported: false }}
-                loading={
-                  <div className="flex items-center justify-center text-black text-md">
-                    Loading...
-                  </div>
-                }
-                file={pdfResponse}
-                onLoadSuccess={(pdf) => {
-                  setNumPages(pdf.numPages);
-                }}
-              >
-                {Array.from({ length: numPages }, (_, index) => (
-                  <div key={`page_container_${index + 1}`} className="m-4">
-                    <Page
-                      key={`page_${index + 1}`}
-                      pageNumber={index + 1}
-                      className="border"
-                      scale={scale}
-                      renderTextLayer={false}
-                      //   noData
-                    />
-                  </div>
-                ))}
-              </Document>
+            <div className={`h-full w-full mx-auto ${SCROLLBAR_STYLE}`}>
+              <object
+                data={documnetUrl}
+                type="application/pdf"
+                width="100%"
+                height="100%"
+              ></object>
             </div>
           </div>
           <div className={`absolute ${"right-[8%]"} top-[17%]`}>
@@ -137,20 +106,6 @@ const ViewDocument = ({
                 className="p-3 mt-10 rounded-full bg-slate-600 text-slate-200 flex justify-center items-center"
               >
                 <BsArrowsFullscreen />
-              </button>
-              <div className="h-2"></div>
-              <button
-                onClick={handleZoomIn}
-                className="p-3  rounded-full bg-slate-600 text-slate-200 flex justify-center items-center"
-              >
-                <BsPlus size={20} />
-              </button>
-              <div className="h-2"></div>
-              <button
-                onClick={handleZoomOut}
-                className="p-3 rounded-full bg-slate-600 text-slate-200 flex justify-center items-center"
-              >
-                <BsDash size={20} />
               </button>
             </div>
           </div>

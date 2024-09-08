@@ -111,9 +111,9 @@ const AlertDocumentsPage = () => {
                   ) : (
                     <div className=" underline text-[#12A7FF]">
                       <Link
-                        href={`/alerts-and-cases/alerts/${params.id.toString()}/documents/${
-                          document.id
-                        }`}
+                        href={`/alerts-and-cases/alerts/${params.id.toString()}/documents/${encodeURIComponent(
+                          (document as any).documentUrl
+                        )}`}
                       >
                         <MyText size="md">View PDF</MyText>
                       </Link>

@@ -9,12 +9,13 @@ import MyControlledTextField from "../../TextField/MyControlledTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
-import MyRedButton from "../../Button/MyRedButton";
 import MyControlledAutocomplete from "../../Autocomplete/MyControlledAutocomplete";
-import MyCheckbox from "../../Button/MyCheckbox ";
 import { useSelector } from "react-redux";
-import { Alert } from "@/core/api/ApiTypes";
-import { esclateAlert, resolveAlert } from "@/redux/slices/alerts_slice";
+import { Alert, OFAC } from "@/core/api/ApiTypes";
+import { resolveAlert } from "@/redux/slices/alerts_slice";
+import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
+import MyCircularProgressIndicator from "../../circular_progress_indicator";
+import ErrorPage from "../../error_page";
 
 const ResolveAlertButton = () => {
   const params = useParams();
@@ -31,9 +32,18 @@ const ResolveAlertButton = () => {
 
   const [submitting, setSubmitting] = useState(false);
 
+  const [ofacHit, setOfacHit] = useState<"loading" | null | string | OFAC>(
+    "loading"
+  );
+
   const handleModalClose = () => {
     setModalOpen(false);
   };
+
+  const [resolveOptions, setResolveOptions] = useState<String[]>([
+    "Approve",
+    "Decline",
+  ]);
 
   const {
     formState: { errors },
@@ -60,7 +70,40 @@ const ResolveAlertButton = () => {
     console.log("data:", data);
     setSubmitting(true);
 
-    dispatch(resolveAlert(data)).then((result) => {
+    const resolveData: {
+      alertId: string;
+      action: string;
+      note: string;
+      whiteList?: {
+        entityType: string;
+        entityId: string;
+        sdnId: string;
+      };
+    } = { ...data };
+
+    data.action = data.action.toUpperCase();
+
+    if (
+      ofacHit != null &&
+      typeof ofacHit != "string" &&
+      typeof alert != "string"
+    ) {
+      if (data.action.toLowerCase().includes("whitelist")) {
+        resolveData.whiteList = {
+          sdnId:
+            ofacHit.rawResults != null
+              ? JSON.parse(ofacHit.rawResults)?.SDNs?.[0]?.entityID ?? ""
+              : "",
+          entityId:
+            ofacHit?.businessId != null
+              ? ofacHit?.businessId
+              : ofacHit?.individualId ?? "",
+          entityType: ofacHit?.businessId != null ? "BUSINESS" : "INDIVIDUAL",
+        };
+      }
+    }
+
+    dispatch(resolveAlert(resolveData)).then((result) => {
       if (typeof result.payload == "string") {
         enqueueSnackbar(result.payload, { variant: "error", persist: true });
       } else {
@@ -76,6 +119,28 @@ const ResolveAlertButton = () => {
     if (typeof alert != "string") {
       if (alert.status == "OPEN") {
         setIsOpen(true);
+
+        if (alert.type == "OFAC") {
+          dispatch(fetchOFACHitNew(alert.contextId?.toString() ?? "")).then(
+            (data: any) => {
+              setOfacHit(data.payload);
+              if (typeof data.payload != "string") {
+                if (
+                  data.payload?.individualId != null ||
+                  data.payload?.businessId != null
+                ) {
+                  setResolveOptions([
+                    "Approve",
+                    "Approve & Whitelist",
+                    "Decline",
+                  ]);
+                }
+              }
+            }
+          );
+        } else {
+          setOfacHit(null);
+        }
       } else {
         setIsOpen(false);
       }
@@ -102,45 +167,75 @@ const ResolveAlertButton = () => {
         handleModalClose={handleModalClose}
         height="360px"
       >
-        <MyText size="lg">Resolve Alert</MyText>
-        <div className="pb-6" />
-        <MyText>Decision</MyText>
-        <MyControlledAutocomplete
-          clearable={false}
-          name="action"
-          displayName="Action"
-          control={control}
-          errors={errors}
-          options={["APPROVE", "DECLINE"]}
-          rules={{
-            required: true,
-          }}
-          value={getValues("action")}
-        />
-        <div className="h-4" />
-        <MyText>Note</MyText>
-        <MyControlledTextField
-          name={"note"}
-          displayName={"Note"}
-          control={control}
-          errors={errors}
-          rules={{
-            required: true,
-          }}
-          value={getValues("note")}
-        />
-        <div className="pb-8" />
-        <div className="w-fit">
-          <MyBlueButton
-            submitting={submitting}
-            onClick={() => {
-              handleSubmit(onSubmit)();
+        {ofacHit == "loading" ? (
+          <MyCircularProgressIndicator />
+        ) : typeof ofacHit == "string" ? (
+          <ErrorPage
+            error={ofacHit}
+            recoveryButtonTitle="Retry"
+            recoveryButtonOnClick={() => {
+              dispatch(fetchOFACHitNew(alert.contextId?.toString() ?? "")).then(
+                (data: any) => {
+                  setOfacHit(data.payload);
+                  if (typeof data.payload != "string") {
+                    if (
+                      data.payload?.individualId != null ||
+                      data.payload?.businessId != null
+                    ) {
+                      setResolveOptions([
+                        "Approve",
+                        "Approve & Whitelist",
+                        "Decline",
+                      ]);
+                    }
+                  }
+                }
+              );
             }}
-          >
-            Resolve Alert
-          </MyBlueButton>
-        </div>
-        <div className="pb-6" />
+          />
+        ) : (
+          <>
+            <MyText size="lg">Resolve Alert</MyText>
+            <div className="pb-6" />
+            <MyText>Decision</MyText>
+            <MyControlledAutocomplete
+              clearable={false}
+              name="action"
+              displayName="Action"
+              control={control}
+              errors={errors}
+              options={resolveOptions}
+              rules={{
+                required: true,
+              }}
+              value={getValues("action")}
+            />
+            <div className="h-4" />
+            <MyText>Note</MyText>
+            <MyControlledTextField
+              name={"note"}
+              displayName={"Note"}
+              control={control}
+              errors={errors}
+              rules={{
+                required: true,
+              }}
+              value={getValues("note")}
+            />
+            <div className="pb-8" />
+            <div className="w-fit">
+              <MyBlueButton
+                submitting={submitting}
+                onClick={() => {
+                  handleSubmit(onSubmit)();
+                }}
+              >
+                Resolve Alert
+              </MyBlueButton>
+            </div>
+            <div className="pb-6" />
+          </>
+        )}
       </MyModal>
     </>
   );

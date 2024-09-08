@@ -55,6 +55,7 @@ import {
   ADMIN_OPS_ROLE,
   ADMIN_ROLE,
   DEVELOPER_OPS_ROLE,
+  SCROLLBAR_STYLE,
 } from "@/core/constants";
 import DrawerHeaderButtons from "./drawer_header_buttons";
 import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
@@ -578,6 +579,7 @@ export default function PersistentDrawerLeft(props: any) {
       </Drawer>
       <Box
         component="main"
+        className={`${SCROLLBAR_STYLE}`}
         sx={{
           flexGrow: 1,
           p: 3,
@@ -585,6 +587,7 @@ export default function PersistentDrawerLeft(props: any) {
           width: open
             ? `calc(100vw - ${drawerWidth}px)`
             : `calc(100vw - ${closedDrawerWidth}px)`,
+          overflow: "auto",
         }}
       >
         <DrawerHeader />

@@ -43,10 +43,26 @@ class ProductRepo {
   }
 
   public async fetchProductBalance(id: number) {
-    const response = await this.apiClient.http<OnboardingConfig[]>(
+    const response = await this.apiClient.http<any>(
       Method.GET,
       `/product/${id}/balance`
     );
+    return response;
+  }
+
+  public async fetchProductBalanceFromMetrics(id?: number) {
+    const response = await this.apiClient.http<
+      {
+        created_at?: number | null;
+        id?: number | null;
+        product_id?: number | null;
+        label?: string | null;
+        program_id?: number | null;
+        customer_id?: number | null;
+        tenant_id?: string | null;
+        value?: number | null;
+      }[]
+    >(Method.GET, `/metric/key/product.balance`);
     return response;
   }
 
