@@ -162,11 +162,48 @@ export const esclateAlert = createAsyncThunk(
 export const resolveAlert = createAsyncThunk(
   "alerts/resolveAlert",
   async (
-    data: { alertId: string; action: string; note: string },
+    data: {
+      alertId: string;
+      action: string;
+      note: string;
+      whiteList?: {
+        entityType: string;
+        entityId: string;
+        sdnId: string;
+      };
+    },
     thunkApi: any
   ) => {
     try {
-      const resolvedAlert = await alertsRepo.resolveAlert(data);
+      let action = data.action;
+      if (data.action.toLowerCase().includes("whitelist")) {
+        action = "APPROVE";
+      }
+      const resolvedAlert = await alertsRepo.resolveAlert({
+        alertId: data.alertId,
+        action: action,
+        note: data.note,
+      });
+
+      if (
+        data.action.toLowerCase().includes("whitelist") &&
+        data.whiteList &&
+        data.whiteList.sdnId != null &&
+        data.whiteList.sdnId != ""
+      ) {
+        if (data.whiteList.entityType == "BUSINESS") {
+          await alertsRepo.whiteListBusiness(
+            data.whiteList.entityId,
+            data.whiteList.sdnId
+          );
+        } else {
+          await alertsRepo.whiteListIndividual(
+            data.whiteList.entityId,
+            data.whiteList.sdnId
+          );
+        }
+      }
+
       console.log("alert resolve", resolvedAlert);
 
       thunkApi.dispatch(fetchAlert(data.alertId));
