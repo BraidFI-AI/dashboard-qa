@@ -5,6 +5,21 @@ export type PaginationStateType = {
   loadingPage: boolean;
 };
 
+export const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sept",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 export const SCROLLBAR_STYLE =
   "overflow-y-auto scrollbar scrollbar-thin scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#ffffff]";
 

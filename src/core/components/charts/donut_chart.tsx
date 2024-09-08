@@ -9,6 +9,7 @@ type DonutChartProps = {
   total: number;
   developerId: string;
   onClick: (data: any) => void;
+  date: string | null;
 };
 
 const DonutChart: React.FC<DonutChartProps> = ({
@@ -16,6 +17,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   total,
   developerId,
   onClick,
+  date,
 }) => {
   const svgRef = React.useRef(null);
 
@@ -65,10 +67,10 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
     const foreignObject = svg
       .append("foreignObject")
-      .attr("width", radius)
+      .attr("width", radius + 10)
       .attr("height", radius - 70)
       .attr("x", -100) // Center the foreignObject
-      .attr("y", -50); // Adjust the y position
+      .attr("y", -45); // Adjust the y position
 
     // Create a div within the foreignObject
     const div = foreignObject
@@ -95,7 +97,8 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .style("word-break", "break-all")
       .style("margin", "0")
       .style("margin-top", "5px")
-      .style("color", "#12A7FF")
+      .style("color", "black")
+      .style("font-weight", "bold")
       .style("font-size", "20px")
       .text(`${toDollarFormat(total)}`);
 
@@ -104,7 +107,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .append("p")
       .style("margin", "0")
       .style("color", "grey")
-      .text(`8, Sept, 2024`);
+      .text(date ?? "");
 
     svg
       .append("g")
@@ -135,7 +138,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .attr("height", 18)
       .attr("fill", (d: any) => color(d.data.name) as string)
       .style("cursor", (d: any) =>
-        developerId == "All" && d.data.name ? "pointer" : "default"
+        developerId == "All" && d.data.name != "Others" ? "pointer" : "default"
       )
       .on("click", function (event, d) {
         onClick && onClick(d.data);
@@ -148,7 +151,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .attr("dy", ".35em")
       .style("font-size", "20px")
       .style("cursor", (d: any) =>
-        developerId == "All" && d.data.name ? "pointer" : "default"
+        developerId == "All" && d.data.name != "Others" ? "pointer" : "default"
       )
       .text((d: any) => `${d.data.name}: ${toDollarFormat(d.data.hover)}`)
       .on("click", function (event, d) {
@@ -166,7 +169,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .attr("fill", (d: any) => color(d.data.name) as string)
       .attr("d", arc as any)
       .style("cursor", (d: any) =>
-        developerId == "All" && d.data.name ? "pointer" : "default"
+        developerId == "All" && d.data.name != "Others" ? "pointer" : "default"
       )
       .on("click", function (event, d) {
         onClick && onClick(d.data);
