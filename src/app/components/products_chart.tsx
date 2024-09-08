@@ -11,7 +11,8 @@ import { fetchDevelopersNew } from "@/redux/slices/DeveloperSlice";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE, months } from "@/core/constants";
+import moment from "moment";
 
 const ProductsChart = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +28,7 @@ const ProductsChart = () => {
   >("loading");
 
   const [total, setTotal] = useState(0);
+  const [date, setDate] = useState<null | string>(null);
 
   const userType = useSelector((state: any) => state.app.userType);
 
@@ -112,6 +114,14 @@ const ProductsChart = () => {
         console.log("charts data:", cData);
         setChartData(cData);
         setTotal(total);
+
+        const date = moment(d.payload?.[0]?.created_at);
+
+        const day = date.date();
+        const month = months[date.month()];
+        const year = date.year();
+
+        setDate(`${day} ${month}, ${year}`);
       } else {
         setChartData(d.payload);
       }
@@ -192,6 +202,7 @@ const ProductsChart = () => {
                 data={chartData}
                 total={total}
                 developerId={developerId}
+                date={date}
                 onClick={(data) => {
                   console.log(data);
                   if (developerId == "All" && data.name != "Others") {
@@ -223,6 +234,7 @@ const ProductsChart = () => {
       data={chartData}
       total={total}
       developerId={developerId}
+      date={date}
       onClick={(data) => {}}
     />
   );

@@ -181,7 +181,7 @@ export const resolveAlert = createAsyncThunk(
       }
       const resolvedAlert = await alertsRepo.resolveAlert({
         alertId: data.alertId,
-        action: action,
+        action: action.toUpperCase(),
         note: data.note,
       });
 
