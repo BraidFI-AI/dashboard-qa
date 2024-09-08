@@ -209,44 +209,55 @@ export const fetchAllProductBalance = createAsyncThunk(
   "product/fetchAllProductBalance",
   async (developerId?: string | undefined) => {
     try {
-      const data = await productRepo.fetchProductBalanceFromMetrics();
+      const data: {
+        created_at?: number | null;
+        id?: number | null;
+        product_id?: number | null;
+        label?: string | null;
+        program_id?: number | null;
+        customer_id?: number | null;
+        tenant_id?: string | null;
+        value?: number | null;
+      }[] = await productRepo.fetchProductBalanceFromMetrics();
+
+      let chartData = [];
 
       if (developerId) {
-        return data.filter((d) => d.tenant_id == developerId);
+        chartData = data.filter((d) => d.tenant_id == developerId);
       } else {
-        return data;
+        // group data based of tenant_id
+        const groupedData = data.reduce((acc: any, curr: any) => {
+          const tenantId = curr.tenant_id;
+          if (!acc[tenantId]) {
+            acc[tenantId] = [];
+          }
+
+          acc[tenantId].push(curr);
+
+          return acc;
+        }, {});
+
+        console.log("grouped data:", groupedData);
+
+        // sum up the balance for each tenant_id
+        chartData = Object.entries(groupedData).map(
+          ([tenantId, values]: any) => {
+            const balance = values.reduce((acc: number, curr: any) => {
+              return acc + curr.value;
+            }, 0);
+
+            return {
+              label: tenantId,
+              hover: balance,
+              value: balance,
+            };
+          }
+        );
+
+        console.log("chart data:", chartData);
       }
-      // console.log("developerId", developerId);
 
-      // let products = await productRepo.fetchProducts();
-
-      // if (developerId) {
-      //   products = products.filter((p) => p.tenantId == developerId);
-      //   console.log("filtered products", products);
-      // }
-
-      // const balanceApiCalls = [];
-
-      // for (var i = 0; i < products.length; i++) {
-      //   balanceApiCalls.push(
-      //     productRepo.fetchProductBalance(products[i].id ?? -1)
-      //   );
-      // }
-
-      // const data = await Promise.all(balanceApiCalls);
-
-      // const balanceData: { name: string; value: string }[] = [];
-
-      // data.forEach((balance: any, index: number) => {
-      //   balanceData.push({
-      //     name: products[index].productName ?? "",
-      //     value: balance.availableBalance,
-      //   });
-      // });
-
-      // console.log("product balance", balanceData);
-
-      // return balanceData;
+      return chartData;
     } catch (e: any) {
       return `Error fetching product balance ${generateErrorMessage(e)}`;
     }

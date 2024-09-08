@@ -6,9 +6,17 @@ import React, { useEffect } from "react";
 
 type DonutChartProps = {
   data: { name: string; value: string; hover: string }[];
+  total: number;
+  developerId: string;
+  onClick: (data: any) => void;
 };
 
-const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
+const DonutChart: React.FC<DonutChartProps> = ({
+  data,
+  total,
+  developerId,
+  onClick,
+}) => {
   const svgRef = React.useRef(null);
 
   useEffect(() => {
@@ -89,7 +97,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .style("margin-top", "5px")
       .style("color", "#12A7FF")
       .style("font-size", "20px")
-      .text(`${toDollarFormat("100000000000000000.00")}`);
+      .text(`${toDollarFormat(total)}`);
 
     // Add text in the div for date
     div
@@ -125,7 +133,13 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .append("rect")
       .attr("width", 18)
       .attr("height", 18)
-      .attr("fill", (d: any) => color(d.data.name) as string);
+      .attr("fill", (d: any) => color(d.data.name) as string)
+      .style("cursor", (d: any) =>
+        developerId == "All" && d.data.name ? "pointer" : "default"
+      )
+      .on("click", function (event, d) {
+        onClick && onClick(d.data);
+      });
 
     legend
       .append("text")
@@ -133,7 +147,13 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("font-size", "20px")
-      .text((d: any) => `${d.data.name}: ${toDollarFormat(d.data.hover)}`);
+      .style("cursor", (d: any) =>
+        developerId == "All" && d.data.name ? "pointer" : "default"
+      )
+      .text((d: any) => `${d.data.name}: ${toDollarFormat(d.data.hover)}`)
+      .on("click", function (event, d) {
+        onClick && onClick(d.data);
+      });
 
     const arcs = svg
       .append("g")
@@ -144,7 +164,13 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
     arcs
       .append("path")
       .attr("fill", (d: any) => color(d.data.name) as string)
-      .attr("d", arc as any);
+      .attr("d", arc as any)
+      .style("cursor", (d: any) =>
+        developerId == "All" && d.data.name ? "pointer" : "default"
+      )
+      .on("click", function (event, d) {
+        onClick && onClick(d.data);
+      });
 
     const textGroup = svg.append("g");
 
