@@ -6,9 +6,17 @@ import React, { useEffect } from "react";
 
 type DonutChartProps = {
   data: { name: string; value: string; hover: string }[];
+  total: number;
+  developerId: string;
+  onClick: (data: any) => void;
 };
 
-const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
+const DonutChart: React.FC<DonutChartProps> = ({
+  data,
+  total,
+  developerId,
+  onClick,
+}) => {
   const svgRef = React.useRef(null);
 
   useEffect(() => {
@@ -54,6 +62,50 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .attr("width", chartWidth)
       .attr("height", height)
       .attr("viewBox", `-20 -220 ${chartWidth} ${height * 1.2 + radius * 0.2}`);
+
+    const foreignObject = svg
+      .append("foreignObject")
+      .attr("width", radius)
+      .attr("height", radius - 70)
+      .attr("x", -100) // Center the foreignObject
+      .attr("y", -50); // Adjust the y position
+
+    // Create a div within the foreignObject
+    const div = foreignObject
+      .append("xhtml:div")
+      .style("font-size", "16px")
+      .style("height", "100%")
+      .style("display", "flex")
+      .style("flex-direction", "column")
+      .style("text-align", "center");
+
+    // Create a wrapper for title and balance
+    const topSection = div.append("div").style("margin-bottom", "auto"); // Push the date to the bottom
+
+    // Add text in the div for title
+    topSection
+      .append("p")
+      .style("margin", "0")
+      .style("color", "grey")
+      .text(`Total Balance:`);
+
+    // Add text in the div for total volume
+    topSection
+      .append("p")
+      .style("word-break", "break-all")
+      .style("margin", "0")
+      .style("margin-top", "5px")
+      .style("color", "#12A7FF")
+      .style("font-size", "20px")
+      .text(`${toDollarFormat(total)}`);
+
+    // Add text in the div for date
+    div
+      .append("p")
+      .style("margin", "0")
+      .style("color", "grey")
+      .text(`8, Sept, 2024`);
+
     svg
       .append("g")
       .selectAll()
@@ -81,7 +133,13 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .append("rect")
       .attr("width", 18)
       .attr("height", 18)
-      .attr("fill", (d: any) => color(d.data.name) as string);
+      .attr("fill", (d: any) => color(d.data.name) as string)
+      .style("cursor", (d: any) =>
+        developerId == "All" && d.data.name ? "pointer" : "default"
+      )
+      .on("click", function (event, d) {
+        onClick && onClick(d.data);
+      });
 
     legend
       .append("text")
@@ -89,7 +147,13 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("font-size", "20px")
-      .text((d: any) => `${d.data.name}: ${toDollarFormat(d.data.hover)}`);
+      .style("cursor", (d: any) =>
+        developerId == "All" && d.data.name ? "pointer" : "default"
+      )
+      .text((d: any) => `${d.data.name}: ${toDollarFormat(d.data.hover)}`)
+      .on("click", function (event, d) {
+        onClick && onClick(d.data);
+      });
 
     const arcs = svg
       .append("g")
@@ -100,7 +164,13 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
     arcs
       .append("path")
       .attr("fill", (d: any) => color(d.data.name) as string)
-      .attr("d", arc as any);
+      .attr("d", arc as any)
+      .style("cursor", (d: any) =>
+        developerId == "All" && d.data.name ? "pointer" : "default"
+      )
+      .on("click", function (event, d) {
+        onClick && onClick(d.data);
+      });
 
     const textGroup = svg.append("g");
 
@@ -123,7 +193,9 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
         const hoverData = (d.data as any).hover;
 
         t.selectAll("tspan")
-          .data(hoverData?.split(" "))
+          .data(
+            typeof hoverData?.split == "function" ? hoverData?.split(" ") : []
+          )
           .join("tspan")
           .attr("x", 0)
           .attr("dy", "0em")

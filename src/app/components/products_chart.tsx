@@ -1,13 +1,11 @@
 "use client";
 
-import { Product } from "@/core/api/ApiTypes";
 import DonutChart from "@/core/components/charts/donut_chart";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import { fetchAllProductBalance } from "@/redux/slices/ProductSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import React, { useCallback, useEffect, useState } from "react";
-import Products from "../configuration/products/page";
 import MyText from "@/core/components/Text/Text";
 import { fetchDevelopersNew } from "@/redux/slices/DeveloperSlice";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
@@ -22,12 +20,13 @@ const ProductsChart = () => {
     "loading" | string | { tenantId: string; name: string }[]
   >("loading");
 
-  const [developer, setDeveloper] = useState("All");
   const [developerId, setDeveloperId] = useState("All");
 
   const [chartData, setChartData] = useState<
     "loading" | string | { name: string; value: string; hover: string }[]
   >("loading");
+
+  const [total, setTotal] = useState(0);
 
   const userType = useSelector((state: any) => state.app.userType);
 
@@ -36,8 +35,7 @@ const ProductsChart = () => {
   const {
     formState: { errors },
     control,
-    handleSubmit,
-    getValues,
+    setValue,
   } = useForm();
   const onSubmit: SubmitHandler<{
     tenantId: string;
@@ -48,7 +46,6 @@ const ProductsChart = () => {
     dispatch(fetchDevelopersNew()).then((d: any) => {
       if (typeof d.payload != "string") {
         setDevelopers(["All", ...d.payload]);
-        setDeveloper("All");
         setDeveloperId("All");
       } else {
         setDevelopers(d.payload);
@@ -63,8 +60,8 @@ const ProductsChart = () => {
     ).then((d: any) => {
       if (typeof d.payload != "string") {
         d.payload.sort(function (
-          a: { name: string; value: string },
-          b: { name: string; value: string }
+          a: { label: string; value: string },
+          b: { label: string; value: string }
         ) {
           return parseFloat(b.value) - parseFloat(a.value);
         });
@@ -88,7 +85,7 @@ const ProductsChart = () => {
         for (var i = 0; i < d.payload.length; i++) {
           if (i < topNumber) {
             cData.push({
-              name: d.payload[i].name,
+              name: d.payload[i].label,
               hover: d.payload[i].value,
               value: `${
                 total == 0
@@ -114,6 +111,7 @@ const ProductsChart = () => {
 
         console.log("charts data:", cData);
         setChartData(cData);
+        setTotal(total);
       } else {
         setChartData(d.payload);
       }
@@ -123,7 +121,6 @@ const ProductsChart = () => {
   useEffect(() => {
     console.log("userType:", userType);
     if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
-      console.log("userType 2222:", userType);
       fetchDevelopersCallback();
     }
   }, [dispatch, fetchDevelopersCallback, userType]);
@@ -155,8 +152,8 @@ const ProductsChart = () => {
               <MyControlledAutocomplete
                 clearable={false}
                 value={`All`}
-                displayName="Product ID"
-                name={"productId"}
+                displayName="Developer ID"
+                name={"developerId"}
                 control={control}
                 errors={errors}
                 rules={{ required: true }}
@@ -169,11 +166,9 @@ const ProductsChart = () => {
                   const id = val?.split(" - ")[0];
                   const name = val?.split(" - ")[1];
                   if (val == "All") {
-                    setDeveloper("All");
                     setDeveloperId("-1");
                   }
                   if (id) {
-                    setDeveloper(name);
                     setDeveloperId(id);
                   }
                 }}
@@ -193,7 +188,19 @@ const ProductsChart = () => {
             ) : chartData.length == 0 ? (
               <MyText>No data found!</MyText>
             ) : (
-              <DonutChart data={chartData} />
+              <DonutChart
+                data={chartData}
+                total={total}
+                developerId={developerId}
+                onClick={(data) => {
+                  console.log(data);
+                  if (developerId == "All" && data.name != "Others") {
+                    setDeveloperId(data.name);
+                    const dev = developers.find((dev) => dev.name == data.name);
+                    setValue("developerId", `${dev?.tenantId} - ${dev?.name}`);
+                  }
+                }}
+              />
             )}
           </div>
         )}
@@ -212,7 +219,12 @@ const ProductsChart = () => {
   ) : chartData.length == 0 ? (
     <MyText>No data found!</MyText>
   ) : (
-    <DonutChart data={chartData} />
+    <DonutChart
+      data={chartData}
+      total={total}
+      developerId={developerId}
+      onClick={(data) => {}}
+    />
   );
 };
 
