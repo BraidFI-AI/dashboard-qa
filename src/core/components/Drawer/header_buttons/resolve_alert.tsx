@@ -142,7 +142,7 @@ const ResolveAlertButton = () => {
           setOfacHit(null);
         }
       } else {
-        // setIsOpen(false);
+        setIsOpen(false);
       }
     }
   }, [alert]);
