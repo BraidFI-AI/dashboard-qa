@@ -209,37 +209,44 @@ export const fetchAllProductBalance = createAsyncThunk(
   "product/fetchAllProductBalance",
   async (developerId?: string | undefined) => {
     try {
-      console.log("developerId", developerId);
-
-      let products = await productRepo.fetchProducts();
+      const data = await productRepo.fetchProductBalanceFromMetrics();
 
       if (developerId) {
-        products = products.filter((p) => p.tenantId == developerId);
-        console.log("filtered products", products);
+        return data.filter((d) => d.tenant_id == developerId);
+      } else {
+        return data;
       }
+      // console.log("developerId", developerId);
 
-      const balanceApiCalls = [];
+      // let products = await productRepo.fetchProducts();
 
-      for (var i = 0; i < products.length; i++) {
-        balanceApiCalls.push(
-          productRepo.fetchProductBalance(products[i].id ?? -1)
-        );
-      }
+      // if (developerId) {
+      //   products = products.filter((p) => p.tenantId == developerId);
+      //   console.log("filtered products", products);
+      // }
 
-      const data = await Promise.all(balanceApiCalls);
+      // const balanceApiCalls = [];
 
-      const balanceData: { name: string; value: string }[] = [];
+      // for (var i = 0; i < products.length; i++) {
+      //   balanceApiCalls.push(
+      //     productRepo.fetchProductBalance(products[i].id ?? -1)
+      //   );
+      // }
 
-      data.forEach((balance: any, index: number) => {
-        balanceData.push({
-          name: products[index].productName ?? "",
-          value: balance.availableBalance,
-        });
-      });
+      // const data = await Promise.all(balanceApiCalls);
 
-      console.log("product balance", balanceData);
+      // const balanceData: { name: string; value: string }[] = [];
 
-      return balanceData;
+      // data.forEach((balance: any, index: number) => {
+      //   balanceData.push({
+      //     name: products[index].productName ?? "",
+      //     value: balance.availableBalance,
+      //   });
+      // });
+
+      // console.log("product balance", balanceData);
+
+      // return balanceData;
     } catch (e: any) {
       return `Error fetching product balance ${generateErrorMessage(e)}`;
     }

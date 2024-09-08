@@ -54,6 +54,50 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
       .attr("width", chartWidth)
       .attr("height", height)
       .attr("viewBox", `-20 -220 ${chartWidth} ${height * 1.2 + radius * 0.2}`);
+
+    const foreignObject = svg
+      .append("foreignObject")
+      .attr("width", radius)
+      .attr("height", radius - 70)
+      .attr("x", -100) // Center the foreignObject
+      .attr("y", -50); // Adjust the y position
+
+    // Create a div within the foreignObject
+    const div = foreignObject
+      .append("xhtml:div")
+      .style("font-size", "16px")
+      .style("height", "100%")
+      .style("display", "flex")
+      .style("flex-direction", "column")
+      .style("text-align", "center");
+
+    // Create a wrapper for title and balance
+    const topSection = div.append("div").style("margin-bottom", "auto"); // Push the date to the bottom
+
+    // Add text in the div for title
+    topSection
+      .append("p")
+      .style("margin", "0")
+      .style("color", "grey")
+      .text(`Total Balance:`);
+
+    // Add text in the div for total volume
+    topSection
+      .append("p")
+      .style("word-break", "break-all")
+      .style("margin", "0")
+      .style("margin-top", "5px")
+      .style("color", "#12A7FF")
+      .style("font-size", "20px")
+      .text(`${toDollarFormat("100000000000000000.00")}`);
+
+    // Add text in the div for date
+    div
+      .append("p")
+      .style("margin", "0")
+      .style("color", "grey")
+      .text(`8, Sept, 2024`);
+
     svg
       .append("g")
       .selectAll()
@@ -123,7 +167,9 @@ const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
         const hoverData = (d.data as any).hover;
 
         t.selectAll("tspan")
-          .data(hoverData?.split(" "))
+          .data(
+            typeof hoverData?.split == "function" ? hoverData?.split(" ") : []
+          )
           .join("tspan")
           .attr("x", 0)
           .attr("dy", "0em")

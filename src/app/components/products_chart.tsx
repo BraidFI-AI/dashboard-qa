@@ -63,8 +63,8 @@ const ProductsChart = () => {
     ).then((d: any) => {
       if (typeof d.payload != "string") {
         d.payload.sort(function (
-          a: { name: string; value: string },
-          b: { name: string; value: string }
+          a: { label: string; value: string },
+          b: { label: string; value: string }
         ) {
           return parseFloat(b.value) - parseFloat(a.value);
         });
@@ -88,7 +88,7 @@ const ProductsChart = () => {
         for (var i = 0; i < d.payload.length; i++) {
           if (i < topNumber) {
             cData.push({
-              name: d.payload[i].name,
+              name: d.payload[i].label,
               hover: d.payload[i].value,
               value: `${
                 total == 0
@@ -123,7 +123,6 @@ const ProductsChart = () => {
   useEffect(() => {
     console.log("userType:", userType);
     if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
-      console.log("userType 2222:", userType);
       fetchDevelopersCallback();
     }
   }, [dispatch, fetchDevelopersCallback, userType]);

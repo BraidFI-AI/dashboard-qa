@@ -333,25 +333,27 @@ const TransactionsChart = () => {
           )}
         </div>
         <div className="w-4"></div>
-        <div>
-          <MyText>Duration</MyText>
-          <div className="pb-1"></div>
-          <div className="w-[300px]">
-            <MyControlledAutocomplete
-              clearable={false}
-              value={duration}
-              displayName="Duration"
-              name={"duration"}
-              control={control}
-              errors={errors}
-              rules={{ required: true }}
-              options={["Week", "Month", "Year"]}
-              customOnChange={(val: "Week" | "Month" | "Year") => {
-                setDuration(val);
-              }}
-            />
+        {typeof developers != "string" && typeof products != "string" && (
+          <div>
+            <MyText>Duration</MyText>
+            <div className="pb-1"></div>
+            <div className="w-[300px]">
+              <MyControlledAutocomplete
+                clearable={false}
+                value={duration}
+                displayName="Duration"
+                name={"duration"}
+                control={control}
+                errors={errors}
+                rules={{ required: true }}
+                options={["Week", "Month", "Year"]}
+                customOnChange={(val: "Week" | "Month" | "Year") => {
+                  setDuration(val);
+                }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="pb-6"></div>
       {typeof products != "string" && (
