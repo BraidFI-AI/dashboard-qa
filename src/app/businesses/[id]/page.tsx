@@ -164,7 +164,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
           recoveryButtonTitle="Retry"
         />
       ) : (
-        <div className="w-[1000px] flex flex-row justify-between h-fit">
+        <div className="w-[1320px] flex flex-row justify-between h-fit">
           <div className="flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-fit px-3 pt-3">
             <div className="w-[320px]">
               <ItemRow
@@ -249,6 +249,34 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 Download PDF Form
               </MyBlueButton> */}
               </div>
+            </div>
+            <div className="w-[320px]">
+              <MyText size="md">Mailing Address</MyText>
+              <div className="pb-2" />
+              <ItemRow
+                title="Street Address"
+                value={(business as any)?.addresses?.[0]?.line1 ?? ""}
+              ></ItemRow>
+              <ItemRow
+                title="Apartment, suite, or floor"
+                value={(business as any)?.addresses?.[0]?.line2 ?? ""}
+              ></ItemRow>
+              <ItemRow
+                title="Country Code"
+                value={(business as any)?.addresses?.[0]?.countryCode ?? ""}
+              ></ItemRow>
+              <ItemRow
+                title="State"
+                value={(business as any)?.addresses?.[0]?.state ?? ""}
+              ></ItemRow>
+              <ItemRow
+                title="City"
+                value={(business as any)?.addresses?.[0]?.city ?? ""}
+              ></ItemRow>
+              <ItemRow
+                title="Postal Code"
+                value={(business as any)?.addresses?.[0]?.postalCode ?? ""}
+              ></ItemRow>
             </div>
           </div>
           <div className="w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
