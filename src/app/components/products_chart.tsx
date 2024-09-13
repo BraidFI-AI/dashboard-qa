@@ -139,104 +139,113 @@ const ProductsChart = () => {
     fetchChartDataCallback();
   }, [dispatch, developerId, fetchChartDataCallback, userType]);
 
-  return userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
-    <>
-      <MyText size="md">Products balance</MyText>
-      <div className="pb-4"></div>
-      <MyText>Developers</MyText>
-      <div className="pb-1"></div>
-      <div className="">
-        {developers == "loading" ? (
-          <MyCircularProgressIndicator />
-        ) : typeof developers == "string" ? (
-          <ErrorPage
-            error={developers}
-            recoveryButtonOnClick={() => {
-              fetchDevelopersCallback();
-            }}
-            recoveryButtonTitle="Retry"
-          />
-        ) : (
-          <div>
-            <div className="w-[300px]">
-              <MyControlledAutocomplete
-                clearable={false}
-                value={`All`}
-                displayName="Developer ID"
-                name={"developerId"}
-                control={control}
-                errors={errors}
-                rules={{ required: true }}
-                options={developers?.map((dev) => {
-                  return typeof dev == "string"
-                    ? dev
-                    : `${dev.tenantId} - ${dev.name}`;
-                })}
-                customOnChange={(val: string) => {
-                  const id = val?.split(" - ")[0];
-                  const name = val?.split(" - ")[1];
-                  if (val == "All") {
-                    setDeveloperId("-1");
-                  }
-                  if (id) {
-                    setDeveloperId(id);
-                  }
-                }}
-              />
-            </div>
-            <div className="pb-6"></div>
-            {chartData == "loading" ? (
+  return (
+    <div className="h-[480px]">
+      {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+        <>
+          <MyText size="md">Products balance</MyText>
+          <div className="pb-4"></div>
+          <MyText>Developers</MyText>
+          <div className="pb-1"></div>
+          <div className="">
+            {developers == "loading" ? (
               <MyCircularProgressIndicator />
-            ) : typeof chartData == "string" ? (
+            ) : typeof developers == "string" ? (
               <ErrorPage
-                error={chartData}
+                error={developers}
                 recoveryButtonOnClick={() => {
-                  fetchChartDataCallback();
+                  fetchDevelopersCallback();
                 }}
                 recoveryButtonTitle="Retry"
               />
-            ) : chartData.length == 0 ? (
-              <MyText>No data found!</MyText>
             ) : (
-              <DonutChart
-                data={chartData}
-                total={total}
-                developerId={developerId}
-                date={date}
-                onClick={(data) => {
-                  console.log(data);
-                  if (developerId == "All" && data.name != "Others") {
-                    setDeveloperId(data.name);
-                    const dev = developers.find((dev) => dev.name == data.name);
-                    setValue("developerId", `${dev?.tenantId} - ${dev?.name}`);
-                  }
-                }}
-              />
+              <div>
+                <div className="w-[300px]">
+                  <MyControlledAutocomplete
+                    clearable={false}
+                    value={`All`}
+                    displayName="Developer ID"
+                    name={"developerId"}
+                    control={control}
+                    errors={errors}
+                    rules={{ required: true }}
+                    options={developers?.map((dev) => {
+                      return typeof dev == "string"
+                        ? dev
+                        : `${dev.tenantId} - ${dev.name}`;
+                    })}
+                    customOnChange={(val: string) => {
+                      const id = val?.split(" - ")[0];
+                      const name = val?.split(" - ")[1];
+                      if (val == "All") {
+                        setDeveloperId("-1");
+                      }
+                      if (id) {
+                        setDeveloperId(id);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="pb-6"></div>
+                {chartData == "loading" ? (
+                  <MyCircularProgressIndicator />
+                ) : typeof chartData == "string" ? (
+                  <ErrorPage
+                    error={chartData}
+                    recoveryButtonOnClick={() => {
+                      fetchChartDataCallback();
+                    }}
+                    recoveryButtonTitle="Retry"
+                  />
+                ) : chartData.length == 0 ? (
+                  <MyText>No data found!</MyText>
+                ) : (
+                  <DonutChart
+                    data={chartData}
+                    total={total}
+                    developerId={developerId}
+                    date={date}
+                    onClick={(data) => {
+                      console.log(data);
+                      if (developerId == "All" && data.name != "Others") {
+                        setDeveloperId(data.name);
+                        const dev = developers.find(
+                          (dev) => dev.name == data.name
+                        );
+                        setValue(
+                          "developerId",
+                          `${dev?.tenantId} - ${dev?.name}`
+                        );
+                      }
+                    }}
+                  />
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
-    </>
-  ) : chartData == "loading" ? (
-    <MyCircularProgressIndicator />
-  ) : typeof chartData == "string" ? (
-    <ErrorPage
-      error={chartData}
-      recoveryButtonOnClick={() => {
-        fetchChartDataCallback();
-      }}
-      recoveryButtonTitle="Retry"
-    />
-  ) : chartData.length == 0 ? (
-    <MyText>No data found!</MyText>
-  ) : (
-    <DonutChart
-      data={chartData}
-      total={total}
-      developerId={developerId}
-      date={date}
-      onClick={(data) => {}}
-    />
+        </>
+      ) : chartData == "loading" ? (
+        <MyCircularProgressIndicator />
+      ) : typeof chartData == "string" ? (
+        <ErrorPage
+          error={chartData}
+          recoveryButtonOnClick={() => {
+            fetchChartDataCallback();
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : chartData.length == 0 ? (
+        <MyText>No data found!</MyText>
+      ) : (
+        <DonutChart
+          data={chartData}
+          total={total}
+          developerId={developerId}
+          date={date}
+          onClick={(data) => {}}
+        />
+      )}
+    </div>
   );
 };
 

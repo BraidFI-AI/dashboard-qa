@@ -113,12 +113,16 @@ export const fetchProductsNew = createAsyncThunk(
 
 export const fetchProductsTransactionVolume = createAsyncThunk(
   "product/fetchProductsTransactionVolume",
-  async (inp: { product: string; duration: "week" | "month" | "year" }) => {
+  async (inp: {
+    developer: string;
+    product: string;
+    duration: "week" | "month" | "year";
+  }) => {
     try {
       const endDate = moment();
       const startDate = endDate.clone().subtract(1, inp.duration);
 
-      const data = await productRepo.fetchProductTransactionVolume(
+      let data = await productRepo.fetchProductTransactionVolume(
         momentToUTCString(startDate, true, false),
         momentToUTCString(endDate, false, false),
         inp.product === "All" ? undefined : inp.product
@@ -126,6 +130,10 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
 
       if (data.length === 0) {
         return [];
+      }
+
+      if (inp.developer != "All") {
+        data = data.filter((d) => d.tenant_id == inp.developer);
       }
 
       console.log("transactions volume data:", data);
