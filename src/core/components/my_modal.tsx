@@ -5,6 +5,7 @@ import Modal from "@mui/material/Modal";
 import MyText from "@/core/components/Text/Text";
 import ItemRow from "@/core/components/Text/ItemRow";
 import { useState } from "react";
+import { SCROLLBAR_STYLE } from "../constants";
 
 interface MyModalProps {
   modalOpen: boolean;
@@ -36,14 +37,27 @@ const MyModal: React.FC<MyModalProps> = ({
     <Modal
       open={modalOpen}
       onClose={handleModalClose}
-      className="overflow-auto"
+      className={`overflow-auto`}
     >
-      <Box
-        sx={ModalBoxstyle}
-        className="bg-white p-10 pb-4 rounded-lg scrollbar-thin scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-lg"
+      <div
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+        className={`h-[500px] ${
+          width ? `w-[${width}px` : "w-[500px]"
+        } overflow-clip rounded-lg bg-white`}
       >
-        {children}
-      </Box>
+        <Box
+          sx={ModalBoxstyle}
+          id="myBox"
+          className={`bg-white p-10 pb-4 rounded-lg ${SCROLLBAR_STYLE} scrollbar-track-rounded-full`}
+        >
+          {children}
+        </Box>
+      </div>
     </Modal>
   );
 };

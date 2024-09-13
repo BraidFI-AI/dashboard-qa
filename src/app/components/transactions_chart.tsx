@@ -110,6 +110,7 @@ const TransactionsChart = () => {
       setChartData("loading");
       dispatch(
         fetchProductsTransactionVolume({
+          developer: developerId,
           product: productId,
           duration: duration.toLowerCase() as "week" | "month" | "year",
         })
@@ -134,7 +135,7 @@ const TransactionsChart = () => {
   }, [dispatch, fetchChartDataCallback, userType]);
 
   return userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
-    <>
+    <div className="h-[500px]">
       <MyText size="md">Transactions volume</MyText>
       <div className="pb-4"></div>
       <div className="">
@@ -284,9 +285,9 @@ const TransactionsChart = () => {
           )}
         </>
       </div>
-    </>
+    </div>
   ) : (
-    <>
+    <div>
       <div className="flex flex-row">
         <div>
           <MyText>Products</MyText>
@@ -380,7 +381,7 @@ const TransactionsChart = () => {
           )}
         </>
       )}
-    </>
+    </div>
   );
 };
 
