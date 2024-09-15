@@ -199,8 +199,6 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         }}
         columnVisibilityModel={{
           paymentId: false,
-          "ach.counterparty.id": false,
-          description: false,
         }}
         columns={[
           {
