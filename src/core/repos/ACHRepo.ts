@@ -48,7 +48,7 @@ class ACHRepo {
   public async sendFileToSFTP(filename: string) {
     const response = await this.apiClient.http<any[]>(
       Method.POST,
-      `/ach//settlement/file/${filename}/send`
+      `/ach/settlement/file/${filename}/send`
     );
     return response;
   }

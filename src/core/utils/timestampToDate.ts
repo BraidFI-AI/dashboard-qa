@@ -2,7 +2,8 @@ import moment from "moment";
 
 export default function timestampToDate(
   date: number | null,
-  ms: boolean = false
+  ms: boolean = false,
+  time: boolean = false
 ): string {
   let ret: string = "-";
   if (date) {
@@ -19,6 +20,14 @@ export default function timestampToDate(
     ret = `${year}-${month.toString().padStart(2, "0")}-${day
       .toString()
       .padStart(2, "0")}`;
+
+    if (time) {
+      const hours = strDate.hours();
+      const minutes = strDate.minutes();
+      const seconds = strDate.seconds();
+
+      ret += ` ${hours}:${minutes}:${seconds}`;
+    }
   }
 
   return ret;
