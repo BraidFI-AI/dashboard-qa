@@ -3,6 +3,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import React from "react";
+import { APP_TIMEZONE } from "@/core/constants";
 
 type MyControlledDateTimePickerProps = {
   name: string;
@@ -56,6 +57,7 @@ const MyControlledDatePicker: React.FC<MyControlledDateTimePickerProps> = ({
                 // fontFamily: "AvenirNext LT Pro Regular",
               },
             }}
+            timezone={APP_TIMEZONE}
             value={typeof value == "string" ? moment(value) : value}
             onChange={(event) => {
               onChange(event ? event : undefined);
