@@ -93,18 +93,11 @@ class AlertsRepo {
     return data;
   }
 
-  public async whiteListIndividual(entityId: string, sdnEntityId: string) {
+  public async whiteListEntity(ofacId: string) {
     const response = await this.apiClient.http<any>(
       Method.POST,
-      `/individual/whitelist/${entityId}?entityType=INDIVIDUAL&sdnEntityId=${sdnEntityId}`
-    );
-    return response;
-  }
-
-  public async whiteListBusiness(entityId: string, sdnEntityId: string) {
-    const response = await this.apiClient.http<any>(
-      Method.POST,
-      `/business/whitelist/${entityId}?entityType=BUSINESS&sdnEntityId=${sdnEntityId}`
+      `/OFAC/whitelist`,
+      { ofacId }
     );
     return response;
   }
