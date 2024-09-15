@@ -6,7 +6,11 @@ import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { ACHSettlementHistory } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
-import { approveSettlement, downloadACHFile } from "@/redux/slices/ACHSlice";
+import {
+  approveSettlement,
+  downloadACHFile,
+  sendFileToSFTP,
+} from "@/redux/slices/ACHSlice";
 import moment, { Moment } from "moment";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -123,7 +127,8 @@ const ACHHistoryTable = () => {
             if (
               params.field == "status" ||
               params.field == "file" ||
-              params.field == "productName"
+              params.field == "productName" ||
+              params.field == "sftpStatus"
             ) {
               event.stopPropagation();
             }
@@ -193,13 +198,83 @@ const ACHHistoryTable = () => {
               minWidth: 120,
             },
             {
+              field: "sftpStatus",
+              headerName: "Send To SFTP",
+              flex: 1,
+              minWidth: 165,
+              renderCell: (params: any) =>
+                params.row.sftpStatus == "FAIL" ||
+                params.row.sftpStatus == "NOT_START" ? (
+                  <Tooltip title="Approve Settlement" placement="right">
+                    <div className="flex justify-center">
+                      <MyBlueButton
+                        submitting={approving.includes(params.row.filename)}
+                        onClick={() => {
+                          if (params != null) {
+                            updateApprovingArr(params.row.filename, true);
+                            dispatch(sendFileToSFTP(params.row.filename)).then(
+                              (send: any) => {
+                                if (typeof send.payload != "string") {
+                                  dispatch(
+                                    approveSettlement({
+                                      productId: params.row.productId,
+                                      filename: params.row.filename,
+                                    })
+                                  ).then((appr: any) => {
+                                    updateApprovingArr(
+                                      params.row.filename,
+                                      false
+                                    );
+                                    if (appr.payload) {
+                                      enqueueSnackbar("Settlement approved", {
+                                        variant: "success",
+                                      });
+
+                                      let tH = [...achHistory];
+                                      let h = tH.find(
+                                        (e) =>
+                                          e.filename == params?.row?.filename
+                                      );
+                                    }
+                                  });
+                                } else {
+                                  updateApprovingArr(
+                                    params.row.filename,
+                                    false
+                                  );
+                                  enqueueSnackbar(send.payload, {
+                                    variant: "error",
+                                    persist: true,
+                                  });
+                                }
+                              }
+                            );
+                          }
+                        }}
+                      >
+                        Send To SFTP
+                      </MyBlueButton>
+                    </div>
+                  </Tooltip>
+                ) : (
+                  <div>
+                    {params.row?.sftpStatus
+                      ? (
+                          params.row?.sftpStatus?.[0] +
+                          params?.row?.sftpStatus?.slice(1)?.toLowerCase()
+                        ).replace("_", " ")
+                      : ""}
+                  </div>
+                ),
+            },
+            {
               field: "status",
               headerName: "Status",
               flex: 1,
               minWidth: 120,
               renderCell: (params: any) =>
                 params.row.status == "SUBMITTED" ? (
-                  <Tooltip title="Approve Settlement" placement="right">
+                  <Tooltip title="Send File to SFTP Folder" placement="right">
                     <div className="flex justify-center">
                       <MyBlueButton
                         submitting={approving.includes(params.row.filename)}

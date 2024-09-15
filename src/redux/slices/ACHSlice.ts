@@ -91,6 +91,21 @@ const momentToUTCString = (date: Moment, start: boolean) => {
   return utc;
 };
 
+export const sendFileToSFTP = createAsyncThunk(
+  "ach/sendFileToSFTP",
+  async (filename: string) => {
+    try {
+      const resp = await achRepo.sendFileToSFTP(filename);
+      console.log("settlement file sent to sftp:", resp);
+      return { filename: filename };
+    } catch (e: any) {
+      return `Error sending file to SFTP the settlement ${generateErrorMessage(
+        e
+      )}`;
+    }
+  }
+);
+
 export const approveSettlement = createAsyncThunk(
   "ach/approveSettlement",
   async (data: { productId: number; filename: string }) => {
