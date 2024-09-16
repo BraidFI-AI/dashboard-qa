@@ -14,7 +14,7 @@ import {
 import { PaginationStateType, paginationPageSize } from "@/core/constants";
 import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
-import { momentToUTCString } from "@/core/utils/dateTimeUtil";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
@@ -123,8 +123,8 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       const startDate = endDate.clone().subtract(1, inp.duration);
 
       let data = await productRepo.fetchProductTransactionVolume(
-        momentToUTCString(startDate, true, false),
-        momentToUTCString(endDate, false, false),
+        momentToPSTString(startDate, true),
+        momentToPSTString(endDate, false),
         inp.product === "All" ? undefined : inp.product
       );
 

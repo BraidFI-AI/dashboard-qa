@@ -1,7 +1,7 @@
 import ApiClient from "@/core/api/ApiClient";
 import { WireSettlementHistory } from "@/core/api/ApiTypes";
 import WireRepo from "@/core/repos/wire_settlement_repo";
-import { momentToUTCString } from "@/core/utils/dateTimeUtil";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment, { Moment } from "moment";
@@ -26,8 +26,8 @@ const initialState: WireState = {
   wireSettlementHistory: "initial",
   productId: null,
   productName: null,
-  startDate: momentToUTCString(moment(), true),
-  endDate: momentToUTCString(moment(), false),
+  startDate: momentToPSTString(moment(), true),
+  endDate: momentToPSTString(moment(), false),
 };
 
 const WireSlice = createSlice({
@@ -105,8 +105,8 @@ export const fetchWireSettlementHistory = createAsyncThunk(
         if (data.startDate != null && data.endDate != null) {
           const wireSettlementHistory =
             await wireRepo.fetchWireSettlementHistory(
-              momentToUTCString(data.startDate, true),
-              momentToUTCString(data.endDate, false)
+              momentToPSTString(data.startDate, true),
+              momentToPSTString(data.endDate, false)
             );
           console.log("wireSettlementHistory", wireSettlementHistory);
           return wireSettlementHistory;
