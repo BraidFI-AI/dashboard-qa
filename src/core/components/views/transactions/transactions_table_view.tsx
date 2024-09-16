@@ -19,6 +19,7 @@ import MyText from "../../Text/Text";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MyModal from "../../my_modal";
 import ItemRow from "../../Text/ItemRow";
+import timestampToDate from "@/core/utils/timestampToDate";
 
 type TransactionTableViewProps = {
   transactions: Transaction[];
@@ -107,11 +108,39 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
 
   const renderObject = (obj: any, prefix: string = ""): any => {
     return Object.entries(obj).flatMap(([key, value]): any => {
-      const fullKey = prefix ? `${prefix}.${key}` : key;
+      const fullKey = prefix ? `${prefix} ${key}` : key;
       if (typeof value === "object" && value !== null) {
+        if (Array.isArray(value)) {
+          if (value.every((item) => typeof item === "number" && !isNaN(item))) {
+            return (
+              <ItemRow
+                title={formatTitle(fullKey.replaceAll("_", " "))}
+                value={value.join("-")}
+              />
+            );
+          } else if (value.every((item) => typeof item === "string")) {
+            return (
+              <ItemRow
+                title={formatTitle(fullKey.replaceAll("_", " "))}
+                value={value.join(", ")}
+              />
+            );
+          }
+        }
         return renderObject(value, fullKey);
       }
-      return <ItemRow title={formatTitle(fullKey)} value={value as any} />;
+      return (
+        <ItemRow
+          title={formatTitle(fullKey.replaceAll("_", " "))}
+          value={
+            fullKey.includes("At") || fullKey.toLowerCase().includes("Date")
+              ? timestampToDate(value as any, false, true)
+              : fullKey.toLowerCase().includes("amount")
+              ? toDollarFormat(value as any)
+              : (value as any)
+          }
+        />
+      );
     });
   };
 
@@ -170,8 +199,6 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         }}
         columnVisibilityModel={{
           paymentId: false,
-          "ach.counterparty.id": false,
-          description: false,
         }}
         columns={[
           {
@@ -270,7 +297,11 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             minWidth: 100,
             renderCell: (params: any) => (
               <InfoOutlinedIcon
-                className="text-[#12A7FF]"
+                className={`${
+                  params.row.ach != null || params.row.wire != null
+                    ? "text-[#12A7FF]"
+                    : "text-[#BDBDBD]"
+                }`}
                 onClick={() => {
                   showTransactionDetails(
                     params.row.ach ?? params.row.wire ?? null,

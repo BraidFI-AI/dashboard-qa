@@ -167,9 +167,7 @@ export const resolveAlert = createAsyncThunk(
       action: string;
       note: string;
       whiteList?: {
-        entityType: string;
-        entityId: string;
-        sdnId: string;
+        ofacId: string;
       };
     },
     thunkApi: any
@@ -188,20 +186,9 @@ export const resolveAlert = createAsyncThunk(
       if (
         data.action.toLowerCase().includes("whitelist") &&
         data.whiteList &&
-        data.whiteList.sdnId != null &&
-        data.whiteList.sdnId != ""
+        data.whiteList.ofacId != null
       ) {
-        if (data.whiteList.entityType == "BUSINESS") {
-          await alertsRepo.whiteListBusiness(
-            data.whiteList.entityId,
-            data.whiteList.sdnId
-          );
-        } else {
-          await alertsRepo.whiteListIndividual(
-            data.whiteList.entityId,
-            data.whiteList.sdnId
-          );
-        }
+        await alertsRepo.whiteListEntity(data.whiteList.ofacId);
       }
 
       console.log("alert resolve", resolvedAlert);

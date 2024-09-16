@@ -75,9 +75,7 @@ const ResolveAlertButton = () => {
       action: string;
       note: string;
       whiteList?: {
-        entityType: string;
-        entityId: string;
-        sdnId: string;
+        ofacId: string;
       };
     } = { ...data };
 
@@ -90,15 +88,7 @@ const ResolveAlertButton = () => {
     ) {
       if (data.action.toLowerCase().includes("whitelist")) {
         resolveData.whiteList = {
-          sdnId:
-            ofacHit.rawResults != null
-              ? JSON.parse(ofacHit.rawResults)?.SDNs?.[0]?.entityID ?? ""
-              : "",
-          entityId:
-            ofacHit?.businessId != null
-              ? ofacHit?.businessId
-              : ofacHit?.individualId ?? "",
-          entityType: ofacHit?.businessId != null ? "BUSINESS" : "INDIVIDUAL",
+          ofacId: ofacHit.ofacId ?? "",
         };
       }
     }

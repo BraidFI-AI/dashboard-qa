@@ -72,9 +72,41 @@ const ACHSlice = createSlice({
         }
       }
     });
+    builder.addCase(sendFileToSFTP.fulfilled, (state, action) => {
+      if (
+        action.payload != null &&
+        typeof action.payload != "string" &&
+        typeof state.achSettlementHistory != "string"
+      ) {
+        const filename = action.payload.filename;
+        const updatedFilename = state.achSettlementHistory.find(
+          (e) => e.filename == filename
+        );
+
+        if (updatedFilename != undefined) {
+          const index = state.achSettlementHistory.indexOf(updatedFilename);
+          state.achSettlementHistory[index].sftpStatus = "SUCCESS";
+        }
+      }
+    });
     builder.addCase(downloadACHFile.fulfilled, () => {});
   },
 });
+
+export const sendFileToSFTP = createAsyncThunk(
+  "ach/sendFileToSFTP",
+  async (filename: string) => {
+    try {
+      const resp = await achRepo.sendFileToSFTP(filename);
+      console.log("settlement file sent to sftp:", resp);
+      return { filename: filename };
+    } catch (e: any) {
+      return `Error sending file to SFTP the settlement ${generateErrorMessage(
+        e
+      )}`;
+    }
+  }
+);
 
 export const approveSettlement = createAsyncThunk(
   "ach/approveSettlement",

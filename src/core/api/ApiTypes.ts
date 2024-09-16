@@ -608,6 +608,7 @@ export interface ACHSettlementHistory {
   file: null;
   productId: string | null;
   status?: string | null;
+  sftpStatus?: string | null;
 }
 
 export interface WireSettlementHistory {

@@ -21,7 +21,7 @@ class TransactionRepo {
     } = await this.apiClient.http(
       Method.POST,
       `/transaction/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      criteria
+      { ...criteria, includeRawData: true }
     );
 
     const transactions = resp.content;
@@ -41,6 +41,7 @@ class TransactionRepo {
       "/transaction/search",
       {
         paymentId: paymentId,
+        includeRawData: true,
       }
     );
 
