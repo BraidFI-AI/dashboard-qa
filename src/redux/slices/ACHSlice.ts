@@ -72,6 +72,23 @@ const ACHSlice = createSlice({
         }
       }
     });
+    builder.addCase(sendFileToSFTP.fulfilled, (state, action) => {
+      if (
+        action.payload != null &&
+        typeof action.payload != "string" &&
+        typeof state.achSettlementHistory != "string"
+      ) {
+        const filename = action.payload.filename;
+        const updatedFilename = state.achSettlementHistory.find(
+          (e) => e.filename == filename
+        );
+
+        if (updatedFilename != undefined) {
+          const index = state.achSettlementHistory.indexOf(updatedFilename);
+          state.achSettlementHistory[index].sftpStatus = "SUCCESS";
+        }
+      }
+    });
     builder.addCase(downloadACHFile.fulfilled, () => {});
   },
 });
