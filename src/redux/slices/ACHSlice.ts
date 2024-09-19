@@ -1,6 +1,7 @@
 import ApiClient from "@/core/api/ApiClient";
 import { ACHSettlementHistory } from "@/core/api/ApiTypes";
 import ACHRepo from "@/core/repos/ACHRepo";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment, { Moment } from "moment";
@@ -71,25 +72,41 @@ const ACHSlice = createSlice({
         }
       }
     });
+    builder.addCase(sendFileToSFTP.fulfilled, (state, action) => {
+      if (
+        action.payload != null &&
+        typeof action.payload != "string" &&
+        typeof state.achSettlementHistory != "string"
+      ) {
+        const filename = action.payload.filename;
+        const updatedFilename = state.achSettlementHistory.find(
+          (e) => e.filename == filename
+        );
+
+        if (updatedFilename != undefined) {
+          const index = state.achSettlementHistory.indexOf(updatedFilename);
+          state.achSettlementHistory[index].sftpStatus = "SUCCESS";
+        }
+      }
+    });
     builder.addCase(downloadACHFile.fulfilled, () => {});
   },
 });
 
-const momentToUTCString = (date: Moment, start: boolean) => {
-  const month: string =
-    date.month() + 1 > 9
-      ? (date.month() + 1).toString()
-      : `0${date.month() + 1}`;
-
-  const day: string =
-    date.date() > 9 ? date.date().toString() : `0${date.date()}`;
-
-  const time: string = start ? "T00:00:00Z" : "T23:59:59Z";
-
-  const utc = date.year().toString() + "-" + month + "-" + day + time;
-
-  return utc;
-};
+export const sendFileToSFTP = createAsyncThunk(
+  "ach/sendFileToSFTP",
+  async (filename: string) => {
+    try {
+      const resp = await achRepo.sendFileToSFTP(filename);
+      console.log("settlement file sent to sftp:", resp);
+      return { filename: filename };
+    } catch (e: any) {
+      return `Error sending file to SFTP the settlement ${generateErrorMessage(
+        e
+      )}`;
+    }
+  }
+);
 
 export const approveSettlement = createAsyncThunk(
   "ach/approveSettlement",
@@ -141,8 +158,8 @@ export const fetchACHSettlementHistory = createAsyncThunk(
         data?.date?.startDate != undefined &&
         data?.date?.endDate != undefined
       ) {
-        sd = momentToUTCString(moment(data.date.startDate), true);
-        ed = momentToUTCString(moment(data.date.endDate), false);
+        sd = momentToPSTString(moment(data.date.startDate), true);
+        ed = momentToPSTString(moment(data.date.endDate), false);
       }
 
       const achSettlementHistory = await achRepo.fetchACHSettlementHistory(

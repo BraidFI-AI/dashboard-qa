@@ -109,6 +109,7 @@ const ACHTransactionStatusPage = () => {
           },
         ]}
         rows={transactions}
+        sortModel={[{ field: "processingDate", sort: "desc" }]}
       />
     </div>
   );

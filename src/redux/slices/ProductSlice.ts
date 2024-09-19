@@ -14,7 +14,7 @@ import {
 import { PaginationStateType, paginationPageSize } from "@/core/constants";
 import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
-import { momentToUTCString } from "@/core/utils/dateTimeUtil";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
@@ -113,19 +113,27 @@ export const fetchProductsNew = createAsyncThunk(
 
 export const fetchProductsTransactionVolume = createAsyncThunk(
   "product/fetchProductsTransactionVolume",
-  async (inp: { product: string; duration: "week" | "month" | "year" }) => {
+  async (inp: {
+    developer: string;
+    product: string;
+    duration: "week" | "month" | "year";
+  }) => {
     try {
       const endDate = moment();
       const startDate = endDate.clone().subtract(1, inp.duration);
 
-      const data = await productRepo.fetchProductTransactionVolume(
-        momentToUTCString(startDate, true, false),
-        momentToUTCString(endDate, false, false),
+      let data = await productRepo.fetchProductTransactionVolume(
+        momentToPSTString(startDate, true),
+        momentToPSTString(endDate, false),
         inp.product === "All" ? undefined : inp.product
       );
 
       if (data.length === 0) {
         return [];
+      }
+
+      if (inp.developer != "All") {
+        data = data.filter((d) => d.tenant_id == inp.developer);
       }
 
       console.log("transactions volume data:", data);

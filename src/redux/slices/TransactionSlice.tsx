@@ -12,6 +12,7 @@ import { isEqual } from "lodash";
 import AccountRepo from "@/core/repos/AccountRepo";
 import IndividualRepo from "@/core/repos/IndividualRepo";
 import BusinessRepo from "@/core/repos/BusinessRepo";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 
 const apiClient = ApiClient.getInstance();
 const transactionRepo: TransactionRepo = new TransactionRepo(apiClient);
@@ -78,22 +79,6 @@ const TransactionSlice = createSlice({
   },
 });
 
-const momentToUTCString = (date: Moment, start: boolean) => {
-  const month: string =
-    date.month() + 1 > 9
-      ? (date.month() + 1).toString()
-      : `0${date.month() + 1}`;
-
-  const day: string =
-    date.date() > 9 ? date.date().toString() : `0${date.date()}`;
-
-  const time: string = start ? "T00:00:00Z" : "T23:59:59Z";
-
-  const utc = date.year().toString() + "-" + month + "-" + day + time;
-
-  return utc;
-};
-
 export const fetchTransactionByPaymentId = createAsyncThunk(
   "UserManagementState/createUser",
   async (paymentId: string, thunkAPI: any) => {
@@ -147,13 +132,13 @@ export const fetchTransactions = createAsyncThunk(
       if (data.criteria.beginDate) {
         data.criteria = {
           ...data.criteria,
-          beginDate: momentToUTCString(moment(data.criteria.beginDate), true),
+          beginDate: momentToPSTString(moment(data.criteria.beginDate), true),
         };
       }
       if (data.criteria.endDate) {
         data.criteria = {
           ...data.criteria,
-          endDate: momentToUTCString(moment(data.criteria.endDate), false),
+          endDate: momentToPSTString(moment(data.criteria.endDate), false),
         };
       }
       if (data.criteria.amount != undefined || data.criteria.amount != null) {
