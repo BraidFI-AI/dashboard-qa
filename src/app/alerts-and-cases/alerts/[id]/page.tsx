@@ -140,7 +140,7 @@ const AlertsPage = () => {
                     alert.contextType == "PRODUCT"
                       ? `/configuration/products/${alert.contextId}`
                       : alert.contextType == "FILE_NAME"
-                      ? `/transactions/transactionReview?wireFileHandle=${alert.contextId}`
+                      ? `/transactions/transactionHistory?wireFileHandle=${alert.contextId}`
                       : "",
                 }}
               />
@@ -179,7 +179,7 @@ const AlertsPage = () => {
                     : alert.contextType == "PRODUCT"
                     ? `/configuration/products/${alert.contextId}`
                     : alert.contextType == "FILE_NAME"
-                    ? `/transactions/transactionReview?wireFileHandle=${alert.contextId}`
+                    ? `/transactions/transactionHistory?wireFileHandle=${alert.contextId}`
                     : "",
               }}
             />

@@ -64,7 +64,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
       router.push(`/configuration/products/${params.row.contextId}`);
     } else if (params.row.contextType == "FILE_NAME") {
       router.push(
-        `/transactions/transactionReview?wireFileHandle=${params.row.contextId}`
+        `/transactions/transactionHistory?wireFileHandle=${params.row.contextId}`
       );
     } else {
       router.push(`/alerts-and-cases/alerts/${params.row.id}`);
