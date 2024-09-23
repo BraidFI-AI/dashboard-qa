@@ -157,7 +157,7 @@ export const fetchUsers = createAsyncThunk(
       );
       console.log("users", users);
 
-      if (users._metadata.paginations.next) {
+      if (users._metadata?.paginations?.next != null) {
         thunkAPI.dispatch(fetchUsers(users._metadata.paginations.next));
       }
 

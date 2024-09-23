@@ -17,6 +17,13 @@ import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
 import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
 
+const userGroupMapping: any = {
+  "Bank Admin": "admin-admin",
+  "Bank Ops": "admin-ops",
+  "Fintech Admin": "developer-admin",
+  "Fintech Ops": "developer-ops",
+};
+
 const CreateUserPage = () => {
   const router = useRouter();
 
@@ -35,10 +42,12 @@ const CreateUserPage = () => {
     if (!isDeveloper) {
       data.tenantId = "";
     }
-    data.group = data.group.toLowerCase();
     console.log(data);
 
     setSubmitting(true);
+
+    data.group = userGroupMapping[data.group];
+
     dispatch(createUser(data)).then((usr: any) => {
       if (typeof usr.payload != "string") {
         enqueueSnackbar("User created successfully", { variant: "success" });
@@ -154,7 +163,7 @@ const CreateUserPage = () => {
         )}
         <MyText>Group</MyText>
         <MyControlledAutocomplete
-          value={"Customers"}
+          value={"Bank Admin"}
           displayName="Group"
           name={"group"}
           control={control}
@@ -166,7 +175,7 @@ const CreateUserPage = () => {
                   required: true,
                 }
           }
-          options={["Customers", "Developers", "Admins"]}
+          options={["Bank Admin", "Bank Ops", "Fintech Admin", "Fintech Ops"]}
           // customOnChange={(val: string) => {
           //   if (val == "Developers") {
           //     setIsDeveloper(true);

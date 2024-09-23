@@ -1,5 +1,7 @@
+import axios from "axios";
 import ApiClient, { Method } from "../api/ApiClient";
 import { CreateUser, User, UserResponse } from "../api/ApiTypes";
+import { Auth } from "aws-amplify";
 
 class UserMangementRepo {
   private apiClient: ApiClient;
@@ -18,11 +20,23 @@ class UserMangementRepo {
   }
 
   public async fetchUsers(token: string) {
-    const response = await this.apiClient.http<UserResponse>(
-      Method.GET,
-      `${token ? token : "/user"}`
+    // const response = await this.apiClient.http<UserResponse>(
+    //   Method.GET,
+    //   `${token ? token : "/user"}`
+    // );
+
+    // axios call to fetch data without using apiclient
+    const session = await Auth.currentSession();
+
+    const authToken = session.getAccessToken().getJwtToken();
+    const response = await axios.get(
+      `https://apiapi.development.braid.zone/user`,
+      {
+        headers: { Authorization: `Bearer ${authToken}` },
+      }
     );
-    return response;
+
+    return response.data;
   }
 
   public async disableUser(username: string) {

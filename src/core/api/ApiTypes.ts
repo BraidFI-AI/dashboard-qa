@@ -694,8 +694,17 @@ export interface TransactionMarketValue {
 }
 
 export interface TransactionSearch {
+  showAchNoc?: boolean;
+  excludeWire?: boolean;
+  excludeAch?: boolean;
+  wireFileHandle?: string;
+  direction?: string;
+  counterpartyId?: string;
+  customerId?: string;
+  settlementFileName?: string;
+  isInbound?: boolean;
   accountNumber?: string;
-  achStatus?: string;
+  processingStatus?: string;
   beginDate?: string;
   endDate?: string;
   maxAmount?: string;
