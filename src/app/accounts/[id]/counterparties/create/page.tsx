@@ -249,7 +249,7 @@ const CreateCounterpartyPage = () => {
             submitting
               ? { required: false, pattern: false, validate: null }
               : {
-                  required: true,
+                  required: false,
                   validate: (value: string, _: any) => {
                     const chars = value.split("");
                     if (
@@ -730,7 +730,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -746,7 +746,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -762,7 +762,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value="NATIONAL_CLEARING_SYSTEM"
@@ -782,7 +782,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                 />
@@ -798,7 +798,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   options={States}
@@ -814,7 +814,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -830,7 +830,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -846,7 +846,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -963,7 +963,7 @@ const CreateCounterpartyPage = () => {
                 <MyText>Address Type</MyText>
                 <MyControlledAutocomplete
                   value={"MAILING"}
-                  displayName="Address Type<"
+                  displayName="Address Type"
                   name={"address.type"}
                   control={wireControl}
                   errors={wireErrors}
@@ -988,7 +988,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   options={States}
