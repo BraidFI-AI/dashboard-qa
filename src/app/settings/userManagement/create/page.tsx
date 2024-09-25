@@ -15,14 +15,8 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { createUser } from "@/redux/slices/UsermanagementSlice";
 import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
-import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
-
-const userGroupMapping: any = {
-  "Bank Admin": "admin-admin",
-  "Bank Ops": "admin-ops",
-  "Fintech Admin": "developer-admin",
-  "Fintech Ops": "developer-ops",
-};
+import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
+import { validate } from "uuid";
 
 const CreateUserPage = () => {
   const router = useRouter();
@@ -42,7 +36,6 @@ const CreateUserPage = () => {
     if (!isDeveloper) {
       data.tenantId = "";
     }
-
     console.log(data);
 
     setSubmitting(true);
@@ -81,6 +74,11 @@ const CreateUserPage = () => {
               ? { required: false }
               : {
                   required: true,
+                  validate: (value: any, formValues: any) => {
+                    if (value.includes(" ")) {
+                      return "Username cannot contain spaces";
+                    }
+                  },
                 }
           }
           value={""}

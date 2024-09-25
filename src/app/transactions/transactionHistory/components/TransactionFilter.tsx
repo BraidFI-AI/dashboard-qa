@@ -24,6 +24,9 @@ import MyControlledMultiAutocomplete from "@/core/components/Autocomplete/MyCont
 import { fetchProductIdsList } from "@/redux/slices/ach_return_slice";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import { useRouter, useSearchParams } from "next/navigation";
+import MyControlledAsyncAutocomplete from "@/core/components/Autocomplete/MyControlledAsyncAutocomplete";
+import { fetchAccountNumbersList } from "@/redux/slices/AccountSlice";
+import MyControlledCheckbox from "@/core/components/Button/MyControlledCheckbox";
 
 type TransactionFilterProps = {};
 
@@ -42,6 +45,11 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
+  const [isInbound, setIsInbound] = useState(false);
+  const [showAchNoc, setShowAchNoc] = useState(false);
+  const [excludeWire, setExcludeWire] = useState(false);
+  const [excludeAch, setExcludeAch] = useState(false);
+
   const {
     formState: { errors },
     control,
@@ -53,6 +61,59 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
     console.log("data:", data);
 
     data.productId = productId;
+
+    if (data.counterpartyId == null || data.counterpartyId == "") {
+      data.counterpartyId = undefined;
+    }
+
+    if (data.customerId == null || data.customerId == "") {
+      data.customerId = undefined;
+    }
+
+    if (data.settlementFileName == null || data.settlementFileName == "") {
+      data.settlementFileName = undefined;
+    }
+
+    if (data.direction == null || data.direction == "") {
+      data.direction = undefined;
+    }
+
+    if (data.wireFileHandle == null || data.wireFileHandle == "") {
+      data.wireFileHandle = undefined;
+    }
+
+    if (
+      data.isInbound == null ||
+      data.isInbound == "" ||
+      data.isInbound == false
+    ) {
+      data.isInbound = undefined;
+    }
+
+    if (
+      data.excludeWire == null ||
+      data.excludeWire == "" ||
+      data.excludeWire == false
+    ) {
+      data.excludeWire = undefined;
+    }
+
+    if (
+      data.excludeAch == null ||
+      data.excludeAch == "" ||
+      data.excludeAch == false
+    ) {
+      data.excludeAch = undefined;
+    }
+
+    if (
+      data.showAchNoc == null ||
+      data.showAchNoc == "" ||
+      data.showAchNoc == false
+    ) {
+      data.showAchNoc = undefined;
+    }
+
     if (productId == null || productId == "") {
       data.productId = undefined;
     }
@@ -65,8 +126,8 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.paymentId = undefined;
     }
 
-    if (data.achStatus == null || data.achStatus == "") {
-      data.achStatus = undefined;
+    if (data.processingStatus == null || data.processingStatus == "") {
+      data.processingStatus = undefined;
     }
 
     if (data.beginDate == null || data.beginDate == "") {
@@ -97,7 +158,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.transactionType = undefined;
     }
 
-    let params = "?";
+    let params: string = "?";
 
     for (const key in data) {
       if (data[key] !== undefined) {
@@ -127,7 +188,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
   useEffect(() => {
     reset({
       accountNumber: qParams.get("accountNumber") ?? "",
-      achStatus: qParams.get("achStatus") ?? "",
+      processingStatus: qParams.get("processingStatus") ?? "",
       beginDate: qParams.get("beginDate") ?? undefined,
       endDate: qParams.get("endDate") ?? undefined,
       maxAmount: qParams.get("maxAmount") ?? "",
@@ -136,8 +197,21 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       transactionStatus: qParams.getAll("transactionStatus") ?? [],
       transactionType: qParams.getAll("transactionType") ?? [],
       paymentId: qParams.get("paymentId") ?? "",
+      customerId: qParams.get("customerId") ?? "",
+      counterpartyId: qParams.get("counterpartyId") ?? "",
+      settlementFileName: qParams.get("settlementFileName") ?? "",
+      direction: qParams.get("direction") ?? "",
+      wireFileHandle: qParams.get("wireFileHandle") ?? "",
+      isInbound: qParams.get("isInbound") == "true",
+      excludeWire: qParams.get("excludeWire") == "true",
+      excludeAch: qParams.get("excludeAch") == "true",
+      showAchNoc: qParams.get("showAchNoc") == "true",
     });
-    setProductId(undefined);
+    setProductId(qParams.get("productId") ?? undefined);
+    setIsInbound(qParams.get("isInbound") == "true");
+    setExcludeWire(qParams.get("excludeWire") == "true");
+    setExcludeAch(qParams.get("excludeAch") == "true");
+    setShowAchNoc(qParams.get("showAchNoc") == "true");
   }, [qParams]);
 
   useEffect(() => {
@@ -160,8 +234,9 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
         }}
       >
         <Box className="flex flex-col px-4 pt-10 max-w-full">
+          <div className="h-[50px]" />
           <MyText size="lg">Transaction Filters</MyText>
-          <Box className="flex flex-row  pt-8">
+          <Box className="flex flex-row pt-8">
             <Box className="pb-4 w-full">
               <MyText>Account Number</MyText>
               <MyControlledTextField
@@ -208,6 +283,52 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                 />
               )}
             </Box>
+          </Box>
+          <Box className="pb-4 w-full flex flex-row">
+            <div className="pr-2 w-full">
+              <MyText>Customer ID</MyText>
+              <MyControlledTextField
+                name="customerId"
+                displayName="Customer ID"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={getValues("customerId")}
+              />
+            </div>
+            <div className="w-full">
+              <MyText>Counterparty ID</MyText>
+              <MyControlledTextField
+                name="counterpartyId"
+                displayName="Counterparty ID"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={getValues("counterpartyId")}
+              />
+            </div>
+          </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Settlement File Name</MyText>
+            <MyControlledTextField
+              name="settlementFileName"
+              displayName="Settlement File Name"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("settlementFileName") ?? ""}
+            />
+          </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Wire File Handle</MyText>
+            <MyControlledTextField
+              name="wireFileHandle"
+              displayName="Wire File Handle"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("wireFileHandle") ?? ""}
+            />
           </Box>
           <Box className="pb-4 w-full">
             <MyText>Payment ID</MyText>
@@ -274,26 +395,35 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
             />
           </Box>
           <Box className="pb-4 w-full">
-            <MyText>ACH Status</MyText>
+            <MyText>Processing Status</MyText>
             <MyControlledAutocomplete
-              value={getValues("achStatus") ?? ""}
-              displayName="ACH Status"
-              name={"achStatus"}
+              value={getValues("processingStatus") ?? ""}
+              displayName="Processing Status"
+              name={"processingStatus"}
               control={control}
               errors={errors}
               rules={{}}
               options={[
-                "MANUAL_REVIEW",
-                "CONTESTED",
-                "ERROR",
-                "CANCELED",
                 "INITIATED",
-                "REJECTED",
-                "RETURNED",
-                "SENT",
+                "MANUAL_REVIEW",
+                "CANCELED",
                 "SUBMITTED",
-                "DISHONORED",
+                "SENT",
+                "RETURNED",
+                "REJECTED",
               ]}
+            />
+          </Box>
+          <Box className="w-full pb-4">
+            <MyText>Direction</MyText>
+            <MyControlledAutocomplete
+              value={getValues("direction") ?? ""}
+              displayName="Direction"
+              name={"direction"}
+              control={control}
+              errors={errors}
+              rules={{}}
+              options={["DEBIT", "CREDIT"]}
             />
           </Box>
           <Box className="flex flex-row">
@@ -376,13 +506,78 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
               />
             </Box>
           </Box>
+          <Box className="pb-4 w-full flex flex-row justify-between">
+            <div className="w-1/2">
+              <MyControlledCheckbox
+                name="isInbound"
+                displayName="Inbound"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={isInbound}
+                customOnChange={(val: boolean) => {
+                  setIsInbound(val);
+                }}
+              />
+            </div>
+            <div className="w-1/2">
+              <MyControlledCheckbox
+                name="showAchNoc"
+                displayName="Show ACH NOC"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={showAchNoc}
+                customOnChange={(val: boolean) => {
+                  setShowAchNoc(val);
+                }}
+              />
+            </div>
+          </Box>
+          <Box className="w-full flex flex-row justify-between">
+            <div className="w-1/2">
+              <MyControlledCheckbox
+                name="excludeWire"
+                displayName="Exclude Wire"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={excludeWire}
+                customOnChange={(val: boolean) => {
+                  setExcludeWire(val);
+                }}
+              />
+            </div>
+            <div className="w-1/2">
+              <MyControlledCheckbox
+                name="excludeAch"
+                displayName="Exclude Ach"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={excludeAch}
+                customOnChange={(val: boolean) => {
+                  setExcludeAch(val);
+                }}
+              />
+            </div>
+          </Box>
           <Box className="flex flex-row justify-between pb-10">
             <Box className="w-32 pt-6">
               <MyTextButton
                 onClick={() => {
                   reset({
+                    counterpartyId: "",
+                    customerId: "",
+                    settlementFileName: "",
+                    direction: "",
+                    wireFileHandle: "",
+                    isInbound: false,
+                    excludeWire: false,
+                    excludeAch: false,
+                    showAchNoc: false,
                     accountNumber: "",
-                    achStatus: "",
+                    processingStatus: "",
                     beginDate: undefined,
                     endDate: undefined,
                     maxAmount: "",

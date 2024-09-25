@@ -61,8 +61,6 @@ class TransactionRepo {
     pageSize: number,
     pageNumber: number,
     filter: {
-      includeWire?: boolean;
-      includeAch?: boolean;
       wireFileHandle?: string;
     }
   ) {
@@ -72,8 +70,8 @@ class TransactionRepo {
       number: number;
     }>(
       Method.POST,
-      `/transaction/manual-review?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      filter
+      `/transaction/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      { ...filter, processingStatus: ["MANUAL_REVIEW"] }
     );
 
     const transactions = resp.content;

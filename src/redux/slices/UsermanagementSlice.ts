@@ -63,6 +63,7 @@ const UserManagementSlice = createSlice({
           Username: action.payload.username,
           UserLastModifiedDate: dtS,
           UserCreateDate: dtS,
+          Groups: [action.payload.group],
           Attributes: [
             { Name: "custom:tenantId", Value: action.payload.tenantId },
             {},
