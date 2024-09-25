@@ -20,23 +20,12 @@ class UserMangementRepo {
   }
 
   public async fetchUsers(token: string) {
-    // const response = await this.apiClient.http<UserResponse>(
-    //   Method.GET,
-    //   `${token ? token : "/user"}`
-    // );
-
-    // axios call to fetch data without using apiclient
-    const session = await Auth.currentSession();
-
-    const authToken = session.getAccessToken().getJwtToken();
-    const response = await axios.get(
-      `https://apiapi.development.braid.zone/user`,
-      {
-        headers: { Authorization: `Bearer ${authToken}` },
-      }
+    const response = await this.apiClient.http<UserResponse>(
+      Method.GET,
+      `${token ? token : "/user"}`
     );
 
-    return response.data;
+    return response;
   }
 
   public async disableUser(username: string) {
