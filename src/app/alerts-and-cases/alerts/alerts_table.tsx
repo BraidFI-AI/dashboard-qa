@@ -124,26 +124,22 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             {
               field: "id",
               headerName: "Alert ID",
-              flex: 1,
-              minWidth: 120,
+              width: 120,
             },
             {
               field: "type",
               headerName: "Type",
-              flex: 1,
-              minWidth: 200,
+              width: 200,
             },
             {
               field: "status",
               headerName: "Status",
-              flex: 1,
-              minWidth: 120,
+              width: 120,
             },
             {
               field: "contextType",
               headerName: "Context Type",
-              flex: 1,
-              minWidth: 140,
+              width: 140,
             },
             {
               field: "contextId",
