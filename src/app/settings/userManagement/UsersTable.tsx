@@ -28,6 +28,7 @@ import PersonAddDisabledOutlinedIcon from "@mui/icons-material/PersonAddDisabled
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import Tooltip from "@mui/material/Tooltip";
+import { userGroupMappingToReadableNames } from "@/core/constants";
 
 const UsersTable = () => {
   const router = useRouter();
@@ -143,6 +144,19 @@ const UsersTable = () => {
               params.row.Attributes?.filter((attr: any) => {
                 return attr?.Name == "custom:tenantId";
               })?.[0]?.Value,
+          },
+          {
+            field: "Groups",
+            headerName: "User Group",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params: any) => (
+              <div>
+                {userGroupMappingToReadableNames[params.row.Groups?.[0] ?? ""]}
+              </div>
+            ),
+            valueGetter: (params: any) =>
+              userGroupMappingToReadableNames[params.row.Groups?.[0] ?? ""],
           },
           {
             field: "Enabled",

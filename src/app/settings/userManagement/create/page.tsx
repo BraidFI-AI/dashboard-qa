@@ -15,14 +15,7 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { createUser } from "@/redux/slices/UsermanagementSlice";
 import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
-import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
-
-const userGroupMapping: any = {
-  "Bank Admin": "admin-admin",
-  "Bank Ops": "admin-ops",
-  "Fintech Admin": "developer-admin",
-  "Fintech Ops": "developer-ops",
-};
+import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
 
 const CreateUserPage = () => {
   const router = useRouter();
