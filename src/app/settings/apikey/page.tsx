@@ -36,16 +36,18 @@ const APIKeyPage = () => {
     <div>
       <ItemRow title="Api Key" value={apiKeyState.apikey ?? "No key found"} />
       <div className="pb-4"></div>
-      <div className="w-[150px]">
-        <MyBlueButton
-          onClick={() => {
-            navigator.clipboard.writeText(apiKeyState.apikey);
-            enqueueSnackbar("Api key copied!", { variant: "success" });
-          }}
-        >
-          Copy Key
-        </MyBlueButton>
-      </div>
+      {apiKeyState.apikey != null && (
+        <div className="w-[150px]">
+          <MyBlueButton
+            onClick={() => {
+              navigator.clipboard.writeText(apiKeyState.apikey);
+              enqueueSnackbar("Api key copied!", { variant: "success" });
+            }}
+          >
+            Copy Key
+          </MyBlueButton>
+        </div>
+      )}
     </div>
   );
 };
