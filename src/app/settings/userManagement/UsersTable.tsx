@@ -127,6 +127,16 @@ const UsersTable = () => {
               })?.[0]?.Value,
           },
           {
+            field: "Groups",
+            headerName: "User Group",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params: any) => (
+              <div>{params.row.Groups?.[0] ?? ""}</div>
+            ),
+            valueGetter: (params: any) => params.row.Groups?.[0] ?? "",
+          },
+          {
             field: "Attributes[0].name",
             headerName: "Tenant ID",
             flex: 1,

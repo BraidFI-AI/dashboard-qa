@@ -17,6 +17,13 @@ import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
 import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
 
+const userGroupMapping: any = {
+  "Bank Admin": "admin-admin",
+  "Bank Ops": "admin-ops",
+  "Fintech Admin": "developer-admin",
+  "Fintech Ops": "developer-ops",
+};
+
 const CreateUserPage = () => {
   const router = useRouter();
 
