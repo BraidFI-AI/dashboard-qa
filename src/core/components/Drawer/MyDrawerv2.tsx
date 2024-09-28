@@ -357,9 +357,11 @@ export default function PersistentDrawerLeft(props: any) {
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <div className="h-full flex flex-col justify-between">
+        <div
+          className={`h-full flex flex-col justify-between overflow-y-auto scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#F4F5F7]`}
+        >
           <div>
-            <DrawerHeader className="flex flex-row justify-between">
+            <DrawerHeader className={`flex flex-row justify-between`}>
               <div
                 onClick={() => {
                   open ? handleDrawerClose() : handleDrawerOpen();
@@ -583,7 +585,9 @@ export default function PersistentDrawerLeft(props: any) {
       </Drawer>
       <Box
         component="main"
-        className={`${SCROLLBAR_STYLE}`}
+        className={
+          "scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#ffffff]"
+        }
         sx={{
           flexGrow: 1,
           p: 3,
@@ -591,7 +595,6 @@ export default function PersistentDrawerLeft(props: any) {
           width: open
             ? `calc(100vw - ${drawerWidth}px)`
             : `calc(100vw - ${closedDrawerWidth}px)`,
-          overflow: "auto",
         }}
       >
         <DrawerHeader />

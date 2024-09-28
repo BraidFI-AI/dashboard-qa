@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
 import MyText from "@/core/components/Text/Text";
+import { v4 as uuidv4 } from "uuid";
 import {
   UserManagementState,
   deleteUser,
@@ -104,7 +104,7 @@ const UsersTable = () => {
           }
         }}
         handleRowClick={handleRowClick}
-        customId={(user: User) => user.Username}
+        customId={(user: User) => user.Username ?? uuidv4()}
         columns={[
           { field: "Username", headerName: "Username", flex: 1, minWidth: 160 },
           {
@@ -125,16 +125,6 @@ const UsersTable = () => {
               params.row.Attributes?.filter((attr: any) => {
                 return attr.Name == "email";
               })?.[0]?.Value,
-          },
-          {
-            field: "Groups",
-            headerName: "User Group",
-            flex: 1,
-            minWidth: 200,
-            renderCell: (params: any) => (
-              <div>{params.row.Groups?.[0] ?? ""}</div>
-            ),
-            valueGetter: (params: any) => params.row.Groups?.[0] ?? "",
           },
           {
             field: "Attributes[0].name",

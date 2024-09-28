@@ -17,6 +17,7 @@ export interface MyTextProps {
   underline?: boolean;
   white?: boolean;
   status?: boolean;
+  color?: string;
 }
 
 const MyText: React.FC<MyTextProps> = ({
@@ -27,6 +28,7 @@ const MyText: React.FC<MyTextProps> = ({
   underline,
   white = false,
   status,
+  color,
 }) => {
   return typeof children === "string" && children === "" ? (
     <div className="invisible">.</div>
@@ -62,7 +64,7 @@ const MyText: React.FC<MyTextProps> = ({
           ? status == true
             ? "text-[#4DB984]"
             : "text-[#F54B24]"
-          : "text-black"
+          : color ?? "text-black"
       }
       ${underline ? " underline " : ""}
       `}

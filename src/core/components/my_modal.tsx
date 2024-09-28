@@ -45,10 +45,11 @@ const MyModal: React.FC<MyModalProps> = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
+          width: width ?? "500px",
+          height: height,
+          maxHeight: height,
         }}
-        className={`h-[500px] ${
-          width ? `w-[${width}px` : "w-[500px]"
-        } overflow-clip rounded-lg bg-white`}
+        className={`overflow-clip rounded-lg bg-white`}
       >
         <Box
           sx={ModalBoxstyle}
