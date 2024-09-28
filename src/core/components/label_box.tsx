@@ -10,29 +10,29 @@ type LabelBoxProps = {
 };
 
 const borderColorToHex = {
-  gray: "border-[#EFEFF0]",
-  orange: "border-[#FDD273]",
-  blue: "border-[#A5CCFA]",
-  green: "border-[#86E3C1]",
-  red: "border-[#FEB2B2]",
+  gray: "border-[#B1B9CA]",
+  orange: "border-[#FFE0A6]",
+  blue: "border-[#A9E2F8]",
+  green: "border-[#B3DFD1]",
+  red: "border-[#EDB4B4]",
   "": "",
 };
 
 const textColorToHex = {
   gray: "text-black",
-  orange: "text-[#BB6224]",
-  blue: "text-[#2665EB]",
-  green: "text-[#3D8F73]",
-  red: "text-[#C53030]",
+  orange: "text-[#FFA400]",
+  blue: "text-[#12A7E1]",
+  green: "text-[#3C8F73]",
+  red: "text-[#C42F30]",
   "": "",
 };
 
 const fillColorToHex = {
-  gray: "bg-[#f5f5f5]",
-  orange: "bg-[#fcf6e6]",
-  blue: "bg-[#EFF6FF]",
-  green: "bg-[#ECFDF6]",
-  red: "bg-[#FEF6F6]",
+  gray: "bg-[#E7E9EE]",
+  orange: "bg-[#FFF5E3]",
+  blue: "bg-[#E4F6FD]",
+  green: "bg-[#E7F5F0]",
+  red: "bg-[#F9E8E8]",
   "": "",
 };
 
@@ -49,7 +49,7 @@ const LabelBox: React.FC<LabelBoxProps> = ({
       } ${border == false ? "" : `border-2 ${borderColorToHex[color ?? ""]}`}`}
     >
       <MyText
-        size="md"
+        size="table"
         color={color == null ? undefined : textColorToHex[color]}
       >
         {children}

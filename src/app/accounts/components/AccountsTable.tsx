@@ -111,6 +111,7 @@ const AccountsTable = () => {
           minWidth: 150,
           renderCell: (params: any) => (
             <MyLinkText
+              textProps={{ size: "table" }}
               link={
                 params.row.customerType == "BUSINESS"
                   ? `/businesses/${params.row.customerId}`

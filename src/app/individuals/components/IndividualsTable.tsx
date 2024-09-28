@@ -77,6 +77,7 @@ const IndividualsTable = () => {
           minWidth: 160,
           renderCell: (params: any) => (
             <MyLinkText
+              textProps={{ size: "table" }}
               link={`/configuration/products/${params.row.productId}`}
             >
               {params.row.productName}
