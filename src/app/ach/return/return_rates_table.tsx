@@ -3,7 +3,7 @@
 import { ReturnRate } from "@/core/api/ApiTypes";
 import MyTable from "@/core/components/Table/MyTable";
 import MyLinkText from "@/core/components/Text/LinkText";
-import toPercentage from "@/core/utils/formatting_util";
+import { toPercentage } from "@/core/utils/formatting_util";
 import timestampToDate from "@/core/utils/timestampToDate";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 
