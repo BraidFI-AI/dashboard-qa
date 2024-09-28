@@ -22,6 +22,8 @@ import MyText from "@/core/components/Text/Text";
 import MyModal from "@/core/components/my_modal";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
+import LabelBox from "@/core/components/label_box";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
 const OFACHitsTable = () => {
   const router = useRouter();
@@ -197,7 +199,20 @@ const OFACHitsTable = () => {
               flex: 1,
               minWidth: 140,
               renderCell: (params: any) => (
-                <div>
+                <LabelBox
+                  color={
+                    params.row.businessName != null
+                      ? "blue"
+                      : params.row.individualName != null
+                      ? "orange"
+                      : params.row.counterpartyName != null
+                      ? "green"
+                      : params.row.transactionPaymentId != null
+                      ? "red"
+                      : "gray"
+                  }
+                  border
+                >
                   {params.row.uboId
                     ? "UBO"
                     : params.row.businessName
@@ -209,7 +224,7 @@ const OFACHitsTable = () => {
                     : params.row.transactionPaymentId
                     ? "Transaction"
                     : "Unknown"}
-                </div>
+                </LabelBox>
               ),
               valueGetter: (params: any) =>
                 params.row.uboId
@@ -235,6 +250,21 @@ const OFACHitsTable = () => {
               headerName: "Status",
               flex: 1,
               minWidth: 120,
+              renderCell: (params: any) => (
+                <LabelBox
+                  color={
+                    params.row?.status == "CLEARED"
+                      ? "green"
+                      : params.row?.status == "CONFIRMED"
+                      ? "red"
+                      : "gray"
+                  }
+                  fill
+                >
+                  {enumTextToReadableText(params.row?.status)}
+                </LabelBox>
+              ),
+              valueGetter: (params: any) => params.row?.status,
             },
             {
               field: "updatedAt",

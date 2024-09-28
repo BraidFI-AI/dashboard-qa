@@ -12,6 +12,8 @@ import { GridEventListener } from "@mui/x-data-grid";
 import timestampToDate from "@/core/utils/timestampToDate";
 import ErrorPage from "@/core/components/error_page";
 import MyLinkText from "@/core/components/Text/LinkText";
+import LabelBox from "@/core/components/label_box";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
 const IndividualsTable = () => {
   const router = useRouter();
@@ -88,8 +90,43 @@ const IndividualsTable = () => {
           headerName: "CIP Status",
           flex: 1,
           minWidth: 160,
+          renderCell: (params: any) => (
+            <LabelBox
+              color={
+                params.row?.cipStatus == "PASS"
+                  ? "green"
+                  : params.row?.cipStatus == "FAIL"
+                  ? "red"
+                  : "gray"
+              }
+              border
+            >
+              {enumTextToReadableText(params.row?.cipStatus)}
+            </LabelBox>
+          ),
+          valueGetter: (params: any) => params.row?.cipStatus,
         },
-        { field: "status", headerName: "Status", flex: 1, minWidth: 120 },
+        {
+          field: "status",
+          headerName: "Status",
+          flex: 1,
+          minWidth: 120,
+          renderCell: (params: any) => (
+            <LabelBox
+              color={
+                params.row?.status == "ACTIVE"
+                  ? "green"
+                  : params.row?.status == "BLOCKED"
+                  ? "red"
+                  : "gray"
+              }
+              fill
+            >
+              {enumTextToReadableText(params.row?.status)}
+            </LabelBox>
+          ),
+          valueGetter: (params: any) => params.row?.status,
+        },
         {
           field: "createdAt",
           headerName: "Created",

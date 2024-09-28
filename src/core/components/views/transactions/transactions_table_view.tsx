@@ -20,6 +20,8 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MyModal from "../../my_modal";
 import ItemRow from "../../Text/ItemRow";
 import timestampToDate from "@/core/utils/timestampToDate";
+import LabelBox from "../../label_box";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
 type TransactionTableViewProps = {
   transactions: Transaction[];
@@ -187,13 +189,11 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
           params: GridCellParams,
           event: MuiEvent<React.MouseEvent>
         ) => {
-          if (
-            params.field == "ach.counterparty.id" ||
-            params.field == "ach.customerId"
-          ) {
-            if (params.field == "ach.counterparty.id") {
-              navigateToEntity(params.row.ach);
-            }
+          if (params.field == "ach.counterparty.id" || params.field != null) {
+            navigateToEntity(params.row.ach);
+            event.stopPropagation();
+          }
+          if (params.field == "ach.customerId") {
             event.stopPropagation();
           }
         }}
@@ -289,6 +289,12 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             headerName: "Transaction Type",
             flex: 1,
             minWidth: 250,
+            renderCell: (params: any) => (
+              <LabelBox color="gray" border>
+                {enumTextToReadableText(params.row?.transactionType)}
+              </LabelBox>
+            ),
+            valueGetter: (params: any) => params.row?.transactionType,
           },
           {
             field: "details",
@@ -328,6 +334,21 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             headerName: "Status",
             flex: 1,
             minWidth: 140,
+            renderCell: (params: any) => (
+              <LabelBox
+                color={
+                  params.row?.status == "POSTED"
+                    ? "green"
+                    : params.row?.status == "PENDING"
+                    ? "orange"
+                    : "gray"
+                }
+                fill
+              >
+                {enumTextToReadableText(params.row?.status)}
+              </LabelBox>
+            ),
+            valueGetter: (params: any) => params.row?.status,
           },
           {
             field: "updatedAt",

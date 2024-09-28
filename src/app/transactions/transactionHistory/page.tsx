@@ -66,7 +66,7 @@ const Transactions = () => {
   }, [dispatch, qParams]);
 
   return (
-    <div className="flex flex-col" style={{ height: "78vh" }}>
+    <div className="h-full flex flex-col">
       <div className="pb-2 w-fit">
         <TransactionFilter />
       </div>

@@ -16,6 +16,8 @@ import MyTable from "@/core/components/Table/MyTable";
 import timestampToDate from "@/core/utils/timestampToDate";
 import Link from "next/link";
 import ErrorPage from "@/core/components/error_page";
+import LabelBox from "@/core/components/label_box";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
 const BusinessesTable = () => {
   const router = useRouter();
@@ -85,8 +87,42 @@ const BusinessesTable = () => {
               headerName: "CIP status",
               flex: 1,
               minWidth: 120,
+              renderCell: (params: any) => (
+                <LabelBox
+                  color={
+                    params.row?.cipStatus == "PASS"
+                      ? "green"
+                      : params.row?.cipStatus == "FAIL"
+                      ? "red"
+                      : "gray"
+                  }
+                  border
+                >
+                  {enumTextToReadableText(params.row?.cipStatus)}
+                </LabelBox>
+              ),
+              valueGetter: (params: any) => params.row?.cipStatus,
             },
-            { field: "status", headerName: "Status", width: 120 },
+            {
+              field: "status",
+              headerName: "Status",
+              width: 120,
+              renderCell: (params: any) => (
+                <LabelBox
+                  color={
+                    params.row?.status == "ACTIVE"
+                      ? "green"
+                      : params.row?.status == "BLOCKED"
+                      ? "red"
+                      : "gray"
+                  }
+                  fill
+                >
+                  {enumTextToReadableText(params.row?.status)}
+                </LabelBox>
+              ),
+              valueGetter: (params: any) => params.row?.status,
+            },
             {
               field: "createdAt",
               headerName: "Created",

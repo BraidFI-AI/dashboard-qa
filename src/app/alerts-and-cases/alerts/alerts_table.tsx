@@ -2,10 +2,12 @@
 
 import ReviewTransactionModal from "@/app/transactions/transactionReview/review_transaction_modal";
 import { Alert } from "@/core/api/ApiTypes";
+import LabelBox from "@/core/components/label_box";
 import MyTable from "@/core/components/Table/MyTable";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import {
   fetchAlerts,
   setAlertsPaginationPageNumber,
@@ -85,7 +87,10 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
           ofacId={(selectedAlert as any).ofacId ?? ""}
         />
       )}
-      <div style={navigating ? { pointerEvents: "none" } : {}}>
+      <div
+        className="h-full"
+        style={navigating ? { pointerEvents: "none" } : {}}
+      >
         <MyTable
           hideSearch={hideHeaders}
           hideColumnsButton={hideHeaders}
@@ -124,22 +129,64 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             {
               field: "id",
               headerName: "Alert ID",
-              width: 120,
+              flex: 1,
+              minWidth: 80,
             },
             {
               field: "type",
               headerName: "Type",
-              width: 200,
+              flex: 1,
+              minWidth: 200,
+              renderCell: (params: any) => (
+                <LabelBox
+                  color={
+                    params.row?.type?.toLowerCase() == "ofac"
+                      ? "red"
+                      : params.row.type == "TRANSACTION_MONITORING"
+                      ? "orange"
+                      : params.row.type == "DUAL_APPROVAL"
+                      ? "green"
+                      : params.row.type == "TRANSACTION_REVIEW"
+                      ? "blue"
+                      : "gray"
+                  }
+                  border
+                >
+                  {enumTextToReadableText(params.row?.type)}
+                </LabelBox>
+              ),
+              valueGetter: (params: any) => params.row?.type,
             },
             {
               field: "status",
               headerName: "Status",
-              width: 120,
+              flex: 1,
+              minWidth: 80,
+              renderCell: (params: any) => (
+                <LabelBox
+                  color={
+                    params.row?.status?.toLowerCase() == "closed"
+                      ? "green"
+                      : "red"
+                  }
+                  fill
+                >
+                  {enumTextToReadableText(params.row?.status)}
+                </LabelBox>
+              ),
+              valueGetter: (params: any) => params.row?.status,
             },
             {
               field: "contextType",
               headerName: "Context Type",
-              width: 140,
+              flex: 1,
+              minWidth: 140,
+              renderCell: (params: any) => (
+                <LabelBox color={"gray"} border>
+                  {enumTextToReadableText(params.row?.contextType)}
+                </LabelBox>
+              ),
+              valueGetter: (params: any) => params.row?.contextType,
             },
             {
               field: "contextId",
@@ -190,7 +237,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             {
               field: "description",
               headerName: "Description",
-              minWidth: 160,
+              minWidth: 560,
               flex: 1,
             },
           ]}
