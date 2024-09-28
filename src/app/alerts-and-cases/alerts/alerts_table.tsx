@@ -195,7 +195,10 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
               minWidth: 140,
               renderCell: (params: any) => {
                 return params.row.type == "OFAC" ? (
-                  <MyLinkText link={`/compliance/ofac/${params.row.contextId}`}>
+                  <MyLinkText
+                    textProps={{ size: "table" }}
+                    link={`/compliance/ofac/${params.row.contextId}`}
+                  >
                     {params.row.contextId}
                   </MyLinkText>
                 ) : params.row.type == "TRANSACTION_MONITORING" ||
@@ -211,7 +214,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                       }
                     }}
                   >
-                    <MyText size="md" primary={true} underline={true}>
+                    <MyText size="table" primary={true} underline={true}>
                       {params.row.contextId}
                     </MyText>
                   </div>
@@ -224,12 +227,12 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                       e.stopPropagation();
                     }}
                   >
-                    <MyText primary underline size="md">
+                    <MyText primary underline size="table">
                       {params.row.contextId}
                     </MyText>
                   </div>
                 ) : (
-                  <MyText>{params.row.contextId}</MyText>
+                  <MyText size="table">{params.row.contextId}</MyText>
                 );
               },
               valueGetter: (params: any) => params.row.contextId,

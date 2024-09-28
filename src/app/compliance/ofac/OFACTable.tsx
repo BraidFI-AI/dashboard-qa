@@ -177,7 +177,7 @@ const OFACHitsTable = () => {
                       ? false
                       : true
                   }
-                  size="md"
+                  size="table"
                 >
                   {params.row.businessName ??
                     params.row.individualName ??

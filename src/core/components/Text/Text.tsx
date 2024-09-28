@@ -11,7 +11,7 @@ const firstLetterUpper = (val: boolean) => {
 
 export interface MyTextProps {
   variant?: "title" | "label";
-  size?: "sm" | "smd" | "md" | "lg" | "xl";
+  size?: "sm" | "smd" | "table" | "md" | "lg" | "xl";
   children: string | number | boolean | null | undefined;
   primary?: boolean;
   underline?: boolean;
@@ -38,6 +38,8 @@ const MyText: React.FC<MyTextProps> = ({
         variant === "label"
           ? size == "sm"
             ? " text-[13px]"
+            : size == "table"
+            ? " text-[14px]"
             : size == "smd"
             ? " text-[15px]"
             : size == "md"

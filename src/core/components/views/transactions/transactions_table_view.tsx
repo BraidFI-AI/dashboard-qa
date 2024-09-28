@@ -254,6 +254,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             minWidth: 200,
             renderCell: (params: any) => (
               <MyLinkText
+                textProps={{ size: "table" }}
                 link={
                   params.row.customerType != null &&
                   params.row.customerType == "BusinessCustomer"
@@ -272,7 +273,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             flex: 1,
             minWidth: 200,
             renderCell: (params: any) => (
-              <MyText primary={true} underline={true} size="md">
+              <MyText primary={true} underline={true} size="table">
                 {params.row?.ach?.counterpartyName}
               </MyText>
             ),
