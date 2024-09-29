@@ -272,21 +272,22 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                   ></ItemRow>
                   <ItemRow
                     title="Interest Rate"
-                    value={`${(
-                      (product as any).interestRate as number
-                    )?.toFixed(4)}%`}
+                    value={`${
+                      ((product as any)?.interestRate as number)?.toFixed(4) ??
+                      "0.0000"
+                    }%`}
                   ></ItemRow>
                   <ItemRow
                     title="Interest Payout Date"
-                    value={`${(
-                      product as any
-                    ).interestPayDayOfMonth.toString()}`}
+                    value={`${
+                      (product as any)?.interestPayDayOfMonth?.toString() ?? ""
+                    }`}
                   ></ItemRow>
                   <ItemRow
                     title="Duplicate Payment Check Days"
-                    value={`${(
-                      product as any
-                    ).duplicatePaymentDays.toString()}`}
+                    value={`${
+                      (product as any)?.duplicatePaymentDays?.toString() ?? ""
+                    }`}
                   ></ItemRow>
                 </>
               )}
