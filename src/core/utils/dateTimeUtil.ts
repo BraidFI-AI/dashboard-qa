@@ -22,4 +22,4 @@ const toFlatDateString = (date: Moment, start: boolean) => {
   }
 };
 
-export { momentToPSTString };
+export { momentToPSTString, toFlatDateString };

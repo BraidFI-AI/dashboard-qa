@@ -123,8 +123,8 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       const startDate = endDate.clone().subtract(1, inp.duration);
 
       let data = await productRepo.fetchProductTransactionVolume(
-        toFlatDateString(startDate, true),
-        toFlatDateString(endDate, false),
+        momentToPSTString(startDate, true),
+        momentToPSTString(endDate, false),
         inp.product === "All" ? undefined : inp.product
       );
 
@@ -650,6 +650,3 @@ export const {
   setInitialProductState,
   setProductCounterpartyPaginationPageNumber,
 } = ProductSlice.actions;
-function toFlatDateString(startDate: moment.Moment, arg1: boolean): string {
-  throw new Error("Function not implemented.");
-}
