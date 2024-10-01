@@ -189,7 +189,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
           params: GridCellParams,
           event: MuiEvent<React.MouseEvent>
         ) => {
-          if (params.field == "ach.counterparty.id" || params.field != null) {
+          if (params.field == "ach.counterparty.id" && params.field != null) {
             navigateToEntity(params.row.ach);
             event.stopPropagation();
           }
