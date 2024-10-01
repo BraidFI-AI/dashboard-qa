@@ -61,7 +61,8 @@ class AlertsRepo {
   }) {
     const response = await this.apiClient.http<any>(
       Method.PUT,
-      `/alerts/${data.alertId}/status?action=${data.action}&note=${data.note}`
+      `/alerts/${data.alertId}/status`,
+      { action: data.action, note: data.note }
     );
     return response;
   }
