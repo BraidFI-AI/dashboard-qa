@@ -239,10 +239,10 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
                   className="pb-6"
                 >
                   <Box className="flex flex-col">
-                    <MyText>ACH Hold</MyText>
+                    <MyText>ACH Hold Days</MyText>
                     <MyControlledTextField
                       name="achHold"
-                      displayName="ACH Hold"
+                      displayName="ACH Hold Days"
                       control={fundsControl}
                       errors={fundsErrors}
                       rules={

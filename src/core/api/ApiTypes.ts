@@ -534,14 +534,14 @@ export interface ACHConfigWindowWithStringTime {
 export interface FundsAvailability {
   id: number;
   productId: number;
-  achHold: number;
+  achHoldDays: number;
   interIssuerHold: number;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface UpdateFundsAvailability {
-  achHold: number;
+  achHoldDays: number;
   interIssuerHold: number;
 }
 
