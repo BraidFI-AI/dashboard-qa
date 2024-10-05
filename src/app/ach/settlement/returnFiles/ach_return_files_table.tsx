@@ -24,12 +24,10 @@ import toDollarFormat from "@/core/utils/toDollarFormat";
 import MyLinkText from "@/core/components/Text/LinkText";
 import ItemRow from "@/core/components/Text/ItemRow";
 
-const ACHHistoryTable = () => {
+const ACHReturnFilesTable = () => {
   const dispatch = useAppDispatch();
 
-  const achHistory = useSelector(
-    (state: any) => state.ach.achSettlementHistory
-  );
+  const achHistory = useSelector((state: any) => state.ach.achReturnFiles);
 
   const [ACHModalOpen, setACHModalOpen] = useState<boolean>(false);
   const [selectedACH, setSelectedACH] = useState<any>(null);
@@ -116,7 +114,7 @@ const ACHHistoryTable = () => {
           </Box>
         </Modal>
       )}
-      <div style={{ height: "67vh" }}>
+      <div style={{ height: "62vh" }}>
         <MyTable
           customId={(row: ACHSettlementHistory) => row.filename}
           handleRowClick={handleRowClick}
@@ -360,4 +358,4 @@ const ACHHistoryTable = () => {
     </>
   );
 };
-export default ACHHistoryTable;
+export default ACHReturnFilesTable;
