@@ -28,6 +28,7 @@ import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
 import { set } from "lodash";
+import React from "react";
 
 type FeeIdViewProps = {
   replaceTo: string;
@@ -187,15 +188,35 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
         )}
         <ItemRow title="Same day" value={fee.sameDay ?? "false"} />
         {feeType != "MONTHLY" && (
-          <ItemRow
-            title="Charging Account"
+          <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            editable={false}
+            name="feeChargingAccountNumber"
+            displayName="Charging Account"
+            control={control}
+            errors={errors}
+            rules={{
+              required: false,
+            }}
             value={fee.feeChargingAccountNumber ?? ""}
-          ></ItemRow>
+            submitting={false}
+          />
         )}
-        <ItemRow
-          title="Settlement Account Number"
-          value={fee.settlementAccountNumber}
-        ></ItemRow>
+        <MyEditableTextField
+          editing={editing}
+          setEditing={setEditing}
+          editable={false}
+          name="settlementAccountNumber"
+          displayName="Settlement Account Number"
+          control={control}
+          errors={errors}
+          rules={{
+            required: true,
+          }}
+          value={fee.settlementAccountNumber ?? ""}
+          submitting={false}
+        />
         <MyEditableTextField
           editing={editing}
           setEditing={setEditing}
