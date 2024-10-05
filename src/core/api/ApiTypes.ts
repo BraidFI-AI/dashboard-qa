@@ -969,6 +969,16 @@ export interface Developer {
   name: string | null;
 }
 
+export interface WhitelistedIP {
+  id?: number;
+  ipAddress?: string | null;
+  tenant?: {
+    tenantId?: string | null;
+    name?: string | null;
+    enableIpRestriction?: string | null;
+  };
+}
+
 export interface CreateDeveloper {
   tenantId: string;
   name: string;

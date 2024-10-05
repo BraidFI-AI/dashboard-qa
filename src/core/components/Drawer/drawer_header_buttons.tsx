@@ -17,6 +17,7 @@ import UploadCaseDocumentButton from "./header_buttons/upload_case_document";
 import CreateProductPage from "@/app/configuration/products/components/create_product";
 import CreateBusinessAccount from "../views/account/create_business_account";
 import CreateIndividualAccount from "../views/account/create_individual_account";
+import WhitelistDeveloperID from "./header_buttons/white_developer_id";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -77,7 +78,10 @@ const DrawerHeaderButtons = () => {
     (pathname == `/alerts-and-cases/cases/${params.id}/documents` && (
       <UploadCaseDocumentButton />
     )) ||
-    (pathname == "/ach/settlement" && <AchHistoryFilters />)
+    (pathname == "/ach/settlement" && <AchHistoryFilters />) ||
+    (pathname.includes("/configuration/developers/") && (
+      <WhitelistDeveloperID />
+    ))
   );
 };
 
