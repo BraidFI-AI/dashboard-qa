@@ -26,6 +26,7 @@ import TransactionReviewSlice from "../slices/transaction_review_slice";
 import AlertsSlice from "../slices/alerts_slice";
 import WireSlice from "../slices/wire_settlement_slice";
 import CasesSlice from "../slices/cases_slice";
+import WireProcessingSlice from "../slices/wire_processing_slice";
 
 export const store = configureStore({
   reducer: {
@@ -54,6 +55,7 @@ export const store = configureStore({
     transaction: TransactionSlice.reducer,
     transactionReview: TransactionReviewSlice.reducer,
     wireSettlement: WireSlice.reducer,
+    wireProcessing: WireProcessingSlice.reducer,
   },
 });
 

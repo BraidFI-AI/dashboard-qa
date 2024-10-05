@@ -448,6 +448,19 @@ export interface ACHConfig {
   windows?: ACHConfigWindow[];
 }
 
+export interface WireTransactionStatus {
+  totalRecords?: number | null;
+  errorCount?: number | null;
+  rejectCount?: number | null;
+  pendingCount?: number | null;
+  postedCount?: number | null;
+  createdAt?: number | null;
+  errors: {
+    level?: string | null;
+    message?: string | null;
+  }[];
+}
+
 export interface ACHTransactionStatus {
   fileName?: string | null;
   processingDate: "2024-07-17";
