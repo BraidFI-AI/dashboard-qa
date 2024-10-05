@@ -26,6 +26,7 @@ import MyTextButton from "@/core/components/Button/MyTextButton";
 import ItemRow from "@/core/components/Text/ItemRow";
 import { States } from "@/core/constants";
 import { createCounterparty } from "@/redux/slices/CounterpartySlice";
+import React from "react";
 
 const CreateCounterpartyPage = () => {
   const params = useParams();
@@ -267,6 +268,7 @@ const CreateCounterpartyPage = () => {
               : {
                   required: false,
                   validate: (value: string, _: any) => {
+                    if (value == "") return;
                     const chars = value.split("");
                     if (
                       !(
