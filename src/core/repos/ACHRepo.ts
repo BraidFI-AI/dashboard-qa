@@ -155,6 +155,21 @@ class ACHRepo {
 
     return response;
   }
+
+  public async fetchACHReturnFiles(startDate?: string, endDate?: string) {
+    var url = `/ach/returnFiles?`;
+
+    if (startDate != undefined) {
+      url += `startDate=${startDate}&`;
+    }
+    if (endDate != undefined) {
+      url += `endDate=${endDate}&`;
+    }
+
+    const response = await this.apiClient.http<any[]>(Method.GET, url);
+    console.log(response);
+    return response;
+  }
 }
 
 export default ACHRepo;
