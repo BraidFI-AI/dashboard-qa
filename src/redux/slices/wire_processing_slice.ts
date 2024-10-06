@@ -4,8 +4,11 @@ import {
   User,
   UserResponse,
   WireInbound,
+  WireTransactionStatus,
 } from "@/core/api/ApiTypes";
+import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import WireProcessingRepo from "@/core/repos/wire_processing_repo";
+import WireRepo from "@/core/repos/wire_settlement_repo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
@@ -16,15 +19,50 @@ const wireProcessingRepo: WireProcessingRepo = new WireProcessingRepo(
   apiClient
 );
 
-export interface WireProcessingState {}
+export interface WireProcessingState {
+  fileStatusPagination: PaginationStateType;
+  transactionsStatus: "loading" | string | WireTransactionStatus[];
+}
 
-const initialState: WireProcessingState = {};
+const initialState: WireProcessingState = {
+  transactionsStatus: "loading",
+  fileStatusPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+  },
+};
 
 const WireProcessingSlice = createSlice({
   name: "userManagement",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {},
+  reducers: {
+    setFileStatusPageNumber(state, action) {
+      state.fileStatusPagination.pageNumber = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchWireTransactionStatus.pending, (state, action) => {
+      if (
+        state.fileStatusPagination.pageNumber == -1 ||
+        action.meta?.arg?.refresh == true
+      ) {
+        state.transactionsStatus = "loading";
+      }
+      state.fileStatusPagination.loadingPage = true;
+    });
+    builder.addCase(fetchWireTransactionStatus.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.transactionsStatus = action.payload;
+      } else {
+        state.transactionsStatus = action.payload.transactions;
+        state.fileStatusPagination.rowCount = action.payload.rowCount;
+        state.fileStatusPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.fileStatusPagination.loadingPage = false;
+    });
+  },
 });
 
 export const processInboundWire = createAsyncThunk(
@@ -37,8 +75,6 @@ export const processInboundWire = createAsyncThunk(
     } catch (e: any) {
       return `Error processing inbound wire ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
@@ -61,5 +97,29 @@ export const uploadInboundWireFile = createAsyncThunk(
   }
 );
 
+export const fetchWireTransactionStatus = createAsyncThunk(
+  "WireProcessingSlice/fetchWireTransactionStatus",
+  async (data: { filename?: string; refresh: boolean }, thunkApi: any) => {
+    try {
+      const trans = await wireProcessingRepo.fetchWireTransactionStatus(
+        paginationPageSize,
+        thunkApi.getState().wireProcessing.fileStatusPagination.pageNumber ==
+          -1 || data.refresh == true
+          ? 0
+          : thunkApi.getState().wireProcessing.fileStatusPagination.pageNumber,
+        data.filename
+      );
+
+      return {
+        transactions: trans.content,
+        rowCount: trans.totalElements,
+        pageNumber: trans.number,
+      };
+    } catch (e: any) {
+      return `Error fetching transactions status! ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export default WireProcessingSlice;
-export const {} = WireProcessingSlice.actions;
+export const { setFileStatusPageNumber } = WireProcessingSlice.actions;

@@ -32,6 +32,21 @@ class WireProcessingRepo {
 
     return response;
   }
+
+  public async fetchWireTransactionStatus(
+    pageSize: number,
+    pageNumber: number,
+    filename?: string
+  ) {
+    const response = await this.apiClient.http<any>(
+      Method.GET,
+      `/wire/load/inbound/status?page=${pageNumber}&size=${pageSize}&${
+        filename != null ? `filename=${filename}` : ""
+      }`
+    );
+
+    return response;
+  }
 }
 
 export default WireProcessingRepo;
