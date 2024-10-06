@@ -98,7 +98,7 @@ export const uploadInboundWireFile = createAsyncThunk(
 );
 
 export const fetchWireTransactionStatus = createAsyncThunk(
-  "ach/fetchACHTransactionStatus",
+  "ach/fetchWireTransactionStatus",
   async (data: { filename?: string; refresh: boolean }, thunkApi: any) => {
     try {
       const trans = await wireProcessingRepo.fetchWireTransactionStatus(
