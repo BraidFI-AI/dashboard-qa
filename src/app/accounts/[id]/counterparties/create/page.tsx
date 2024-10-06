@@ -251,6 +251,7 @@ const CreateCounterpartyPage = () => {
               : {
                   required: false,
                   validate: (value: string, _: any) => {
+                    if (value == "") return;
                     const chars = value.split("");
                     if (
                       !(

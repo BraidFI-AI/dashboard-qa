@@ -22,6 +22,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import React from "react";
 
 const ACHConfig = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
@@ -44,7 +45,7 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
     reset,
   } = useForm<UpdateFundsAvailability>({
     defaultValues: {
-      achHold: fundsAvailability?.achHold,
+      achHoldDays: fundsAvailability?.achHoldDays,
       interIssuerHold: fundsAvailability?.interIssuerHold,
     },
   });
@@ -55,8 +56,8 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
 
     if (fundsAvailability) {
       if (!isEditingACHHold) {
-        data.achHold = fundsAvailability.achHold
-          ? fundsAvailability.achHold
+        data.achHoldDays = fundsAvailability.achHoldDays
+          ? fundsAvailability.achHoldDays
           : 0;
       }
 
@@ -96,7 +97,7 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
             (data: any) => {
               if (data.payload) {
                 reset({
-                  achHold: data.payload.achHold,
+                  achHoldDays: data.payload.achHoldDays,
                   interIssuerHold: data.payload.interIssuerHold,
                 });
               }
@@ -137,8 +138,8 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
           <MyEditableTextField
             editing={isEditingACHHold}
             setEditing={setIsEditingACHHold}
-            name="achHold"
-            displayName="ACH Hold"
+            name="achHoldDays"
+            displayName="ACH Hold Days"
             control={control}
             errors={errors}
             rules={
@@ -150,7 +151,9 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
                   }
             }
             value={
-              fundsAvailability.achHold != null ? fundsAvailability.achHold : 0
+              fundsAvailability.achHoldDays != null
+                ? fundsAvailability.achHoldDays
+                : 0
             }
             submitting={false}
           />

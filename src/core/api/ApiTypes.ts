@@ -534,14 +534,14 @@ export interface ACHConfigWindowWithStringTime {
 export interface FundsAvailability {
   id: number;
   productId: number;
-  achHold: number;
+  achHoldDays: number;
   interIssuerHold: number;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface UpdateFundsAvailability {
-  achHold: number;
+  achHoldDays: number;
   interIssuerHold: number;
 }
 
@@ -967,6 +967,16 @@ export interface CreateCounterpartyACH {
 export interface Developer {
   tenantId: string | null;
   name: string | null;
+}
+
+export interface WhitelistedIP {
+  id?: number;
+  ipAddress?: string | null;
+  tenant?: {
+    tenantId?: string | null;
+    name?: string | null;
+    enableIpRestriction?: string | null;
+  };
 }
 
 export interface CreateDeveloper {
