@@ -9,6 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
   approveSettlement,
   downloadACHFile,
+  downloadACHReturnFile,
   sendFileToSFTP,
 } from "@/redux/slices/ACHSlice";
 import moment, { Moment } from "moment";
@@ -323,16 +324,13 @@ const ACHReturnFilesTable = () => {
               headerName: "ACH File",
               width: 82,
               renderCell: (params: any) => (
-                <Tooltip title="Download ACH Setllment File" placement="right">
+                <Tooltip title="Download ACH Return File" placement="right">
                   <div className="flex justify-center">
                     <MyBlueButton
                       onClick={() => {
                         if (params != null) {
                           dispatch(
-                            downloadACHFile({
-                              productId: params.row.productId,
-                              filename: params.row.filename,
-                            })
+                            downloadACHReturnFile(params.row.filename)
                           ).then((d: any) => {
                             if (!d.payload || d.payload != "downloaded") {
                               enqueueSnackbar(d.payload, {

@@ -67,6 +67,17 @@ class ACHRepo {
     }
   }
 
+  public async downloadACHReturnFile(filename: string) {
+    try {
+      const response = await this.apiClient.downloadACHReturnFile(filename);
+      // console.log(response);
+
+      return response;
+    } catch (e: any) {
+      throw e;
+    }
+  }
+
   public async uploadInboundFile(data: string) {
     console.log(data);
     const response = await this.apiClient.http(

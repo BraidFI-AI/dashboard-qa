@@ -127,13 +127,7 @@ const ACH = () => {
       ) : achHistory == "loading" ? (
         <MyCircularProgressIndicator />
       ) : typeof achHistory == "string" ? (
-        <ErrorPage
-          error={achHistory}
-          recoveryButtonOnClick={() => {
-            dispatch(fetchACHReturnFiles({}));
-          }}
-          recoveryButtonTitle="Retry"
-        />
+        <MyText>{achHistory}</MyText>
       ) : achHistory.length == 0 ? (
         <MyText>No ACH Return File found</MyText>
       ) : (

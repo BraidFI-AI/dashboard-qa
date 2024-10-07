@@ -358,7 +358,7 @@ export default function PersistentDrawerLeft(props: any) {
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <div
-          className={`h-full flex flex-col justify-between overflow-y-auto scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#F4F5F7]`}
+          className={`h-full flex flex-col justify-between overflow-y-auto overflow-hidden scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#F4F5F7]`}
         >
           <div>
             <DrawerHeader className={`flex flex-row justify-between`}>

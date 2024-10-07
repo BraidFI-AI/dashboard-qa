@@ -154,6 +154,18 @@ export const downloadACHFile = createAsyncThunk(
   }
 );
 
+export const downloadACHReturnFile = createAsyncThunk(
+  "ach/downloadACHReturnFile",
+  async (filename: string) => {
+    try {
+      await achRepo.downloadACHReturnFile(filename);
+      return "downloaded";
+    } catch (e: any) {
+      return `Error downloading ach return file! ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchACHSettlementHistory = createAsyncThunk(
   "ach/fetchACHSettlementHistory",
   async (data?: {
