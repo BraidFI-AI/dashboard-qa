@@ -257,7 +257,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
                 textProps={{ size: "table" }}
                 link={
                   params.row.customerType != null &&
-                  params.row.customerType == "BusinessCustomer"
+                  params.row.customerType == "BUSINESS"
                     ? `/businesses/${params.row?.customerId}`
                     : `/individuals/${params.row?.customerId}`
                 }
