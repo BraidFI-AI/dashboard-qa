@@ -80,8 +80,6 @@ export const fetchToReviewACHTransactions = createAsyncThunk(
     data: {
       refresh?: boolean;
       filter: {
-        includeWire?: boolean;
-        includeAch?: boolean;
         wireFileHandle?: string;
       };
     },
@@ -130,8 +128,6 @@ export const updateTransactionStatus = createAsyncThunk(
       action: string;
       note: string;
       filter?: {
-        includeWire?: boolean;
-        includeAch?: boolean;
         wireFileHandle?: string;
       };
     },

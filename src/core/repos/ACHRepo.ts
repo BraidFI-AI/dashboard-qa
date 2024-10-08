@@ -67,6 +67,17 @@ class ACHRepo {
     }
   }
 
+  public async downloadACHReturnFile(filename: string) {
+    try {
+      const response = await this.apiClient.downloadACHReturnFile(filename);
+      // console.log(response);
+
+      return response;
+    } catch (e: any) {
+      throw e;
+    }
+  }
+
   public async uploadInboundFile(data: string) {
     console.log(data);
     const response = await this.apiClient.http(
@@ -153,6 +164,21 @@ class ACHRepo {
       `/product/globalErrors/achfile/${filename}?pageSize=${pageSize}&pageNumber=${pageNumber}`
     );
 
+    return response;
+  }
+
+  public async fetchACHReturnFiles(startDate?: string, endDate?: string) {
+    var url = `/ach/returnFiles?`;
+
+    if (startDate != undefined) {
+      url += `startDate=${startDate}&`;
+    }
+    if (endDate != undefined) {
+      url += `endDate=${endDate}&`;
+    }
+
+    const response = await this.apiClient.http<any[]>(Method.GET, url);
+    console.log(response);
     return response;
   }
 }

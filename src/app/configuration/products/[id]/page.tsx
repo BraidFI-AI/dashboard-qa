@@ -249,32 +249,50 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
               ></ItemRow>
             </div>
             <div className="w-[300px]">
-              {userType == ADMIN_ROLE ||
-                (userType == ADMIN_OPS_ROLE && (
-                  <>
-                    <ItemRow
-                      title="Program"
-                      value={{
-                        value:
-                          program == null
-                            ? product.programId?.toString()
-                            : program.name == null
-                            ? product.programId?.toString()
-                            : program.name,
-                        link: `/configuration/programs/${product.programId}`,
-                      }}
-                    ></ItemRow>
-                    <ItemRow
-                      title="Tenant"
-                      value={{
-                        value: developer ? developer.name : product.tenantId,
-                        link: `/configuration/developers/${product.tenantId}`,
-                      }}
-                    ></ItemRow>
-                  </>
-                ))}
+              {(userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) && (
+                <>
+                  <ItemRow
+                    title="Program"
+                    value={{
+                      value:
+                        program == null
+                          ? product.programId?.toString()
+                          : program.name == null
+                          ? product.programId?.toString()
+                          : program.name,
+                      link: `/configuration/programs/${product.programId}`,
+                    }}
+                  ></ItemRow>
+                  <ItemRow
+                    title="Tenant"
+                    value={{
+                      value: developer ? developer.name : product.tenantId,
+                      link: `/configuration/developers/${product.tenantId}`,
+                    }}
+                  ></ItemRow>
+                  <ItemRow
+                    title="Interest Rate"
+                    value={`${
+                      ((product as any)?.interestRate as number)?.toFixed(4) ??
+                      "0.0000"
+                    }%`}
+                  ></ItemRow>
+                  <ItemRow
+                    title="Interest Payout Date"
+                    value={`${
+                      (product as any)?.interestPayDayOfMonth?.toString() ?? ""
+                    }`}
+                  ></ItemRow>
+                  <ItemRow
+                    title="Duplicate Payment Check Days"
+                    value={`${
+                      (product as any)?.duplicatePaymentDays?.toString() ?? ""
+                    }`}
+                  ></ItemRow>
+                </>
+              )}
               <ItemRow
-                title="Customer Account Type"
+                title="Account Type"
                 value={product.customerAccountType ?? ""}
               ></ItemRow>
               <MyEditableTextField

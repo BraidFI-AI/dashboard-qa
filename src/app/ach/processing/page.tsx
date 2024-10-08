@@ -1,25 +1,17 @@
 "use client";
 
-import { ACHTransactionStatus } from "@/core/api/ApiTypes";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import MyCheckbox from "@/core/components/Button/MyCheckbox ";
 import RadioButton from "@/core/components/Button/RadioButton";
-import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
-import ErrorPage from "@/core/components/error_page";
-import MyTable from "@/core/components/Table/MyTable";
 import MyText from "@/core/components/Text/Text";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import { getTextFromFile } from "@/core/utils/file_processing_util";
 import {
-  fetchACHTransactionStatus,
   uploadInboundFile,
   uploadOutboundFile,
 } from "@/redux/slices/ach_processing_slice";
 import { useAppDispatch } from "@/redux/store/store";
-import Head from "next/head";
-import Script from "next/script";
 import { enqueueSnackbar } from "notistack";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 const ProcessingPage = () => {

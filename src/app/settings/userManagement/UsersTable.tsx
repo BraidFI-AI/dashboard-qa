@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
 import MyText from "@/core/components/Text/Text";
+import { v4 as uuidv4 } from "uuid";
 import {
   UserManagementState,
   deleteUser,
@@ -28,6 +28,7 @@ import PersonAddDisabledOutlinedIcon from "@mui/icons-material/PersonAddDisabled
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import Tooltip from "@mui/material/Tooltip";
+import { userGroupMappingToReadableNames } from "@/core/constants";
 
 const UsersTable = () => {
   const router = useRouter();
@@ -103,7 +104,7 @@ const UsersTable = () => {
           }
         }}
         handleRowClick={handleRowClick}
-        customId={(user: User) => user.Username}
+        customId={(user: User) => user.Username ?? uuidv4()}
         columns={[
           { field: "Username", headerName: "Username", flex: 1, minWidth: 160 },
           {
@@ -143,6 +144,19 @@ const UsersTable = () => {
               params.row.Attributes?.filter((attr: any) => {
                 return attr?.Name == "custom:tenantId";
               })?.[0]?.Value,
+          },
+          {
+            field: "Groups",
+            headerName: "User Group",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params: any) => (
+              <div>
+                {userGroupMappingToReadableNames[params.row.Groups?.[0] ?? ""]}
+              </div>
+            ),
+            valueGetter: (params: any) =>
+              userGroupMappingToReadableNames[params.row.Groups?.[0] ?? ""],
           },
           {
             field: "Enabled",

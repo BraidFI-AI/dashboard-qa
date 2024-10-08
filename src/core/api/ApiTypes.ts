@@ -448,6 +448,19 @@ export interface ACHConfig {
   windows?: ACHConfigWindow[];
 }
 
+export interface WireTransactionStatus {
+  totalRecords?: number | null;
+  errorCount?: number | null;
+  rejectCount?: number | null;
+  pendingCount?: number | null;
+  postedCount?: number | null;
+  createdAt?: number | null;
+  errors: {
+    level?: string | null;
+    message?: string | null;
+  }[];
+}
+
 export interface ACHTransactionStatus {
   fileName?: string | null;
   processingDate: "2024-07-17";
@@ -534,14 +547,14 @@ export interface ACHConfigWindowWithStringTime {
 export interface FundsAvailability {
   id: number;
   productId: number;
-  achHold: number;
+  achHoldDays: number;
   interIssuerHold: number;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface UpdateFundsAvailability {
-  achHold: number;
+  achHoldDays: number;
   interIssuerHold: number;
 }
 
@@ -694,8 +707,17 @@ export interface TransactionMarketValue {
 }
 
 export interface TransactionSearch {
+  showAchNoc?: boolean;
+  excludeWire?: boolean;
+  excludeAch?: boolean;
+  wireFileHandle?: string;
+  direction?: string;
+  counterpartyId?: string;
+  customerId?: string;
+  settlementFileName?: string;
+  isInbound?: boolean;
   accountNumber?: string;
-  achStatus?: string;
+  processingStatus?: string;
   beginDate?: string;
   endDate?: string;
   maxAmount?: string;
@@ -958,6 +980,16 @@ export interface CreateCounterpartyACH {
 export interface Developer {
   tenantId: string | null;
   name: string | null;
+}
+
+export interface WhitelistedIP {
+  id?: number;
+  ipAddress?: string | null;
+  tenant?: {
+    tenantId?: string | null;
+    name?: string | null;
+    enableIpRestriction?: string | null;
+  };
 }
 
 export interface CreateDeveloper {

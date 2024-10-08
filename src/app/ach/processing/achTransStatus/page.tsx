@@ -35,7 +35,11 @@ const ACHTransactionStatusPage = () => {
     <ErrorPage
       error={transactions}
       recoveryButtonTitle="Retry"
-      recoveryButtonOnClick={() => {}}
+      recoveryButtonOnClick={() => {
+        dispatch(fetchACHTransactionStatus()).then((res: any) => {
+          setTtransactions(res.payload);
+        });
+      }}
     />
   ) : (
     <div style={{ height: "67vh" }}>

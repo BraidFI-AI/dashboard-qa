@@ -12,6 +12,7 @@ const achRepo: ACHRepo = new ACHRepo(apiClient);
 
 interface ACHState {
   achSettlementHistory: "loading" | string | ACHSettlementHistory[];
+  achReturnFiles: "initial" | "loading" | string | ACHSettlementHistory[];
   productId?: string;
   startDate?: string;
   endDate?: string;
@@ -19,6 +20,7 @@ interface ACHState {
 
 const initialState: ACHState = {
   achSettlementHistory: "loading",
+  achReturnFiles: "initial",
   productId: undefined,
   startDate: undefined,
   endDate: undefined,
@@ -55,6 +57,17 @@ const ACHSlice = createSlice({
     });
     builder.addCase(fetchACHSettlementHistory.fulfilled, (state, action) => {
       state.achSettlementHistory = action.payload;
+    });
+    builder.addCase(fetchACHReturnFiles.pending, (state, action) => {
+      state.achReturnFiles = "loading";
+
+      state.startDate = action.meta.arg?.date?.startDate ?? undefined;
+      state.endDate = action.meta.arg?.date?.endDate ?? undefined;
+
+      console.log(action.meta.arg);
+    });
+    builder.addCase(fetchACHReturnFiles.fulfilled, (state, action) => {
+      state.achReturnFiles = action.payload;
     });
     builder.addCase(approveSettlement.fulfilled, (state, action) => {
       if (
@@ -141,6 +154,18 @@ export const downloadACHFile = createAsyncThunk(
   }
 );
 
+export const downloadACHReturnFile = createAsyncThunk(
+  "ach/downloadACHReturnFile",
+  async (filename: string) => {
+    try {
+      await achRepo.downloadACHReturnFile(filename);
+      return "downloaded";
+    } catch (e: any) {
+      return `Error downloading ach return file! ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchACHSettlementHistory = createAsyncThunk(
   "ach/fetchACHSettlementHistory",
   async (data?: {
@@ -171,6 +196,35 @@ export const fetchACHSettlementHistory = createAsyncThunk(
       return achSettlementHistory;
     } catch (e: any) {
       return `Error fetching settlement history ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchACHReturnFiles = createAsyncThunk(
+  "ach/fetchACHReturnFiles",
+  async (data?: {
+    date?: {
+      startDate: string;
+      endDate: string;
+    };
+  }) => {
+    try {
+      let sd = undefined;
+      let ed = undefined;
+
+      if (
+        data?.date?.startDate != undefined &&
+        data?.date?.endDate != undefined
+      ) {
+        sd = momentToPSTString(moment(data.date.startDate), true);
+        ed = momentToPSTString(moment(data.date.endDate), false);
+      }
+
+      const achSettlementHistory = await achRepo.fetchACHReturnFiles(sd, ed);
+      console.log("achSettlementHistory", achSettlementHistory);
+      return achSettlementHistory;
+    } catch (e: any) {
+      return `Error fetching ach return files ${generateErrorMessage(e)}`;
     }
   }
 );

@@ -10,8 +10,8 @@ class NocRepo {
   public async fetchNoc(pageSize: number, pageNumber: number) {
     const response = await this.apiClient.http<any>(
       Method.POST,
-      `/transaction/ach/noc/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      {}
+      `/transaction/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      { showAchNoc: true }
     );
     return response;
   }

@@ -1,5 +1,7 @@
+import axios from "axios";
 import ApiClient, { Method } from "../api/ApiClient";
 import { CreateUser, User, UserResponse } from "../api/ApiTypes";
+import { Auth } from "aws-amplify";
 
 class UserMangementRepo {
   private apiClient: ApiClient;
@@ -22,6 +24,7 @@ class UserMangementRepo {
       Method.GET,
       `${token ? token : "/user"}`
     );
+
     return response;
   }
 

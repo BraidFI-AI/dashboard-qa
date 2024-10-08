@@ -63,6 +63,7 @@ const UserManagementSlice = createSlice({
           Username: action.payload.username,
           UserLastModifiedDate: dtS,
           UserCreateDate: dtS,
+          Groups: [action.payload.group],
           Attributes: [
             { Name: "custom:tenantId", Value: action.payload.tenantId },
             {},
@@ -157,7 +158,7 @@ export const fetchUsers = createAsyncThunk(
       );
       console.log("users", users);
 
-      if (users._metadata.paginations.next) {
+      if (users._metadata?.paginations?.next != null) {
         thunkAPI.dispatch(fetchUsers(users._metadata.paginations.next));
       }
 

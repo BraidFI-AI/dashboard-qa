@@ -40,8 +40,6 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
   );
 
   const [filters, setFilters] = useState<{
-    includeWire?: boolean;
-    includeAch?: boolean;
     wireFileHandle?: string;
   }>({});
 
@@ -85,8 +83,6 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
 
     setFilters(
       params as {
-        includeWire?: boolean;
-        includeAch?: boolean;
         wireFileHandle?: string;
       }
     );

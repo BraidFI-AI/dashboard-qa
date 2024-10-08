@@ -32,6 +32,7 @@ import MyExpandableButton from "@/core/components/Button/MyExpandableButton";
 import Colorful from "@uiw/react-color-colorful";
 import MyTextField from "@/core/components/TextField/MyTextField";
 import OnbaordingSettings from "./components/OnboardingSettings";
+import React from "react";
 
 const ProductSettings = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
@@ -239,10 +240,10 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
                   className="pb-6"
                 >
                   <Box className="flex flex-col">
-                    <MyText>ACH Hold</MyText>
+                    <MyText>ACH Hold Days</MyText>
                     <MyControlledTextField
-                      name="achHold"
-                      displayName="ACH Hold"
+                      name="achHoldDays"
+                      displayName="ACH Hold Days"
                       control={fundsControl}
                       errors={fundsErrors}
                       rules={
@@ -252,7 +253,7 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
                               required: true,
                             }
                       }
-                      value={fundsAvailability.achHold.toString()}
+                      value={fundsAvailability.achHoldDays.toString()}
                     />
                     <Box className="pb-4"></Box>
                     <MyText>Inter Issuer Hold</MyText>

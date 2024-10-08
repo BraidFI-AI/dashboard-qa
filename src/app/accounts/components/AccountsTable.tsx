@@ -24,6 +24,8 @@ import Link from "next/link";
 import MyText from "@/core/components/Text/Text";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import MyLinkText from "@/core/components/Text/LinkText";
+import LabelBox from "@/core/components/label_box";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
 const AccountsTable = () => {
   const router = useRouter();
@@ -109,6 +111,7 @@ const AccountsTable = () => {
           minWidth: 150,
           renderCell: (params: any) => (
             <MyLinkText
+              textProps={{ size: "table" }}
               link={
                 params.row.customerType == "BUSINESS"
                   ? `/businesses/${params.row.customerId}`
@@ -124,6 +127,21 @@ const AccountsTable = () => {
           headerName: "Status",
           flex: 1,
           minWidth: 120,
+          renderCell: (params: any) => (
+            <LabelBox
+              color={
+                params.row?.status == "ACTIVE"
+                  ? "green"
+                  : params.row?.status == "BLOCKED"
+                  ? "red"
+                  : "gray"
+              }
+              fill
+            >
+              {enumTextToReadableText(params.row?.status)}
+            </LabelBox>
+          ),
+          valueGetter: (params: any) => params.row?.status,
         },
         {
           field: "createdAt",

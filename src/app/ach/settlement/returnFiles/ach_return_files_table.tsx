@@ -9,6 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
   approveSettlement,
   downloadACHFile,
+  downloadACHReturnFile,
   sendFileToSFTP,
 } from "@/redux/slices/ACHSlice";
 import moment, { Moment } from "moment";
@@ -24,12 +25,10 @@ import toDollarFormat from "@/core/utils/toDollarFormat";
 import MyLinkText from "@/core/components/Text/LinkText";
 import ItemRow from "@/core/components/Text/ItemRow";
 
-const ACHHistoryTable = () => {
+const ACHReturnFilesTable = () => {
   const dispatch = useAppDispatch();
 
-  const achHistory = useSelector(
-    (state: any) => state.ach.achSettlementHistory
-  );
+  const achHistory = useSelector((state: any) => state.ach.achReturnFiles);
 
   const [ACHModalOpen, setACHModalOpen] = useState<boolean>(false);
   const [selectedACH, setSelectedACH] = useState<any>(null);
@@ -116,7 +115,7 @@ const ACHHistoryTable = () => {
           </Box>
         </Modal>
       )}
-      <div style={{ height: "67vh" }}>
+      <div style={{ height: "62vh" }}>
         <MyTable
           customId={(row: ACHSettlementHistory) => row.filename}
           handleRowClick={handleRowClick}
@@ -325,16 +324,13 @@ const ACHHistoryTable = () => {
               headerName: "ACH File",
               width: 82,
               renderCell: (params: any) => (
-                <Tooltip title="Download ACH Setllment File" placement="right">
+                <Tooltip title="Download ACH Return File" placement="right">
                   <div className="flex justify-center">
                     <MyBlueButton
                       onClick={() => {
                         if (params != null) {
                           dispatch(
-                            downloadACHFile({
-                              productId: params.row.productId,
-                              filename: params.row.filename,
-                            })
+                            downloadACHReturnFile(params.row.filename)
                           ).then((d: any) => {
                             if (!d.payload || d.payload != "downloaded") {
                               enqueueSnackbar(d.payload, {
@@ -360,4 +356,4 @@ const ACHHistoryTable = () => {
     </>
   );
 };
-export default ACHHistoryTable;
+export default ACHReturnFilesTable;

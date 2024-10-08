@@ -194,29 +194,41 @@ export default function PersistentDrawerLeft(props: any) {
     },
   ].filter((item) => item !== null);
 
-  const settingsOptions = [
-    {
-      name: "User Management",
-      icon: (
-        <PersonAddAltOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-      ),
-      iconFocused: (
-        <PersonAddAltOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-      ),
-      path: "/settings/userManagement",
-    },
-    {
-      name: "API Key",
-      icon: <KeyOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />,
-      iconFocused: (
-        <KeyOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-      ),
-      path: "/settings/apikey",
-    },
-  ];
+  let settingsOptions = null;
 
-  if (userType == ADMIN_OPS_ROLE || userType == DEVELOPER_OPS_ROLE) {
-    settingsOptions.splice(0, 1);
+  if (userType != ADMIN_OPS_ROLE && userType != DEVELOPER_OPS_ROLE) {
+    settingsOptions = (
+      <MyExpandableListItem
+        name="Settings"
+        path={"/settings"}
+        selected={selected}
+        setSelected={setSelcted}
+        icon={<SettingsIcon />}
+        iconFocused={<SettingsIcon focused={true} />}
+        options={[
+          {
+            name: "User Management",
+            icon: (
+              <PersonAddAltOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <PersonAddAltOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/settings/userManagement",
+          },
+          {
+            name: "API Key",
+            icon: (
+              <KeyOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <KeyOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/settings/apikey",
+          },
+        ]}
+      />
+    );
   }
 
   if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
@@ -345,9 +357,11 @@ export default function PersistentDrawerLeft(props: any) {
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <div className="h-full flex flex-col justify-between">
+        <div
+          className={`h-full flex flex-col justify-between overflow-y-auto overflow-hidden scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#F4F5F7]`}
+        >
           <div>
-            <DrawerHeader className="flex flex-row justify-between">
+            <DrawerHeader className={`flex flex-row justify-between`}>
               <div
                 onClick={() => {
                   open ? handleDrawerClose() : handleDrawerOpen();
@@ -512,15 +526,7 @@ export default function PersistentDrawerLeft(props: any) {
                   iconFocused={<ConfigurationIcon focused={true} />}
                   options={configurationOptions}
                 />
-                <MyExpandableListItem
-                  name="Settings"
-                  path={"/settings"}
-                  selected={selected}
-                  setSelected={setSelcted}
-                  icon={<SettingsIcon />}
-                  iconFocused={<SettingsIcon focused={true} />}
-                  options={settingsOptions}
-                />
+                {settingsOptions}
               </List>
             </div>
           </div>
@@ -579,7 +585,9 @@ export default function PersistentDrawerLeft(props: any) {
       </Drawer>
       <Box
         component="main"
-        className={`${SCROLLBAR_STYLE}`}
+        className={
+          "scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#ffffff]"
+        }
         sx={{
           flexGrow: 1,
           p: 3,
@@ -587,7 +595,6 @@ export default function PersistentDrawerLeft(props: any) {
           width: open
             ? `calc(100vw - ${drawerWidth}px)`
             : `calc(100vw - ${closedDrawerWidth}px)`,
-          overflow: "auto",
         }}
       >
         <DrawerHeader />

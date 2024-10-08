@@ -15,7 +15,8 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { createUser } from "@/redux/slices/UsermanagementSlice";
 import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
-import { ADMIN_ROLE, DEVELOPER_ROLE } from "@/core/constants";
+import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
+import { validate } from "uuid";
 
 const CreateUserPage = () => {
   const router = useRouter();
@@ -35,10 +36,12 @@ const CreateUserPage = () => {
     if (!isDeveloper) {
       data.tenantId = "";
     }
-    data.group = data.group.toLowerCase();
     console.log(data);
 
     setSubmitting(true);
+
+    data.group = userGroupMapping[data.group];
+
     dispatch(createUser(data)).then((usr: any) => {
       if (typeof usr.payload != "string") {
         enqueueSnackbar("User created successfully", { variant: "success" });
@@ -71,6 +74,11 @@ const CreateUserPage = () => {
               ? { required: false }
               : {
                   required: true,
+                  validate: (value: any, formValues: any) => {
+                    if (value.includes(" ")) {
+                      return "Username cannot contain spaces";
+                    }
+                  },
                 }
           }
           value={""}
@@ -154,7 +162,7 @@ const CreateUserPage = () => {
         )}
         <MyText>Group</MyText>
         <MyControlledAutocomplete
-          value={"Customers"}
+          value={"Bank Admin"}
           displayName="Group"
           name={"group"}
           control={control}
@@ -166,7 +174,7 @@ const CreateUserPage = () => {
                   required: true,
                 }
           }
-          options={["Customers", "Developers", "Admins"]}
+          options={["Bank Admin", "Bank Ops", "Fintech Admin", "Fintech Ops"]}
           // customOnChange={(val: string) => {
           //   if (val == "Developers") {
           //     setIsDeveloper(true);

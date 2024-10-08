@@ -11,12 +11,13 @@ const firstLetterUpper = (val: boolean) => {
 
 export interface MyTextProps {
   variant?: "title" | "label";
-  size?: "sm" | "smd" | "md" | "lg" | "xl";
+  size?: "sm" | "smd" | "table" | "md" | "lg" | "xl";
   children: string | number | boolean | null | undefined;
   primary?: boolean;
   underline?: boolean;
   white?: boolean;
   status?: boolean;
+  color?: string;
 }
 
 const MyText: React.FC<MyTextProps> = ({
@@ -27,6 +28,7 @@ const MyText: React.FC<MyTextProps> = ({
   underline,
   white = false,
   status,
+  color,
 }) => {
   return typeof children === "string" && children === "" ? (
     <div className="invisible">.</div>
@@ -36,6 +38,8 @@ const MyText: React.FC<MyTextProps> = ({
         variant === "label"
           ? size == "sm"
             ? " text-[13px]"
+            : size == "table"
+            ? " text-[14px]"
             : size == "smd"
             ? " text-[15px]"
             : size == "md"
@@ -62,7 +66,7 @@ const MyText: React.FC<MyTextProps> = ({
           ? status == true
             ? "text-[#4DB984]"
             : "text-[#F54B24]"
-          : "text-black"
+          : color ?? "text-black"
       }
       ${underline ? " underline " : ""}
       `}
