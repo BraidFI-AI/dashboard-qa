@@ -179,7 +179,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
               <div className="pb-4"></div>
               <MyText>Note</MyText>
               <MyControlledTextField
-                name="notes"
+                name="description"
                 displayName="Note"
                 control={control}
                 errors={errors}
