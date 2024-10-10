@@ -1141,7 +1141,7 @@ export interface Fees {
 export interface OneTimeFees {
   accountNumber: string;
   amount: number;
-  notes: string;
+  description: string;
   settlementAccountNumber: string;
   subType: string;
 }
