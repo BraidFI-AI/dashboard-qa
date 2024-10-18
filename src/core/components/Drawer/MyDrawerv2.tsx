@@ -197,11 +197,7 @@ export default function PersistentDrawerLeft(props: any) {
 
   let settingsOptions = null;
 
-  if (
-    userType != ADMIN_OPS_ROLE &&
-    userType != DEVELOPER_OPS_ROLE &&
-    userType != DEVELOPER_ROLE
-  ) {
+  if (userType == ADMIN_ROLE || userType == DEVELOPER_ROLE) {
     settingsOptions = (
       <MyExpandableListItem
         name="Settings"

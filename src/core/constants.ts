@@ -108,10 +108,10 @@ export const States = [
 export const userGroupMapping: any = {
   "Bank Admin": "admin-admin",
   "Bank Ops": "admin-ops",
-  // "Fintech Admin": "developer-admin",
-  // "Fintech Ops": "developer-ops",
-  "Fintech Admin": "developers",
-  "Fintech Ops": "developers",
+  "Fintech Admin": "developer-admin",
+  "Fintech Ops": "developer-ops",
+  // "Fintech Admin": "developers",
+  // "Fintech Ops": "developers",
   "": "",
 };
 
