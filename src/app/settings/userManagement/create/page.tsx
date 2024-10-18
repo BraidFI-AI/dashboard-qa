@@ -17,6 +17,7 @@ import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
 import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
 import { validate } from "uuid";
+import { useSelector } from "react-redux";
 
 const CreateUserPage = () => {
   const router = useRouter();
@@ -26,6 +27,14 @@ const CreateUserPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [tenants, setTenants] = useState<string[] | null>(null);
   const [isDeveloper, setIsDeveloper] = useState(true);
+  const userType = useSelector((state: any) => state.app.userType);
+
+  const [userGroups, setUserGroups] = useState([
+    "Bank Admin",
+    "Bank Ops",
+    "Fintech Admin",
+    "Fintech Ops",
+  ]);
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -52,6 +61,12 @@ const CreateUserPage = () => {
       setSubmitting(false);
     });
   };
+
+  useEffect(() => {
+    if (userType == DEVELOPER_ROLE) {
+      setUserGroups(["Bank Ops"]);
+    }
+  }, [userType]);
 
   useEffect(() => {
     dispatch(fetchTenetIdsList()).then((ts: any) => {
@@ -162,7 +177,7 @@ const CreateUserPage = () => {
         )}
         <MyText>Group</MyText>
         <MyControlledAutocomplete
-          value={"Bank Admin"}
+          value={"Fintech Ops"}
           displayName="Group"
           name={"group"}
           control={control}
@@ -174,7 +189,7 @@ const CreateUserPage = () => {
                   required: true,
                 }
           }
-          options={["Bank Admin", "Bank Ops", "Fintech Admin", "Fintech Ops"]}
+          options={userGroups}
           // customOnChange={(val: string) => {
           //   if (val == "Developers") {
           //     setIsDeveloper(true);
