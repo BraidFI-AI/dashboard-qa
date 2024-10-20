@@ -41,7 +41,7 @@ const TabsProvider = (props: any) => {
     } else {
       setCurrentTab(0);
     }
-  }, [pathname]);
+  }, [pathname, tabs]);
 
   return (
     <div>

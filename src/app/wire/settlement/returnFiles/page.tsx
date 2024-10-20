@@ -83,7 +83,7 @@ const WireReturnFilesPage = () => {
             : undefined,
       })
     );
-  }, []);
+  }, [dispatch, getValues]);
 
   return (
     <>
