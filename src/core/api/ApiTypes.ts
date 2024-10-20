@@ -624,6 +624,15 @@ export interface ACHSettlementHistory {
   sftpStatus?: string | null;
 }
 
+export interface WireReturnFile {
+  filename?: string | null;
+  status?: string | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+  transactionCount?: number | null;
+  transactionAmount?: number | null;
+}
+
 export interface WireSettlementHistory {
   filename?: string | null;
   productId?: number | null;

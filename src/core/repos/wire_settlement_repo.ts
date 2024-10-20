@@ -7,6 +7,30 @@ class WireRepo {
     this.apiClient = apiClient;
   }
 
+  public async fetchWireReturnFiles(startDate?: string, endDate?: string) {
+    var url = `/wire/returnFiles?`;
+
+    if (startDate != undefined) {
+      url += `startDate=${startDate}&`;
+    }
+    if (endDate != undefined) {
+      url += `endDate=${endDate}&`;
+    }
+
+    const response = await this.apiClient.http<any[]>(Method.GET, url);
+    console.log(response);
+    return response;
+  }
+
+  public async runReturnSettlement() {
+    const response = await this.apiClient.http<any[]>(
+      Method.POST,
+      `/wire/returnFiles/generate`
+    );
+    console.log(response);
+    return response;
+  }
+
   public async fetchWireSettlementHistory(startDate: string, endDate: string) {
     const response = await this.apiClient.http<any[]>(
       Method.GET,

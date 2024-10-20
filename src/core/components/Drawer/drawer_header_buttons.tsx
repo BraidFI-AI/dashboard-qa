@@ -18,6 +18,7 @@ import CreateProductPage from "@/app/configuration/products/components/create_pr
 import CreateBusinessAccount from "../views/account/create_business_account";
 import CreateIndividualAccount from "../views/account/create_individual_account";
 import WhitelistDeveloperID from "./header_buttons/white_developer_id";
+import WireRunReturnSettlementButton from "./header_buttons/wire_run_return_settlement";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -54,6 +55,9 @@ const DrawerHeaderButtons = () => {
           }}
         >{`Run Settlement`}</MyBlueButton>
       </div>
+    )) ||
+    (pathname == "/wire/settlement/returnFiles" && (
+      <WireRunReturnSettlementButton />
     )) ||
     (pathname == "/wire/processing" && <ProcessInboundWire />) ||
     (pathname == `/alerts-and-cases/alerts/${params.id}` && (
