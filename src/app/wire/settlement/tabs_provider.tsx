@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 
@@ -16,16 +16,19 @@ const TabsProvider = (props: any) => {
 
   const userType = useSelector((state: any) => state.app.userType);
 
-  const tabs = [
-    {
-      name: "Settlement",
-      path: `/wire/settlement`,
-    },
-    {
-      name: "Return Files",
-      path: `/wire/settlement/returnFiles`,
-    },
-  ];
+  const tabs = useMemo(
+    () => [
+      {
+        name: "Settlement",
+        path: `/wire/settlement`,
+      },
+      {
+        name: "Return Files",
+        path: `/wire/settlement/returnFiles`,
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     if (pathname.includes("wire/settlement/returnFiles")) {
