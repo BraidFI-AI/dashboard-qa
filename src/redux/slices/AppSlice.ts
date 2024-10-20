@@ -32,6 +32,7 @@ interface AppState {
   title: string;
   userType: string | null;
   username: string | null;
+  tenantId?: string | null;
   transactionTypes: TransactionTypesType;
   drawerOpen: boolean;
 }
@@ -42,6 +43,7 @@ const initialState: AppState = {
   userType: null,
   username: null,
   transactionTypes: "loading",
+  tenantId: null,
   drawerOpen: true,
 };
 
@@ -54,6 +56,9 @@ const AppSlice = createSlice({
     },
     setUsername(state, action) {
       state.username = action.payload;
+    },
+    setTenantId(state, action) {
+      state.tenantId = action.payload;
     },
     setInitialState(state) {
       Object.assign(state, initialState);
@@ -127,6 +132,7 @@ export const fetchTransactionTypes = createAsyncThunk(
 
 export default AppSlice;
 export const {
+  setTenantId,
   setUserType,
   setUsername,
   setTitle,

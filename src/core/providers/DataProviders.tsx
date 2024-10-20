@@ -4,6 +4,7 @@ import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import { fetchApiKey } from "@/redux/slices/ApiKeySlice";
 import {
   fetchTransactionTypes,
+  setTenantId,
   setUsername,
   setUserType,
 } from "@/redux/slices/AppSlice";
@@ -31,6 +32,10 @@ const DataProviders = (props: any) => {
         user?.signInUserSession?.accessToken?.payload?.["cognito:groups"];
       console.log(groups);
 
+      const tenantId =
+        user?.signInUserSession?.idToken?.payload?.["custom:tenantId"];
+
+      console.log(tenantId);
       let userType = null;
 
       if (groups?.includes("admins") || groups?.includes("admin-admin")) {
@@ -50,6 +55,7 @@ const DataProviders = (props: any) => {
 
       dispatch(setUserType(userType));
       dispatch(setUsername(user?.username));
+      dispatch(setTenantId(tenantId));
     };
 
     setUser();
