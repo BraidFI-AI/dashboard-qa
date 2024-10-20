@@ -119,7 +119,12 @@ const WireSettlement = () => {
 
     console.log("data:", data);
 
-    dispatch(fetchWireSettlementHistory(data)).then((files: any) => {
+    dispatch(
+      fetchWireSettlementHistory({
+        startDate: moment(data.startDate),
+        endDate: moment(data.endDate),
+      })
+    ).then((files: any) => {
       setSubmitting(false);
     });
   };
