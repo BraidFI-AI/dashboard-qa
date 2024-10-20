@@ -717,7 +717,7 @@ export interface TransactionSearch {
   settlementFileName?: string;
   isInbound?: boolean;
   accountNumber?: string;
-  processingStatus?: string;
+  processingStatus?: string[];
   beginDate?: string;
   endDate?: string;
   maxAmount?: string;
