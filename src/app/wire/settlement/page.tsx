@@ -65,7 +65,15 @@ const WireSettlement = () => {
   };
 
   useEffect(() => {
-    dispatch(setInitialWireState());
+    setSubmitting(true);
+    dispatch(
+      fetchWireSettlementHistory({
+        startDate: moment(getValues("startDate")),
+        endDate: moment(getValues("endDate")),
+      })
+    ).then((files: any) => {
+      setSubmitting(false);
+    });
   }, [dispatch]);
 
   // useEffect(() => {
@@ -91,7 +99,12 @@ const WireSettlement = () => {
     productId: number;
     startDate: Moment;
     endDate: Moment;
-  }>();
+  }>({
+    defaultValues: {
+      startDate: momentToPSTString(moment().subtract(5, "day"), true),
+      endDate: momentToPSTString(moment(), false),
+    },
+  });
   const onSubmit: SubmitHandler<{
     productId: number;
     startDate: Moment;
@@ -106,7 +119,12 @@ const WireSettlement = () => {
 
     console.log("data:", data);
 
-    dispatch(fetchWireSettlementHistory(data)).then((files: any) => {
+    dispatch(
+      fetchWireSettlementHistory({
+        startDate: moment(data.startDate),
+        endDate: moment(data.endDate),
+      })
+    ).then((files: any) => {
       setSubmitting(false);
     });
   };
@@ -322,6 +340,12 @@ const WireSettlement = () => {
               {
                 field: "transactionCount",
                 headerName: "Transaction Count",
+                flex: 1,
+                minWidth: 120,
+              },
+              {
+                field: "transactionAmount",
+                headerName: "Transaction Amount",
                 flex: 1,
                 minWidth: 120,
               },
