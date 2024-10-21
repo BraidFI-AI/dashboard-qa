@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import Providers from "../core/providers/Providers";
 import MuiThemeProvider from "@/core/providers/ThemeProvider";
 import React, { Suspense } from "react";
-import { Amplify, Auth } from "aws-amplify";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -133,12 +133,12 @@ a {
   }
 }
 
-.amplify-button[data-variation="primary"] {
-  background: #12a7ff;
-  border-radius: 8px;
-  font-size: 15px;
+.amplify-button--primary {
+  background: #12a7ff !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
   /* font-family: AvenirNext LT Pro Regular; */
-  width: fit-content;
+  width: fit-content !important;
 }
 
 .amplify-button:disabled {
