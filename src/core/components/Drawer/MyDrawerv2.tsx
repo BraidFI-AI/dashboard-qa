@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import { useAppDispatch } from "@/redux/store/store";
 import { resetAppState } from "@/redux/slices/AppSlice";
-import { Auth } from "aws-amplify";
+import { signOut } from "aws-amplify/auth";
 import MyListItem from "./MyListItem";
 import MyExpandableListItem from "./MyListItemExpandable";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
@@ -567,7 +567,7 @@ export default function PersistentDrawerLeft(props: any) {
               <ListItemButton
                 onClick={() => {
                   dispatch(resetAppState());
-                  Auth.signOut();
+                  signOut();
                 }}
                 sx={{
                   height: "40px",

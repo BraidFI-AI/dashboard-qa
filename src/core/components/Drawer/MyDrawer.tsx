@@ -43,7 +43,6 @@
 // import Image from "next/image";
 // import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 // import { useAuthenticator } from "@aws-amplify/ui-react";
-// import { Auth } from "aws-amplify";
 // import { InactivityTracker } from "@/core/inactivity_tracker/InactivityTracker";
 // import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 // import SyncProblemIcon from "@mui/icons-material/SyncProblem";

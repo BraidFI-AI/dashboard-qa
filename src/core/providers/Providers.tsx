@@ -3,12 +3,11 @@
 import { Provider } from "react-redux";
 import { store } from "@/redux/store/store";
 import { SnackbarProvider, closeSnackbar } from "notistack";
-// import AuthProvider from "./AuthProvider";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect } from "react";
-import { Amplify, Auth } from "aws-amplify";
+import { Amplify } from "aws-amplify";
 
 import { Authenticator, View } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
@@ -26,6 +25,8 @@ import { APP_TIMEZONE } from "../constants";
 import IconButton from "@mui/material/IconButton";
 import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
 import { LicenseInfo } from "@mui/x-license";
+import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
+import { sessionStorage } from "aws-amplify/utils";
 
 /// setting default timezone to PACIFIC timezone
 dayjs.extend(utc);
@@ -47,11 +48,7 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
   const searchParams = useSearchParams();
 
   Amplify.configure(amplifyConfiguration);
-  Auth.configure({
-    ...amplifyConfiguration,
-    authenticationFlowType: "USER_SRP_AUTH",
-    storage: typeof window !== "undefined" ? window.sessionStorage : null,
-  });
+  cognitoUserPoolsTokenProvider.setKeyValueStorage(sessionStorage);
 
   useEffect(() => {
     NProgress.done();

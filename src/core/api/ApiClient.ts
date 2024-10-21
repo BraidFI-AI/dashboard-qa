@@ -4,7 +4,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 import AxiosConfig from "./AxiosConfig";
-import { Auth } from "aws-amplify";
+import { fetchAuthSession } from "aws-amplify/auth";
 import { InactivityTracker } from "../inactivity_tracker/InactivityTracker";
 
 export enum Method {
@@ -26,11 +26,11 @@ class ApiClient {
       async (config: InternalAxiosRequestConfig) => {
         // const authToken = Cookies.get("token");
         InactivityTracker.reset();
-        const session = await Auth.currentSession();
+        const session = await fetchAuthSession();
 
-        const authToken = session.getAccessToken().getJwtToken();
+        const authToken = session.tokens?.accessToken;
 
-        // console.log("TOKEN:", session);
+        console.log("TOKEN:", session);
 
         if (authToken) {
           config.headers.Authorization = `Bearer ${authToken}`;
