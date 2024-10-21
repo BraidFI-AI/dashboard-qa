@@ -2,7 +2,7 @@
 const nextConfig = {
   // output: "export",
   compiler: {
-    removeConsole: false,
+    removeConsole: true,
   },
   webpack: (
     config,
