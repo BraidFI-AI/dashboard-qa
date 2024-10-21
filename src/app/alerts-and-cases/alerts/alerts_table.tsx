@@ -1,13 +1,14 @@
 "use client";
 
 import ReviewTransactionModal from "@/app/transactions/transactionReview/review_transaction_modal";
-import { Alert } from "@/core/api/ApiTypes";
+import { Alert, AlertTimeline } from "@/core/api/ApiTypes";
 import LabelBox from "@/core/components/label_box";
 import MyTable from "@/core/components/Table/MyTable";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
+import timestampToDate from "@/core/utils/timestampToDate";
 import {
   fetchAlerts,
   setAlertsPaginationPageNumber,
@@ -131,6 +132,27 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
               headerName: "Alert ID",
               flex: 1,
               minWidth: 80,
+            },
+            {
+              field: "createdAt",
+              headerName: "Created At",
+              flex: 1,
+              minWidth: 150,
+              valueFormatter: (params: any) => {
+                return params.value?.alertTimelines == null
+                  ? ""
+                  : `${timestampToDate(
+                      (params.value?.alertTimelines as AlertTimeline[]).find(
+                        (timeline) => timeline.action == "CREATED"
+                      )?.actionDateTime ?? 0
+                    )}`;
+              },
+              valueGetter: (params: any) =>
+                params.value?.alertTimelines == null
+                  ? null
+                  : (params.value?.alertTimelines as AlertTimeline[]).find(
+                      (timeline) => timeline.action == "CREATED"
+                    )?.actionDateTime ?? null,
             },
             {
               field: "type",
