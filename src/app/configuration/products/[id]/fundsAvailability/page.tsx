@@ -46,7 +46,7 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
   } = useForm<UpdateFundsAvailability>({
     defaultValues: {
       achHoldDays: fundsAvailability?.achHoldDays,
-      interIssuerHold: fundsAvailability?.interIssuerHold,
+      checkDepositHoldDays: fundsAvailability?.checkDepositHoldDays,
     },
   });
   const onSubmit: SubmitHandler<UpdateFundsAvailability> = async (
@@ -62,8 +62,8 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
       }
 
       if (!isEditingIIH) {
-        data.interIssuerHold = fundsAvailability.interIssuerHold
-          ? fundsAvailability.interIssuerHold
+        data.checkDepositHoldDays = fundsAvailability.checkDepositHoldDays
+          ? fundsAvailability.checkDepositHoldDays
           : 0;
       }
 
@@ -98,7 +98,7 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
               if (data.payload) {
                 reset({
                   achHoldDays: data.payload.achHoldDays,
-                  interIssuerHold: data.payload.interIssuerHold,
+                  checkDepositHoldDays: data.payload.checkDepositHoldDays,
                 });
               }
 
@@ -160,8 +160,8 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
           <MyEditableTextField
             editing={isEditingIIH}
             setEditing={setIsEditingIIH}
-            name="interIssuerHold"
-            displayName="Inter Issuer Hold"
+            name="checkDepositHoldDays"
+            displayName="Check Deposit Hold Days"
             control={control}
             errors={errors}
             rules={
@@ -173,8 +173,8 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
                   }
             }
             value={
-              fundsAvailability.interIssuerHold != null
-                ? fundsAvailability.interIssuerHold
+              fundsAvailability.checkDepositHoldDays != null
+                ? fundsAvailability.checkDepositHoldDays
                 : 0
             }
             submitting={false}

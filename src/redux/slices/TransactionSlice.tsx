@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { Transaction } from "@/core/api/ApiTypes";
+import { Transaction, TransactionSearch } from "@/core/api/ApiTypes";
 import { DataGridPaginationType } from "@/core/components/Table/MyTable";
 import { PaginationStateType, paginationPageSize } from "@/core/constants";
 import TransactionRepo from "@/core/repos/TransactionRepo";
@@ -100,29 +100,30 @@ export const fetchTransactionByPaymentId = createAsyncThunk(
 
 export const fetchTransactions = createAsyncThunk(
   "transaction/fetchTransactions",
-  async (data: { criteria: any; refresh?: boolean }, thunkApi: any) => {
+  async (
+    data: { criteria: TransactionSearch; refresh?: boolean },
+    thunkApi: any
+  ) => {
     if (data.criteria.accountNumber == "") {
       data.criteria.accountNumber = undefined;
     }
     if (data.criteria.paymentId == "") {
       data.criteria.paymentId = undefined;
     }
-    if (data.criteria.senderNote == "") {
-      data.criteria.senderNote = undefined;
-    }
-    if (data.criteria.recepientNote == "") {
-      data.criteria.recepientNote = undefined;
-    }
     if (
       data.criteria.transactionType != null &&
-      data.criteria.transactionType != "" &&
       typeof data.criteria.transactionType == "string"
     ) {
       data.criteria.transactionType = [data.criteria.transactionType];
     }
     if (
+      data.criteria.processingStatus != null &&
+      typeof data.criteria.processingStatus == "string"
+    ) {
+      data.criteria.processingStatus = [data.criteria.processingStatus];
+    }
+    if (
       data.criteria.transactionStatus != null &&
-      data.criteria.transactionStatus != "" &&
       typeof data.criteria.transactionStatus == "string"
     ) {
       data.criteria.transactionStatus = [data.criteria.transactionStatus];
@@ -140,33 +141,6 @@ export const fetchTransactions = createAsyncThunk(
           ...data.criteria,
           endDate: momentToPSTString(moment(data.criteria.endDate), false),
         };
-      }
-      if (data.criteria.amount != undefined || data.criteria.amount != null) {
-        if (
-          data.criteria.amount.value == undefined ||
-          data.criteria.amount.value == null
-        ) {
-          data.criteria.amount = undefined;
-        } else {
-          let op = "eq";
-
-          if (data.criteria.amount.op == "Not equal to") {
-            op = "neq";
-          } else if (data.criteria.amount.op == "Less than") {
-            op = "lt";
-          } else if (data.criteria.amount.op == "Less then or equal to") {
-            op = "lte";
-          } else if (data.criteria.amount.op == "Greater than") {
-            op = "gt";
-          } else if (data.criteria.amount.op == "Greater than or equal to") {
-            op = "gte";
-          }
-
-          data.criteria = {
-            ...data.criteria,
-            amount: [{ op: op, value: data.criteria.amount.value }],
-          };
-        }
       }
 
       if (data.criteria.transactionType == null) {

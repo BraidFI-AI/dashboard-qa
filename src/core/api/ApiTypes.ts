@@ -548,14 +548,14 @@ export interface FundsAvailability {
   id: number;
   productId: number;
   achHoldDays: number;
-  interIssuerHold: number;
+  checkDepositHoldDays: number;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface UpdateFundsAvailability {
   achHoldDays: number;
-  interIssuerHold: number;
+  checkDepositHoldDays: number;
 }
 
 export interface OnboardingConfig {
