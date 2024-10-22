@@ -137,22 +137,30 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
               field: "createdAt",
               headerName: "Created At",
               flex: 1,
-              minWidth: 150,
-              valueFormatter: (params: any) => {
-                return params.value?.alertTimelines == null
+              minWidth: 180,
+              renderCell: (params: any) => {
+                return params.row?.alertTimelines == null
                   ? ""
                   : `${timestampToDate(
-                      (params.value?.alertTimelines as AlertTimeline[]).find(
+                      (params.row?.alertTimelines as AlertTimeline[]).find(
                         (timeline) => timeline.action == "CREATED"
-                      )?.actionDateTime ?? 0
+                      )?.actionDateTime ?? 0,
+                      false,
+                      true
                     )}`;
               },
-              valueGetter: (params: any) =>
-                params.value?.alertTimelines == null
-                  ? null
-                  : (params.value?.alertTimelines as AlertTimeline[]).find(
-                      (timeline) => timeline.action == "CREATED"
-                    )?.actionDateTime ?? null,
+              valueGetter: (params: any) => {
+                console.log("oiiiii:", params);
+                return params.row?.alertTimelines == null
+                  ? ""
+                  : `${timestampToDate(
+                      (params.row?.alertTimelines as AlertTimeline[]).find(
+                        (timeline) => timeline.action == "CREATED"
+                      )?.actionDateTime ?? 0,
+                      false,
+                      true
+                    )}`;
+              },
             },
             {
               field: "type",
