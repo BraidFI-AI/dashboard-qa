@@ -16,6 +16,7 @@ import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
 import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
+import timestampToDate from "@/core/utils/timestampToDate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
@@ -209,6 +210,89 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       return grouping;
     } catch (e: any) {
       return `Error fetching transactions volume ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchDailyProductBalanceData = createAsyncThunk(
+  "product/fetchAllProductBalance",
+  async (developerId?: string | undefined) => {
+    try {
+      const metricData: {
+        created_at?: number | null;
+        id?: number | null;
+        product_id?: number | null;
+        label?: string | null;
+        program_id?: number | null;
+        customer_id?: number | null;
+        tenant_id?: string | null;
+        value?: number | null;
+      }[] = await productRepo.fetchProductDailyBalanceFromMetrics();
+
+      if (developerId == undefined) {
+        metricData.sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
+
+        // convert metricData to array of objects with name as product_id, value as value, and hover as created_at
+        const chartData = metricData.map((data) => {
+          return {
+            name: data.label,
+            value: data.value,
+            hover: timestampToDate(data.created_at ?? 1, true),
+          };
+        });
+
+        // make chartData unique
+        const uniqueChartData: any = [];
+        const map = new Map();
+        for (const item of chartData) {
+          if (!map.has(item.name)) {
+            map.set(item.name, true);
+            uniqueChartData.push({
+              name: item.name,
+              value: item.value,
+              hover: item.hover,
+            });
+          }
+        }
+
+        // make chartdata to only have the first 5 elements
+        return uniqueChartData.slice(0, 5);
+      } else {
+        // filter metricData by developerId on tenant_id
+        const filteredData = metricData.filter(
+          (data) => data.tenant_id == developerId
+        );
+
+        filteredData.sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
+
+        // convert metricData to array of objects with name as product_id, value as value, and hover as created_at
+        const chartData = filteredData.map((data) => {
+          return {
+            name: data.label,
+            value: data.value,
+            hover: timestampToDate(data.created_at ?? 1, true),
+          };
+        });
+
+        // make chartData unique
+        const uniqueChartData: any = [];
+        const map = new Map();
+        for (const item of chartData) {
+          if (!map.has(item.name)) {
+            map.set(item.name, true);
+            uniqueChartData.push({
+              name: item.name,
+              value: item.value,
+              hover: item.hover,
+            });
+          }
+        }
+
+        // make chartdata to only have the first 5 elements
+        return uniqueChartData.slice(0, 5);
+      }
+    } catch (e: any) {
+      return `Error fetching product daily balance ${generateErrorMessage(e)}`;
     }
   }
 );

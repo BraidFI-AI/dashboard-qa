@@ -22,12 +22,13 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const svgRef = React.useRef(null);
 
   useEffect(() => {
-    const chartWidth = 1500;
+    const radius = 200;
+
+    const chartWidth = 450;
 
     d3.select(svgRef.current).selectAll("*").remove();
 
-    const height = Math.min(chartWidth, 320);
-    const radius = 200; //Math.min(chartWidth, height) / 1.4;
+    const height = 650;
 
     const arc = d3
       .arc()
@@ -63,7 +64,10 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .select(svgRef.current)
       .attr("width", chartWidth)
       .attr("height", height)
-      .attr("viewBox", `-20 -220 ${chartWidth} ${height * 1.2 + radius * 0.2}`);
+      .attr(
+        "viewBox",
+        `-160 -220 ${chartWidth} ${height * 1.2 + radius * 0.2}`
+      );
 
     const foreignObject = svg
       .append("foreignObject")
@@ -121,7 +125,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
     const legend = svg
       .append("g")
-      .attr("transform", `translate(${radius + 80}, 0)`)
+      .attr("transform", `translate(${-radius + 40}, ${radius + 140})`)
       .selectAll(".legend")
       .data(pie(data as any))
       .enter()

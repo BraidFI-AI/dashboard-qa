@@ -3,7 +3,10 @@
 import DonutChart from "@/core/components/charts/donut_chart";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
-import { fetchAllProductBalance } from "@/redux/slices/ProductSlice";
+import {
+  fetchAllProductBalance,
+  fetchDailyProductBalanceData,
+} from "@/redux/slices/ProductSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import React, { useCallback, useEffect, useState } from "react";
 import MyText from "@/core/components/Text/Text";
@@ -13,6 +16,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE, months } from "@/core/constants";
 import moment from "moment";
+import BarChart from "@/core/components/charts/horizontal_bar_chart";
 
 const ProductsChart = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +28,10 @@ const ProductsChart = () => {
   const [developerId, setDeveloperId] = useState("All");
 
   const [chartData, setChartData] = useState<
+    "loading" | string | { name: string; value: string; hover: string }[]
+  >("loading");
+
+  const [dailyData, setDailyData] = useState<
     "loading" | string | { name: string; value: string; hover: string }[]
   >("loading");
 
@@ -57,6 +65,16 @@ const ProductsChart = () => {
 
   const fetchChartDataCallback = useCallback(() => {
     setChartData("loading");
+    setDailyData("loading");
+
+    dispatch(
+      fetchDailyProductBalanceData(
+        developerId == "All" ? undefined : developerId
+      )
+    ).then((d: any) => {
+      setDailyData(d.payload);
+    });
+
     dispatch(
       fetchAllProductBalance(developerId == "All" ? undefined : developerId)
     ).then((d: any) => {
@@ -140,7 +158,7 @@ const ProductsChart = () => {
   }, [dispatch, developerId, fetchChartDataCallback, userType]);
 
   return (
-    <div className="h-[480px]">
+    <div className="h-[650px] w-[1200px]">
       {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
         <>
           <MyText size="md">Products balance</MyText>
@@ -187,38 +205,68 @@ const ProductsChart = () => {
                   />
                 </div>
                 <div className="pb-6"></div>
-                {chartData == "loading" ? (
+                {chartData == "loading" || dailyData == "loading" ? (
                   <MyCircularProgressIndicator />
-                ) : typeof chartData == "string" ? (
+                ) : typeof chartData == "string" ||
+                  typeof dailyData == "string" ? (
                   <ErrorPage
-                    error={chartData}
+                    error={
+                      typeof chartData == "string"
+                        ? chartData
+                        : typeof dailyData == "string"
+                        ? dailyData
+                        : "An error happened, please try again"
+                    }
                     recoveryButtonOnClick={() => {
                       fetchChartDataCallback();
                     }}
                     recoveryButtonTitle="Retry"
                   />
-                ) : chartData.length == 0 ? (
+                ) : chartData.length == 0 || dailyData.length == 0 ? (
                   <MyText>No data found!</MyText>
                 ) : (
-                  <DonutChart
-                    data={chartData}
-                    total={total}
-                    developerId={developerId}
-                    date={date}
-                    onClick={(data) => {
-                      console.log(data);
-                      if (developerId == "All" && data.name != "Others") {
-                        setDeveloperId(data.name);
-                        const dev = developers.find(
-                          (dev) => dev.name == data.name
-                        );
-                        setValue(
-                          "developerId",
-                          `${dev?.tenantId} - ${dev?.name}`
-                        );
-                      }
-                    }}
-                  />
+                  <div className="flex flex-row">
+                    <div className="">
+                      <DonutChart
+                        data={chartData}
+                        total={total}
+                        developerId={developerId}
+                        date={date}
+                        onClick={(data) => {
+                          console.log(data);
+                          if (developerId == "All" && data.name != "Others") {
+                            setDeveloperId(data.name);
+                            const dev = developers.find(
+                              (dev) => dev.name == data.name
+                            );
+                            setValue(
+                              "developerId",
+                              `${dev?.tenantId} - ${dev?.name}`
+                            );
+                          }
+                        }}
+                      />
+                    </div>
+                    <BarChart
+                      data={dailyData}
+                      total={total}
+                      developerId={developerId}
+                      date={date}
+                      onClick={(data: any) => {
+                        console.log(data);
+                        if (developerId == "All" && data.name != "Others") {
+                          setDeveloperId(data.name);
+                          const dev = developers.find(
+                            (dev) => dev.name == data.name
+                          );
+                          setValue(
+                            "developerId",
+                            `${dev?.tenantId} - ${dev?.name}`
+                          );
+                        }
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             )}
