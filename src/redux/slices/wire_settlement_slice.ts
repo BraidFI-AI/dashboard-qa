@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { WireSettlementHistory } from "@/core/api/ApiTypes";
+import { WireReturnFile, WireSettlementHistory } from "@/core/api/ApiTypes";
 import WireRepo from "@/core/repos/wire_settlement_repo";
 import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
@@ -15,7 +15,9 @@ interface WireState {
     | "loading"
     | string
     | WireSettlementHistory[];
-
+  wireReturnFiles: "initial" | "loading" | string | WireReturnFile[];
+  returnFileStartDate?: string;
+  returnFileEndDate?: string;
   productId: number | null;
   productName: number | null;
   startDate: string;
@@ -24,8 +26,11 @@ interface WireState {
 
 const initialState: WireState = {
   wireSettlementHistory: "initial",
+  wireReturnFiles: "initial",
   productId: null,
   productName: null,
+  returnFileStartDate: undefined,
+  returnFileEndDate: undefined,
   startDate: momentToPSTString(moment(), true),
   endDate: momentToPSTString(moment(), false),
 };
@@ -51,6 +56,23 @@ const WireSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchWireReturnFiles.pending, (state, action) => {
+      state.wireReturnFiles = "loading";
+
+      if (
+        action.meta.arg?.refresh == null ||
+        action.meta.arg.refresh == false
+      ) {
+        state.returnFileStartDate =
+          action.meta.arg?.date?.startDate ?? undefined;
+        state.returnFileEndDate = action.meta.arg?.date?.endDate ?? undefined;
+      }
+
+      console.log("fetchWireReturnFiles.pending", action.meta.arg);
+    });
+    builder.addCase(fetchWireReturnFiles.fulfilled, (state, action) => {
+      state.wireReturnFiles = action.payload;
+    });
     builder.addCase(fetchWireSettlementHistory.pending, (state, action) => {
       state.wireSettlementHistory = "loading";
     });
@@ -75,6 +97,76 @@ const WireSlice = createSlice({
     });
   },
 });
+
+export const fetchWireReturnFiles = createAsyncThunk(
+  "wire/fetchWireReturnFiles",
+  async (
+    data: {
+      refresh?: boolean;
+      date?: {
+        startDate: string;
+        endDate: string;
+      };
+    },
+    thunkApi: any
+  ) => {
+    try {
+      let sd = undefined;
+      let ed = undefined;
+
+      console.log(
+        "wire/fetchWireReturnFiles",
+        data,
+        thunkApi.getState().wireSettlement
+      );
+
+      if (data?.refresh != null && data.refresh) {
+        if (
+          thunkApi.getState().wireSettlement.returnFileStartDate != null &&
+          thunkApi.getState().wireSettlement.returnFileEndDate != null
+        ) {
+          sd = momentToPSTString(
+            moment(thunkApi.getState().wireSettlement.returnFileStartDate),
+            true
+          );
+          ed = momentToPSTString(
+            moment(thunkApi.getState().wireSettlement.returnFileEndDate),
+            false
+          );
+        } else {
+          return "Please select date range";
+        }
+      } else if (
+        data?.date?.startDate != undefined &&
+        data?.date?.endDate != undefined
+      ) {
+        sd = momentToPSTString(moment(data.date.startDate), true);
+        ed = momentToPSTString(moment(data.date.endDate), false);
+      } else {
+        return "Please select date range";
+      }
+
+      const wireSettlementHistory = await wireRepo.fetchWireReturnFiles(sd, ed);
+      console.log("wireSettlementHistory", wireSettlementHistory);
+      return wireSettlementHistory;
+    } catch (e: any) {
+      return `Error fetching wire return files ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const runReturnSettlement = createAsyncThunk(
+  "wire/runReturnFile",
+  async () => {
+    try {
+      const resp = await wireRepo.runReturnSettlement();
+      console.log("Return settlement ran:", resp);
+      return { status: "success" };
+    } catch (e: any) {
+      return `Error running return settlement ${generateErrorMessage(e)}`;
+    }
+  }
+);
 
 export const fetchWireSettlementHistory = createAsyncThunk(
   "wire/fetchWireSettlementHistory",
@@ -111,7 +203,7 @@ export const fetchWireSettlementHistory = createAsyncThunk(
           console.log("wireSettlementHistory", wireSettlementHistory);
           return wireSettlementHistory;
         } else {
-          return "Please select a product and date range";
+          return "Please select date range";
         }
       }
     } catch (e: any) {

@@ -954,6 +954,12 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: true,
+                          validate: (value: string, _: any) => {
+                            const countryCodeRegex = /^[A-Z]{2}$/;
+                            if (!countryCodeRegex.test(value) || value == "") {
+                              return "Country code must be 2 uppercase letters";
+                            }
+                          },
                         }
                   }
                   value=""

@@ -126,7 +126,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.paymentId = undefined;
     }
 
-    if (data.processingStatus == null || data.processingStatus == "") {
+    if (data.processingStatus == null || data.processingStatus.length == 0) {
       data.processingStatus = undefined;
     }
 
@@ -188,14 +188,14 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
   useEffect(() => {
     reset({
       accountNumber: qParams.get("accountNumber") ?? "",
-      processingStatus: qParams.get("processingStatus") ?? "",
+      processingStatus: qParams.get("processingStatus")?.split(",") ?? [],
       beginDate: qParams.get("beginDate") ?? undefined,
       endDate: qParams.get("endDate") ?? undefined,
       maxAmount: qParams.get("maxAmount") ?? "",
       minAmount: qParams.get("minAmount") ?? "",
       productId: qParams.get("productId") ?? "",
-      transactionStatus: qParams.getAll("transactionStatus") ?? [],
-      transactionType: qParams.getAll("transactionType") ?? [],
+      transactionStatus: qParams.get("transactionStatus")?.split(",") ?? [],
+      transactionType: qParams.get("transactionType")?.split(",") ?? [],
       paymentId: qParams.get("paymentId") ?? "",
       customerId: qParams.get("customerId") ?? "",
       counterpartyId: qParams.get("counterpartyId") ?? "",
@@ -396,8 +396,8 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
           </Box>
           <Box className="pb-4 w-full">
             <MyText>Processing Status</MyText>
-            <MyControlledAutocomplete
-              value={getValues("processingStatus") ?? ""}
+            <MyControlledMultiAutocomplete
+              value={getValues("processingStatus") ?? []}
               displayName="Processing Status"
               name={"processingStatus"}
               control={control}
@@ -411,6 +411,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                 "SENT",
                 "RETURNED",
                 "REJECTED",
+                "CONFIRMED",
               ]}
             />
           </Box>
@@ -435,7 +436,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                 name={"minAmount"}
                 control={control}
                 errors={errors}
-                rules={{ pattern: /^[0-9]+$/ }}
+                rules={{ pattern: /^-?\d*\.?\d+$/ }}
               />
             </Box>
             <Box className="w-4"></Box>
@@ -447,7 +448,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                 name={"maxAmount"}
                 control={control}
                 errors={errors}
-                rules={{ pattern: /^[0-9]+$/ }}
+                rules={{ pattern: /^-?\d*\.?\d+$/ }}
               />
             </Box>
           </Box>
@@ -577,7 +578,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                     excludeAch: false,
                     showAchNoc: false,
                     accountNumber: "",
-                    processingStatus: "",
+                    processingStatus: [],
                     beginDate: undefined,
                     endDate: undefined,
                     maxAmount: "",

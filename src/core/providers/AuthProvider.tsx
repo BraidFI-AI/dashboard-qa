@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { Auth } from "aws-amplify";
+import { signOut, fetchAuthSession } from "aws-amplify/auth";
 import { InactivityTracker } from "../inactivity_tracker/InactivityTracker";
 import { resetAppState } from "@/redux/slices/AppSlice";
 
@@ -17,7 +17,7 @@ const AuthProvider = (props: any) => {
       const isInactive = InactivityTracker.isInactive();
       if (isInactive) {
         dispatch(resetAppState());
-        Auth.signOut();
+        signOut();
       }
     }, 10 * 1000);
 
@@ -25,11 +25,9 @@ const AuthProvider = (props: any) => {
   }, [dispatch]);
 
   const printToken = async () => {
-    const session = await Auth.currentSession();
+    const session = await fetchAuthSession();
 
-    const authToken = session.getAccessToken().getJwtToken();
-
-    console.log("Amplify Token:", session);
+    console.log("Amplify session:", session);
   };
 
   return <>{props.children}</>;

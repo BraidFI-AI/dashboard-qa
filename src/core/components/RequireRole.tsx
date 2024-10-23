@@ -1,6 +1,5 @@
 "use client";
 
-import { Auth } from "aws-amplify";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";

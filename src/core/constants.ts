@@ -110,6 +110,8 @@ export const userGroupMapping: any = {
   "Bank Ops": "admin-ops",
   "Fintech Admin": "developer-admin",
   "Fintech Ops": "developer-ops",
+  // "Fintech Admin": "developers",
+  // "Fintech Ops": "developers",
   "": "",
 };
 

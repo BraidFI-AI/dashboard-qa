@@ -258,8 +258,8 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
                     <Box className="pb-4"></Box>
                     <MyText>Inter Issuer Hold</MyText>
                     <MyControlledTextField
-                      name="interIssuerHold"
-                      displayName="Inter Issuer Hold"
+                      name="checkDepositHoldDays"
+                      displayName="Check Deposit Hold Days"
                       control={fundsControl}
                       errors={fundsErrors}
                       rules={
@@ -269,7 +269,7 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
                               required: true,
                             }
                       }
-                      value={fundsAvailability.interIssuerHold.toString()}
+                      value={fundsAvailability.checkDepositHoldDays.toString()}
                     />
                     <Box className="pb-8"></Box>
                     <Box className="w-fit">

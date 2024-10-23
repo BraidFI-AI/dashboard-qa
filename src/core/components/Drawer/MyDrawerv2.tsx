@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import { useAppDispatch } from "@/redux/store/store";
 import { resetAppState } from "@/redux/slices/AppSlice";
-import { Auth } from "aws-amplify";
+import { signOut } from "aws-amplify/auth";
 import MyListItem from "./MyListItem";
 import MyExpandableListItem from "./MyListItemExpandable";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
@@ -55,6 +55,7 @@ import {
   ADMIN_OPS_ROLE,
   ADMIN_ROLE,
   DEVELOPER_OPS_ROLE,
+  DEVELOPER_ROLE,
   SCROLLBAR_STYLE,
 } from "@/core/constants";
 import DrawerHeaderButtons from "./drawer_header_buttons";
@@ -196,7 +197,7 @@ export default function PersistentDrawerLeft(props: any) {
 
   let settingsOptions = null;
 
-  if (userType != ADMIN_OPS_ROLE && userType != DEVELOPER_OPS_ROLE) {
+  if (userType == ADMIN_ROLE || userType == DEVELOPER_ROLE) {
     settingsOptions = (
       <MyExpandableListItem
         name="Settings"
@@ -566,7 +567,7 @@ export default function PersistentDrawerLeft(props: any) {
               <ListItemButton
                 onClick={() => {
                   dispatch(resetAppState());
-                  Auth.signOut();
+                  signOut();
                 }}
                 sx={{
                   height: "40px",

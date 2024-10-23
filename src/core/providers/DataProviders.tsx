@@ -4,12 +4,13 @@ import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import { fetchApiKey } from "@/redux/slices/ApiKeySlice";
 import {
   fetchTransactionTypes,
+  setTenantId,
   setUsername,
   setUserType,
 } from "@/redux/slices/AppSlice";
 import { fetchUsers } from "@/redux/slices/UsermanagementSlice";
 import { useAppDispatch } from "@/redux/store/store";
-import { Auth } from "aws-amplify";
+import { fetchAuthSession } from "aws-amplify/auth";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -25,12 +26,21 @@ const DataProviders = (props: any) => {
 
   useEffect(() => {
     const setUser = async () => {
-      const user = await Auth.currentAuthenticatedUser();
+      const session = await fetchAuthSession();
 
       const groups: String[] =
-        user?.signInUserSession?.accessToken?.payload?.["cognito:groups"];
+        session?.tokens?.accessToken?.payload?.["cognito:groups"] != null
+          ? (session?.tokens?.accessToken?.payload?.[
+              "cognito:groups"
+            ] as String[])
+          : [];
       console.log(groups);
 
+      const tenantId = session?.tokens?.idToken?.payload?.["custom:tenantId"];
+
+      const username = session?.tokens?.idToken?.payload?.["cognito:username"];
+
+      console.log(tenantId);
       let userType = null;
 
       if (groups?.includes("admins") || groups?.includes("admin-admin")) {
@@ -49,7 +59,8 @@ const DataProviders = (props: any) => {
       }
 
       dispatch(setUserType(userType));
-      dispatch(setUsername(user?.username));
+      dispatch(setUsername(username));
+      dispatch(setTenantId(tenantId));
     };
 
     setUser();

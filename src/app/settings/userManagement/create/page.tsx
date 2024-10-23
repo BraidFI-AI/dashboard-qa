@@ -16,7 +16,7 @@ import { createUser } from "@/redux/slices/UsermanagementSlice";
 import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
 import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
-import { validate } from "uuid";
+import { useSelector } from "react-redux";
 
 const CreateUserPage = () => {
   const router = useRouter();
@@ -26,6 +26,15 @@ const CreateUserPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [tenants, setTenants] = useState<string[] | null>(null);
   const [isDeveloper, setIsDeveloper] = useState(true);
+  const userType = useSelector((state: any) => state.app.userType);
+  const tenantId = useSelector((state: any) => state.app.tenantId);
+
+  const [userGroups, setUserGroups] = useState([
+    "Bank Admin",
+    "Bank Ops",
+    "Fintech Admin",
+    "Fintech Ops",
+  ]);
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -42,6 +51,10 @@ const CreateUserPage = () => {
 
     data.group = userGroupMapping[data.group];
 
+    if (userType == DEVELOPER_ROLE) {
+      data.tenantId = tenantId;
+    }
+
     dispatch(createUser(data)).then((usr: any) => {
       if (typeof usr.payload != "string") {
         enqueueSnackbar("User created successfully", { variant: "success" });
@@ -54,11 +67,19 @@ const CreateUserPage = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchTenetIdsList()).then((ts: any) => {
-      setTenants(ts.payload);
-      setLoading(false);
-    });
-  }, [dispatch]);
+    if (userType == DEVELOPER_ROLE) {
+      setUserGroups(["Fintech Ops"]);
+    }
+  }, [userType]);
+
+  useEffect(() => {
+    if (userType != DEVELOPER_ROLE) {
+      dispatch(fetchTenetIdsList()).then((ts: any) => {
+        setTenants(ts.payload);
+        setLoading(false);
+      });
+    }
+  }, [dispatch, userType]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
@@ -133,36 +154,44 @@ const CreateUserPage = () => {
           value={""}
         />
         <Box className="pb-4"></Box> */}
-        {isDeveloper && (
+        {userType == DEVELOPER_ROLE ? (
           <>
             <MyText>Tenant ID</MyText>
-            {loading ? (
-              <CircularProgress size="25px" />
-            ) : tenants == null || tenants.length == 0 ? (
-              <MyText>No Tenant found</MyText>
-            ) : (
-              <MyControlledAutocomplete
-                value={tenants[0]}
-                displayName="Tenant ID"
-                name={"tenantId"}
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                options={tenants}
-              />
-            )}
+            <MyText size="md">{tenantId}</MyText>
             <Box className="pb-4"></Box>
           </>
+        ) : (
+          isDeveloper && (
+            <>
+              <MyText>Tenant ID</MyText>
+              {loading ? (
+                <CircularProgress size="25px" />
+              ) : tenants == null || tenants.length == 0 ? (
+                <MyText>No Tenant found</MyText>
+              ) : (
+                <MyControlledAutocomplete
+                  value={tenants[0]}
+                  displayName="Tenant ID"
+                  name={"tenantId"}
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  options={tenants}
+                />
+              )}
+              <Box className="pb-4"></Box>
+            </>
+          )
         )}
         <MyText>Group</MyText>
         <MyControlledAutocomplete
-          value={"Bank Admin"}
+          value={"Fintech Ops"}
           displayName="Group"
           name={"group"}
           control={control}
@@ -174,7 +203,7 @@ const CreateUserPage = () => {
                   required: true,
                 }
           }
-          options={["Bank Admin", "Bank Ops", "Fintech Admin", "Fintech Ops"]}
+          options={userGroups}
           // customOnChange={(val: string) => {
           //   if (val == "Developers") {
           //     setIsDeveloper(true);

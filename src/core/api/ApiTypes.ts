@@ -548,14 +548,14 @@ export interface FundsAvailability {
   id: number;
   productId: number;
   achHoldDays: number;
-  interIssuerHold: number;
+  checkDepositHoldDays: number;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface UpdateFundsAvailability {
   achHoldDays: number;
-  interIssuerHold: number;
+  checkDepositHoldDays: number;
 }
 
 export interface OnboardingConfig {
@@ -622,6 +622,15 @@ export interface ACHSettlementHistory {
   productId: string | null;
   status?: string | null;
   sftpStatus?: string | null;
+}
+
+export interface WireReturnFile {
+  filename?: string | null;
+  status?: string | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+  transactionCount?: number | null;
+  transactionAmount?: number | null;
 }
 
 export interface WireSettlementHistory {
@@ -717,7 +726,7 @@ export interface TransactionSearch {
   settlementFileName?: string;
   isInbound?: boolean;
   accountNumber?: string;
-  processingStatus?: string;
+  processingStatus?: string[];
   beginDate?: string;
   endDate?: string;
   maxAmount?: string;
@@ -1141,7 +1150,7 @@ export interface Fees {
 export interface OneTimeFees {
   accountNumber: string;
   amount: number;
-  notes: string;
+  description: string;
   settlementAccountNumber: string;
   subType: string;
 }
