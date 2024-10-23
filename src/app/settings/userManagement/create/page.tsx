@@ -16,7 +16,6 @@ import { createUser } from "@/redux/slices/UsermanagementSlice";
 import { enqueueSnackbar } from "notistack";
 import RequireRole from "@/core/components/RequireRole";
 import { ADMIN_ROLE, DEVELOPER_ROLE, userGroupMapping } from "@/core/constants";
-import { validate } from "uuid";
 import { useSelector } from "react-redux";
 
 const CreateUserPage = () => {
@@ -69,7 +68,7 @@ const CreateUserPage = () => {
 
   useEffect(() => {
     if (userType == DEVELOPER_ROLE) {
-      setUserGroups(["Bank Ops"]);
+      setUserGroups(["Fintech Ops"]);
     }
   }, [userType]);
 

@@ -18,6 +18,7 @@ import { enqueueSnackbar } from "notistack";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import MyLinkText from "@/core/components/Text/LinkText";
 import ItemRow from "@/core/components/Text/ItemRow";
+import timestampToDate from "@/core/utils/timestampToDate";
 
 const WireReturnFilesTable = () => {
   const dispatch = useAppDispatch();
@@ -89,7 +90,9 @@ const WireReturnFilesTable = () => {
               flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
-                return params.value == null ? "" : `${moment(params.value)}`;
+                return params.value == null
+                  ? ""
+                  : `${timestampToDate(params.value, false, true)}`;
               },
               valueGetter: (params: any) => params.row.createdAt,
             },
@@ -99,7 +102,9 @@ const WireReturnFilesTable = () => {
               flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
-                return params.value == null ? "" : `${moment(params.value)}`;
+                return params.value == null
+                  ? ""
+                  : `${timestampToDate(params.value, false, true)}`;
               },
               valueGetter: (params: any) => params.row.updatedAt,
             },
