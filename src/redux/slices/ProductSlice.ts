@@ -229,6 +229,13 @@ export const fetchDailyProductBalanceData = createAsyncThunk(
         value?: number | null;
       }[] = await productRepo.fetchProductDailyBalanceFromMetrics();
 
+      // make value positive in case its negative
+      metricData.forEach((data) => {
+        if (data.value != null && data.value < 0) {
+          data.value = Math.abs(data.value);
+        }
+      });
+
       if (developerId == undefined) {
         metricData.sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
 
@@ -311,6 +318,13 @@ export const fetchAllProductBalance = createAsyncThunk(
         tenant_id?: string | null;
         value?: number | null;
       }[] = await productRepo.fetchProductBalanceFromMetrics();
+
+      // make value positive in case its negative
+      data.forEach((d) => {
+        if (d.value != null && d.value < 0) {
+          d.value = Math.abs(d.value);
+        }
+      });
 
       let chartData = [];
 

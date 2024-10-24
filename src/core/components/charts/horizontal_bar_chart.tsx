@@ -82,7 +82,7 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr("class", "bar")
       .attr("x", 1) // Add 1px space between y-axis and bars
       .attr("y", (d) => y(d.name) as number)
-      .attr("width", (d) => x(+d.value))
+      .attr("width", (d) => (d.value == "0" ? 0 : x(+d.value)))
       .attr("height", y.bandwidth())
       .attr("fill", (d: any) => colorScale(d.name) as string);
 
@@ -121,15 +121,6 @@ const BarChart: React.FC<BarChartProps> = ({
           .text((d: any) => d.hover)
           .style("font-size", "12px");
       });
-
-    svg
-      .append("text")
-      .attr("x", width / 2)
-      .attr("y", height + margin.bottom - 20)
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("fill", "grey")
-      .text(date ?? "");
   }, [data]);
 
   return (

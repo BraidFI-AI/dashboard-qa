@@ -46,7 +46,12 @@ const ProductsChart = () => {
     formState: { errors },
     control,
     setValue,
-  } = useForm();
+    getValues,
+  } = useForm({
+    defaultValues: {
+      tenantId: "All",
+    },
+  });
   const onSubmit: SubmitHandler<{
     tenantId: string;
   }> = (data: { tenantId: string }) => {};
@@ -181,9 +186,9 @@ const ProductsChart = () => {
                 <div className="w-[300px]">
                   <MyControlledAutocomplete
                     clearable={false}
-                    value={`All`}
+                    value={getValues("tenantId")}
                     displayName="Developer ID"
-                    name={"developerId"}
+                    name={"tenantId"}
                     control={control}
                     errors={errors}
                     rules={{ required: true }}
@@ -237,46 +242,42 @@ const ProductsChart = () => {
                           if (developerId == "All" && data.name != "Others") {
                             setDeveloperId(data.name);
                             const dev = developers.find(
-                              (dev) => dev.name == data.name
+                              (dev) => dev.tenantId == data.name
                             );
                             setValue(
-                              "developerId",
+                              "tenantId",
                               `${dev?.tenantId} - ${dev?.name}`
                             );
                           }
                         }}
                       />
                     </div>
-                    <BarChart
-                      data={dailyData}
-                      total={total}
-                      developerId={developerId}
-                      date={date}
-                      onClick={(data: any) => {
-                        console.log(data);
-                        if (developerId == "All" && data.name != "Others") {
-                          setDeveloperId(data.name);
-                          const dev = developers.find(
-                            (dev) => dev.name == data.name
-                          );
-                          setValue(
-                            "developerId",
-                            `${dev?.tenantId} - ${dev?.name}`
-                          );
-                        }
-                      }}
-                    />
+                    {!(dailyData.length == 1 && dailyData[0].value == "0") && (
+                      <BarChart
+                        data={dailyData}
+                        total={total}
+                        developerId={developerId}
+                        date={date}
+                        onClick={(data: any) => {}}
+                      />
+                    )}
                   </div>
                 )}
               </div>
             )}
           </div>
         </>
-      ) : chartData == "loading" ? (
+      ) : chartData == "loading" || dailyData == "loading" ? (
         <MyCircularProgressIndicator />
-      ) : typeof chartData == "string" ? (
+      ) : typeof chartData == "string" || typeof dailyData == "string" ? (
         <ErrorPage
-          error={chartData}
+          error={
+            typeof chartData == "string"
+              ? chartData
+              : typeof dailyData == "string"
+              ? dailyData
+              : "An error happened, please try again"
+          }
           recoveryButtonOnClick={() => {
             fetchChartDataCallback();
           }}
@@ -285,13 +286,24 @@ const ProductsChart = () => {
       ) : chartData.length == 0 ? (
         <MyText>No data found!</MyText>
       ) : (
-        <DonutChart
-          data={chartData}
-          total={total}
-          developerId={developerId}
-          date={date}
-          onClick={(data) => {}}
-        />
+        <div className="flex flex-row">
+          <DonutChart
+            data={chartData}
+            total={total}
+            developerId={developerId}
+            date={date}
+            onClick={(data) => {}}
+          />
+          {!(dailyData.length == 1 && dailyData[0].value == "0") && (
+            <BarChart
+              data={dailyData}
+              total={total}
+              developerId={developerId}
+              date={date}
+              onClick={(data: any) => {}}
+            />
+          )}
+        </div>
       )}
     </div>
   );
