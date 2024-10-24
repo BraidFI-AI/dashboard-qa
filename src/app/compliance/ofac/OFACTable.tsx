@@ -12,6 +12,7 @@ import timestampToDate from "@/core/utils/timestampToDate";
 import {
   fetchOFACHits,
   setOFACTablePageNumber,
+  setOFACTablePageSize,
 } from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
@@ -113,9 +114,10 @@ const OFACHitsTable = () => {
             loading: pagination.loadingPage,
             paginationModel: {
               page: pagination.pageNumber,
-              pageSize: paginationPageSize,
+              pageSize: pagination.pageSize ?? paginationPageSize,
             },
-            setPaginationModel: (page: number) => {
+            setPaginationModel: (page: number, size: number) => {
+              dispatch(setOFACTablePageSize(size));
               dispatch(setOFACTablePageNumber(page));
               dispatch(fetchOFACHits(false));
             },

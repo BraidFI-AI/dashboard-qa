@@ -5,14 +5,18 @@ import MyTableToolbar from "./MyTableToolbar";
 import React from "react";
 import { useSelector } from "react-redux";
 // import { drawerWidth } from "../Drawer/MyDrawer";
-import { paginationPageSize } from "@/core/constants";
+import {
+  pageSizeOptions,
+  pageSizeOptionsType,
+  paginationPageSize,
+} from "@/core/constants";
 
 export type DataGridPaginationType = {
   rowCount: number;
   loading: boolean;
   paginationModel: {
     page: number;
-    pageSize: typeof paginationPageSize;
+    pageSize: typeof pageSizeOptionsType;
   };
   setPaginationModel: any;
 };
@@ -35,6 +39,7 @@ type MyTableProps = {
   hideDensityButton?: boolean;
   hideSearch?: boolean;
   filterModel?: any;
+  sizeOptions?: number[];
 };
 
 const MyTable: React.FC<MyTableProps> = ({
@@ -54,19 +59,20 @@ const MyTable: React.FC<MyTableProps> = ({
   hideDensityButton = false,
   hideSearch = false,
   filterModel,
+  sizeOptions = [100],
 }) => {
   return (
     <DataGridPro
       /// need to enable pagination for pro (disabled in pro by default)
       pagination
       /// for pagination
-      pageSizeOptions={[100]}
+      pageSizeOptions={sizeOptions}
       paginationMode={pagination ? "server" : "client"}
       paginationModel={pagination ? pagination.paginationModel : undefined}
       onPaginationModelChange={
         pagination
           ? (params) => {
-              pagination.setPaginationModel(params.page);
+              pagination.setPaginationModel(params.page, params.pageSize);
             }
           : undefined
       }
@@ -126,6 +132,7 @@ const MyTable: React.FC<MyTableProps> = ({
       }))}
       rows={rows}
       initialState={{
+        pagination: { paginationModel: { pageSize: sizeOptions[0] } },
         columns: {
           columnVisibilityModel: columnVisibilityModel,
         },

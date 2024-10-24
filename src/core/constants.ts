@@ -3,6 +3,7 @@ export type PaginationStateType = {
   rowCount: number;
   pageNumber: number;
   loadingPage: boolean;
+  pageSize?: number;
 };
 
 export const months = [
@@ -24,6 +25,8 @@ export const SCROLLBAR_STYLE =
   "overflow-y-auto scrollbar scrollbar-thin scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#ffffff]";
 
 export const paginationPageSize = 100;
+export const pageSizeOptionsType = 100 | 200 | 500;
+export const pageSizeOptions = [100, 200, 500];
 
 /// TIMEZONE
 export const APP_TIMEZONE = "America/Los_Angeles";
