@@ -216,7 +216,7 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
 
 export const fetchDailyProductBalanceData = createAsyncThunk(
   "product/fetchAllProductBalance",
-  async (developerId?: string | undefined) => {
+  async () => {
     try {
       const metricData: {
         created_at?: number | null;
@@ -227,77 +227,33 @@ export const fetchDailyProductBalanceData = createAsyncThunk(
         customer_id?: number | null;
         tenant_id?: string | null;
         value?: number | null;
-      }[] = await productRepo.fetchProductDailyBalanceFromMetrics();
+      }[] = await productRepo.fetchRootDailyBalanceFromMetrics(
+        momentToPSTString(moment().subtract(1, "month"), true),
+        momentToPSTString(moment(), false)
+      );
 
-      // make value positive in case its negative
-      metricData.forEach((data) => {
-        if (data.value != null && data.value < 0) {
-          data.value = Math.abs(data.value);
-        }
+      // sort by created_at in ascending order
+      metricData.sort((a, b) => {
+        return (a.created_at ?? 0) - (b.created_at ?? 0);
       });
 
-      if (developerId == undefined) {
-        metricData.sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
+      let chartData: {
+        label: string;
+        hover: string;
+        value: number;
+      }[] = [];
 
-        // convert metricData to array of objects with name as product_id, value as value, and hover as created_at
-        const chartData = metricData.map((data) => {
-          return {
-            name: data.label,
-            value: data.value,
-            hover: timestampToDate(data.created_at ?? 1, true),
-          };
+      metricData.forEach((d) => {
+        chartData.push({
+          label: d.tenant_id ?? "",
+          hover: timestampToDate(d.created_at ?? 0, true),
+          value: d.value ?? 0,
         });
+      });
 
-        // make chartData unique
-        const uniqueChartData: any = [];
-        const map = new Map();
-        for (const item of chartData) {
-          if (!map.has(item.name)) {
-            map.set(item.name, true);
-            uniqueChartData.push({
-              name: item.name,
-              value: item.value,
-              hover: item.hover,
-            });
-          }
-        }
+      console.log("root metric data:", chartData);
 
-        // make chartdata to only have the first 5 elements
-        return uniqueChartData.slice(0, 5);
-      } else {
-        // filter metricData by developerId on tenant_id
-        const filteredData = metricData.filter(
-          (data) => data.tenant_id == developerId
-        );
-
-        filteredData.sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
-
-        // convert metricData to array of objects with name as product_id, value as value, and hover as created_at
-        const chartData = filteredData.map((data) => {
-          return {
-            name: data.label,
-            value: data.value,
-            hover: timestampToDate(data.created_at ?? 1, true),
-          };
-        });
-
-        // make chartData unique
-        const uniqueChartData: any = [];
-        const map = new Map();
-        for (const item of chartData) {
-          if (!map.has(item.name)) {
-            map.set(item.name, true);
-            uniqueChartData.push({
-              name: item.name,
-              value: item.value,
-              hover: item.hover,
-            });
-          }
-        }
-
-        // make chartdata to only have the first 5 elements
-        return uniqueChartData.slice(0, 5);
-      }
+      return chartData;
     } catch (e: any) {
       return `Error fetching product daily balance ${generateErrorMessage(e)}`;
     }

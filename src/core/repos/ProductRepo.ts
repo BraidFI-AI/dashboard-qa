@@ -66,7 +66,10 @@ class ProductRepo {
     return response;
   }
 
-  public async fetchProductDailyBalanceFromMetrics(id?: number) {
+  public async fetchRootDailyBalanceFromMetrics(
+    startDate: string,
+    endDate: string
+  ) {
     const response = await this.apiClient.http<
       {
         created_at?: number | null;
@@ -78,7 +81,11 @@ class ProductRepo {
         tenant_id?: string | null;
         value?: number | null;
       }[]
-    >(Method.GET, `/metric/key/product.checkpoint.balance`);
+    >(
+      Method.GET,
+      `/metric/key/root.checkpoint.balance?start=${startDate}&end=${endDate}`
+    );
+
     return response;
   }
 

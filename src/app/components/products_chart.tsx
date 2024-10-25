@@ -16,7 +16,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE, months } from "@/core/constants";
 import moment from "moment";
-import BarChart from "@/core/components/charts/horizontal_bar_chart";
+import BarChart from "@/core/components/charts/bar_chart";
 
 const ProductsChart = () => {
   const dispatch = useAppDispatch();
@@ -72,11 +72,7 @@ const ProductsChart = () => {
     setChartData("loading");
     setDailyData("loading");
 
-    dispatch(
-      fetchDailyProductBalanceData(
-        developerId == "All" ? undefined : developerId
-      )
-    ).then((d: any) => {
+    dispatch(fetchDailyProductBalanceData()).then((d: any) => {
       setDailyData(d.payload);
     });
 

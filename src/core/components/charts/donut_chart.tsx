@@ -24,7 +24,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   useEffect(() => {
     const radius = 200;
 
-    const chartWidth = 450;
+    const chartWidth = 400;
 
     d3.select(svgRef.current).selectAll("*").remove();
 
