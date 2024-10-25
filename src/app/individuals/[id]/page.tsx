@@ -274,7 +274,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                 title="Status"
                 value={individual.status}
               ></ItemRow> */}
-                {individual.status === "BLOCKED" &&
+                {/* {individual.status === "BLOCKED" &&
                   (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) && (
                     <div className="w-fit pl-10">
                       <MyTextButton
@@ -304,7 +304,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         Unblock
                       </MyTextButton>
                     </div>
-                  )}
+                  )} */}
               </div>
               <MyEditButton editing={editing} setEditing={setEditing} />
             </div>

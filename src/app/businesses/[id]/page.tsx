@@ -330,7 +330,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   title="Status"
                   value={business.status ?? ""}
                 ></ItemRow> */}
-                {typeof ofac != "string" &&
+                {/* {typeof ofac != "string" &&
                   ofac.status != "REVIEW" &&
                   business.status === "BLOCKED" && (
                     <div className="w-fit pl-10">
@@ -361,7 +361,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                         Unblock
                       </MyTextButton>
                     </div>
-                  )}
+                  )} */}
               </div>
               {typeof ofac != "string" && ofac.status != "REVIEW" && (
                 <MyEditButton editing={editing} setEditing={setEditing} />
