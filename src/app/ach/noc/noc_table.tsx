@@ -61,6 +61,8 @@ const NocTable = () => {
         dispatch(fetchNoc({ refresh: true }));
       }}
     />
+  ) : noc.length == 0 ? (
+    <MyText>No data found</MyText>
   ) : (
     <>
       {selectedAch && modalOpen && (

@@ -155,6 +155,18 @@ export const fetchWireReturnFiles = createAsyncThunk(
   }
 );
 
+export const downloadWireReturnFile = createAsyncThunk(
+  "wire/downloadWireFile",
+  async (filename: string) => {
+    try {
+      await wireRepo.downloadWireReturnFile(filename);
+      return "downloaded";
+    } catch (e: any) {
+      return `Error downloading wire return file! ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const runReturnSettlement = createAsyncThunk(
   "wire/runReturnFile",
   async () => {
