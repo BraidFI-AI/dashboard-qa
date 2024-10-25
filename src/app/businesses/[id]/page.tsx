@@ -164,9 +164,9 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
           recoveryButtonTitle="Retry"
         />
       ) : (
-        <div className="w-[1320px] flex flex-row justify-between h-fit">
+        <div className="w-[1260px] flex flex-row justify-between h-fit">
           <div className="flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-fit px-3 pt-3">
-            <div className="w-[320px]">
+            <div className="w-[300px]">
               <ItemRow
                 title="Business Name"
                 value={business.name ?? ""}
@@ -199,7 +199,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 value={business.achCompanyId ?? ""}
               ></ItemRow>
             </div>
-            <div className="w-[320px]">
+            <div className="w-[300px]">
               <ItemRow
                 title="Doing Business as"
                 value={business.dba ?? ""}
@@ -250,7 +250,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               </MyBlueButton> */}
               </div>
             </div>
-            <div className="w-[320px]">
+            <div className="w-[300px]">
               <MyText size="md">Mailing Address</MyText>
               <div className="pb-2" />
               <ItemRow
