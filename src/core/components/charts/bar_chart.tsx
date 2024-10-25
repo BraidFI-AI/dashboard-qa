@@ -79,7 +79,7 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr("y", (d) => y(+d.value))
       .attr("width", x.bandwidth())
       .attr("height", (d) => height - y(+d.value))
-      .attr("fill", (d: any) => colorScale(d.hover) as string)
+      .attr("fill", (d: any) => "#4288B5")
       .append("title")
       .text((d) => `Value: ${toDollarFormat(d.value)}`);
   }, [data]);
