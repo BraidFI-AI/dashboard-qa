@@ -24,6 +24,7 @@ const initialState: AlertsState = {
     rowCount: 0,
     pageNumber: -1,
     loadingPage: false,
+    pageSize: paginationPageSize,
   },
 };
 
@@ -36,6 +37,9 @@ const AlertsSlice = createSlice({
     },
     setAlertsPaginationPageNumber(state, action) {
       state.pagination.pageNumber = action.payload;
+    },
+    setAlertsPaginationPageSize(state, action) {
+      state.pagination.pageSize = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -76,7 +80,7 @@ export const fetchAlerts = createAsyncThunk(
   async (refresh: boolean, thunkApi: any) => {
     try {
       const alerts = await alertsRepo.fetchAlerts(
-        paginationPageSize,
+        thunkApi.getState().alerts.pagination.pageSize ?? paginationPageSize,
         refresh == true
           ? 0
           : thunkApi.getState().alerts.pagination.pageNumber == -1
@@ -242,5 +246,8 @@ export const uploadAlertDocument = createAsyncThunk(
 );
 
 export default AlertsSlice;
-export const { setInitialAlertsState, setAlertsPaginationPageNumber } =
-  AlertsSlice.actions;
+export const {
+  setInitialAlertsState,
+  setAlertsPaginationPageNumber,
+  setAlertsPaginationPageSize,
+} = AlertsSlice.actions;

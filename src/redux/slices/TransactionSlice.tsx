@@ -37,6 +37,7 @@ const initialState: TransactionState = {
     rowCount: 0,
     pageNumber: -1,
     loadingPage: false,
+    pageSize: paginationPageSize,
   },
 };
 
@@ -55,6 +56,9 @@ const TransactionSlice = createSlice({
     },
     setPaginationPageNumber(state, action) {
       state.pagination.pageNumber = action.payload;
+    },
+    setPaginationPageSize(state, action) {
+      state.pagination.pageSize = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -161,7 +165,8 @@ export const fetchTransactions = createAsyncThunk(
 
       const transactions = await transactionRepo.fetchTransactions(
         data.criteria,
-        paginationPageSize,
+        thunkApi.getState().transaction.pagination.pageSize ??
+          paginationPageSize,
         thunkApi.getState().transaction.pagination.pageNumber == -1 || !same
           ? 0
           : thunkApi.getState().transaction.pagination.pageNumber
@@ -240,4 +245,5 @@ export const {
   setInitialTransactionState,
   setPaginationPageNumber,
   setLoadingTransactions,
+  setPaginationPageSize,
 } = TransactionSlice.actions;

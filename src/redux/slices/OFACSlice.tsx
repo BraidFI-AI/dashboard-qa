@@ -20,6 +20,7 @@ const initialState: OFACState = {
     rowCount: 0,
     pageNumber: -1,
     loadingPage: false,
+    pageSize: paginationPageSize,
   },
 };
 
@@ -32,6 +33,9 @@ const OFACSlice = createSlice({
     },
     setOFACTablePageNumber(state, action) {
       state.pagination.pageNumber = action.payload;
+    },
+    setOFACTablePageSize(state, action) {
+      state.pagination.pageSize = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -60,7 +64,7 @@ export const fetchOFACHits = createAsyncThunk(
   async (refresh: boolean, thunkApi: any) => {
     try {
       const ofacs = await ofacRepo.fetchOFACHits(
-        paginationPageSize,
+        thunkApi.getState().ofac.pagination.pageSize ?? 100,
         thunkApi.getState().ofac.pagination.pageNumber == -1 || refresh == true
           ? 0
           : thunkApi.getState().ofac.pagination.pageNumber
@@ -125,5 +129,8 @@ export const fetchOFACHitNew = createAsyncThunk(
 );
 
 export default OFACSlice;
-export const { setInitialOFACState, setOFACTablePageNumber } =
-  OFACSlice.actions;
+export const {
+  setInitialOFACState,
+  setOFACTablePageNumber,
+  setOFACTablePageSize,
+} = OFACSlice.actions;
