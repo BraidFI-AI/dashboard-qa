@@ -69,17 +69,6 @@ const BarChart: React.FC<BarChartProps> = ({
           )
       );
 
-    // Create tooltip
-    const tooltip = d3
-      .select("body")
-      .append("div")
-      .style("position", "absolute")
-      .style("background-color", "white")
-      .style("border", "1px solid #ccc")
-      .style("padding", "10px")
-      .style("display", "none")
-      .style("pointer-events", "none");
-
     svg
       .selectAll(".bar")
       .data(data)
@@ -91,19 +80,8 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr("width", x.bandwidth())
       .attr("height", (d) => height - y(+d.value))
       .attr("fill", (d: any) => colorScale(d.hover) as string)
-      .on("mouseover", (event, d) => {
-        tooltip
-          .style("display", "block")
-          .html(`Value: ${toDollarFormat(d.value)}`);
-      })
-      .on("mousemove", (event) => {
-        tooltip
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY - 20 + "px");
-      })
-      .on("mouseout", () => {
-        tooltip.style("display", "none");
-      });
+      .append("title")
+      .text((d) => `Value: ${toDollarFormat(d.value)}`);
   }, [data]);
 
   return (
