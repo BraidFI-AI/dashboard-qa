@@ -5,12 +5,17 @@ import React, { use, useEffect, useState } from "react";
 import MyLinkText from "@/core/components/Text/LinkText";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import moment from "moment";
-import { PaginationStateType, paginationPageSize } from "@/core/constants";
+import {
+  PaginationStateType,
+  pageSizeOptions,
+  paginationPageSize,
+} from "@/core/constants";
 import { useAppDispatch } from "@/redux/store/store";
 import { useSelector } from "react-redux";
 import {
   fetchTransactions,
   setPaginationPageNumber,
+  setPaginationPageSize,
 } from "@/redux/slices/TransactionSlice";
 import { useRouter } from "next/navigation";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
@@ -158,14 +163,16 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
           </MyModal>
         )}
       <MyTable
+        sizeOptions={pageSizeOptions}
         pagination={{
           rowCount: pagination.rowCount,
           loading: pagination.loadingPage,
           paginationModel: {
             page: pagination.pageNumber,
-            pageSize: paginationPageSize,
+            pageSize: pagination.pageSize ?? paginationPageSize,
           },
-          setPaginationModel: (page: number) => {
+          setPaginationModel: (page: number, size: number) => {
+            dispatch(setPaginationPageSize(size));
             dispatch(setPaginationPageNumber(page));
             dispatch(
               fetchTransactions({

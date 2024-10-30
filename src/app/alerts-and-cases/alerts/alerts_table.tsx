@@ -6,12 +6,17 @@ import LabelBox from "@/core/components/label_box";
 import MyTable from "@/core/components/Table/MyTable";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
-import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import {
+  pageSizeOptions,
+  paginationPageSize,
+  PaginationStateType,
+} from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import timestampToDate from "@/core/utils/timestampToDate";
 import {
   fetchAlerts,
   setAlertsPaginationPageNumber,
+  setAlertsPaginationPageSize,
 } from "@/redux/slices/alerts_slice";
 import { fetchLimit } from "@/redux/slices/RulesAndLimitsSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -98,6 +103,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
           hideFilterButton={hideHeaders}
           hideDensityButton={hideHeaders}
           exp={!hideHeaders}
+          sizeOptions={pageSizeOptions}
           pagination={
             isPaginated
               ? {
@@ -105,9 +111,10 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                   loading: pagination.loadingPage,
                   paginationModel: {
                     page: pagination.pageNumber,
-                    pageSize: paginationPageSize,
+                    pageSize: pagination.pageSize ?? paginationPageSize,
                   },
-                  setPaginationModel: (page: number) => {
+                  setPaginationModel: (page: number, size: number) => {
+                    dispatch(setAlertsPaginationPageSize(size));
                     dispatch(setAlertsPaginationPageNumber(page));
                     dispatch(fetchAlerts(false));
                   },
@@ -150,7 +157,6 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                     )}`;
               },
               valueGetter: (params: any) => {
-                console.log("oiiiii:", params);
                 return params.row?.alertTimelines == null
                   ? ""
                   : `${timestampToDate(

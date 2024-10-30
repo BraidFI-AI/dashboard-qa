@@ -31,6 +31,16 @@ class WireRepo {
     return response;
   }
 
+  public async downloadWireReturnFile(filename: string) {
+    try {
+      const response = await this.apiClient.downloadWireReturnFile(filename);
+
+      return response;
+    } catch (e: any) {
+      throw e;
+    }
+  }
+
   public async fetchWireSettlementHistory(startDate: string, endDate: string) {
     const response = await this.apiClient.http<any[]>(
       Method.GET,

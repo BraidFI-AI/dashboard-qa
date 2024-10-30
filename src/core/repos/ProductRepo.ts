@@ -66,6 +66,29 @@ class ProductRepo {
     return response;
   }
 
+  public async fetchRootDailyBalanceFromMetrics(
+    startDate: string,
+    endDate: string
+  ) {
+    const response = await this.apiClient.http<
+      {
+        created_at?: number | null;
+        id?: number | null;
+        product_id?: number | null;
+        label?: string | null;
+        program_id?: number | null;
+        customer_id?: number | null;
+        tenant_id?: string | null;
+        value?: number | null;
+      }[]
+    >(
+      Method.GET,
+      `/metric/key/root.checkpoint.balance?start=${startDate}&end=${endDate}`
+    );
+
+    return response;
+  }
+
   public async fetchOnboardingConfig(id: number) {
     const response = await this.apiClient.http<OnboardingConfig[]>(
       Method.GET,

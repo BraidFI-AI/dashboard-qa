@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import {
-  DataGrid,
-  GridCellParams,
-  GridEventListener,
-  GridToolbar,
-  MuiEvent,
-} from "@mui/x-data-grid";
+import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Account } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";

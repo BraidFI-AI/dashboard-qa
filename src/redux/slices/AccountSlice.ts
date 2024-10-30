@@ -81,6 +81,21 @@ const AccountSlice = createSlice({
 
       state.accontsPagination.loadingPage = false;
     });
+    builder.addCase(searchAccount.pending, (state, action) => {
+      state.accounts = "loading";
+      state.accontsPagination.loadingPage = true;
+    });
+    builder.addCase(searchAccount.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.accounts = action.payload;
+      } else {
+        state.accounts = action.payload.accounts;
+        state.accontsPagination.rowCount = action.payload.rowCount;
+        state.accontsPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.accontsPagination.loadingPage = false;
+    });
     // builder.addCase(fetchAccountTransactionsData.pending, (state, action) => {
     //   state.accountTransactions = "loading";
     // });
@@ -190,6 +205,23 @@ export const fetchAccounts = createAsyncThunk(
       };
     } catch (e: any) {
       return `Error fetching accounts ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const searchAccount = createAsyncThunk(
+  "account/searchAccount",
+  async (accountNumber: string, thunkApi: any) => {
+    try {
+      const account = await accountRepo.fetchAccount(accountNumber);
+      console.log("account", account);
+      return {
+        accounts: [account],
+        rowCount: 1,
+        pageNumber: 0,
+      };
+    } catch (e: any) {
+      return `Error searching account ${generateErrorMessage(e)}`;
     }
   }
 );

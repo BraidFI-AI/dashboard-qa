@@ -5,19 +5,13 @@ import { useAppDispatch } from "@/redux/store/store";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { WireReturnFile } from "@/core/api/ApiTypes";
-import CircularProgress from "@mui/material/CircularProgress";
-import moment, { Moment } from "moment";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import Tooltip from "@mui/material/Tooltip";
 import MyTable from "@/core/components/Table/MyTable";
-import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import MyText from "@/core/components/Text/Text";
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import { enqueueSnackbar } from "notistack";
-import toDollarFormat from "@/core/utils/toDollarFormat";
-import MyLinkText from "@/core/components/Text/LinkText";
-import ItemRow from "@/core/components/Text/ItemRow";
+import { downloadWireReturnFile } from "@/redux/slices/wire_settlement_slice";
 import timestampToDate from "@/core/utils/timestampToDate";
 
 const WireReturnFilesTable = () => {
@@ -107,6 +101,36 @@ const WireReturnFilesTable = () => {
                   : `${timestampToDate(params.value, false, true)}`;
               },
               valueGetter: (params: any) => params.row.updatedAt,
+            },
+            {
+              field: "file",
+              headerName: "FedWire Return File",
+              flex: 1,
+              minWidth: 82,
+              renderCell: (params: any) => (
+                <Tooltip title="Download Wire Return File" placement="right">
+                  <div className="flex justify-center">
+                    <MyBlueButton
+                      onClick={() => {
+                        if (params != null) {
+                          dispatch(
+                            downloadWireReturnFile(params.row.filename)
+                          ).then((d: any) => {
+                            if (!d.payload || d.payload != "downloaded") {
+                              enqueueSnackbar(d.payload, {
+                                variant: "error",
+                                persist: true,
+                              });
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      <CloudDownloadOutlinedIcon />
+                    </MyBlueButton>
+                  </div>
+                </Tooltip>
+              ),
             },
           ]}
           rows={wireReturnFiles}

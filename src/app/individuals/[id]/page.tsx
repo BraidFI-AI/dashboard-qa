@@ -1,6 +1,6 @@
 "use client";
 
-import { Individual, OFAC } from "@/core/api/ApiTypes";
+import { Individual, OFAC, Product } from "@/core/api/ApiTypes";
 import {
   approveIndividual,
   fetchIndividual,
@@ -27,6 +27,7 @@ import MyEditableTextField from "@/core/components/TextField/MyEditableTextField
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import MyEditButton from "@/core/components/Button/MyEditButton";
+import { fetchProduct } from "@/redux/slices/ProductSlice";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
   const userType = useSelector((state: any) => state.app.userType);
@@ -39,6 +40,8 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [individual, setIndividual] = useState<Individual | null>(null);
+
+  const [product, setProduct] = useState<Product | null>(null);
 
   const [refresh, setRefresh] = useState(true);
   const [unblocking, setUnblocking] = useState(false);
@@ -108,6 +111,10 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
           dispatch(
             setTitle(data.payload.firstName + " " + data.payload.lastName)
           );
+
+          dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
+            setProduct(prd.payload);
+          });
 
           dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
             setOfac(o.payload);
@@ -191,6 +198,19 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div className="h-full w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
+            <ItemRow
+              title="Product Name"
+              value={{
+                value:
+                  product == null
+                    ? individual.productId == null
+                      ? ""
+                      : individual.productId?.toString()
+                    : product.productName?.toString(),
+
+                link: `/configuration/products/${individual.productId}`,
+              }}
+            />
             {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
               <div className="flex flex-row justify-between">
                 <div>
@@ -254,7 +274,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                 title="Status"
                 value={individual.status}
               ></ItemRow> */}
-                {individual.status === "BLOCKED" &&
+                {/* {individual.status === "BLOCKED" &&
                   (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) && (
                     <div className="w-fit pl-10">
                       <MyTextButton
@@ -284,7 +304,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         Unblock
                       </MyTextButton>
                     </div>
-                  )}
+                  )} */}
               </div>
               <MyEditButton editing={editing} setEditing={setEditing} />
             </div>
@@ -384,6 +404,12 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               if (data.payload) {
                 setIndividual(data.payload);
                 dispatch(setTitle(data.payload.name));
+
+                dispatch(fetchProduct(data.payload.productId)).then(
+                  (prd: any) => {
+                    setProduct(prd.payload);
+                  }
+                );
 
                 dispatch(fetchOFACHitNew(data.payload.ofacId)).then(
                   (o: any) => {

@@ -16,6 +16,7 @@ import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
 import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
+import timestampToDate from "@/core/utils/timestampToDate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
@@ -213,6 +214,52 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
   }
 );
 
+export const fetchDailyProductBalanceData = createAsyncThunk(
+  "product/fetchAllProductBalance",
+  async () => {
+    try {
+      const metricData: {
+        created_at?: number | null;
+        id?: number | null;
+        product_id?: number | null;
+        label?: string | null;
+        program_id?: number | null;
+        customer_id?: number | null;
+        tenant_id?: string | null;
+        value?: number | null;
+      }[] = await productRepo.fetchRootDailyBalanceFromMetrics(
+        momentToPSTString(moment().subtract(1, "month"), true),
+        momentToPSTString(moment(), false)
+      );
+
+      // sort by created_at in ascending order
+      metricData.sort((a, b) => {
+        return (a.created_at ?? 0) - (b.created_at ?? 0);
+      });
+
+      let chartData: {
+        label: string;
+        hover: string;
+        value: number;
+      }[] = [];
+
+      metricData.forEach((d) => {
+        chartData.push({
+          label: d.tenant_id ?? "",
+          hover: timestampToDate(d.created_at ?? 0, true),
+          value: d.value ?? 0,
+        });
+      });
+
+      console.log("root metric data:", chartData);
+
+      return chartData;
+    } catch (e: any) {
+      return `Error fetching product daily balance ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchAllProductBalance = createAsyncThunk(
   "product/fetchAllProductBalance",
   async (developerId?: string | undefined) => {
@@ -227,6 +274,13 @@ export const fetchAllProductBalance = createAsyncThunk(
         tenant_id?: string | null;
         value?: number | null;
       }[] = await productRepo.fetchProductBalanceFromMetrics();
+
+      // make value positive in case its negative
+      data.forEach((d) => {
+        if (d.value != null && d.value < 0) {
+          d.value = Math.abs(d.value);
+        }
+      });
 
       let chartData = [];
 
