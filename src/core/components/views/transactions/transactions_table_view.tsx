@@ -52,6 +52,9 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
   const [selectedTransaction, setSelectedTransaction] = useState<any | null>(
     null
   );
+  const [fullTransactionDetail, setFullTransactionDetail] = useState<
+    any | null
+  >(null);
   const [selectedTransactionType, setSelectedTransactionType] = useState<
     string | null
   >(null);
@@ -136,7 +139,17 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         }
         return renderObject(value, fullKey);
       }
-      return (
+      return fullKey == "linkedPaymentId" ? (
+        <>
+          <MyText size="table">Linked Payment ID</MyText>
+          <MyLinkText
+            link={`/transactions/transactionHistory?paymentId=${value}`}
+          >
+            {value as any}
+          </MyLinkText>
+          <div className="pb-4" />
+        </>
+      ) : (
         <ItemRow
           title={formatTitle(fullKey.replaceAll("_", " "))}
           value={
@@ -153,6 +166,13 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
 
   return (
     <>
+      {fullTransactionDetail != null && modalOpen && (
+        <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
+          <MyText size="lg">Transaction Details</MyText>
+          <div className="pb-3" />
+          {renderObject(fullTransactionDetail)}
+        </MyModal>
+      )}
       {selectedTransaction != null &&
         selectedTransactionType != null &&
         modalOpen && (
@@ -191,7 +211,10 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             : undefined
         }
         customId={(row: Transaction) => row.customUUID}
-        handleRowClick={() => {}}
+        handleRowClick={(params: any) => {
+          setFullTransactionDetail(params.row);
+          setModalOpen(true);
+        }}
         handleCellClick={(
           params: GridCellParams,
           event: MuiEvent<React.MouseEvent>
