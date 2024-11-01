@@ -42,7 +42,7 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   customActionOnCompletion,
   ofacId,
 }) => {
-  console.log("asdasdssadsa", ofacId);
+  console.log("ofacId", ofacId);
 
   const dispatch = useAppDispatch();
 
@@ -72,13 +72,9 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
     dispatch(fetchTransactionByPaymentId(paymentId)).then((result: any) => {
       setTransaction(result.payload);
       if (ofacId == null || ofacId == "") {
-        if (result.payload.ach != null) {
-          setSOfacId(result.payload.ach?.ofacId);
-          setDuplicatePaymentId(result.payload.ach?.duplicateOfPaymentId);
-        }
-        if (result.payload.wire) {
-          setSOfacId(result.payload.wire?.ofacId);
-          setDuplicatePaymentId(result.payload.wire?.duplicateOfPaymentId);
+        if (result.payload != null) {
+          setSOfacId(result.payload?.ofacId);
+          setDuplicatePaymentId(result.payload?.duplicateOfPaymentId);
         }
       }
     });
