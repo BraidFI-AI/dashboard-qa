@@ -191,42 +191,41 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                 )}
               </div>
               <div className="w-[250px]">
-                {transaction.ach?.customerType != null &&
-                  transaction.ach.customerName != null &&
-                  transaction.ach.customerId != null && (
+                {transaction?.customerType != null &&
+                  transaction.customerName != null &&
+                  transaction.customerId != null && (
                     <ItemRow
                       boxValues={true}
                       title="Customer"
                       value={{
                         link:
-                          transaction.ach?.customerType == "BUSINESS"
-                            ? `/businesses/${transaction.ach?.customerId}`
-                            : `/individuals/${transaction.ach?.customerId}`,
-                        value: transaction.ach?.customerName ?? "",
+                          transaction?.customerType == "BUSINESS"
+                            ? `/businesses/${transaction?.customerId}`
+                            : `/individuals/${transaction?.customerId}`,
+                        value: transaction?.customerName ?? "",
                       }}
                     />
                   )}{" "}
-                {transaction.ach?.counterpartyAssociatedEntityType != null &&
-                  transaction.ach.counterpartyAssociatedEntityId != null &&
-                  transaction.ach.counterpartyName != null &&
-                  transaction.ach.counterpartyId != null && (
+                {transaction?.counterpartyAssociatedEntityType != null &&
+                  transaction.counterpartyAssociatedEntityId != null &&
+                  transaction.counterpartyName != null &&
+                  transaction.counterpartyId != null && (
                     <ItemRow
                       boxValues={true}
                       title="Counterparty"
                       value={{
                         link:
-                          transaction.ach?.counterpartyAssociatedEntityType ==
+                          transaction?.counterpartyAssociatedEntityType ==
                           "BUSINESS"
-                            ? `/businesses/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                            : transaction.ach
-                                ?.counterpartyAssociatedEntityType ==
+                            ? `/businesses/${transaction?.counterpartyAssociatedEntityId}/counterparties`
+                            : transaction?.counterpartyAssociatedEntityType ==
                               "INDIVIDUAL"
-                            ? `/individuals/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                            : transaction.ach
-                                ?.counterpartyAssociatedEntityType == "PRODUCT"
-                            ? `/configuration/products/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                            : `/accounts/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`,
-                        value: transaction.ach?.counterpartyName ?? "",
+                            ? `/individuals/${transaction?.counterpartyAssociatedEntityId}/counterparties`
+                            : transaction?.counterpartyAssociatedEntityType ==
+                              "PRODUCT"
+                            ? `/configuration/products/${transaction?.counterpartyAssociatedEntityId}/counterparties`
+                            : `/accounts/${transaction?.counterpartyAssociatedEntityId}/counterparties`,
+                        value: transaction?.counterpartyName ?? "",
                       }}
                     />
                   )}

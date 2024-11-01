@@ -227,7 +227,7 @@ const Transactions = ({ params }: { params: any }) => {
               ),
             },
             {
-              field: "ach.counterparty.id",
+              field: "counterpartyId",
               headerName: "Counterparty",
               width: 160,
               renderCell: (params: any) => (

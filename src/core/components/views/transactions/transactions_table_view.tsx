@@ -18,8 +18,6 @@ import {
   setPaginationPageSize,
 } from "@/redux/slices/TransactionSlice";
 import { useRouter } from "next/navigation";
-import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
-import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import MyText from "../../Text/Text";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MyModal from "../../my_modal";
@@ -60,37 +58,28 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
     setModalOpen(false);
   };
 
-  const navigateToEntity = async (ach: any) => {
-    if (ach == null) {
+  const navigateToEntity = async (row: any) => {
+    if (
+      row == null ||
+      row.counterpartyId == null ||
+      row.counterpartyAssociatedEntityType == null ||
+      row.counterpartyAssociatedEntityId == null
+    ) {
       return;
     }
 
     const association =
-      ach.counterpartyAssociatedEntityType == "BUSINESS"
+      row.counterpartyAssociatedEntityType == "BUSINESS"
         ? "businesses"
-        : ach.counterpartyAssociatedEntityType == "INVIDIDUAL"
+        : row.counterpartyAssociatedEntityType == "INVIDIDUAL"
         ? "individuals"
-        : ach.counterpartyAssociatedEntityType == "ACCOUNT"
+        : row.counterpartyAssociatedEntityType == "ACCOUNT"
         ? "accounts"
         : "configuration/products";
 
-    const link = `/${association}/${ach.counterpartyAssociatedEntityId}/counterparties/${ach.counterpartyId}`;
+    const link = `/${association}/${row.counterpartyAssociatedEntityId}/counterparties/${row.counterpartyId}`;
 
     router.push(link);
-
-    // if (id == null) {
-    //   return;
-    // }
-    // setNavigating(true);
-    // dispatch(fetchCounterParty(id)).then((cp: any) => {
-    //   if (cp.payload) {
-    //     const link = linkToCounterparty(cp.payload);
-    //     if (link) {
-    //       router.push(link);
-    //     }
-    //   }
-    //   setNavigating(false);
-    // });
   };
 
   const showTransactionDetails = (
@@ -196,11 +185,11 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
           params: GridCellParams,
           event: MuiEvent<React.MouseEvent>
         ) => {
-          if (params.field == "ach.counterparty.id" && params.field != null) {
-            navigateToEntity(params.row.ach);
+          if (params.field == "counterpartyId" && params.field != null) {
+            navigateToEntity(params.row);
             event.stopPropagation();
           }
-          if (params.field == "ach.customerId") {
+          if (params.field == "customerId") {
             event.stopPropagation();
           }
         }}
@@ -255,7 +244,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             ),
           },
           {
-            field: "ach.customerId",
+            field: "customerId",
             headerName: "Customer",
             flex: 1,
             minWidth: 200,
@@ -275,16 +264,16 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             valueGetter: (params: any) => params.row?.customerName,
           },
           {
-            field: "ach.counterparty.id",
+            field: "counterpartyId",
             headerName: "Counterparty",
             flex: 1,
             minWidth: 200,
             renderCell: (params: any) => (
               <MyText primary={true} underline={true} size="table">
-                {params.row?.ach?.counterpartyName}
+                {params.row?.counterpartyName}
               </MyText>
             ),
-            valueGetter: (params: any) => params.row?.ach?.counterpartyName,
+            valueGetter: (params: any) => params.row?.counterpartyName,
           },
           {
             field: "description",
