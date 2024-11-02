@@ -192,6 +192,18 @@ class ApiClient {
       console.error(error);
     }
   }
+
+  public async uploadFilePost(endpoint: string, fileData: any) {
+    const response = await this.axiosInstance.post(
+      endpoint,
+      { file: fileData },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+  }
 }
 
 export default ApiClient;
