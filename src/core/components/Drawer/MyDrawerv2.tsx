@@ -62,6 +62,7 @@ import DrawerHeaderButtons from "./drawer_header_buttons";
 import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
+import ClientLogo from "../client_logo";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -368,12 +369,7 @@ export default function PersistentDrawerLeft(props: any) {
                   open ? handleDrawerClose() : handleDrawerOpen();
                 }}
               >
-                <Image
-                  alt="Braidfi"
-                  src="/images/braid_logo_black.png"
-                  height={45}
-                  width={107}
-                ></Image>
+                <ClientLogo />
               </div>
               {open && (
                 <IconButton onClick={handleDrawerClose}>
