@@ -42,7 +42,7 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   customActionOnCompletion,
   ofacId,
 }) => {
-  console.log("asdasdssadsa", ofacId);
+  console.log("ofacId", ofacId);
 
   const dispatch = useAppDispatch();
 
@@ -72,13 +72,9 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
     dispatch(fetchTransactionByPaymentId(paymentId)).then((result: any) => {
       setTransaction(result.payload);
       if (ofacId == null || ofacId == "") {
-        if (result.payload.ach != null) {
-          setSOfacId(result.payload.ach?.ofacId);
-          setDuplicatePaymentId(result.payload.ach?.duplicateOfPaymentId);
-        }
-        if (result.payload.wire) {
-          setSOfacId(result.payload.wire?.ofacId);
-          setDuplicatePaymentId(result.payload.wire?.duplicateOfPaymentId);
+        if (result.payload != null) {
+          setSOfacId(result.payload?.ofacId);
+          setDuplicatePaymentId(result.payload?.duplicateOfPaymentId);
         }
       }
     });
@@ -96,7 +92,7 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
   return (
     <MyModal
       width="800px"
-      height={sOfacId != null || duplicatePaymentId != null ? "400px" : "630px"}
+      height={duplicatePaymentId != null ? "400px" : "630px"}
       modalOpen={modalOpen}
       handleModalClose={handleModalClose}
     >
@@ -191,42 +187,41 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                 )}
               </div>
               <div className="w-[250px]">
-                {transaction.ach?.customerType != null &&
-                  transaction.ach.customerName != null &&
-                  transaction.ach.customerId != null && (
+                {transaction?.customerType != null &&
+                  transaction.customerName != null &&
+                  transaction.customerId != null && (
                     <ItemRow
                       boxValues={true}
                       title="Customer"
                       value={{
                         link:
-                          transaction.ach?.customerType == "BUSINESS"
-                            ? `/businesses/${transaction.ach?.customerId}`
-                            : `/individuals/${transaction.ach?.customerId}`,
-                        value: transaction.ach?.customerName ?? "",
+                          transaction?.customerType == "BUSINESS"
+                            ? `/businesses/${transaction?.customerId}`
+                            : `/individuals/${transaction?.customerId}`,
+                        value: transaction?.customerName ?? "",
                       }}
                     />
                   )}{" "}
-                {transaction.ach?.counterpartyAssociatedEntityType != null &&
-                  transaction.ach.counterpartyAssociatedEntityId != null &&
-                  transaction.ach.counterpartyName != null &&
-                  transaction.ach.counterpartyId != null && (
+                {transaction?.counterpartyAssociatedEntityType != null &&
+                  transaction.counterpartyAssociatedEntityId != null &&
+                  transaction.counterpartyName != null &&
+                  transaction.counterpartyId != null && (
                     <ItemRow
                       boxValues={true}
                       title="Counterparty"
                       value={{
                         link:
-                          transaction.ach?.counterpartyAssociatedEntityType ==
+                          transaction?.counterpartyAssociatedEntityType ==
                           "BUSINESS"
-                            ? `/businesses/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                            : transaction.ach
-                                ?.counterpartyAssociatedEntityType ==
+                            ? `/businesses/${transaction?.counterpartyAssociatedEntityId}/counterparties`
+                            : transaction?.counterpartyAssociatedEntityType ==
                               "INDIVIDUAL"
-                            ? `/individuals/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                            : transaction.ach
-                                ?.counterpartyAssociatedEntityType == "PRODUCT"
-                            ? `/configuration/products/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`
-                            : `/accounts/${transaction.ach?.counterpartyAssociatedEntityId}/counterparties`,
-                        value: transaction.ach?.counterpartyName ?? "",
+                            ? `/individuals/${transaction?.counterpartyAssociatedEntityId}/counterparties`
+                            : transaction?.counterpartyAssociatedEntityType ==
+                              "PRODUCT"
+                            ? `/configuration/products/${transaction?.counterpartyAssociatedEntityId}/counterparties`
+                            : `/accounts/${transaction?.counterpartyAssociatedEntityId}/counterparties`,
+                        value: transaction?.counterpartyName ?? "",
                       }}
                     />
                   )}
@@ -234,93 +229,92 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
             </div>
           </>
         )}
-        {(duplicatePaymentId == null || duplicatePaymentId == "") &&
-          (sOfacId == null || sOfacId == "") && (
-            <>
-              <MyText size="md">Breached Limits</MyText>
-              <div className="h-1" />
-              {limits === "loading" ? (
-                <MyCircularProgressIndicator />
-              ) : typeof limits === "string" ? (
-                <ErrorPage
-                  error={limits}
-                  recoveryButtonOnClick={() => {
-                    if (!paymentId) {
-                      setLimits("No payment ID found");
-                    } else {
-                      setLimits("loading");
-                      dispatch(fetchBreachedLimits(paymentId ?? "")).then(
-                        (result: any) => {
-                          setLimits(result.payload);
-                        }
-                      );
-                    }
-                  }}
-                  recoveryButtonTitle="Retry"
-                />
-              ) : (
-                <div>
-                  <div className="h-[270px]">
-                    <MyTable
-                      hideColumnsButton
-                      hideDensityButton
-                      hideFilterButton
-                      hideSearch
-                      handleRowClick={handleRowClick}
-                      columns={[
-                        { field: "id", headerName: "ID", width: 80 },
-                        {
-                          field: "limitName",
-                          headerName: "Limit Name",
-                          flex: 1,
-                          minWidth: 120,
+        {(duplicatePaymentId == null || duplicatePaymentId == "") && (
+          <>
+            <MyText size="md">Breached Limits</MyText>
+            <div className="h-1" />
+            {limits === "loading" ? (
+              <MyCircularProgressIndicator />
+            ) : typeof limits === "string" ? (
+              <ErrorPage
+                error={limits}
+                recoveryButtonOnClick={() => {
+                  if (!paymentId) {
+                    setLimits("No payment ID found");
+                  } else {
+                    setLimits("loading");
+                    dispatch(fetchBreachedLimits(paymentId ?? "")).then(
+                      (result: any) => {
+                        setLimits(result.payload);
+                      }
+                    );
+                  }
+                }}
+                recoveryButtonTitle="Retry"
+              />
+            ) : (
+              <div>
+                <div className="h-[270px]">
+                  <MyTable
+                    hideColumnsButton
+                    hideDensityButton
+                    hideFilterButton
+                    hideSearch
+                    handleRowClick={handleRowClick}
+                    columns={[
+                      { field: "id", headerName: "ID", width: 80 },
+                      {
+                        field: "limitName",
+                        headerName: "Limit Name",
+                        flex: 1,
+                        minWidth: 120,
+                      },
+                      {
+                        field: "transactionType",
+                        headerName: "Transaction Type",
+                        flex: 1,
+                        minWidth: 180,
+                      },
+                      {
+                        field: "limitType",
+                        headerName: "Limit Type",
+                        flex: 1,
+                        minWidth: 180,
+                      },
+                      {
+                        field: "status",
+                        headerName: "Status",
+                        flex: 1,
+                        minWidth: 120,
+                      },
+                      {
+                        field: "amount",
+                        headerName: "Amount",
+                        flex: 1,
+                        minWidth: 120,
+                        renderCell: (params: any) => (
+                          <div>{toDollarFormat(params.row.amount)}</div>
+                        ),
+                        valueGetter: (params: any) => params.row.amount,
+                      },
+                      {
+                        field: "createdAt",
+                        headerName: "Created At",
+                        flex: 1,
+                        minWidth: 120,
+                        valueFormatter: (params: any) => {
+                          return `${timestampToDate(params.value)}`;
                         },
-                        {
-                          field: "transactionType",
-                          headerName: "Transaction Type",
-                          flex: 1,
-                          minWidth: 180,
-                        },
-                        {
-                          field: "limitType",
-                          headerName: "Limit Type",
-                          flex: 1,
-                          minWidth: 180,
-                        },
-                        {
-                          field: "status",
-                          headerName: "Status",
-                          flex: 1,
-                          minWidth: 120,
-                        },
-                        {
-                          field: "amount",
-                          headerName: "Amount",
-                          flex: 1,
-                          minWidth: 120,
-                          renderCell: (params: any) => (
-                            <div>{toDollarFormat(params.row.amount)}</div>
-                          ),
-                          valueGetter: (params: any) => params.row.amount,
-                        },
-                        {
-                          field: "createdAt",
-                          headerName: "Created At",
-                          flex: 1,
-                          minWidth: 120,
-                          valueFormatter: (params: any) => {
-                            return `${timestampToDate(params.value)}`;
-                          },
-                          valueGetter: (params: any) => params.row.createdAt,
-                        },
-                      ]}
-                      rows={limits}
-                    />
-                  </div>
+                        valueGetter: (params: any) => params.row.createdAt,
+                      },
+                    ]}
+                    rows={limits}
+                  />
                 </div>
-              )}
-            </>
-          )}
+              </div>
+            )}
+          </>
+        )}
         <div className="h-6" />
         <div className="flex flex-row justify-end">
           <div className="w-fit">

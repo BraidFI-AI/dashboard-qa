@@ -51,6 +51,7 @@ import ConfigurationIcon from "./../../../../public/icons/configuration";
 import SettingsIcon from "./../../../../public/icons/settings";
 import { usePathname } from "next/navigation";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import {
   ADMIN_OPS_ROLE,
   ADMIN_ROLE,
@@ -505,6 +506,16 @@ export default function PersistentDrawerLeft(props: any) {
                         <AdminPanelSettingsOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
                       ),
                       path: "/compliance/ofac",
+                    },
+                    {
+                      name: "314a",
+                      icon: (
+                        <UploadFileOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                      ),
+                      iconFocused: (
+                        <UploadFileOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                      ),
+                      path: "/compliance/314a",
                     },
                   ]}
                 />

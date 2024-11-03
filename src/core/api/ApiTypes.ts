@@ -696,6 +696,10 @@ export interface Transaction {
   marketValue: TransactionMarketValue;
   operationType: string | null;
   transactionType: string;
+  counterpartyId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyAssociatedEntityId?: string | null;
+  counterpartyAssociatedEntityType?: string | null;
   reference: string;
   transactionCode: string | null;
   senderNote: string;
