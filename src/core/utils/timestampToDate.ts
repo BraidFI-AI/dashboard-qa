@@ -1,5 +1,21 @@
 import moment from "moment";
 
+export function formatUnixTimestamp(
+  timestamp: any,
+  ms: boolean = false
+): string {
+  if (!ms) {
+    timestamp = timestamp * 1000;
+  }
+  const date = new Date(timestamp);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 export default function timestampToDate(
   date: number | null,
   ms: boolean = false,

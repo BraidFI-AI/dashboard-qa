@@ -20,6 +20,7 @@ const BarChart: React.FC<BarChartProps> = ({
   date,
 }) => {
   const svgRef = React.useRef(null);
+  const tooltipRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const margin = { top: 20, right: 20, bottom: 50, left: 80 };
@@ -52,7 +53,7 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x))
       .selectAll("text")
-      .attr("transform", "rotate(-45)")
+      .attr("transform", "rotate(-40) translate(-7, 0)")
       .style("text-anchor", "end");
 
     svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y).ticks(5));
@@ -69,6 +70,8 @@ const BarChart: React.FC<BarChartProps> = ({
           )
       );
 
+    const tooltip = d3.select(tooltipRef.current);
+
     svg
       .selectAll(".bar")
       .data(data)
@@ -80,13 +83,36 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr("width", x.bandwidth())
       .attr("height", (d) => height - y(+d.value))
       .attr("fill", (d: any) => "#4288B5")
-      .append("title")
-      .text((d) => `Value: ${toDollarFormat(d.value)}`);
+      .on("mouseover", (event, d) => {
+        tooltip
+          .style("opacity", 1)
+          .html(`Value: ${toDollarFormat(d.value)}`)
+          .style("left", `${event.pageX + 5}px`)
+          .style("top", `${event.pageY - 28}px`);
+      })
+      .on("mouseout", () => {
+        tooltip.style("opacity", 0);
+      });
   }, [data]);
 
   return (
     <>
       <svg ref={svgRef} />
+      <div
+        ref={tooltipRef}
+        style={{
+          position: "absolute",
+          textAlign: "center",
+          height: "20px",
+          padding: "4px",
+          font: "12px sans-serif",
+          background: "#ccc",
+          border: "0px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          opacity: 0,
+        }}
+      />
     </>
   );
 };
