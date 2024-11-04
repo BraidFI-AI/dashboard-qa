@@ -50,13 +50,6 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
   const [selectedTransaction, setSelectedTransaction] = useState<any | null>(
     null
   );
-  const [fullTransactionDetail, setFullTransactionDetail] = useState<
-    any | null
-  >(null);
-  const [selectedTransactionType, setSelectedTransactionType] = useState<
-    string | null
-  >(null);
-
   const handleModalClose = () => {
     setModalOpen(false);
   };
@@ -85,15 +78,8 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
     router.push(link);
   };
 
-  const showTransactionDetails = (
-    transaction: any | null,
-    type: string | null
-  ) => {
-    if (transaction == null || type == null) {
-      return;
-    }
+  const showTransactionDetails = (transaction: any | null) => {
     setSelectedTransaction(transaction);
-    setSelectedTransactionType(type);
     setModalOpen(true);
   };
   const formatTitle = (key: any) => {
@@ -155,22 +141,13 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
 
   return (
     <>
-      {fullTransactionDetail != null && modalOpen && (
+      {selectedTransaction != null && modalOpen && (
         <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
           <MyText size="lg">Transaction Details</MyText>
           <div className="pb-3" />
-          {renderObject(fullTransactionDetail)}
+          {renderObject(selectedTransaction)}
         </MyModal>
       )}
-      {selectedTransaction != null &&
-        selectedTransactionType != null &&
-        modalOpen && (
-          <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
-            <MyText size="lg">{selectedTransactionType + " Details"}</MyText>
-            <div className="pb-3" />
-            {renderObject(selectedTransaction)}
-          </MyModal>
-        )}
       <MyTable
         sizeOptions={pageSizeOptions}
         pagination={{
@@ -201,7 +178,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         }
         customId={(row: Transaction) => row.customUUID}
         handleRowClick={(params: any) => {
-          setFullTransactionDetail(params.row);
+          setSelectedTransaction(params.row);
           setModalOpen(true);
         }}
         handleCellClick={(
@@ -323,28 +300,11 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
             minWidth: 100,
             renderCell: (params: any) => (
               <InfoOutlinedIcon
-                className={`${
-                  params.row.ach != null || params.row.wire != null
-                    ? "text-[#12A7FF]"
-                    : "text-[#BDBDBD]"
-                }`}
+                className={"text-[#12A7FF]"}
                 onClick={() => {
-                  showTransactionDetails(
-                    params.row.ach ?? params.row.wire ?? null,
-                    params.row.ach != null
-                      ? "ACH"
-                      : params?.row?.wire != null
-                      ? "Wire"
-                      : null
-                  );
+                  showTransactionDetails(params.row);
                 }}
-              >
-                {params.row?.ach != null
-                  ? "ACH"
-                  : params?.row?.wire != null
-                  ? "Wire"
-                  : "Unknown"}
-              </InfoOutlinedIcon>
+              />
             ),
             valueGetter: (params: any) =>
               params.row?.ach ?? params?.row?.wire ?? params?.row ?? "",
