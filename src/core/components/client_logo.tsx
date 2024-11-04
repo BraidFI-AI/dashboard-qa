@@ -3,12 +3,16 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import MyText from "./Text/Text";
 
-const ClientLogo = () => {
+type ClientLogoProps = {
+  drawerOpen: boolean;
+};
+
+const ClientLogo: React.FC<ClientLogoProps> = ({ drawerOpen }) => {
   const [clientLogo, setClientLogo] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("ClientLogo component mounted!");
     const checkCDN = async () => {
       try {
         const response = await axios.head(
@@ -36,7 +40,21 @@ const ClientLogo = () => {
       width={107}
     ></Image>
   ) : (
-    <Image alt="Braidfi" src={clientLogo} height={45} width={107}></Image>
+    <>
+      <Image alt="Braidfi" src={clientLogo} height={45} width={107}></Image>
+      {drawerOpen && (
+        <div className="flex flex-row items-center">
+          <MyText>Powered by</MyText>
+          <div className="pr-[1px]" />
+          <Image
+            alt="Braidfi"
+            src="/images/braid_logo_black.png"
+            height={25}
+            width={55}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

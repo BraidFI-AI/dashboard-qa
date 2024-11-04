@@ -369,7 +369,7 @@ export default function PersistentDrawerLeft(props: any) {
                   open ? handleDrawerClose() : handleDrawerOpen();
                 }}
               >
-                <ClientLogo />
+                <ClientLogo drawerOpen={open} />
               </div>
               {open && (
                 <IconButton onClick={handleDrawerClose}>
