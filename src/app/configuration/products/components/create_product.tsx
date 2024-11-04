@@ -30,6 +30,9 @@ import {
 } from "@/redux/slices/ProductSlice";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { IconButton } from "@mui/material";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import MyTextField from "@/core/components/TextField/MyTextField";
 
 const CreateProductPage = () => {
   const dispatch = useAppDispatch();
@@ -59,6 +62,9 @@ const CreateProductPage = () => {
     "loading" | string | string[]
   >("loading");
 
+  const [newEmail, setNewEmail] = useState<string>("");
+  const [emails, setEmails] = useState<{ settlementEmail: string }[]>([]);
+
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
@@ -73,7 +79,7 @@ const CreateProductPage = () => {
       return;
     }
 
-    data = { ...data, programId: programId };
+    data = { ...data, programId: programId, productSettlementEmails: emails };
 
     setSubmitting(true);
 
@@ -90,6 +96,13 @@ const CreateProductPage = () => {
       setSubmitting(false);
     });
   };
+
+  useEffect(() => {
+    if (!drawerOpen) {
+      setEmails([]);
+      setNewEmail("");
+    }
+  }, [drawerOpen]);
 
   useEffect(() => {
     dispatch(fetchProgramIdsListWithNames()).then((data: any) => {
@@ -306,32 +319,55 @@ const CreateProductPage = () => {
               <Box className="pb-8"></Box>
             </Box>
             <Box className="flex flex-col w-[300px]">
-              <MyText>Settlement Email</MyText>
-              <MyControlledTextField
-                name="settlementEmail"
-                displayName="Settlement Email"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                        validate: (value: any, formValues: any) => {
-                          const chars = value.split("");
-                          if (
-                            !(
-                              chars.filter((c: any) => c == "@").length == 1 &&
-                              chars.filter((c: any) => c == ".").length >= 1
-                            )
-                          ) {
-                            return "Invalid Email";
-                          }
-                        },
-                      }
-                }
-                value=""
-              />
+              <MyText>Settlement Emails</MyText>
+              {emails?.map((email, index) => (
+                <div
+                  key={index}
+                  className="flex flex-row justify-between items-center"
+                >
+                  <MyText size="md">{email.settlementEmail ?? ""}</MyText>
+                  <IconButton
+                    onClick={() => {
+                      emails?.splice(index, 1);
+                      setEmails([...emails]);
+                    }}
+                  >
+                    <DeleteOutlineRoundedIcon className="text-red-500" />
+                  </IconButton>
+                </div>
+              ))}
+              <MyTextField value={newEmail} setValue={setNewEmail} />
+              <div className="w-fit pt-2">
+                <MyBlueButton
+                  onClick={() => {
+                    if (newEmail == "") {
+                      enqueueSnackbar("Email cannot be empty", {
+                        variant: "error",
+                      });
+                      return;
+                    }
+                    const chars = newEmail.split("");
+                    if (
+                      !(
+                        chars.filter((c) => c == "@").length == 1 &&
+                        chars.filter((c) => c == ".").length >= 1
+                      )
+                    ) {
+                      enqueueSnackbar("Invalid Email", {
+                        variant: "error",
+                      });
+                      return;
+                    }
+                    emails?.push({
+                      settlementEmail: newEmail,
+                    });
+
+                    setNewEmail("");
+                  }}
+                >
+                  Add Email
+                </MyBlueButton>
+              </div>
               <Box className="pb-4"></Box>
               <MyText>Settlement Phone Number</MyText>
               <MyControlledTextField
@@ -442,6 +478,7 @@ const CreateProductPage = () => {
                   Create Product
                 </MyBlueButton>
               </Box>
+              <div className="pb-4" />
             </Box>
           </div>
         </Box>

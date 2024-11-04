@@ -8,6 +8,7 @@ import {
   UpdateProduct,
 } from "@/core/api/ApiTypes";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import MyEditButton from "@/core/components/Button/MyEditButton";
 import ItemRow from "@/core/components/Text/ItemRow";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
@@ -28,6 +29,11 @@ import { enqueueSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
+import MyTextField from "@/core/components/TextField/MyTextField";
+import { IconButton } from "@mui/material";
+import _ from "lodash";
 
 const ProductDetails = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
@@ -43,6 +49,8 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingBankName, setIsEditingBankName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [emails, setEmails] = useState<{ settlementEmail: string }[]>([]);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isEditingId, setIsEditingId] = useState(false);
   const [isEditingActive, setIsEditingActive] = useState(false);
@@ -58,7 +66,8 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
     defaultValues: {
       productName: product?.productName ?? "",
       isActive: product?.isActive ?? false,
-      productId: product?.productId ?? "",
+      settlementPhoneNumber: product?.settlementPhoneNumber ?? "",
+      productSettlementEmails: product?.productSettlementEmails ?? [],
     },
   });
   const onSubmit: SubmitHandler<UpdateProduct> = async (
@@ -68,15 +77,25 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
 
     if (product) {
       if (!isEditingName) {
-        data.productName = product.productName ? product.productName : "";
+        data.productName =
+          product.productName != null ? product.productName : "";
       }
-
-      if (!isEditingId) {
-        data.productId = product.productId ? product.productId : "";
-      }
-
       if (!isEditingActive) {
-        data.isActive = product.isActive ? product.isActive : false;
+        data.isActive = product.isActive != null ? product.isActive : false;
+      }
+      if (!isEditingPhone) {
+        data.settlementPhoneNumber =
+          product.settlementPhoneNumber != null
+            ? product.settlementPhoneNumber
+            : "";
+      }
+      if (!isEditingEmail) {
+        data.productSettlementEmails =
+          product.productSettlementEmails != null
+            ? product.productSettlementEmails
+            : [];
+      } else {
+        data.productSettlementEmails = emails;
       }
 
       console.log(data);
@@ -107,12 +126,18 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
       dispatch(setTitle("Product"));
       dispatch(fetchProduct(parseInt(params.id))).then((data: any) => {
         if (data.payload) {
+          setEmails(
+            data.payload.productSettlementEmails != null
+              ? _.cloneDeep(data.payload.productSettlementEmails)
+              : []
+          );
           setProduct(data.payload);
           dispatch(setTitle(data.payload.productName));
           reset({
             productName: data.payload.productName,
             isActive: data.payload.isActive,
-            productId: data.payload.productId,
+            settlementPhoneNumber: data.payload.settlementPhoneNumber,
+            productSettlementEmails: data.payload.productSettlementEmails,
           });
 
           if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
@@ -189,36 +214,87 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 value={product.bankName != null ? product.bankName : ""}
                 submitting={false}
               />
-              <MyEditableTextField
-                editing={isEditingEmail}
-                setEditing={setIsEditingEmail}
-                name="settlementEmail"
-                displayName="Settlement Email"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                        validate: (value: any, formValues: any) => {
-                          const chars = value.split("");
-                          if (
-                            !(
-                              chars.filter((c: any) => c == "@").length == 1 &&
-                              chars.filter((c: any) => c == ".").length >= 1
-                            )
-                          ) {
-                            return "Invalid Email";
-                          }
-                        },
-                      }
-                }
-                value={
-                  product.settlementEmail != null ? product.settlementEmail : ""
-                }
-                submitting={false}
-              />
+              <div className="flex flex-row justify-between">
+                <div>
+                  <MyText>Settlement Emails</MyText>
+                  {isEditingEmail ? (
+                    <>
+                      {emails?.map((email, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-row justify-between items-center"
+                        >
+                          <MyText size="md">
+                            {email.settlementEmail ?? ""}
+                          </MyText>
+                          <IconButton
+                            onClick={() => {
+                              emails?.splice(index, 1);
+                              setProduct({ ...product });
+                            }}
+                          >
+                            <DeleteOutlineRoundedIcon className="text-red-500" />
+                          </IconButton>
+                        </div>
+                      ))}
+                      <MyTextField value={newEmail} setValue={setNewEmail} />
+                      <div className="w-fit pt-2">
+                        <MyBlueButton
+                          onClick={() => {
+                            if (newEmail == "") {
+                              enqueueSnackbar("Email cannot be empty", {
+                                variant: "error",
+                              });
+                              return;
+                            }
+                            const chars = newEmail.split("");
+                            if (
+                              !(
+                                chars.filter((c) => c == "@").length == 1 &&
+                                chars.filter((c) => c == ".").length >= 1
+                              )
+                            ) {
+                              enqueueSnackbar("Invalid Email", {
+                                variant: "error",
+                              });
+                              return;
+                            }
+                            emails?.push({
+                              settlementEmail: newEmail,
+                            });
+
+                            setNewEmail("");
+                          }}
+                        >
+                          Add
+                        </MyBlueButton>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {product.productSettlementEmails?.length == 0 ? (
+                        <MyText size="md">No Email Configured</MyText>
+                      ) : (
+                        product.productSettlementEmails?.map((email, index) => (
+                          <div
+                            key={index}
+                            className="flex flex-row justify-between items-center"
+                          >
+                            <MyText size="md">
+                              {email.settlementEmail ?? ""}
+                            </MyText>
+                          </div>
+                        ))
+                      )}
+                    </>
+                  )}
+                </div>
+                <MyEditButton
+                  editing={isEditingEmail}
+                  setEditing={setIsEditingEmail}
+                />
+              </div>
+              <div className="pb-4" />
               <MyEditableTextField
                 editing={isEditingPhone}
                 setEditing={setIsEditingPhone}
