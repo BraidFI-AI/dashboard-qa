@@ -390,7 +390,7 @@ export interface Product {
   tenantId?: string | null;
   bankName?: string | null;
   settlementPhoneNumber?: string | null;
-  settlementEmail?: string | null;
+  productSettlementEmails?: { settlementEmail: string }[] | null;
   duplicatePaymentDays?: null;
   createdAt?: number | null;
   updatedAt?: number | null;
@@ -405,7 +405,7 @@ export interface CreateProduct {
   productId: string;
   productName: string;
   programId: string;
-  settlementEmail: string;
+  productSettlementEmails?: { settlementEmail: string }[] | null;
   settlementPhoneNumber: string;
   suffix: string;
   tenantId: string;
@@ -795,7 +795,8 @@ export interface CreateVirtualFiatProduct {
 
 export interface UpdateProduct {
   isActive: boolean;
-  productId: string;
+  settlementPhoneNumber?: string | null;
+  productSettlementEmails?: { settlementEmail: string }[] | null;
   productName: string;
 }
 
