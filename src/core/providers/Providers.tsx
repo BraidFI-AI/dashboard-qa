@@ -27,6 +27,7 @@ import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
 import { LicenseInfo } from "@mui/x-license";
 import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
 import { sessionStorage } from "aws-amplify/utils";
+import ClientLogo from "../components/client_logo";
 
 /// setting default timezone to PACIFIC timezone
 dayjs.extend(utc);
@@ -65,13 +66,8 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
           className="h-full flex items-center justify-center bg-white"
           components={{
             Header: () => (
-              <div className="w-[380px] flex items-center justify-center pb-6 self-center pr-[1px]">
-                <Image
-                  alt="Braidfi"
-                  src="/images/braid_logo_black.png"
-                  height={57}
-                  width={134}
-                ></Image>
+              <div className="w-[380px] flex flex-col items-center justify-center pb-6 self-center pr-[1px]">
+                <ClientLogo drawerOpen={true} auth />
               </div>
             ),
             // SignIn: {
