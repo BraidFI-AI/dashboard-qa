@@ -67,7 +67,7 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
           components={{
             Header: () => (
               <div className="w-[380px] flex flex-col items-center justify-center pb-6 self-center pr-[1px]">
-                <ClientLogo drawerOpen />
+                <ClientLogo drawerOpen={true} auth />
               </div>
             ),
             // SignIn: {

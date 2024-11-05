@@ -7,9 +7,13 @@ import MyText from "./Text/Text";
 
 type ClientLogoProps = {
   drawerOpen: boolean;
+  auth?: boolean;
 };
 
-const ClientLogo: React.FC<ClientLogoProps> = ({ drawerOpen }) => {
+const ClientLogo: React.FC<ClientLogoProps> = ({
+  drawerOpen,
+  auth = false,
+}) => {
   const [clientLogo, setClientLogo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,7 +39,7 @@ const ClientLogo: React.FC<ClientLogoProps> = ({ drawerOpen }) => {
   return clientLogo == null ? (
     <Image
       alt="Braidfi"
-      src="/images/braid_logo_black.png"
+      src={"/images/braid_logo_black.png"}
       height={45}
       width={107}
     ></Image>
@@ -44,13 +48,13 @@ const ClientLogo: React.FC<ClientLogoProps> = ({ drawerOpen }) => {
       <Image alt="Braidfi" src={clientLogo} height={45} width={107}></Image>
       {drawerOpen && (
         <div className="flex flex-row items-center">
-          <MyText>Powered by</MyText>
+          <MyText size={auth == true ? "xs" : "sm"}>Powered by</MyText>
           <div className="pr-[1px]" />
           <Image
             alt="Braidfi"
             src="/images/braid_logo_black.png"
-            height={25}
-            width={55}
+            height={auth == true ? 20 : 25}
+            width={auth == true ? 30 : 55}
           />
         </div>
       )}

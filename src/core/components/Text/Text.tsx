@@ -11,7 +11,7 @@ const firstLetterUpper = (val: boolean) => {
 
 export interface MyTextProps {
   variant?: "title" | "label";
-  size?: "sm" | "smd" | "table" | "md" | "lg" | "xl";
+  size?: "xs" | "sm" | "smd" | "table" | "md" | "lg" | "xl";
   children: string | number | boolean | null | undefined;
   primary?: boolean;
   underline?: boolean;
@@ -36,7 +36,9 @@ const MyText: React.FC<MyTextProps> = ({
     <Typography
       className={`font-avenir-regular ${
         variant === "label"
-          ? size == "sm"
+          ? size == "xs"
+            ? " text-[10px]"
+            : size == "sm"
             ? " text-[13px]"
             : size == "table"
             ? " text-[14px]"
