@@ -1,1 +1,4 @@
-{ "url": "${API_URL}" }
+{ 
+  "url": "${API_URL}",
+  "url_cdn": "${NEXT_PUBLIC_CDN_URL}"
+}
