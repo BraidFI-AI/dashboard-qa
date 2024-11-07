@@ -63,6 +63,7 @@ import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import ClientLogo from "../client_logo";
+import PoweredByBraid from "../powered_by_braid";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -369,7 +370,7 @@ export default function PersistentDrawerLeft(props: any) {
                   open ? handleDrawerClose() : handleDrawerOpen();
                 }}
               >
-                <ClientLogo drawerOpen={open} />
+                <ClientLogo width={open ? 186 : 63} />
               </div>
               {open && (
                 <IconButton onClick={handleDrawerClose}>
@@ -577,6 +578,11 @@ export default function PersistentDrawerLeft(props: any) {
                 <ListItemText primary={"Logout"} />
               </ListItemButton>
             </ListItem>
+            {open && (
+              <div className="w-[300px] flex flex-row justify-end">
+                <PoweredByBraid />
+              </div>
+            )}
           </div>
         </div>
       </Drawer>
