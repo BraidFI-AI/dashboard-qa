@@ -305,25 +305,6 @@ const CounterpartyWireDetailsView: React.FC<
               editing={isEditing}
               setEditing={setIsEditing}
               editable={false}
-              name="wire.address.type"
-              displayName="Address Type"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              options={["OTHER", "MAILING", "RESIDENCE", "BUSINESS"]}
-              value={counterparty.wire?.type ? counterparty.wire?.type : ""}
-              submitting={false}
-            />
-            <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
               name="wire.address.line1"
               displayName="Street Address"
               control={control}
@@ -354,7 +335,7 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting
                   ? { required: false }
                   : {
-                      required: true,
+                      required: false,
                     }
               }
               value={counterparty.wire?.line2 ? counterparty.wire?.line2 : ""}

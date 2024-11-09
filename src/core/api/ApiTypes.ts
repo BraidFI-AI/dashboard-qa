@@ -959,7 +959,6 @@ export interface CreateCounterPartyWire {
     line1: string;
     line2: string;
     state: string;
-    type: string;
     postalCode: string;
     countryCode: string;
   };
