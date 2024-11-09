@@ -170,10 +170,6 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               ></ItemRow>
               <MyText size="md">Address</MyText>
               <ItemRow
-                title="Address Type"
-                value={individual.addresses?.[0]?.type ?? ""}
-              />
-              <ItemRow
                 title="State"
                 value={individual.addresses?.[0]?.state ?? ""}
               />

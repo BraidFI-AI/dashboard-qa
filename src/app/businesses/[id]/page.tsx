@@ -494,10 +494,6 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               value={(business as any).addresses?.[0]?.line2 ?? ""}
             />
             <ItemRow
-              title="Address Type"
-              value={(business as any).addresses?.[0]?.type ?? ""}
-            />
-            <ItemRow
               title="Postal Code"
               value={(business as any).addresses?.[0]?.postalCode ?? ""}
             />
