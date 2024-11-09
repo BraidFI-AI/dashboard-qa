@@ -358,9 +358,20 @@ const CreateProductPage = () => {
                       });
                       return;
                     }
-                    emails?.push({
-                      settlementEmail: newEmail,
-                    });
+
+                    if (
+                      emails.find((e) => e.settlementEmail == newEmail) !=
+                      undefined
+                    ) {
+                      enqueueSnackbar("Email already added", {
+                        variant: "error",
+                      });
+                      return;
+                    }
+
+                    let newEmails = [...emails, { settlementEmail: newEmail }];
+
+                    setEmails(newEmails);
 
                     setNewEmail("");
                   }}

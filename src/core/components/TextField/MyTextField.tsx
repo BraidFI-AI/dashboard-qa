@@ -35,6 +35,7 @@ const MyTextField: React.FC<MyTextFieldProps> = ({
         }
       }}
       defaultValue={value}
+      value={value}
       fullWidth
       error={error}
       helperText={error ? errorText : undefined}
