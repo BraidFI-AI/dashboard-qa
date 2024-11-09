@@ -13,7 +13,7 @@ import MyText from "../../Text/Text";
 import ItemRow from "../../Text/ItemRow";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import timestampToDate from "@/core/utils/timestampToDate";
-import { Account, Counterparty, Product } from "@/core/api/ApiTypes";
+import { Account, Counterparty, Product, Program } from "@/core/api/ApiTypes";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import { fetchAccount } from "@/redux/slices/AccountSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
@@ -21,6 +21,7 @@ import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import MyRedButton from "../../Button/MyRedButton";
 import { enqueueSnackbar } from "notistack";
 import MyBlueButton from "../../Button/MyBlueButton";
+import { fetchProgramV2 } from "@/redux/slices/ProgramSlice";
 
 type LimitsViewProps = {
   id: string;
@@ -32,6 +33,8 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
   const limit: LimitType = useSelector((state: any) => state.limits.limit);
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [program, setProgram] = useState<Program | null>(null);
+
   const [account, setAccount] = useState<"loading" | string | Account>(
     "loading"
   );
@@ -46,7 +49,13 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
           dispatch(fetchProduct(d.payload.productId)).then((prod: any) => {
             setProduct(prod.payload);
           });
-        } else {
+        }
+        if (d.payload.programId != null) {
+          dispatch(fetchProgramV2(d.payload.programId)).then((prog: any) => {
+            if (typeof prog.payload != "string") {
+              setProgram(prog.payload);
+            }
+          });
         }
 
         if (d.payload.accountNumber != null) {
@@ -83,6 +92,15 @@ const LimitsView: React.FC<LimitsViewProps> = ({ id }) => {
         <ItemRow title="Frequency" value={limit.frequencyMax ?? "-"} />
       </div>
       <div className="w-[400px]">
+        {limit.programId && (
+          <ItemRow
+            title="Program"
+            value={{
+              value: program ? program.name : limit.programId.toString(),
+              link: `/configuration/programs/${limit.programId}`,
+            }}
+          />
+        )}
         {limit.productId && (
           <ItemRow
             title="Product"

@@ -1019,6 +1019,7 @@ export interface CreateLimit {
   limitName: string | null;
   limitType: string | null;
   productId: number | null;
+  programId: number | null;
   transactionType: string | null;
   action: string | null;
 }
@@ -1028,6 +1029,7 @@ export interface RulesAndLimits {
   limitName: string | null;
   limitType: string | null;
   productId: number | null;
+  programId: number | null;
   accountNumber: string | null;
   counterpartyId: number | null;
   durationDays: number | null;

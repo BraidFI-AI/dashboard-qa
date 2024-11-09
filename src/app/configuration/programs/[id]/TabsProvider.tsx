@@ -14,9 +14,20 @@ const TabsProvider = (props: any) => {
   const params = useParams();
   const pathname = usePathname();
 
+  const tabs = [
+    {
+      name: "Program Details",
+      path: `/configuration/programs/${parseInt(params.id.toString())}`,
+    },
+    {
+      name: "Limits",
+      path: `/configuration/programs/${parseInt(params.id.toString())}/limits`,
+    },
+  ];
+
   useEffect(() => {
-    if (pathname.includes("programSettings")) {
-      setCurrentTab(1);
+    if (pathname.includes("/limits")) {
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("/limits")));
     } else {
       setCurrentTab(0);
     }
@@ -33,26 +44,16 @@ const TabsProvider = (props: any) => {
           variant="scrollable"
           scrollButtons="auto"
         >
-          <Tab
-            label="Program Details"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/configuration/programs/${parseInt(params.id.toString())}`
-              );
-            }}
-          />
-          {/* <Tab
-            label="Settings"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/configuration/programs/${parseInt(
-                  params.id.toString()
-                )}/programSettings`
-              );
-            }}
-          /> */}
+          {tabs.map((tab, index) => (
+            <Tab
+              key={index}
+              label={tab.name}
+              style={{ textTransform: "none" }}
+              onClick={() => {
+                router.replace(tab.path);
+              }}
+            />
+          ))}
         </Tabs>
       </Box>
       <div className="pb-6"></div>

@@ -84,6 +84,18 @@ export const fetchProgram = createAsyncThunk(
   }
 );
 
+export const fetchProgramV2 = createAsyncThunk(
+  "program/fetchProgram",
+  async (programId: number) => {
+    try {
+      const program = await programRepo.fetchProgram(programId);
+      return program;
+    } catch (e: any) {
+      return `Error fetching program ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const createProgram = createAsyncThunk(
   "program/createProgram",
   async (program: CreateProgram) => {
