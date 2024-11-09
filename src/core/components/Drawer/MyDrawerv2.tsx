@@ -337,6 +337,16 @@ export default function PersistentDrawerLeft(props: any) {
       ),
       path: "/configuration/developers",
     });
+    configurationOptions.splice(3, 0, {
+      name: "Data Hierarchy",
+      icon: (
+        <GridViewOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+      ),
+      iconFocused: (
+        <GridViewOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+      ),
+      path: "/configuration/data_hierarchy",
+    });
   }
 
   return (
