@@ -183,7 +183,7 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       const unit = inp.duration === "year" ? "months" : "days";
 
       const dates = Array.from({ length }, (_, i) =>
-        moment().subtract(i, unit).format(format)
+        moment().utc().subtract(i, unit).format(format)
       ).reverse();
 
       dates.forEach((date) => {
@@ -201,7 +201,9 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
 
       // Sort the data by date and then by volume within each date
       const grouping = Object.entries(groupedData)
-        .sort(([dateA], [dateB]) => moment(dateB).diff(moment(dateA)))
+        .sort(([dateA], [dateB]) =>
+          moment(dateB).utc().diff(moment(dateA).utc())
+        )
         .map(([date, values]) => {
           return (values as any).sort((a: any, b: any) => b.volume - a.volume);
         })

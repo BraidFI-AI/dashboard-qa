@@ -30,7 +30,7 @@ const DivergingStackChart: React.FC<DivergingStackChartProps> = ({
 
     const margin = { top: 20, right: 0, bottom: 20, left: 100 },
       width = chartWidth,
-      height = 460 - margin.top - margin.bottom;
+      height = 560 - margin.top - margin.bottom;
 
     const x = d3
       .scalePoint()
