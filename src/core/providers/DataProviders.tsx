@@ -20,6 +20,7 @@ import {
   DEVELOPER_OPS_ROLE,
   DEVELOPER_ROLE,
 } from "../constants";
+import { fetchClearSightData } from "@/redux/slices/clear_sight_slice";
 
 const DataProviders = (props: any) => {
   const dispatch = useAppDispatch();
@@ -69,6 +70,7 @@ const DataProviders = (props: any) => {
     dispatch(fetchUsers(""));
     dispatch(fetchApiKey());
     dispatch(fetchOpenAlertsCount());
+    dispatch(fetchClearSightData());
   }, [dispatch]);
 
   return <>{props.children}</>;
