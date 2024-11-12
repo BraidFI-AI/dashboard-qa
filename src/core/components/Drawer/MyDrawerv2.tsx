@@ -65,6 +65,7 @@ import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import ClientLogo from "../client_logo";
 import PoweredByBraid from "../powered_by_braid";
+import InsightsIcon from "@mui/icons-material/Insights";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -338,14 +339,12 @@ export default function PersistentDrawerLeft(props: any) {
       path: "/configuration/developers",
     });
     configurationOptions.splice(3, 0, {
-      name: "Data Hierarchy",
-      icon: (
-        <GridViewOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-      ),
+      name: "ClearSight",
+      icon: <InsightsIcon className="text-[#6B788E] w-[20px] h-[20px]" />,
       iconFocused: (
-        <GridViewOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+        <InsightsIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
       ),
-      path: "/configuration/data_hierarchy",
+      path: "/configuration/clear_sight",
     });
   }
 
