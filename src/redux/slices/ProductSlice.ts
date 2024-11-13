@@ -16,7 +16,9 @@ import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
 import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
-import timestampToDate from "@/core/utils/timestampToDate";
+import timestampToDate, {
+  formatUnixTimestamp,
+} from "@/core/utils/timestampToDate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
@@ -124,8 +126,8 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       const startDate = endDate.clone().subtract(1, inp.duration);
 
       let data = await productRepo.fetchProductTransactionVolume(
-        momentToPSTString(startDate, true),
-        momentToPSTString(endDate, false),
+        momentToPSTString(startDate, true).replace("-08:00", "Z"),
+        momentToPSTString(endDate, false).replace("-08:00", "Z"),
         inp.product === "All" ? undefined : inp.product
       );
 
@@ -143,7 +145,7 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
 
       const groupedData = data.reduce((acc: any, curr: any) => {
         // Convert timestamp to date
-        const date = moment(curr.created_at).format(format);
+        const date = formatUnixTimestamp(curr.created_at, true);
         const type = curr.label;
         let isDebit = curr.label.includes("Debit");
         if (curr.label?.toLowerCase()?.includes("originator")) {
@@ -181,7 +183,7 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       const unit = inp.duration === "year" ? "months" : "days";
 
       const dates = Array.from({ length }, (_, i) =>
-        moment().subtract(i, unit).format(format)
+        moment().utc().subtract(i, unit).format(format)
       ).reverse();
 
       dates.forEach((date) => {
@@ -199,7 +201,9 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
 
       // Sort the data by date and then by volume within each date
       const grouping = Object.entries(groupedData)
-        .sort(([dateA], [dateB]) => moment(dateB).diff(moment(dateA)))
+        .sort(([dateA], [dateB]) =>
+          moment(dateB).utc().diff(moment(dateA).utc())
+        )
         .map(([date, values]) => {
           return (values as any).sort((a: any, b: any) => b.volume - a.volume);
         })

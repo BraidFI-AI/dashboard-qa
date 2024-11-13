@@ -130,7 +130,6 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
         <MyText size="md">No ACH Config found</MyText>
       ) : (
         <div className="w-[300px]">
-          <ItemRow title="ID" value={fundsAvailability.id}></ItemRow>
           <ItemRow
             title="Product Name"
             value={product.productName ?? ""}

@@ -390,7 +390,7 @@ export interface Product {
   tenantId?: string | null;
   bankName?: string | null;
   settlementPhoneNumber?: string | null;
-  settlementEmail?: string | null;
+  productSettlementEmails?: { settlementEmail: string }[] | null;
   duplicatePaymentDays?: null;
   createdAt?: number | null;
   updatedAt?: number | null;
@@ -405,7 +405,7 @@ export interface CreateProduct {
   productId: string;
   productName: string;
   programId: string;
-  settlementEmail: string;
+  productSettlementEmails?: { settlementEmail: string }[] | null;
   settlementPhoneNumber: string;
   suffix: string;
   tenantId: string;
@@ -696,6 +696,10 @@ export interface Transaction {
   marketValue: TransactionMarketValue;
   operationType: string | null;
   transactionType: string;
+  counterpartyId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyAssociatedEntityId?: string | null;
+  counterpartyAssociatedEntityType?: string | null;
   reference: string;
   transactionCode: string | null;
   senderNote: string;
@@ -791,7 +795,8 @@ export interface CreateVirtualFiatProduct {
 
 export interface UpdateProduct {
   isActive: boolean;
-  productId: string;
+  settlementPhoneNumber?: string | null;
+  productSettlementEmails?: { settlementEmail: string }[] | null;
   productName: string;
 }
 
@@ -954,7 +959,6 @@ export interface CreateCounterPartyWire {
     line1: string;
     line2: string;
     state: string;
-    type: string;
     postalCode: string;
     countryCode: string;
   };
@@ -1015,6 +1019,7 @@ export interface CreateLimit {
   limitName: string | null;
   limitType: string | null;
   productId: number | null;
+  programId: number | null;
   transactionType: string | null;
   action: string | null;
 }
@@ -1024,6 +1029,7 @@ export interface RulesAndLimits {
   limitName: string | null;
   limitType: string | null;
   productId: number | null;
+  programId: number | null;
   accountNumber: string | null;
   counterpartyId: number | null;
   durationDays: number | null;

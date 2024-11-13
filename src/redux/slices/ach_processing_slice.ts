@@ -4,6 +4,7 @@ import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import ACHRepo from "@/core/repos/ACHRepo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 
 const apiClient = ApiClient.getInstance();
 const achRepo: ACHRepo = new ACHRepo(apiClient);
@@ -87,7 +88,11 @@ export const fetchACHTransactionStatus = createAsyncThunk(
   "ach/fetchACHTransactionStatus",
   async () => {
     try {
-      const filename = await achRepo.fetchACHTransactionStatus();
+      const startDate: string = moment()
+        .subtract(2, "days")
+        .format("YYYY-MM-DD");
+
+      const filename = await achRepo.fetchACHTransactionStatus(startDate);
 
       return filename;
     } catch (e: any) {

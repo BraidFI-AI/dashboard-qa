@@ -27,6 +27,11 @@ import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
 import { LicenseInfo } from "@mui/x-license";
 import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
 import { sessionStorage } from "aws-amplify/utils";
+import ClientLogo from "../components/client_logo";
+import MyText from "../components/Text/Text";
+import BraidLogoBlue from "../svgs/braid_logo_blue";
+import PoweredByBraid from "../components/powered_by_braid";
+import { CDNProvider } from "./cdn_provider";
 
 /// setting default timezone to PACIFIC timezone
 dayjs.extend(utc);
@@ -59,61 +64,63 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
 
   return (
     <Suspense>
-      <div className="w-full h-full">
-        <Authenticator
-          hideSignUp
-          className="h-full flex items-center justify-center bg-white"
-          components={{
-            Header: () => (
-              <div className="w-[380px] flex items-center justify-center pb-6 self-center pr-[1px]">
-                <Image
-                  alt="Braidfi"
-                  src="/images/braid_logo_black.png"
-                  height={57}
-                  width={134}
-                ></Image>
-              </div>
-            ),
-            // SignIn: {
-            //   Header: () => (
-            //     <div className="pl-8 pt-2">
-            //       <MyText variant="label" size="xl">
-            //         Login
-            //       </MyText>
-            //     </div>
-            //   ),
-            // },
-          }}
-        >
-          <Provider store={store}>
-            <DataProviders>
-              <AuthProvider>
-                <SnackbarProvider
-                  hideIconVariant
-                  maxSnack={7}
-                  autoHideDuration={2000}
-                  action={(snackbarId) => (
-                    <IconButton
-                      className="text-white"
-                      onClick={() => closeSnackbar(snackbarId)}
-                    >
-                      <CloseRoundedIcon />
-                    </IconButton>
-                  )}
-                >
-                  {/* <AuthProvider> */}
-                  {pathname === "/login" ? (
-                    children
-                  ) : (
-                    <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
-                  )}
-                  {/* </AuthProvider> */}
-                </SnackbarProvider>
-              </AuthProvider>
-            </DataProviders>
-          </Provider>
-        </Authenticator>
-      </div>
+      <CDNProvider>
+        <div className="w-full h-full">
+          <Authenticator
+            hideSignUp
+            className="h-full flex items-center justify-center bg-white"
+            components={{
+              Header: () => (
+                <div className="w-[380px] flex flex-col items-center justify-center pb-6 self-center pr-[1px]">
+                  <ClientLogo width={228} />
+                </div>
+              ),
+              Footer: () => (
+                <div className="w-[380px] flex flex-row justify-end">
+                  <PoweredByBraid />
+                </div>
+              ),
+              // SignIn: {
+              //   Header: () => (
+              //     <div className="pl-8 pt-2">
+              //       <MyText variant="label" size="xl">
+              //         Login
+              //       </MyText>
+              //     </div>
+              //   ),
+              // },
+            }}
+          >
+            <Provider store={store}>
+              <DataProviders>
+                <AuthProvider>
+                  <SnackbarProvider
+                    hideIconVariant
+                    maxSnack={7}
+                    autoHideDuration={2000}
+                    action={(snackbarId) => (
+                      <IconButton
+                        className="text-white"
+                        onClick={() => closeSnackbar(snackbarId)}
+                      >
+                        <CloseRoundedIcon />
+                      </IconButton>
+                    )}
+                  >
+                    {/* <AuthProvider> */}
+                    {pathname === "/login" ? (
+                      children
+                    ) : (
+                      <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
+                    )}
+                    {/* </AuthProvider> */}
+                  </SnackbarProvider>
+                </AuthProvider>
+              </DataProviders>
+            </Provider>
+          </Authenticator>
+        </div>
+      </CDNProvider>
     </Suspense>
   );
 };

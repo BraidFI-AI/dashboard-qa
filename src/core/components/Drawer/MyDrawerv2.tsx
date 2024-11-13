@@ -51,6 +51,7 @@ import ConfigurationIcon from "./../../../../public/icons/configuration";
 import SettingsIcon from "./../../../../public/icons/settings";
 import { usePathname } from "next/navigation";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import {
   ADMIN_OPS_ROLE,
   ADMIN_ROLE,
@@ -62,6 +63,9 @@ import DrawerHeaderButtons from "./drawer_header_buttons";
 import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
+import ClientLogo from "../client_logo";
+import PoweredByBraid from "../powered_by_braid";
+import InsightsIcon from "@mui/icons-material/Insights";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -334,6 +338,14 @@ export default function PersistentDrawerLeft(props: any) {
       ),
       path: "/configuration/developers",
     });
+    configurationOptions.splice(3, 0, {
+      name: "ClearSight",
+      icon: <InsightsIcon className="text-[#6B788E] w-[20px] h-[20px]" />,
+      iconFocused: (
+        <InsightsIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+      ),
+      path: "/configuration/clear_sight",
+    });
   }
 
   return (
@@ -368,12 +380,7 @@ export default function PersistentDrawerLeft(props: any) {
                   open ? handleDrawerClose() : handleDrawerOpen();
                 }}
               >
-                <Image
-                  alt="Braidfi"
-                  src="/images/braid_logo_black.png"
-                  height={45}
-                  width={107}
-                ></Image>
+                <ClientLogo width={open ? 186 : 63} />
               </div>
               {open && (
                 <IconButton onClick={handleDrawerClose}>
@@ -506,6 +513,16 @@ export default function PersistentDrawerLeft(props: any) {
                       ),
                       path: "/compliance/ofac",
                     },
+                    {
+                      name: "314a",
+                      icon: (
+                        <UploadFileOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                      ),
+                      iconFocused: (
+                        <UploadFileOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                      ),
+                      path: "/compliance/314a",
+                    },
                   ]}
                 />
                 <MyExpandableListItem
@@ -581,6 +598,11 @@ export default function PersistentDrawerLeft(props: any) {
                 <ListItemText primary={"Logout"} />
               </ListItemButton>
             </ListItem>
+            {open && (
+              <div className="w-[300px] flex flex-row justify-end">
+                <PoweredByBraid />
+              </div>
+            )}
           </div>
         </div>
       </Drawer>

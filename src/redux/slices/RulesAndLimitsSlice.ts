@@ -54,6 +54,12 @@ const LimitsSlice = createSlice({
     builder.addCase(fetchLimit.fulfilled, (state, action) => {
       state.limit = action.payload;
     });
+    builder.addCase(fetchProgramLimits.pending, (state, action) => {
+      state.limits = "loading";
+    });
+    builder.addCase(fetchProgramLimits.fulfilled, (state, action) => {
+      state.limits = action.payload;
+    });
     builder.addCase(fetchBusinessLimits.pending, (state, action) => {
       state.limits = "loading";
     });
@@ -100,6 +106,27 @@ export const fetchAccountLimits = createAsyncThunk(
           acc.productId ?? 0
         );
       }
+
+      console.log("limits:", limits);
+
+      if (limits.length == 0) {
+        return "No limits found";
+      } else {
+        return limits;
+      }
+    } catch (e: any) {
+      return `Error fetching limit ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchProgramLimits = createAsyncThunk(
+  "limits/fetchProgramLimits",
+  async (programId: string) => {
+    try {
+      let limits: RulesAndLimits[] = [];
+
+      limits = await rulesRepo.fetchProgramLimits(programId);
 
       console.log("limits:", limits);
 

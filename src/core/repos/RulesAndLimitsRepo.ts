@@ -64,5 +64,13 @@ class RulesAndLimitsRepo {
     );
     return response;
   }
+
+  public async fetchProgramLimits(programId: string) {
+    const response = await this.apiClient.http<RulesAndLimits[]>(
+      Method.GET,
+      `/rule?programId=${programId}`
+    );
+    return response;
+  }
 }
 export default RulesAndLimitsRepo;

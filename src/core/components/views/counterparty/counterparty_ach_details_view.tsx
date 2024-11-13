@@ -288,14 +288,6 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               }
               submitting={false}
             />
-            {/* <ItemRow
-              title="Apt, Building etc"
-              value={counterparty.wire.line2 ?? ""}
-            ></ItemRow> */}
-            {/* <ItemRow
-              title="City"
-              value={counterparty.wire.city ?? ""}
-            ></ItemRow> */}
             <MyEditableTextField
               editing={isEditing}
               setEditing={setIsEditing}

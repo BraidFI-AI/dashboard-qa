@@ -89,7 +89,6 @@ const CreateCounterpartyPage = () => {
           line1: wireGetValues("address.line1"),
           line2: wireGetValues("address.line2"),
           state: wireGetValues("address.state"),
-          type: wireGetValues("address.type"),
           postalCode: wireGetValues("address.postalCode"),
           countryCode: wireGetValues("address.countryCode"),
         },
@@ -344,11 +343,6 @@ const CreateCounterpartyPage = () => {
               <MyText primary>{achGetValues("rdfiNumberQualifier")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
-            <Box className="flex flex-row">
-              <MyText>Address type</MyText>
-              <Box className="pr-2" />
-              <MyText primary>Mailing</MyText>
-            </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
               <MyText>Country Code</MyText>
@@ -479,11 +473,6 @@ const CreateCounterpartyPage = () => {
               </MyText>
             </Box>
             <Box className="pb-2"></Box>
-            <Box className="flex flex-row">
-              <MyText>Address type</MyText>
-              <Box className="pr-2" />
-              <MyText primary>{wireGetValues("address.type")}</MyText>
-            </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
               <MyText>State</MyText>
@@ -845,23 +834,6 @@ const CreateCounterpartyPage = () => {
                 <Box className="pb-4"></Box>
                 <MyText>Address details</MyText>
                 <Box className="pb-2"></Box>
-                <MyText>Address Type</MyText>
-                <MyControlledAutocomplete
-                  value={"MAILING"}
-                  displayName="Address Type<"
-                  name={"address.type"}
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: true,
-                        }
-                  }
-                  options={["OTHER", "MAILING", "RESIDENCE", "BUSINESS"]}
-                />
-                <Box className="pb-4"></Box>
                 <MyText>State</MyText>
                 <MyControlledAutocomplete
                   value={States[0]}
@@ -921,7 +893,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
