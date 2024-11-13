@@ -35,40 +35,54 @@ class RulesAndLimitsRepo {
 
   public async fetchLimits() {
     const response = await this.apiClient.http<RulesAndLimits[]>(
-      Method.GET,
-      "/rule"
+      Method.POST,
+      "/rule",
+      {}
     );
     return response;
   }
 
   public async fetchLimitsByProductId(id: string) {
     const response = await this.apiClient.http<RulesAndLimits[]>(
-      Method.GET,
-      `/rule?productId=${id}`
+      Method.POST,
+      `/rule/search`,
+      {
+        productId: id,
+      }
     );
     return response;
   }
 
   public async fetchLimitsByAccountId(id: string) {
     const response = await this.apiClient.http<RulesAndLimits[]>(
-      Method.GET,
-      `/rule?accountNumber=${id}`
+      Method.POST,
+      `/rule/search`,
+      {
+        accountNumber: id,
+      }
     );
     return response;
   }
 
   public async fetchAccountLimits(accountNumber: string, productId: number) {
     const response = await this.apiClient.http<RulesAndLimits[]>(
-      Method.GET,
-      `/rule?accountNumber=${accountNumber}&productId=${productId}`
+      Method.POST,
+      `/rule/search`,
+      {
+        accountNumber: accountNumber,
+        productId: productId,
+      }
     );
     return response;
   }
 
   public async fetchProgramLimits(programId: string) {
     const response = await this.apiClient.http<RulesAndLimits[]>(
-      Method.GET,
-      `/rule?programId=${programId}`
+      Method.POST,
+      `/rule/search`,
+      {
+        programId: programId,
+      }
     );
     return response;
   }
