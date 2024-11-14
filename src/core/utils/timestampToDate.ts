@@ -5,7 +5,7 @@ export function formatUnixTimestamp(
   ms: boolean = false
 ): string {
   if (!ms) {
-    // timestamp = timestamp * 1000;
+    timestamp = timestamp * 1000;
   }
 
   const date = moment(timestamp).utc();
