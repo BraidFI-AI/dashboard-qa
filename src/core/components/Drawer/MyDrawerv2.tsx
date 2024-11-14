@@ -600,7 +600,9 @@ export default function PersistentDrawerLeft(props: any) {
             </ListItem>
             {open && (
               <div className="w-[300px] flex flex-row justify-end">
-                <PoweredByBraid />
+                <div className="pr-[10px]">
+                  <PoweredByBraid />
+                </div>
               </div>
             )}
           </div>
