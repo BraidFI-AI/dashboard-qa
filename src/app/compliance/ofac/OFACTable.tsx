@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
-import { OFAC } from "@/core/api/ApiTypes";
+import { OFAC, OFACSearch } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
@@ -26,7 +26,11 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import LabelBox from "@/core/components/label_box";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
-const OFACHitsTable = () => {
+type OFACHitsTableProps = {
+  filters: OFACSearch;
+};
+
+const OFACHitsTable: React.FC<OFACHitsTableProps> = ({ filters }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const ofacsHits: "loading" | string | OFAC[] = useSelector(
@@ -48,10 +52,6 @@ const OFACHitsTable = () => {
   const handleModalOpen = () => {
     setModalOpen(true);
   };
-
-  useEffect(() => {
-    dispatch(fetchOFACHits(true));
-  }, []);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/compliance/ofac/${params.row.ofacId}`);
@@ -90,7 +90,7 @@ const OFACHitsTable = () => {
     <ErrorPage
       error="Error loading OFAC checks"
       recoveryButtonOnClick={() => {
-        dispatch(fetchOFACHits(true));
+        dispatch(fetchOFACHits({ refresh: true, filters: filters }));
       }}
       recoveryButtonTitle="Retry"
     />
@@ -119,7 +119,12 @@ const OFACHitsTable = () => {
             setPaginationModel: (page: number, size: number) => {
               dispatch(setOFACTablePageSize(size));
               dispatch(setOFACTablePageNumber(page));
-              dispatch(fetchOFACHits(false));
+              dispatch(
+                fetchOFACHits({
+                  refresh: false,
+                  filters: filters,
+                })
+              );
             },
           }}
           customId={(row: OFAC) => row.ofacId}

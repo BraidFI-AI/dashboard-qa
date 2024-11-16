@@ -719,6 +719,10 @@ export interface TransactionMarketValue {
   source: string | null;
 }
 
+export interface OFACSearch {
+  status?: string;
+}
+
 export interface TransactionSearch {
   showAchNoc?: boolean;
   excludeWire?: boolean;
