@@ -145,10 +145,10 @@ class ACHRepo {
     return response;
   }
 
-  public async fetchACHTransactionStatus() {
+  public async fetchACHTransactionStatus(startDate: string) {
     const response = await this.apiClient.http<ACHTransactionStatus[]>(
       Method.GET,
-      `/ach/file/status`
+      `/ach/file/status?startDate=${startDate}`
     );
 
     return response;

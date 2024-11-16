@@ -27,10 +27,12 @@ import AlertsSlice from "../slices/alerts_slice";
 import WireSlice from "../slices/wire_settlement_slice";
 import CasesSlice from "../slices/cases_slice";
 import WireProcessingSlice from "../slices/wire_processing_slice";
+import ClearSightSlice from "../slices/clear_sight_slice";
 
 export const store = configureStore({
   reducer: {
     app: AppSlice.reducer,
+    clearSight: ClearSightSlice.reducer,
     auth: AuthSlice.reducer,
     alerts: AlertsSlice.reducer,
     cases: CasesSlice.reducer,
