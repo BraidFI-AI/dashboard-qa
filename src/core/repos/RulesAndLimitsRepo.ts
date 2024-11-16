@@ -36,7 +36,7 @@ class RulesAndLimitsRepo {
   public async fetchLimits() {
     const response = await this.apiClient.http<RulesAndLimits[]>(
       Method.POST,
-      "/rule",
+      "/rule/search",
       {}
     );
     return response;
