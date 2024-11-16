@@ -719,6 +719,13 @@ export interface TransactionMarketValue {
   source: string | null;
 }
 
+export interface AlertSearch {
+  contextType?: string;
+  contextId?: string;
+  types?: string[];
+  statuses?: string[];
+}
+
 export interface TransactionSearch {
   showAchNoc?: boolean;
   excludeWire?: boolean;
