@@ -722,6 +722,13 @@ export interface TransactionMarketValue {
 export interface OFACSearch {
   status?: string;
 }
+export interface CustomerSearch {
+  name?: string;
+  productName?: string;
+  createdAtStart?: string;
+  createdAtEnd?: string;
+  status?: string;
+}
 
 export interface TransactionSearch {
   showAchNoc?: boolean;
