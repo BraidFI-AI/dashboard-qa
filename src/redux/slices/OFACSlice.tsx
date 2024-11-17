@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { OFAC } from "@/core/api/ApiTypes";
+import { OFAC, OFACSearch } from "@/core/api/ApiTypes";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import OFACRepo from "@/core/repos/OFACRepo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
@@ -40,7 +40,10 @@ const OFACSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchOFACHits.pending, (state, action) => {
-      if (state.pagination.pageNumber == -1 || action.meta.arg == true) {
+      if (
+        state.pagination.pageNumber == -1 ||
+        action.meta.arg.refresh == true
+      ) {
         state.OFACs = "loading";
       }
       state.pagination.loadingPage = true;
@@ -61,13 +64,15 @@ const OFACSlice = createSlice({
 
 export const fetchOFACHits = createAsyncThunk(
   "individual/fetchOFACHits",
-  async (refresh: boolean, thunkApi: any) => {
+  async (data: { refresh: boolean; filters?: OFACSearch }, thunkApi: any) => {
     try {
       const ofacs = await ofacRepo.fetchOFACHits(
         thunkApi.getState().ofac.pagination.pageSize ?? 100,
-        thunkApi.getState().ofac.pagination.pageNumber == -1 || refresh == true
+        thunkApi.getState().ofac.pagination.pageNumber == -1 ||
+          data.refresh == true
           ? 0
-          : thunkApi.getState().ofac.pagination.pageNumber
+          : thunkApi.getState().ofac.pagination.pageNumber,
+        data.filters
       );
       console.log("OFACs", ofacs);
       return {

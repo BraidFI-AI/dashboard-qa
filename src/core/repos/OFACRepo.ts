@@ -1,5 +1,5 @@
 import ApiClient, { Method } from "../api/ApiClient";
-import { OFAC } from "../api/ApiTypes";
+import { OFAC, OFACSearch } from "../api/ApiTypes";
 
 class OFACRepo {
   private apiClient: ApiClient;
@@ -8,10 +8,16 @@ class OFACRepo {
     this.apiClient = apiClient;
   }
 
-  public async fetchOFACHits(pageSize: number, pageNumber: number) {
+  public async fetchOFACHits(
+    pageSize: number,
+    pageNumber: number,
+    filters?: OFACSearch
+  ) {
     const response = await this.apiClient.http<any>(
       Method.GET,
-      `/OFAC?pageSize=${pageSize}&pageNumber=${pageNumber}`
+      `/OFAC?pageSize=${pageSize}&pageNumber=${pageNumber}${
+        filters?.status == null ? "" : `&status=${filters?.status}`
+      }`
     );
     return response;
   }

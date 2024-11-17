@@ -720,11 +720,17 @@ export interface TransactionMarketValue {
 }
 
 
+
 export interface AlertSearch {
   contextType?: string;
   contextId?: string;
   types?: string[];
   statuses?: string[];
+}
+
+
+export interface OFACSearch {
+  status?: string;
 }
 
 export interface CustomerSearch {
