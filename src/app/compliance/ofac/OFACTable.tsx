@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
-import { OFAC } from "@/core/api/ApiTypes";
+import { OFAC, OFACSearch } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
@@ -26,7 +26,11 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import LabelBox from "@/core/components/label_box";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 
-const OFACHitsTable = () => {
+type OFACHitsTableProps = {
+  filters: OFACSearch;
+};
+
+const OFACHitsTable: React.FC<OFACHitsTableProps> = ({ filters }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const ofacsHits: "loading" | string | OFAC[] = useSelector(
@@ -48,10 +52,6 @@ const OFACHitsTable = () => {
   const handleModalOpen = () => {
     setModalOpen(true);
   };
-
-  useEffect(() => {
-    dispatch(fetchOFACHits(true));
-  }, []);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/compliance/ofac/${params.row.ofacId}`);
@@ -90,7 +90,7 @@ const OFACHitsTable = () => {
     <ErrorPage
       error="Error loading OFAC checks"
       recoveryButtonOnClick={() => {
-        dispatch(fetchOFACHits(true));
+        dispatch(fetchOFACHits({ refresh: true, filters: filters }));
       }}
       recoveryButtonTitle="Retry"
     />
@@ -104,132 +104,123 @@ const OFACHitsTable = () => {
         <MyText size="md">{note}</MyText>
         <div className="pb-4"></div>
       </MyModal>
-      <div
+      {/* <div
         style={navigating ? { pointerEvents: "none" } : {}}
         className="h-full"
-      >
-        <MyTable
-          pagination={{
-            rowCount: pagination.rowCount,
-            loading: pagination.loadingPage,
-            paginationModel: {
-              page: pagination.pageNumber,
-              pageSize: pagination.pageSize ?? paginationPageSize,
-            },
-            setPaginationModel: (page: number, size: number) => {
-              dispatch(setOFACTablePageSize(size));
-              dispatch(setOFACTablePageNumber(page));
-              dispatch(fetchOFACHits(false));
-            },
-          }}
-          customId={(row: OFAC) => row.ofacId}
-          handleRowClick={handleRowClick}
-          handleCellClick={(
-            params: GridCellParams,
-            event: MuiEvent<React.MouseEvent>
-          ) => {
-            if (params.field == "entity" || params.field == "note") {
-              if (params.field == "entity") {
-                navigateToEntity(params.row);
-              }
-              if (params.field == "note") {
-                setNote(params?.row?.note);
-                handleModalOpen();
-              }
-              event.stopPropagation();
+      > */}
+      <MyTable
+        pagination={{
+          rowCount: pagination.rowCount,
+          loading: pagination.loadingPage,
+          paginationModel: {
+            page: pagination.pageNumber,
+            pageSize: pagination.pageSize ?? paginationPageSize,
+          },
+          setPaginationModel: (page: number, size: number) => {
+            dispatch(setOFACTablePageSize(size));
+            dispatch(setOFACTablePageNumber(page));
+            dispatch(
+              fetchOFACHits({
+                refresh: false,
+                filters: filters,
+              })
+            );
+          },
+        }}
+        customId={(row: OFAC) => row.ofacId}
+        handleRowClick={handleRowClick}
+        handleCellClick={(
+          params: GridCellParams,
+          event: MuiEvent<React.MouseEvent>
+        ) => {
+          if (params.field == "entity" || params.field == "note") {
+            if (params.field == "entity") {
+              navigateToEntity(params.row);
             }
-          }}
-          columns={[
-            {
-              field: "ofacId",
-              headerName: "ID",
-              flex: 1,
-              minWidth: 120,
+            if (params.field == "note") {
+              setNote(params?.row?.note);
+              handleModalOpen();
+            }
+            event.stopPropagation();
+          }
+        }}
+        columns={[
+          {
+            field: "ofacId",
+            headerName: "ID",
+            flex: 1,
+            minWidth: 120,
+          },
+          {
+            field: "createdAt",
+            headerName: "Created",
+            flex: 1,
+            minWidth: 140,
+            valueFormatter: (params: any) => {
+              return `${timestampToDate(params.value)}`;
             },
-            {
-              field: "createdAt",
-              headerName: "Created",
-              flex: 1,
-              minWidth: 140,
-              valueFormatter: (params: any) => {
-                return `${timestampToDate(params.value)}`;
-              },
-              valueGetter: (params: any) => params.row.createdAt,
-            },
-            {
-              field: "entity",
-              headerName: "Entity",
-              flex: 1,
-              minWidth: 160,
-              renderCell: (params: any) => (
-                <MyText
-                  primary={
-                    params.row.businessName == null &&
-                    params.row.individualName == null &&
-                    params.row.counterpartyName == null &&
-                    params.row.transactionPaymentId == null
-                      ? false
-                      : true
-                  }
-                  underline={
-                    params.row.businessName == null &&
-                    params.row.individualName == null &&
-                    params.row.counterpartyName == null &&
-                    params.row.transactionPaymentId == null
-                      ? false
-                      : true
-                  }
-                  size="table"
-                >
-                  {params.row.businessName ??
-                    params.row.individualName ??
-                    params.row.counterpartyName ??
-                    params.row.transactionPaymentId ??
-                    "Unknown"}
-                </MyText>
-              ),
-              valueGetter: (params: any) =>
-                params.row.businessName ??
-                params.row.individualName ??
-                params.row.counterpartyName ??
-                params.row.transactionPaymentId ??
-                "Unknown",
-            },
-            {
-              field: "entityType",
-              headerName: "Entity Type",
-              flex: 1,
-              minWidth: 140,
-              renderCell: (params: any) => (
-                <LabelBox
-                  color={
-                    params.row.businessName != null
-                      ? "blue"
-                      : params.row.individualName != null
-                      ? "orange"
-                      : params.row.counterpartyName != null
-                      ? "green"
-                      : params.row.transactionPaymentId != null
-                      ? "red"
-                      : "gray"
-                  }
-                  border
-                >
-                  {params.row.uboId
-                    ? "UBO"
-                    : params.row.businessName
-                    ? "Business"
-                    : params.row.individualName
-                    ? "Individual"
-                    : params.row.counterpartyName
-                    ? "Counterparty"
-                    : params.row.transactionPaymentId
-                    ? "Transaction"
-                    : "Unknown"}
-                </LabelBox>
-              ),
-              valueGetter: (params: any) =>
-                params.row.uboId
+            valueGetter: (params: any) => params.row.createdAt,
+          },
+          {
+            field: "entity",
+            headerName: "Entity",
+            flex: 1,
+            minWidth: 160,
+            renderCell: (params: any) => (
+              <MyText
+                primary={
+                  params.row.businessName == null &&
+                  params.row.individualName == null &&
+                  params.row.counterpartyName == null &&
+                  params.row.transactionPaymentId == null
+                    ? false
+                    : true
+                }
+                underline={
+                  params.row.businessName == null &&
+                  params.row.individualName == null &&
+                  params.row.counterpartyName == null &&
+                  params.row.transactionPaymentId == null
+                    ? false
+                    : true
+                }
+                size="table"
+              >
+                {params.row.businessName ??
+                  params.row.individualName ??
+                  params.row.counterpartyName ??
+                  params.row.transactionPaymentId ??
+                  "Unknown"}
+              </MyText>
+            ),
+            valueGetter: (params: any) =>
+              params.row.businessName ??
+              params.row.individualName ??
+              params.row.counterpartyName ??
+              params.row.transactionPaymentId ??
+              "Unknown",
+          },
+          {
+            field: "entityType",
+            headerName: "Entity Type",
+            flex: 1,
+            minWidth: 140,
+            renderCell: (params: any) => (
+              <LabelBox
+                color={
+                  params.row.businessName != null
+                    ? "blue"
+                    : params.row.individualName != null
+                    ? "orange"
+                    : params.row.counterpartyName != null
+                    ? "green"
+                    : params.row.transactionPaymentId != null
+                    ? "red"
+                    : "gray"
+                }
+                border
+              >
+                {params.row.uboId
                   ? "UBO"
                   : params.row.businessName
                   ? "Business"
@@ -239,70 +230,84 @@ const OFACHitsTable = () => {
                   ? "Counterparty"
                   : params.row.transactionPaymentId
                   ? "Transaction"
-                  : "Unknown",
+                  : "Unknown"}
+              </LabelBox>
+            ),
+            valueGetter: (params: any) =>
+              params.row.uboId
+                ? "UBO"
+                : params.row.businessName
+                ? "Business"
+                : params.row.individualName
+                ? "Individual"
+                : params.row.counterpartyName
+                ? "Counterparty"
+                : params.row.transactionPaymentId
+                ? "Transaction"
+                : "Unknown",
+          },
+          {
+            field: "alertId",
+            headerName: "Alert ID",
+            flex: 1,
+            minWidth: 120,
+          },
+          {
+            field: "status",
+            headerName: "Status",
+            flex: 1,
+            minWidth: 120,
+            renderCell: (params: any) => (
+              <LabelBox
+                color={
+                  params.row?.status == "CLEARED"
+                    ? "green"
+                    : params.row?.status == "CONFIRMED"
+                    ? "red"
+                    : "gray"
+                }
+                fill
+              >
+                {enumTextToReadableText(params.row?.status)}
+              </LabelBox>
+            ),
+            valueGetter: (params: any) => params.row?.status,
+          },
+          {
+            field: "updatedAt",
+            headerName: "Updated",
+            flex: 1,
+            minWidth: 140,
+            valueFormatter: (params: any) => {
+              return `${timestampToDate(params.value)}`;
             },
-            {
-              field: "alertId",
-              headerName: "Alert ID",
-              flex: 1,
-              minWidth: 120,
-            },
-            {
-              field: "status",
-              headerName: "Status",
-              flex: 1,
-              minWidth: 120,
-              renderCell: (params: any) => (
-                <LabelBox
-                  color={
-                    params.row?.status == "CLEARED"
-                      ? "green"
-                      : params.row?.status == "CONFIRMED"
-                      ? "red"
-                      : "gray"
-                  }
-                  fill
-                >
-                  {enumTextToReadableText(params.row?.status)}
-                </LabelBox>
+            valueGetter: (params: any) => params.row.updatedAt,
+          },
+          {
+            field: "updatedBy",
+            headerName: "Updated By",
+            flex: 1,
+            minWidth: 160,
+          },
+          {
+            field: "note",
+            headerName: "Note",
+            flex: 1,
+            minWidth: 140,
+            renderCell: (params: any) =>
+              params.row.note != undefined && params.row.note != null ? (
+                <IconButton className="text-[#12A7FF]">
+                  <DescriptionIcon />
+                </IconButton>
+              ) : (
+                <></>
               ),
-              valueGetter: (params: any) => params.row?.status,
-            },
-            {
-              field: "updatedAt",
-              headerName: "Updated",
-              flex: 1,
-              minWidth: 140,
-              valueFormatter: (params: any) => {
-                return `${timestampToDate(params.value)}`;
-              },
-              valueGetter: (params: any) => params.row.updatedAt,
-            },
-            {
-              field: "updatedBy",
-              headerName: "Updated By",
-              flex: 1,
-              minWidth: 160,
-            },
-            {
-              field: "note",
-              headerName: "Note",
-              flex: 1,
-              minWidth: 140,
-              renderCell: (params: any) =>
-                params.row.note != undefined && params.row.note != null ? (
-                  <IconButton className="text-[#12A7FF]">
-                    <DescriptionIcon />
-                  </IconButton>
-                ) : (
-                  <></>
-                ),
-            },
-          ]}
-          rows={ofacsHits}
-          sortModel={[{ field: "createdAt", sort: "desc" }]}
-        />
-      </div>
+          },
+        ]}
+        rows={ofacsHits}
+        sortModel={[{ field: "createdAt", sort: "desc" }]}
+      />
+      {/* </div> */}
     </>
   );
 };

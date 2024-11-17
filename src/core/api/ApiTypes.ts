@@ -719,6 +719,9 @@ export interface TransactionMarketValue {
   source: string | null;
 }
 
+export interface OFACSearch {
+  status?: string;
+}
 export interface CustomerSearch {
   name?: string;
   productName?: string;
