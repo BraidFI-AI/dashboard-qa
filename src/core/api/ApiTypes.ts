@@ -719,11 +719,20 @@ export interface TransactionMarketValue {
   source: string | null;
 }
 
+
 export interface AlertSearch {
   contextType?: string;
   contextId?: string;
   types?: string[];
   statuses?: string[];
+}
+
+export interface CustomerSearch {
+  name?: string;
+  productName?: string;
+  createdAtStart?: string;
+  createdAtEnd?: string;
+  status?: string;
 }
 
 export interface TransactionSearch {
