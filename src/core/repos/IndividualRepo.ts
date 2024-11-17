@@ -4,6 +4,7 @@ import {
   CreateAcount,
   CreateIndividualDocument,
   CustomerAccount,
+  CustomerSearch,
   Individual,
   IndividualDocument,
   IndividualExternalAccount,
@@ -23,6 +24,18 @@ class IndividualRepo {
     );
 
     return individual;
+  }
+
+  public async fetchIndividualsPaginated(
+    pageSize: number,
+    pageNumber: number,
+    filters: CustomerSearch
+  ) {
+    return await this.apiClient.http<any>(
+      Method.POST,
+      `/individual/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      filters
+    );
   }
 
   public async fetchIndividuals() {
