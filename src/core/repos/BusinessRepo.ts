@@ -13,6 +13,7 @@ import {
   CreateBusinessDocument,
   CreateUBO,
   BusinessExternalAccount,
+  CustomerSearch,
 } from "../api/ApiTypes";
 
 class BusinessRepo {
@@ -116,6 +117,18 @@ class BusinessRepo {
     );
 
     return patch;
+  }
+
+  public async fetchBusinessesPaginated(
+    pageSize: number,
+    pageNumber: number,
+    filters: CustomerSearch
+  ) {
+    return await this.apiClient.http<any>(
+      Method.POST,
+      `/business/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      filters
+    );
   }
 
   public async fetchBusinesses() {
