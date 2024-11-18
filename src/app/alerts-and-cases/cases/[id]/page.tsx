@@ -69,7 +69,12 @@ const CasesPage = () => {
       <MyText size="md">Linked Alerts</MyText>
       <div className="h-1" />
       <div style={{ height: "50vh" }}>
-        <AlertsTable isPaginated={false} alerts={c.alerts} hideHeaders={true} />
+        <AlertsTable
+          isPaginated={false}
+          alerts={c.alerts}
+          hideHeaders={true}
+          filters={{}}
+        />
       </div>
     </>
   );

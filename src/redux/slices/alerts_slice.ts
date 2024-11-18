@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { Alert } from "@/core/api/ApiTypes";
+import { Alert, AlertSearch } from "@/core/api/ApiTypes";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import AlertsRepo from "@/core/repos/alerts_repo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
@@ -77,15 +77,27 @@ const AlertsSlice = createSlice({
 
 export const fetchAlerts = createAsyncThunk(
   "alerts/fetchAlerts",
-  async (refresh: boolean, thunkApi: any) => {
+  async (data: { refresh: boolean; filters: AlertSearch }, thunkApi: any) => {
     try {
+      if (
+        data.filters.statuses != null &&
+        typeof data.filters.statuses == "string"
+      ) {
+        data.filters.statuses = [data.filters.statuses];
+      }
+
+      if (data.filters.types != null && typeof data.filters.types == "string") {
+        data.filters.types = [data.filters.types];
+      }
+
       const alerts = await alertsRepo.fetchAlerts(
         thunkApi.getState().alerts.pagination.pageSize ?? paginationPageSize,
-        refresh == true
+        data.refresh == true
           ? 0
           : thunkApi.getState().alerts.pagination.pageNumber == -1
           ? 0
-          : thunkApi.getState().alerts.pagination.pageNumber
+          : thunkApi.getState().alerts.pagination.pageNumber,
+        data.filters
       );
       console.log("alerts", alerts);
 
