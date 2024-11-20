@@ -50,20 +50,20 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
       setRTN(noc.correctedData);
     }
     if (noc.changeCode == "C03") {
-      setRTN(parseCorrectedData(noc.correctedData)[0]);
-      setAccountNumber(parseCorrectedData(noc.correctedData)[1]);
+      setRTN(parseCorrectedData(noc.correctedData)?.[0]);
+      setAccountNumber(parseCorrectedData(noc.correctedData)?.[1]);
     }
     if (noc.changeCode == "C05") {
       setTransCode(noc.correctedData);
     }
     if (noc.changeCode == "C06") {
-      setAccountNumber(parseCorrectedData(noc.correctedData)[0]);
-      setTransCode(parseCorrectedData(noc.correctedData)[1]);
+      setAccountNumber(parseCorrectedData(noc.correctedData)?.[0]);
+      setTransCode(parseCorrectedData(noc.correctedData)?.[1]);
     }
     if (noc.changeCode == "C07") {
-      setRTN(parseCorrectedData(noc.correctedData)[0]);
-      setAccountNumber(parseCorrectedData(noc.correctedData)[1]);
-      setTransCode(parseCorrectedData(noc.correctedData)[2]);
+      setRTN(parseCorrectedData(noc.correctedData)?.[0]);
+      setAccountNumber(parseCorrectedData(noc.correctedData)?.[1]);
+      setTransCode(parseCorrectedData(noc.correctedData)?.[2]);
     }
   }, [noc]);
 
@@ -77,8 +77,8 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
     <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
       <MyText size="lg">Change invalid data</MyText>
       <div className="pb-6" />
-      <ItemRow title="Change code" value={noc.changeCode} />
-      <ItemRow title="Change reason" value={noc.changeReason} />
+      <ItemRow title="Change code" value={noc.changeCode ?? ""} />
+      <ItemRow title="Change reason" value={noc.changeReason ?? ""} />
       {counterparty == "loading" ? (
         <MyCircularProgressIndicator />
       ) : counterparty == null ? (
@@ -100,13 +100,13 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
             <MyText size="lg">Counterparty data</MyText>
             <div className="pb-1" />
             <MyText>Account number</MyText>
-            <MyText size="md">{counterparty.ach?.accountNumber}</MyText>
+            <MyText size="md">{counterparty.ach?.accountNumber ?? ""}</MyText>
             <div className="pb-4" />
             <MyText>Routing number</MyText>
-            <MyText size="md">{counterparty.ach?.routingNumber}</MyText>
+            <MyText size="md">{counterparty.ach?.routingNumber ?? ""}</MyText>
             <div className="pb-4" />
             <MyText>Account type</MyText>
-            <MyText size="md">{counterparty.ach?.bankAccountType}</MyText>
+            <MyText size="md">{counterparty.ach?.bankAccountType ?? ""}</MyText>
             <div className="pb-6" />
             {(accountNumber != null &&
               accountNumber != counterparty.ach?.accountNumber) ||

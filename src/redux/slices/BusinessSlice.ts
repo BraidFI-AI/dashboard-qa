@@ -13,6 +13,7 @@ import {
   IdsListType,
   CreateUBO,
   BusinessExternalAccount,
+  CustomerSearch,
 } from "@/core/api/ApiTypes";
 import {
   APP_TIMEZONE,
@@ -21,6 +22,7 @@ import {
 } from "@/core/constants";
 import BusinessRepo from "@/core/repos/BusinessRepo";
 import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -37,21 +39,30 @@ export type BusinessAccountIdsType = "loading" | string | string[];
 
 interface BusinessState {
   businesses: Business[] | null;
+  businessesPaginated: "loading" | string | Business[];
   counterparties: BusinessCounterpartyType;
   accountIds: BusinessAccountIdsType;
   counterpartyPagination: PaginationStateType;
   refresh: boolean;
   business: "loading" | string | Business;
+  businessPagination: PaginationStateType;
   businessAccounts: "loading" | string | CustomerAccount[];
   businessAccountsPagination: PaginationStateType;
 }
 
 const initialState: BusinessState = {
   businesses: null,
+  businessesPaginated: "loading",
   counterparties: "loading",
   accountIds: "loading",
   business: "loading",
   businessAccounts: "loading",
+  businessPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+    pageSize: paginationPageSize,
+  },
   businessAccountsPagination: {
     rowCount: 0,
     pageNumber: -1,
@@ -78,11 +89,37 @@ const BusinessSlice = createSlice({
     setBusinessAccountsPageNumber(state, action) {
       state.businessAccountsPagination.pageNumber = action.payload;
     },
+    setBusinessesPageSize(state, action) {
+      state.businessPagination.pageSize = action.payload;
+    },
+    setBusinessesPageNumber(state, action) {
+      state.businessPagination.pageNumber = action.payload;
+    },
     setRefresh(state, action) {
       state.refresh = action.payload;
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchBusinessesPaginated.pending, (state, action) => {
+      if (
+        state.businessPagination.pageNumber == -1 ||
+        action.meta.arg.refresh
+      ) {
+        state.businessesPaginated = "loading";
+      }
+      state.businessPagination.loadingPage = true;
+    });
+    builder.addCase(fetchBusinessesPaginated.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.businessesPaginated = action.payload;
+      } else {
+        state.businessesPaginated = action.payload.businesses;
+        state.businessPagination.rowCount = action.payload.rowCount;
+        state.businessPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.businessPagination.loadingPage = false;
+    });
     builder.addCase(fetchBusinessV2.pending, (state, action) => {
       state.business = "loading";
     });
@@ -525,6 +562,55 @@ export const fetchBusinesses = createAsyncThunk(
   }
 );
 
+export const fetchBusinessesPaginated = createAsyncThunk(
+  "business/fetchBusinessesPaginated",
+  async (
+    data: { refresh: boolean; filters: CustomerSearch },
+    thunkApi: any
+  ) => {
+    try {
+      if (data.filters.createdAtStart) {
+        const sDate = moment(data.filters.createdAtStart);
+        data.filters = {
+          ...data.filters,
+          createdAtStart: `${sDate.year()}-${(sDate.month() + 1)
+            .toString()
+            .padStart(2, "0")}-${sDate.date().toString().padStart(2, "0")}`,
+        };
+      }
+      if (data.filters.createdAtEnd) {
+        const sDate = moment(data.filters.createdAtEnd);
+        data.filters = {
+          ...data.filters,
+          createdAtEnd: `${sDate.year()}-${(sDate.month() + 1)
+            .toString()
+            .padStart(2, "0")}-${sDate.date().toString().padStart(2, "0")}`,
+        };
+      }
+
+      const businesses = await businessRepo.fetchBusinessesPaginated(
+        thunkApi.getState().business.businessPagination.pageSize ??
+          paginationPageSize,
+        data.refresh == true
+          ? 0
+          : thunkApi.getState().business.businessPagination.pageNumber == -1
+          ? 0
+          : thunkApi.getState().business.businessPagination.pageNumber,
+        data.filters
+      );
+      console.log("businesses", businesses);
+
+      return {
+        businesses: businesses.content,
+        rowCount: businesses.totalElements,
+        pageNumber: businesses.number,
+      };
+    } catch (e: any) {
+      return `Error fetching businesses ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchBusinessV2 = createAsyncThunk(
   "business/fetchBusiness",
   async (id: number) => {
@@ -780,6 +866,8 @@ export const updateBusiness = createAsyncThunk(
 
 export default BusinessSlice;
 export const {
+  setBusinessesPageSize,
+  setBusinessesPageNumber,
   setBusinessAccountsPageNumber,
   setInitialBusinessState,
   setBusinessCounterpartyPaginationPageNumber,

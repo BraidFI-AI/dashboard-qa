@@ -8,8 +8,7 @@ import MyControlledTextField from "@/core/components/TextField/MyControlledTextF
 import { fetchProductIdsList } from "@/redux/slices/ach_return_slice";
 import {
   createBusiness,
-  fetchBusinesses,
-  setRefresh,
+  fetchBusinessesPaginated,
 } from "@/redux/slices/BusinessSlice";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Business, BusinessAddress } from "@/core/api/ApiTypes";
@@ -22,6 +21,7 @@ import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlle
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
+import { useSearchParams } from "next/navigation";
 
 function mapToBusinessType(value: string) {
   if (value === "Sole Proprietor") {
@@ -55,6 +55,8 @@ const CreateBusinessPage = () => {
   const [productIdsList, setProductIdsList] = useState<
     "loading" | string | { id: string; name: string }[]
   >("loading");
+
+  const qParams = useSearchParams();
 
   const [productId, setProductId] = useState<string>("");
 
@@ -134,12 +136,23 @@ const CreateBusinessPage = () => {
         if (typeof res.payload == "string") {
           enqueueSnackbar(res.payload, { variant: "error", persist: true });
         } else {
-          dispatch(fetchBusinesses());
+          const params: { [anyProp: string]: string | string[] } = {};
+
+          qParams.forEach((value, key) => {
+            if (value.includes(",")) {
+              params[key] = value.split(",");
+            } else {
+              params[key] = value;
+            }
+          });
+
+          dispatch(
+            fetchBusinessesPaginated({ refresh: true, filters: params })
+          );
           enqueueSnackbar("Business created successfully", {
             variant: "success",
           });
           setDrawerOpen(false);
-          dispatch(setRefresh(true));
         }
       }
       setSubmitting(false);

@@ -279,6 +279,7 @@ const TransactionsChart = () => {
                       duration == "Week" ? 7 : duration == "Month" ? 31 : 12
                     }
                   />
+                  <div className="pb-10" />
                 </div>
               )}
             </>
@@ -377,6 +378,7 @@ const TransactionsChart = () => {
                 data={chartData}
                 length={duration == "Week" ? 7 : duration == "Month" ? 31 : 12}
               />
+              <div className="pb-10" />
             </div>
           )}
         </>

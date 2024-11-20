@@ -1,5 +1,5 @@
 import ApiClient, { Method } from "../api/ApiClient";
-import { Alert } from "../api/ApiTypes";
+import { Alert, AlertSearch } from "../api/ApiTypes";
 
 class AlertsRepo {
   private apiClient: ApiClient;
@@ -8,11 +8,15 @@ class AlertsRepo {
     this.apiClient = apiClient;
   }
 
-  public async fetchAlerts(pageSize: number, pageNumber: number) {
+  public async fetchAlerts(
+    pageSize: number,
+    pageNumber: number,
+    filters: AlertSearch
+  ) {
     const response = await this.apiClient.http<any>(
       Method.POST,
       `/alerts/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      {}
+      filters
     );
     return response;
   }

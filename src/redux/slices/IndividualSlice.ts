@@ -5,6 +5,7 @@ import {
   CreateAcount,
   CreateIndividualDocument,
   CustomerAccount,
+  CustomerSearch,
   IdsListType,
   Individual,
   IndividualDocument,
@@ -32,22 +33,31 @@ export type IndividualAccountIdsType = "loading" | string | string[];
 
 interface IndividualState {
   individuals: Individual[] | null;
+  individualsPaginated: "loading" | string | Individual[];
   counterparties: IndividualCounterpartyType;
   accountIds: IndividualAccountIdsType;
   counterpartyPagination: PaginationStateType;
   refresh: boolean;
   individual: "loading" | string | Individual;
   individualAccounts: "loading" | string | CustomerAccount[];
+  individualsPagination: PaginationStateType;
   individualAccountsPagination: PaginationStateType;
 }
 
 const initialState: IndividualState = {
   individuals: null,
+  individualsPaginated: "loading",
   counterparties: "loading",
   accountIds: "loading",
   refresh: true,
   individual: "loading",
   individualAccounts: "loading",
+  individualsPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+    pageSize: paginationPageSize,
+  },
   individualAccountsPagination: {
     rowCount: 0,
     pageNumber: -1,
@@ -73,8 +83,34 @@ const IndividualSlice = createSlice({
     setRefreshIndividual(state, action) {
       state.refresh = action.payload;
     },
+    setIndividualsPageSize(state, action) {
+      state.individualsPagination.pageSize = action.payload;
+    },
+    setIndividualsPageNumber(state, action) {
+      state.individualsPagination.pageNumber = action.payload;
+    },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchIndividualsPaginated.pending, (state, action) => {
+      if (
+        state.individualsPagination.pageNumber == -1 ||
+        action.meta.arg.refresh
+      ) {
+        state.individualsPaginated = "loading";
+      }
+      state.individualsPagination.loadingPage = true;
+    });
+    builder.addCase(fetchIndividualsPaginated.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.individualsPaginated = action.payload;
+      } else {
+        state.individualsPaginated = action.payload.individuals;
+        state.individualsPagination.rowCount = action.payload.rowCount;
+        state.individualsPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.individualsPagination.loadingPage = false;
+    });
     builder.addCase(fetchIndividualV2.pending, (state, action) => {
       state.individual = "loading";
     });
@@ -205,6 +241,55 @@ export const createPaymentInstrument = createAsyncThunk(
       return inst;
     } catch (e: any) {
       return `Error creating payment instrument ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchIndividualsPaginated = createAsyncThunk(
+  "individual/fetchIndividualsPaginated",
+  async (
+    data: { refresh: boolean; filters: CustomerSearch },
+    thunkApi: any
+  ) => {
+    try {
+      if (data.filters.createdAtStart) {
+        const sDate = moment(data.filters.createdAtStart);
+        data.filters = {
+          ...data.filters,
+          createdAtStart: `${sDate.year()}-${(sDate.month() + 1)
+            .toString()
+            .padStart(2, "0")}-${sDate.date().toString().padStart(2, "0")}`,
+        };
+      }
+      if (data.filters.createdAtEnd) {
+        const sDate = moment(data.filters.createdAtEnd);
+        data.filters = {
+          ...data.filters,
+          createdAtEnd: `${sDate.year()}-${(sDate.month() + 1)
+            .toString()
+            .padStart(2, "0")}-${sDate.date().toString().padStart(2, "0")}`,
+        };
+      }
+
+      const individuals = await individualRepo.fetchIndividualsPaginated(
+        thunkApi.getState().business.businessPagination.pageSize ??
+          paginationPageSize,
+        data.refresh == true
+          ? 0
+          : thunkApi.getState().business.businessPagination.pageNumber == -1
+          ? 0
+          : thunkApi.getState().business.businessPagination.pageNumber,
+        data.filters
+      );
+      console.log("individuals", individuals);
+
+      return {
+        individuals: individuals.content,
+        rowCount: individuals.totalElements,
+        pageNumber: individuals.number,
+      };
+    } catch (e: any) {
+      return `Error fetching businesses ${generateErrorMessage(e)}`;
     }
   }
 );
@@ -571,6 +656,8 @@ export const approveIndividual = createAsyncThunk(
 
 export default IndividualSlice;
 export const {
+  setIndividualsPageSize,
+  setIndividualsPageNumber,
   setInitialIndividualState,
   setRefreshIndividual,
   setIndividualCounterpartyPaginationPageNumber,
