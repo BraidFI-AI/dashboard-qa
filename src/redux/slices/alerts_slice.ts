@@ -70,7 +70,11 @@ const AlertsSlice = createSlice({
       state.openAlerts = "loading";
     });
     builder.addCase(fetchOpenAlertsCount.fulfilled, (state, action) => {
-      state.openAlerts = action.payload;
+      if (typeof action.payload == "string") {
+        state.openAlerts = action.payload;
+      } else {
+        state.openAlerts = action.payload.allOpenAlerts;
+      }
     });
   },
 });
