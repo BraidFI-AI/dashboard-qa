@@ -8,6 +8,7 @@ import MyText from "@/core/components/Text/Text";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import timestampToDate from "@/core/utils/timestampToDate";
 import { fetch314ARecord } from "@/redux/slices/314a_slice";
+import { setTitle } from "@/redux/slices/AppSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useParams, useRouter } from "next/navigation";
@@ -51,6 +52,7 @@ const Compliance314aDetailsPage = () => {
   };
 
   useEffect(() => {
+    dispatch(setTitle("314A Details"));
     dispatch(fetch314ARecord(params.id.toString())).then((response: any) => {
       setData(response.payload);
     });
