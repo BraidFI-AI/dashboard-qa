@@ -30,10 +30,10 @@ class AlertsRepo {
   }
 
   public async fetchOpenAlertsCount() {
-    const response = await this.apiClient.http<number>(
-      Method.GET,
-      `/alerts/open`
-    );
+    const response = await this.apiClient.http<{
+      allOpenAlerts: number;
+      assignedOpenAlerts: number;
+    }>(Method.GET, `/alerts/open`);
     return response;
   }
 
