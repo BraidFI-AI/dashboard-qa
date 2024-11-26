@@ -719,15 +719,12 @@ export interface TransactionMarketValue {
   source: string | null;
 }
 
-
-
 export interface AlertSearch {
   contextType?: string;
   contextId?: string;
   types?: string[];
   statuses?: string[];
 }
-
 
 export interface OFACSearch {
   status?: string;
@@ -1067,6 +1064,25 @@ export interface CreateAcount {
   cardManagementId: Number | null;
   custId: Number | null;
   productId: Number | null;
+}
+
+export interface Compliance314A {
+  list314aId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyId?: string | null;
+  businessName?: string | null;
+  businessId?: string | null;
+  individualName?: string | null;
+  individualId?: string | null;
+  uboId?: string | null;
+  transactionPaymentId?: string | null;
+  alertId?: string | null;
+  note?: string | null;
+  status?: string | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+  updatedBy?: string | null;
+  rawResults?: string | null;
 }
 
 export interface OFAC {
