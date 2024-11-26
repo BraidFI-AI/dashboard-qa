@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import MyText from "@/core/components/Text/Text";
 import { PaginationStateType, paginationPageSize } from "@/core/constants";
 import { setPaginationPageNumber } from "@/redux/slices/TransactionSlice";
+import { v4 as uuidv4 } from "uuid";
 
 const NocTable = () => {
   const router = useRouter();
@@ -105,6 +106,7 @@ const NocTable = () => {
               event.stopPropagation();
             }
           }}
+          customId={(row: any) => uuidv4()}
           handleRowClick={handleRowClick}
           columns={[
             {

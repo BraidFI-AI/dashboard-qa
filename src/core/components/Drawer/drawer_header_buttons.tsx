@@ -19,6 +19,7 @@ import CreateBusinessAccount from "../views/account/create_business_account";
 import CreateIndividualAccount from "../views/account/create_individual_account";
 import WhitelistDeveloperID from "./header_buttons/white_developer_id";
 import WireRunReturnSettlementButton from "./header_buttons/wire_run_return_settlement";
+import Upload314AFile from "./header_buttons/upload_314a_file";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -85,7 +86,8 @@ const DrawerHeaderButtons = () => {
     (pathname == "/ach/settlement" && <AchHistoryFilters />) ||
     (pathname.includes("/configuration/developers/") && (
       <WhitelistDeveloperID />
-    ))
+    )) ||
+    (pathname == "/compliance/314a" && <Upload314AFile />)
   );
 };
 
