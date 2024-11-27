@@ -195,7 +195,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             field: "status",
             headerName: "Status",
             flex: 1,
-            minWidth: 80,
+            minWidth: 110,
             renderCell: (params: any) => (
               <LabelBox
                 color={
@@ -228,7 +228,14 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             flex: 1,
             minWidth: 140,
             renderCell: (params: any) => {
-              return params.row.type == "OFAC" ? (
+              return params.row.type == "LIST_314A" ? (
+                <MyLinkText
+                  textProps={{ size: "table" }}
+                  link={`/compliance/314a/${params.row.contextId}`}
+                >
+                  {params.row.contextId}
+                </MyLinkText>
+              ) : params.row.type == "OFAC" ? (
                 <MyLinkText
                   textProps={{ size: "table" }}
                   link={`/compliance/ofac/${params.row.contextId}`}

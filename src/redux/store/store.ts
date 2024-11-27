@@ -28,6 +28,7 @@ import WireSlice from "../slices/wire_settlement_slice";
 import CasesSlice from "../slices/cases_slice";
 import WireProcessingSlice from "../slices/wire_processing_slice";
 import ClearSightSlice from "../slices/clear_sight_slice";
+import Compliance314aSlice from "../slices/314a_slice";
 
 export const store = configureStore({
   reducer: {
@@ -49,6 +50,7 @@ export const store = configureStore({
     developer: DeveloperSlice.reducer,
     limits: LimitsSlice.reducer,
     ofac: OFACSlice.reducer,
+    compliance314a: Compliance314aSlice.reducer,
     userManagement: UsermanagementSlice.reducer,
     fee: FeeSlice.reducer,
     apikey: ApiKeySlice.reducer,
