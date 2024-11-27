@@ -76,7 +76,11 @@ const EsclateAlertButton = () => {
 
   useEffect(() => {
     if (typeof alert != "string") {
-      if (alert.status == "OPEN") {
+      if (
+        alert.status == "UNASSIGNED" ||
+        alert.status == "OPEN" ||
+        alert.status == "ASSIGNED"
+      ) {
         setIsOpen(true);
       } else {
         setIsOpen(false);
