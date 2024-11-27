@@ -104,7 +104,15 @@ const AlertsPage = () => {
       />
       <ItemRow title="Description" value={alert.description ?? ""} />
       <ItemRow title="Entity Type" value={alert.contextType ?? ""} />
-      {alert.type == "OFAC" ? (
+      {alert.type == "LIST_314A" ? (
+        <ItemRow
+          title="Entity ID"
+          value={{
+            value: alert.contextId,
+            link: `/compliance/314a/${alert.contextId}`,
+          }}
+        />
+      ) : alert.type == "OFAC" ? (
         <ItemRow
           title="Entity ID"
           value={{
