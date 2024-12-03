@@ -73,7 +73,7 @@ export interface AlertTimeline {
 
 export interface AlertDocument {
   id: number | null;
-
+  name?: string | null;
   alertId: number | null;
   caseId: number | null;
   status: string | null;

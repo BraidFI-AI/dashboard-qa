@@ -6,13 +6,11 @@ import { useAppDispatch } from "@/redux/store/store";
 import { runSettlement } from "@/redux/slices/wire_settlement_slice";
 import { enqueueSnackbar } from "notistack";
 import ProcessInboundWire from "./header_buttons/process_inbound_wire";
-import AddAlertNodeButton from "./header_buttons/add_alert_note";
 import AchHistoryFilters from "@/app/ach/settlement/components/ach_history_filter";
 import AddCaseNodeButton from "./header_buttons/add_case_note";
 import ResolveCaseButton from "./header_buttons/resolve_case_button";
 import EsclateAlertButton from "./header_buttons/esclate_alert_button";
 import ResolveAlertButton from "./header_buttons/resolve_alert";
-import UploadAlertDocumentButton from "./header_buttons/upload_alert_document";
 import UploadCaseDocumentButton from "./header_buttons/upload_case_document";
 import CreateProductPage from "@/app/configuration/products/components/create_product";
 import CreateBusinessAccount from "../views/account/create_business_account";
@@ -67,12 +65,6 @@ const DrawerHeaderButtons = () => {
         <div className="w-4" />
         <ResolveAlertButton />
       </div>
-    )) ||
-    (pathname == `/alerts-and-cases/alerts/${params.id}/alertNotes` && (
-      <AddAlertNodeButton />
-    )) ||
-    (pathname == `/alerts-and-cases/alerts/${params.id}/documents` && (
-      <UploadAlertDocumentButton />
     )) ||
     (pathname == `/alerts-and-cases/cases/${params.id}` && (
       <ResolveCaseButton />

@@ -17,6 +17,10 @@ import { set } from "lodash";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import AlertNotesComponent from "./components/notes";
+import AlertDocumentsComponent from "./components/documents";
+import AlertDetailsComponent from "./components/details";
+import AlertTimelineComponent from "./components/timeline";
 
 const AlertsPage = () => {
   const dispatch = useAppDispatch();
@@ -86,116 +90,22 @@ const AlertsPage = () => {
         ofacId={alert.ofacId ?? ""}
         customActionOnCompletion={() => setRefresh(true)}
       />
-      <ItemRow title="Alert ID" value={alert.id ?? ""} />
-      {alert.caseId != null && (
-        <ItemRow
-          title="Case ID"
-          value={{
-            link: `/alerts-and-cases/cases/${alert.caseId}`,
-            value: c == null ? alert.caseId : c.name,
-          }}
-        />
-      )}
-      <ItemRow title="Type" value={alert.type ?? ""} />
-      <ItemRow
-        status={alert.status == "CLOSED" ? true : false}
-        title="Status"
-        value={alert.status ?? ""}
-      />
-      <ItemRow title="Description" value={alert.description ?? ""} />
-      <ItemRow title="Entity Type" value={alert.contextType ?? ""} />
-      {alert.type == "LIST_314A" ? (
-        <ItemRow
-          title="Entity ID"
-          value={{
-            value: alert.contextId,
-            link: `/compliance/314a/${alert.contextId}`,
-          }}
-        />
-      ) : alert.type == "OFAC" ? (
-        <ItemRow
-          title="Entity ID"
-          value={{
-            value: alert.contextId,
-            link: `/compliance/ofac/${alert.contextId}`,
-          }}
-        />
-      ) : alert.type == "TRANSACTION_MONITORING" ||
-        alert.type == "TRANSACTION_REVIEW" ? (
-        <div
-          className="cursor-pointer"
-          onClick={(e: any) => {
-            if (alert.contextType == "TRANSACTION") {
-              handleReviewModalOpen();
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }}
-        >
-          <ItemRow title="Entity ID" value={alert.contextId} primary={true} />
+      <div className="flex flex-row">
+        <div className="flex flex-col w-full">
+          <AlertDetailsComponent alert={alert} context={context} />
+          <div className="h-6" />
+          <AlertDetailsComponent alert={alert} context={context} />
         </div>
-      ) : alert.type == "DUAL_APPROVAL" ? (
-        <>
-          {context == "loading" ? (
-            alert.contextType == "VELOCITY_LIMIT" ? (
-              <ItemRow title="Entity ID" value={alert.contextId} />
-            ) : (
-              <ItemRow
-                title="Entity ID"
-                value={{
-                  value: alert.contextId,
-                  link:
-                    alert.contextType == "PRODUCT"
-                      ? `/configuration/products/${alert.contextId}`
-                      : alert.contextType == "FILE_NAME"
-                      ? `/transactions/transactionHistory?wireFileHandle=${alert.contextId}`
-                      : "",
-                }}
-              />
-            )
-          ) : context == null || typeof context == "string" ? (
-            <ErrorPage
-              error={
-                typeof context == "string"
-                  ? context
-                  : `Failed to fetch ${alert.contextType
-                      ?.toLowerCase()
-                      ?.replaceAll("_", " ")}`
-              }
-              recoveryButtonTitle="Retry"
-              recoveryButtonOnClick={() => {
-                dispatch(fetchLimit(alert.contextId.toString())).then(
-                  (data: any) => {
-                    setContext(data.payload);
-                  }
-                );
-              }}
-            />
-          ) : (
-            <ItemRow
-              title="Entity ID"
-              value={{
-                value:
-                  alert.contextType == "VELOCITY_LIMIT"
-                    ? context.limitName
-                    : alert.contextId,
-                link:
-                  alert.contextType == "VELOCITY_LIMIT"
-                    ? context.productId != null
-                      ? `/configuration/products/${context.productId}/limits/${context.id}`
-                      : `/accounts/${context.accountNumber}/limits/${context.id}`
-                    : alert.contextType == "PRODUCT"
-                    ? `/configuration/products/${alert.contextId}`
-                    : alert.contextType == "FILE_NAME"
-                    ? `/transactions/transactionHistory?wireFileHandle=${alert.contextId}`
-                    : "",
-              }}
-            />
-          )}
-        </>
-      ) : (
-        <ItemRow title="Entity ID" value={alert.contextId} />
-      )}
+        <div className="w-6" />
+        <AlertTimelineComponent alert={alert} />
+      </div>
+      <div className="h-6" />
+      <div className="w-full flex flex-row">
+        <div className="pr-4 w-full">
+          <AlertNotesComponent alert={alert} />
+        </div>
+        <AlertDocumentsComponent alert={alert} />
+      </div>
       <div className="h-10" />
     </>
   );
