@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { GridEventListener, GridValueFormatterParams } from "@mui/x-data-grid";
+import { GridEventListener } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Product } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -99,13 +99,12 @@ const ProductsTable = () => {
           headerName: "Active",
           flex: 1,
           minWidth: 120,
-          valueFormatter: (params: GridValueFormatterParams<any>) => {
-            if (params.value == null) {
+          valueFormatter: (params: any) => {
+            if (params == null) {
               return "";
             }
             return (
-              params.value.toString()[0].toUpperCase()[0] +
-              params.value.toString().slice(1)
+              params.toString()[0].toUpperCase()[0] + params.toString().slice(1)
             );
           },
         },

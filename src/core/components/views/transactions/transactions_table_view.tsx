@@ -83,12 +83,10 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
     setModalOpen(true);
   };
   const formatTitle = (key: any) => {
-    return (
-      key
-        ?.split(/(?=[A-Z])/)
-        ?.map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
-        ?.join(" ") ?? ""
-    );
+    return (key
+      ?.split(/(?=[A-Z])/)
+      ?.map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
+      ?.join(" ") ?? "");
   };
 
   const renderObject = (obj: any, prefix: string = ""): any => {

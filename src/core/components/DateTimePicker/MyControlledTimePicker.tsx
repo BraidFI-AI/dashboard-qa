@@ -61,23 +61,26 @@ const MyControlledTimePicker: React.FC<MyControlledTimePickerProps> = ({
             onChange={(event) => {
               onChange(event ? event : null);
             }}
-            slotProps={{
-              //   popper: { placement: "auto" },
-              //   actionBar: { actions: ["clear"] },
-              textField: {
-                fullWidth: true,
-                variant: "outlined",
-                error: getErrorByNameString(errors, name) ? true : false,
-                helperText:
-                  getErrorByNameString(errors, name)?.type === "required"
-                    ? `${displayName ? displayName : name} is required`
-                    : getErrorByNameString(errors, name)
-                    ? getErrorByNameString(errors, name).message
-                      ? getErrorByNameString(errors, name).message
-                      : `Invalid ${displayName}`
-                    : "",
-              },
-            }}
+            slotProps={
+              {
+                //   popper: { placement: "auto" },
+                //   actionBar: { actions: ["clear"] },
+                // TODO -- fix this
+                // textField: {
+                //   fullWidth: true,
+                //   variant: "outlined",
+                //   error: getErrorByNameString(errors, name) ? true : false,
+                //   helperText:
+                //     getErrorByNameString(errors, name)?.type === "required"
+                //       ? `${displayName ? displayName : name} is required`
+                //       : getErrorByNameString(errors, name)
+                //       ? getErrorByNameString(errors, name).message
+                //         ? getErrorByNameString(errors, name).message
+                //         : `Invalid ${displayName}`
+                //       : "",
+                // },
+              }
+            }
           />
         </LocalizationProvider>
       )}

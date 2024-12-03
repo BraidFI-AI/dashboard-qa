@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { GridEventListener, GridValueFormatterParams } from "@mui/x-data-grid";
+import { GridEventListener } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Card } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -69,17 +69,17 @@ const CardsTable = () => {
 
                 return date;
               },
-              valueFormatter: (params: GridValueFormatterParams<Moment>) => {
-                if (params.value == null) {
+              valueFormatter: (params: Moment) => {
+                if (params == null) {
                   return "";
                 }
 
                 return `${
-                  params.value.year() +
+                  params.year() +
                   "-" +
-                  (params.value.month() + 1) +
+                  (params.month() + 1) +
                   "-" +
-                  params.value.date()
+                  params.date()
                 }`;
               },
             },
@@ -103,16 +103,16 @@ const CardsTable = () => {
 
                 return date;
               },
-              valueFormatter: (params: GridValueFormatterParams<Moment>) => {
-                if (params.value == null) {
+              valueFormatter: (params: Moment) => {
+                if (params == null) {
                   return "";
                 }
                 return `${
-                  params.value.year() +
+                  params.year() +
                   "-" +
-                  (params.value.month() + 1) +
+                  (params.month() + 1) +
                   "-" +
-                  params.value.date()
+                  params.date()
                 }`;
               },
             },

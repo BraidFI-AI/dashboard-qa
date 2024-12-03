@@ -52,7 +52,7 @@ const CounterpartyBraidDetailsView: React.FC<
   }, [dispatch, counterparty.ofacId]);
 
   return (
-    <div className="flex flex-col">
+    (<div className="flex flex-col">
       {counterparty.ofacId == null ? (
         <MyText size="md">No OFAC check</MyText>
       ) : ofac === "loading" ? (
@@ -278,10 +278,10 @@ const CounterpartyBraidDetailsView: React.FC<
             /> */}
             {counterparty.braid?.status &&
               counterparty.braid?.status == "BLOCKED" && (
-                <ItemRow
+                (<ItemRow
                   title="Blocked results"
                   value={counterparty.braid?.blockedResults ?? ""}
-                ></ItemRow>
+                ></ItemRow>)
                 // <MyEditableTextField
                 //   editing={isEditing}
                 //   setEditing={setIsEditing}
@@ -308,7 +308,7 @@ const CounterpartyBraidDetailsView: React.FC<
           </div>
         </div>
       )}
-    </div>
+    </div>)
   );
 };
 

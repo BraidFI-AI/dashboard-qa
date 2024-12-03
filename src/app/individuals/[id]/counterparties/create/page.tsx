@@ -229,7 +229,7 @@ const CreateCounterpartyPage = () => {
   }, [submitCount, isValid, isSubmitted]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-1/3">
         <MyText>Counterparty Name</MyText>
         <MyControlledTextField
@@ -1110,7 +1110,7 @@ const CreateCounterpartyPage = () => {
           </MyBlueButton>
         </Box>
       </Box>
-    </form>
+    </form>)
   );
 };
 

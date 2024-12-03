@@ -114,18 +114,19 @@ const MyTable: React.FC<MyTableProps> = ({
         cursor: "pointer",
         overflow: "auto",
       }}
-      slots={{ toolbar: MyTableToolbar }}
-      slotProps={{
-        toolbar: {
-          expand: expand,
-          toggleExpand: toggleExpand,
-          exp: exp,
-          hideColumnsButton: hideColumnsButton,
-          hideFilterButton: hideFilterButton,
-          hideDensityButton: hideDensityButton,
-          hideSearch: hideSearch,
-        },
-      }}
+      // TODO -- fix this
+      // slots={{ toolbar: MyTableToolbar }}
+      // slotProps={{
+      //   toolbar: {
+      //     expand: expand,
+      //     toggleExpand: toggleExpand,
+      //     exp: exp,
+      //     hideColumnsButton: hideColumnsButton,
+      //     hideFilterButton: hideFilterButton,
+      //     hideDensityButton: hideDensityButton,
+      //     hideSearch: hideSearch,
+      //   },
+      // }}
       columns={columns.map((column: any) => ({
         ...column,
         resizable: true,

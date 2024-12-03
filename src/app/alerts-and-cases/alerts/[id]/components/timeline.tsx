@@ -22,12 +22,12 @@ const AlertTimelineComponent: React.FC<AlertTimelineComponentProps> = ({
         </MyText>
       </div>
       <Timeline
-        sx={{
-          [`& .${timelineItemClasses.root}:before`]: {
-            flex: 0,
-            padding: 0,
-          },
-        }}
+      // sx={{
+      //   [`& .${timelineItemClasses.root}:before`]: {
+      //     flex: 0,
+      //     padding: 0,
+      //   },
+      // }}
       >
         {alert.alertTimelines?.map((timeline: any, index: number) => {
           return <></>;

@@ -30,7 +30,7 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
   const [expandDetails, toggleExpandDetails] = useState(false);
 
   return (
-    <div className="flex flex-col">
+    (<div className="flex flex-col">
       <MyExpandableButton
         title="ACH Payment Instrument"
         expand={expandDetails}
@@ -407,7 +407,7 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
             /> */}
             {counterparty.ach?.status &&
               counterparty.ach?.status == "BLOCKED" && (
-                <ItemRow title="Blocked results" values={[]}></ItemRow>
+                (<ItemRow title="Blocked results" values={[]}></ItemRow>)
                 // <MyEditableTextField
                 //   editing={isEditing}
                 //   setEditing={setIsEditing}
@@ -434,7 +434,7 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </div>)
   );
 };
 

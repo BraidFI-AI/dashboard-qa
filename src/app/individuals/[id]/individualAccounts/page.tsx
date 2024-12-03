@@ -4,7 +4,7 @@ import { CustomerAccount, Individual } from "@/core/api/ApiTypes";
 import MyTable from "@/core/components/Table/MyTable";
 import MyText from "@/core/components/Text/Text";
 import { useAppDispatch } from "@/redux/store/store";
-import { GridEventListener, GridValueFormatterParams } from "@mui/x-data-grid";
+import { GridEventListener } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useParams, useRouter } from "next/navigation";
@@ -156,13 +156,13 @@ const Accounts = () => {
           headerName: "Active",
           flex: 1,
           minWidth: 120,
-          valueFormatter: (params: GridValueFormatterParams<any>) => {
-            if (params.value == null) {
+          valueFormatter: (params: any) => {
+            if (params == null) {
               return "";
             }
             return (
-              params.value?.toString()[0].toUpperCase()[0] +
-              params.value?.toString().slice(1)
+              params?.toString()[0].toUpperCase()[0] +
+              params?.toString().slice(1)
             );
           },
         },
@@ -171,13 +171,13 @@ const Accounts = () => {
           headerName: "Frozen",
           flex: 1,
           minWidth: 120,
-          valueFormatter: (params: GridValueFormatterParams<any>) => {
-            if (params.value == null) {
+          valueFormatter: (params: any) => {
+            if (params == null) {
               return "";
             }
             return (
-              params.value?.toString()[0].toUpperCase()[0] +
-              params.value?.toString().slice(1)
+              params?.toString()[0].toUpperCase()[0] +
+              params?.toString().slice(1)
             );
           },
         },

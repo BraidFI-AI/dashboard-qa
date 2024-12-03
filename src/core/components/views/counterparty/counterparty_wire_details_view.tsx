@@ -34,7 +34,7 @@ const CounterpartyWireDetailsView: React.FC<
   console.log("CPPPPT:", counterparty);
 
   return (
-    <div className="flex flex-col">
+    (<div className="flex flex-col">
       <MyExpandableButton
         title="Wire Payment Instrument"
         expand={expandDetails}
@@ -272,7 +272,7 @@ const CounterpartyWireDetailsView: React.FC<
             {counterparty.wire?.status &&
               counterparty.wire?.status == "BLOCKED" && (
                 // <ItemRow title="Blocked results" values={[]}></ItemRow>
-                <MyEditableTextField
+                (<MyEditableTextField
                   editing={isEditing}
                   setEditing={setIsEditing}
                   editable={false}
@@ -293,7 +293,7 @@ const CounterpartyWireDetailsView: React.FC<
                       : ""
                   }
                   submitting={false}
-                />
+                />)
               )}
             <MyText size="md">Bank Address</MyText>
             <div className="pb-4" />
@@ -433,7 +433,7 @@ const CounterpartyWireDetailsView: React.FC<
           </div>
         </div>
       )}
-    </div>
+    </div>)
   );
 };
 

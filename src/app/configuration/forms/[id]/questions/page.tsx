@@ -186,7 +186,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
   };
 
   return (
-    <Suspense>
+    (<Suspense>
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -316,7 +316,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
               {form.questions.map(
                 (question: CustomizableFormQuestion, index: number) => {
                   return (
-                    <div key={index} className="flex flex-col">
+                    (<div key={index} className="flex flex-col">
                       <Box className="w-[200px] flex flex-row">
                         <div className="pb-[20px]">
                           <MyText size="md">{`Question ${index + 1}`}</MyText>
@@ -799,7 +799,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
                       <div className="w-[650px] pb-6">
                         <Divider />
                       </div>
-                    </div>
+                    </div>)
                   );
                 }
               )}
@@ -891,7 +891,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
           </>
         )
       )}
-    </Suspense>
+    </Suspense>)
   );
 };
 
