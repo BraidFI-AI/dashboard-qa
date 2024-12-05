@@ -39,7 +39,7 @@ const CaseTimelineComponent: React.FC<CaseTimelineComponentProps> = ({ c }) => {
         >
           {c.caseTimelines?.map((timeline: AlertTimeline, index: number) => {
             return (
-              <TimelineItem>
+              <TimelineItem key={index}>
                 <TimelineSeparator>
                   <TimelineDot
                     className={`${

@@ -69,12 +69,6 @@ const DrawerHeaderButtons = () => {
     (pathname == `/alerts-and-cases/cases/${params.id}` && (
       <ResolveCaseButton />
     )) ||
-    (pathname == `/alerts-and-cases/cases/${params.id}/notes` && (
-      <AddCaseNodeButton />
-    )) ||
-    (pathname == `/alerts-and-cases/cases/${params.id}/documents` && (
-      <UploadCaseDocumentButton />
-    )) ||
     (pathname == "/ach/settlement" && <AchHistoryFilters />) ||
     (pathname.includes("/configuration/developers/") && (
       <WhitelistDeveloperID />
