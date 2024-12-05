@@ -42,7 +42,7 @@ const AlertTimelineComponent: React.FC<AlertTimelineComponentProps> = ({
           {alert.alertTimelines?.map(
             (timeline: AlertTimeline, index: number) => {
               return (
-                <TimelineItem>
+                <TimelineItem key={index}>
                   <TimelineSeparator>
                     <TimelineDot
                       className={`${
