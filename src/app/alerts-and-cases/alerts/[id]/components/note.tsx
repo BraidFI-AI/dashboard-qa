@@ -2,7 +2,7 @@
 
 import { AlertNote } from "@/core/api/ApiTypes";
 import MyText from "@/core/components/Text/Text";
-import { boxBorderStyle } from "@/core/constants";
+import { boxStyle } from "@/core/constants";
 import timestampToDate from "@/core/utils/timestampToDate";
 
 type AlertNoteProps = {
@@ -12,7 +12,7 @@ type AlertNoteProps = {
 const AlertNoteComponent: React.FC<AlertNoteProps> = ({ note }) => {
   return (
     <div
-      className={`flex min-w-[400px] min-h-fit rounded-[10px] shadow-md justify-center items-center ${boxBorderStyle}`}
+      className={`flex min-w-[400px] min-h-fit rounded-[10px] justify-center items-center ${boxStyle}`}
     >
       <div className="flex flex-col px-4 py-4 justify-between w-full">
         <div className="flex flex-row pb-2 justify-between">

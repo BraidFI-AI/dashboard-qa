@@ -15,6 +15,7 @@ import { unblockBusinessCounterparty } from "@/redux/slices/BusinessSlice";
 import { enqueueSnackbar } from "notistack";
 import MyTextButton from "../../Button/MyTextButton";
 import timestampToDate from "@/core/utils/timestampToDate";
+import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
 
 type CounterpartyDetailsViewProps = {
   counterparty: Counterparty;
@@ -24,6 +25,7 @@ type CounterpartyDetailsViewProps = {
   errors: any;
   submitting: any;
   setRefresh: any;
+  editable?: boolean;
 };
 
 const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
@@ -34,6 +36,7 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
   errors,
   submitting,
   setRefresh,
+  editable = true,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -64,150 +67,185 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
   return (
     <>
       {expandDetails && (
-        <div className="flex flex-row-reverse justify-between">
-          <div>
-            <MyEditButton editing={isEditing} setEditing={setIsEditing} />
-          </div>
-          <div>
-            <ItemRow title="ID" value={counterparty.id ?? ""}></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="id"
-              displayName="ID"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={counterparty.id ? counterparty.id : ""}
-              submitting={false}
-            /> */}
-            {/* <ItemRow
-            title="First Name"
-            value={counterparty.firstName ?? ""}
-          ></ItemRow> */}
-
-            <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="name"
-              displayName="Name"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={counterparty.name ?? ""}
-              submitting={false}
-            />
-
-            <ItemRow
-              title="Counterparty type"
-              value={counterparty.type ?? ""}
-            ></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="businessId"
-              displayName="Business ID"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={counterparty.businessId ? counterparty.businessId : ""}
-              submitting={false}
-            /> */}
-            <div className="flex flex-row">
-              <ItemRow
-                title="Status"
-                value={counterparty.status ?? ""}
-              ></ItemRow>
-              {counterparty.status && counterparty.status == "BLOCKED" && (
-                <div className="pl-10 w-fit">
-                  <MyTextButton
-                    submitting={unblocking}
-                    onClick={() => {
-                      if (counterparty.id) {
-                        setUnblocking(true);
-
-                        dispatch(
-                          unblockBusinessCounterparty(counterparty.id)
-                        ).then((d: any) => {
-                          if (typeof d.payload != "string") {
-                            enqueueSnackbar(
-                              "Counterparty unblocked successfully!",
-                              { variant: "success" }
-                            );
-                            setRefresh(true);
-                          } else {
-                            enqueueSnackbar(d.payload, {
-                              variant: "error",
-                            });
-                          }
-                          setUnblocking(false);
-                        });
-                      }
-                    }}
-                  >
-                    Unblock
-                  </MyTextButton>
-                </div>
-              )}
+        <div
+          className={`flex flex-row-reverse ${
+            editable ? "justify-between" : "justify-end"
+          } `}
+        >
+          {editable && (
+            <div>
+              <MyEditButton editing={isEditing} setEditing={setIsEditing} />
             </div>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="status"
-              displayName="Status"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={counterparty.status ? counterparty.status : ""}
-              submitting={false}
-            /> */}
-            <ItemRow
-              title="Created By"
-              value={counterparty.createdBy ?? ""}
-            ></ItemRow>
-            <ItemRow
-              title="Created At"
-              value={timestampToDate(counterparty.createdAt)}
-            ></ItemRow>
-            <ItemRow
-              title="Updated By"
-              value={counterparty.updatedBy ?? ""}
-            ></ItemRow>
-            <ItemRow
-              title="Updated At"
-              value={timestampToDate(counterparty.updatedAt)}
-            ></ItemRow>
+          )}
+          <div className={`${!editable ? "w-full" : ""}`}>
+            {editable ? (
+              <ItemRow title="ID" value={counterparty.id ?? ""}></ItemRow>
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="ID"
+                  value={counterparty.id?.toString() ?? ""}
+                />
+                <div className="h-3" />
+              </>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="name"
+                displayName="Name"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={counterparty.name ?? ""}
+                submitting={false}
+              />
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="Name"
+                  value={counterparty.name ?? ""}
+                />
+                <div className="h-3" />
+              </>
+            )}
+            {editable ? (
+              <ItemRow
+                title="Counterparty Type"
+                value={counterparty.type ?? ""}
+              ></ItemRow>
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="Counterparty Type"
+                  value={counterparty.type ?? ""}
+                />
+                <div className="h-3" />
+              </>
+            )}
+            <div className="flex flex-row">
+              {editable ? (
+                <ItemRow
+                  title="Status"
+                  value={counterparty.status ?? ""}
+                ></ItemRow>
+              ) : (
+                <>
+                  <ItemRowHorizontal
+                    title="Status"
+                    value={counterparty.status ?? ""}
+                  />
+                  <div className="h-3" />
+                </>
+              )}
+              {editable &&
+                counterparty.status &&
+                counterparty.status == "BLOCKED" && (
+                  <div className="pl-10 w-fit">
+                    <MyTextButton
+                      submitting={unblocking}
+                      onClick={() => {
+                        if (counterparty.id) {
+                          setUnblocking(true);
+
+                          dispatch(
+                            unblockBusinessCounterparty(counterparty.id)
+                          ).then((d: any) => {
+                            if (typeof d.payload != "string") {
+                              enqueueSnackbar(
+                                "Counterparty unblocked successfully!",
+                                { variant: "success" }
+                              );
+                              setRefresh(true);
+                            } else {
+                              enqueueSnackbar(d.payload, {
+                                variant: "error",
+                              });
+                            }
+                            setUnblocking(false);
+                          });
+                        }
+                      }}
+                    >
+                      Unblock
+                    </MyTextButton>
+                  </div>
+                )}
+            </div>
+            {!editable && <div className="h-3" />}
+            {editable ? (
+              <ItemRow
+                title="Created By"
+                value={counterparty.createdBy ?? ""}
+              ></ItemRow>
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="Created By"
+                  value={counterparty.createdBy ?? ""}
+                />
+                <div className="h-3" />
+              </>
+            )}
+            {editable ? (
+              <ItemRow
+                title="Created At"
+                value={timestampToDate(counterparty.createdAt)}
+              ></ItemRow>
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="Created At"
+                  value={timestampToDate(counterparty.createdAt)}
+                />
+                <div className="h-3" />
+              </>
+            )}
+            {editable ? (
+              <ItemRow
+                title="Updated By"
+                value={counterparty.updatedBy ?? ""}
+              ></ItemRow>
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="Updated By"
+                  value={counterparty.updatedBy ?? ""}
+                />
+                <div className="h-3" />
+              </>
+            )}
+            {editable ? (
+              <ItemRow
+                title="Updated At"
+                value={timestampToDate(counterparty.updatedAt)}
+              ></ItemRow>
+            ) : (
+              <>
+                <ItemRowHorizontal
+                  title="Updated At"
+                  value={timestampToDate(counterparty.updatedAt)}
+                />
+                <div className="h-3" />
+              </>
+            )}
             {counterparty.status && counterparty.status == "BLOCKED" && (
               <>
-                <MyText>Counterparty blocked results</MyText>
+                {editable ? (
+                  <MyText size="md">Counterparty blocked results</MyText>
+                ) : (
+                  <MyText size="sm" color="text-[#939DA6]">
+                    Counterparty blocked results
+                  </MyText>
+                )}
                 <div className="pb-2"></div>
                 {counterparty.blockedResults?.map(
                   (results: CounterpartyBlockedResults, index: number) => {
@@ -227,29 +265,6 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
                     );
                   }
                 )}
-
-                {/* <MyEditableTextField
-                  editing={isEditing}
-                  setEditing={setIsEditing}
-                  editable={false}
-                  name="blockedResults"
-                  displayName="Blocked results"
-                  control={control}
-                  errors={errors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: true,
-                        }
-                  }
-                  value={
-                    counterparty.blockedResults
-                      ? counterparty.blockedResults
-                      : ""
-                  }
-                  submitting={false}
-                /> */}
               </>
             )}
           </div>

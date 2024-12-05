@@ -112,6 +112,7 @@ const UsersTable = () => {
             headerName: "Email",
             flex: 1,
             minWidth: 200,
+            display: "flex",
             renderCell: (params: any) => (
               <div>
                 {
@@ -121,8 +122,8 @@ const UsersTable = () => {
                 }
               </div>
             ),
-            valueGetter: (params: any) =>
-              params.row.Attributes?.filter((attr: any) => {
+            valueGetter: (value: any, row: any) =>
+              row.Attributes?.filter((attr: any) => {
                 return attr.Name == "email";
               })?.[0]?.Value,
           },
@@ -131,6 +132,7 @@ const UsersTable = () => {
             headerName: "Tenant ID",
             flex: 1,
             minWidth: 120,
+            display: "flex",
             renderCell: (params: any) => (
               <div>
                 {
@@ -140,8 +142,8 @@ const UsersTable = () => {
                 }
               </div>
             ),
-            valueGetter: (params: any) =>
-              params.row.Attributes?.filter((attr: any) => {
+            valueGetter: (value: any, row: any) =>
+              row.Attributes?.filter((attr: any) => {
                 return attr?.Name == "custom:tenantId";
               })?.[0]?.Value,
           },
@@ -150,28 +152,30 @@ const UsersTable = () => {
             headerName: "User Group",
             flex: 1,
             minWidth: 200,
+            display: "flex",
             renderCell: (params: any) => (
               <div>
                 {userGroupMappingToReadableNames[params.row.Groups?.[0] ?? ""]}
               </div>
             ),
-            valueGetter: (params: any) =>
-              userGroupMappingToReadableNames[params.row.Groups?.[0] ?? ""],
+            valueGetter: (value: any, row: any) =>
+              userGroupMappingToReadableNames[row.Groups?.[0] ?? ""],
           },
           {
             field: "Enabled",
             headerName: "Enabled",
             flex: 1,
             minWidth: 120,
+            display: "flex",
             renderCell: (params: any) => (
               <div>
                 {params.row.Enabled?.toString()?.[0]?.toUpperCase() +
                   params.row.Enabled?.toString()?.slice(1)}
               </div>
             ),
-            valueGetter: (params: any) =>
-              params.row.Enabled?.toString()?.[0]?.toUpperCase() +
-              params.row.Enabled?.toString()?.slice(1),
+            valueGetter: (value: any, row: any) =>
+              row.Enabled?.toString()?.[0]?.toUpperCase() +
+              row.Enabled?.toString()?.slice(1),
           },
           {
             field: "UserStatus",
@@ -184,6 +188,7 @@ const UsersTable = () => {
             headerName: "Password",
             flex: 1,
             minWidth: 90,
+            display: "flex",
             renderCell: (params: any) =>
               resettingPassword.includes(params.row.Username ?? "") ? (
                 <CircularProgress size="25px" />
@@ -227,6 +232,7 @@ const UsersTable = () => {
             headerName: "Status",
             flex: 1,
             minWidth: 70,
+            display: "flex",
             renderCell: (params: any) =>
               updatingStatus.includes(params.row.Username) ? (
                 <CircularProgress size="25px" />
@@ -300,6 +306,7 @@ const UsersTable = () => {
             headerName: "Delete",
             flex: 1,
             minWidth: 70,
+            display: "flex",
             renderCell: (params: any) =>
               deleting.includes(params.row.Username) ? (
                 <CircularProgress size="25px" />

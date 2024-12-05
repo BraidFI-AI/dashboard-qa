@@ -14,6 +14,7 @@ import MyLinkText from "../../Text/LinkText";
 import ErrorPage from "../../error_page";
 import { useAppDispatch } from "@/redux/store/store";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
+import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
 
 type CounterpartyBraidDetailsViewProps = {
   counterparty: Counterparty;
@@ -22,6 +23,7 @@ type CounterpartyBraidDetailsViewProps = {
   submitting: any;
   setIsEditing: any;
   isEditing: any;
+  editable?: boolean;
 };
 
 const CounterpartyBraidDetailsView: React.FC<
@@ -33,6 +35,7 @@ const CounterpartyBraidDetailsView: React.FC<
   submitting,
   isEditing,
   setIsEditing,
+  editable = true,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -52,9 +55,17 @@ const CounterpartyBraidDetailsView: React.FC<
   }, [dispatch, counterparty.ofacId]);
 
   return (
-    (<div className="flex flex-col">
+    <div className="flex flex-col">
       {counterparty.ofacId == null ? (
-        <MyText size="md">No OFAC check</MyText>
+        <>
+          {editable ? (
+            <MyText size="md">No OFAC check</MyText>
+          ) : (
+            <MyText size="sm" color="text-[#939DA6]">
+              No OFAC check
+            </MyText>
+          )}
+        </>
       ) : ofac === "loading" ? (
         <MyCircularProgressIndicator />
       ) : typeof ofac == "string" ? (
@@ -73,17 +84,35 @@ const CounterpartyBraidDetailsView: React.FC<
           recoveryButtonTitle="Retry"
         />
       ) : (
-        <ItemRow
-          title="Last OFAC date"
-          value={timestampToDate(ofac.createdAt ?? 0)}
-        />
+        <>
+          {editable ? (
+            <ItemRow
+              title="Last OFAC date"
+              value={timestampToDate(ofac.createdAt ?? 0)}
+            />
+          ) : (
+            <>
+              <ItemRowHorizontal
+                title="Last OFAC date"
+                value={timestampToDate(ofac.createdAt ?? 0)}
+              />
+              <div className="h-3" />
+            </>
+          )}
+        </>
       )}
       {counterparty.ofacId != null && ofac === "loading" ? (
         <MyCircularProgressIndicator />
       ) : typeof ofac == "string" ? (
         <></>
       ) : (
-        <MyLinkText link={`/compliance/ofac/${counterparty.ofacId}`}>
+        <MyLinkText
+          textProps={{
+            size: editable ? "md" : "sm",
+            color: editable ? undefined : "text-[#939DA6]",
+          }}
+          link={`/compliance/ofac/${counterparty.ofacId}`}
+        >
           Last OFAC status
         </MyLinkText>
       )}
@@ -97,218 +126,90 @@ const CounterpartyBraidDetailsView: React.FC<
       <div className="pb-4"></div>
       {expandDetails && (
         <div className="flex flex-row-reverse justify-between">
-          <div>
-            <MyEditButton editing={isEditing} setEditing={setIsEditing} />
-          </div>
+          {editable && (
+            <div>
+              <MyEditButton editing={isEditing} setEditing={setIsEditing} />
+            </div>
+          )}
           <div className="w-full">
-            <ItemRow title="ID" value={counterparty?.braid?.id ?? ""}></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.id"
-              displayName="ID"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={counterparty.braid?.id ? counterparty.braid?.id : ""}
-              submitting={false}
-            /> */}
             <ItemRow
+              horizontal={!editable}
+              title="ID"
+              value={counterparty?.braid?.id ?? ""}
+            ></ItemRow>
+            <ItemRow
+              horizontal={!editable}
               title="Contact ID"
               value={counterparty?.braid?.contactId ?? ""}
             ></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.contactId"
-              displayName="Contact ID"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={
-                counterparty.braid?.contactId
-                  ? counterparty.braid?.contactId
-                  : ""
-              }
-              submitting={false}
-            /> */}
             <ItemRow
+              horizontal={!editable}
               title="Customer ID"
               value={counterparty?.braid?.custId ?? ""}
             ></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.custId"
-              displayName="Customer ID"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={
-                counterparty.braid?.custId ? counterparty.braid?.custId : ""
-              }
-              submitting={false}
-            /> */}
             <ItemRow
+              horizontal={!editable}
               title="Type"
               value={counterparty?.braid?.instrumentType ?? ""}
             ></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.instrumentType"
-              displayName="Type"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={
-                counterparty.braid?.instrumentType
-                  ? counterparty.braid?.instrumentType
-                  : ""
-              }
-              submitting={false}
-            /> */}
-            {/* <ItemRow
-              title="Account Number"
-              value={counterparty.braid.accountNumber ?? ""}
-            ></ItemRow> */}
-            <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.accountNumber"
-              displayName="Account Number"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={
-                counterparty.braid?.accountNumber
-                  ? counterparty.braid?.accountNumber
-                  : ""
-              }
-              submitting={false}
-            />
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="braid.accountNumber"
+                displayName="Account Number"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={
+                  counterparty.braid?.accountNumber
+                    ? counterparty.braid?.accountNumber
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Account Number"
+                value={counterparty.braid?.accountNumber ?? ""}
+              ></ItemRow>
+            )}
             <ItemRow
+              horizontal={!editable}
               title="Status"
               value={counterparty?.braid?.status ?? ""}
             ></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.status"
-              displayName="Status"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={
-                counterparty.braid?.status ? counterparty.braid?.status : ""
-              }
-              submitting={false}
-            /> */}
             <ItemRow
+              horizontal={!editable}
               title="Created at"
               value={timestampToDate(counterparty?.braid?.createdAt)}
             ></ItemRow>
             <ItemRow
+              horizontal={!editable}
               title="Updated at"
               value={timestampToDate(counterparty?.braid?.updatedAt)}
             ></ItemRow>
-            {/* <MyEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="braid.updated_at"
-              displayName="Updated at"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              value={
-                counterparty.braid?.updated_at
-                  ? counterparty.braid?.updated_at
-                  : ""
-              }
-              submitting={false}
-            /> */}
             {counterparty.braid?.status &&
               counterparty.braid?.status == "BLOCKED" && (
-                (<ItemRow
+                <ItemRow
+                  horizontal={!editable}
+                  horizontalNoSpace
                   title="Blocked results"
                   value={counterparty.braid?.blockedResults ?? ""}
-                ></ItemRow>)
-                // <MyEditableTextField
-                //   editing={isEditing}
-                //   setEditing={setIsEditing}
-                //   editable={false}
-                //   name="braid.blockedResults"
-                //   displayName="Blocked results"
-                //   control={control}
-                //   errors={errors}
-                //   rules={
-                //     submitting
-                //       ? { required: false }
-                //       : {
-                //           required: true,
-                //         }
-                //   }
-                //   value={
-                //     counterparty.braid?.blockedResults
-                //       ? counterparty.braid?.blockedResults
-                //       : ""
-                //   }
-                //   submitting={false}
-                // />
+                ></ItemRow>
               )}
           </div>
         </div>
       )}
-    </div>)
+    </div>
   );
 };
 

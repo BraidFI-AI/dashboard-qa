@@ -21,6 +21,18 @@ class AlertsRepo {
     return response;
   }
 
+  public async assignAlertToUser(alertId: string, username: string | null) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      "/alerts/assign",
+      {
+        alertId: alertId,
+        username: username,
+      }
+    );
+    return response;
+  }
+
   public async fetchAlert(id: string | number) {
     const response = await this.apiClient.http<Alert>(
       Method.GET,

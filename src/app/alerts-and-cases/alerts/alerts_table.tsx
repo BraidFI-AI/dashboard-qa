@@ -143,6 +143,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             headerName: "Created At",
             flex: 1,
             minWidth: 180,
+            display: "flex",
             renderCell: (params: any) => {
               return params.row?.alertTimelines == null
                 ? ""
@@ -154,11 +155,11 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                     true
                   )}`;
             },
-            valueGetter: (params: any) => {
-              return params.row?.alertTimelines == null
+            valueGetter: (value: any, row: any) => {
+              return row?.alertTimelines == null
                 ? ""
                 : `${timestampToDate(
-                    (params.row?.alertTimelines as AlertTimeline[]).find(
+                    (row?.alertTimelines as AlertTimeline[]).find(
                       (timeline) => timeline.action == "CREATED"
                     )?.actionDateTime ?? 0,
                     false,
@@ -171,31 +172,35 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             headerName: "Type",
             flex: 1,
             minWidth: 200,
+            display: "flex",
             renderCell: (params: any) => (
-              <LabelBox
-                color={
-                  params.row?.type?.toLowerCase() == "ofac"
-                    ? "red"
-                    : params.row.type == "TRANSACTION_MONITORING"
-                    ? "orange"
-                    : params.row.type == "DUAL_APPROVAL"
-                    ? "green"
-                    : params.row.type == "TRANSACTION_REVIEW"
-                    ? "blue"
-                    : "gray"
-                }
-                border
-              >
-                {enumTextToReadableText(params.row?.type)}
-              </LabelBox>
+              <div style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                <LabelBox
+                  color={
+                    params.row?.type?.toLowerCase() == "ofac"
+                      ? "red"
+                      : params.row.type == "TRANSACTION_MONITORING"
+                      ? "orange"
+                      : params.row.type == "DUAL_APPROVAL"
+                      ? "green"
+                      : params.row.type == "TRANSACTION_REVIEW"
+                      ? "blue"
+                      : "gray"
+                  }
+                  border
+                >
+                  {enumTextToReadableText(params.row?.type)}
+                </LabelBox>
+              </div>
             ),
-            valueGetter: (params: any) => params.row?.type,
+            valueGetter: (value: any, row: any) => row?.type,
           },
           {
             field: "status",
             headerName: "Status",
             flex: 1,
             minWidth: 110,
+            display: "flex",
             renderCell: (params: any) => (
               <LabelBox
                 color={
@@ -208,25 +213,27 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                 {enumTextToReadableText(params.row?.status)}
               </LabelBox>
             ),
-            valueGetter: (params: any) => params.row?.status,
+            valueGetter: (value: any, row: any) => row?.status,
           },
           {
             field: "contextType",
             headerName: "Context Type",
             flex: 1,
             minWidth: 140,
+            display: "flex",
             renderCell: (params: any) => (
               <LabelBox color={"gray"} border>
                 {enumTextToReadableText(params.row?.contextType)}
               </LabelBox>
             ),
-            valueGetter: (params: any) => params.row?.contextType,
+            valueGetter: (value: any, row: any) => row?.contextType,
           },
           {
             field: "contextId",
             headerName: "Context ID",
             flex: 1,
             minWidth: 140,
+            display: "flex",
             renderCell: (params: any) => {
               return params.row.type == "LIST_314A" ? (
                 <MyLinkText
@@ -276,7 +283,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
                 <MyText size="table">{params.row.contextId}</MyText>
               );
             },
-            valueGetter: (params: any) => params.row.contextId,
+            valueGetter: (value: any, row: any) => row?.contextId,
           },
           {
             field: "description",

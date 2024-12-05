@@ -103,6 +103,7 @@ const AccountsTable = () => {
           headerName: "Customer Name",
           flex: 1,
           minWidth: 150,
+          display: "flex",
           renderCell: (params: any) => (
             <MyLinkText
               textProps={{ size: "table" }}
@@ -121,6 +122,7 @@ const AccountsTable = () => {
           headerName: "Status",
           flex: 1,
           minWidth: 120,
+          display: "flex",
           renderCell: (params: any) => (
             <LabelBox
               color={
@@ -135,7 +137,7 @@ const AccountsTable = () => {
               {enumTextToReadableText(params.row?.status)}
             </LabelBox>
           ),
-          valueGetter: (params: any) => params.row?.status,
+          valueGetter: (value: any, row: any) => row?.status,
         },
         {
           field: "createdAt",
@@ -143,9 +145,9 @@ const AccountsTable = () => {
           flex: 1,
           minWidth: 150,
           valueFormatter: (params: any) => {
-            return `${timestampToDate(params.value)}`;
+            return `${timestampToDate(params)}`;
           },
-          valueGetter: (params: any) => params.row.createdAt,
+          valueGetter: (value: any, row: any) => row?.createdAt,
         },
         {
           field: "upadtedAt",
@@ -153,9 +155,9 @@ const AccountsTable = () => {
           flex: 1,
           minWidth: 150,
           valueFormatter: (params: any) => {
-            return `${timestampToDate(params.value)}`;
+            return `${timestampToDate(params)}`;
           },
-          valueGetter: (params: any) => params.row.updatedAt,
+          valueGetter: (value: any, row: any) => row?.updatedAt,
         },
       ]}
       // sortModel={[{ field: "createdAt", sort: "desc" }]}

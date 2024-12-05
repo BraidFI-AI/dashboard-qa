@@ -84,11 +84,11 @@ const WireReturnFilesTable = () => {
               flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
-                return params.value == null
+                return params == null
                   ? ""
-                  : `${timestampToDate(params.value, false, true)}`;
+                  : `${timestampToDate(params, false, true)}`;
               },
-              valueGetter: (params: any) => params.row.createdAt,
+              valueGetter: (value: any, row: any) => row.createdAt,
             },
             {
               field: "updatedAt",
@@ -96,17 +96,18 @@ const WireReturnFilesTable = () => {
               flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
-                return params.value == null
+                return params == null
                   ? ""
-                  : `${timestampToDate(params.value, false, true)}`;
+                  : `${timestampToDate(params, false, true)}`;
               },
-              valueGetter: (params: any) => params.row.updatedAt,
+              valueGetter: (value: any, row: any) => row.updatedAt,
             },
             {
               field: "file",
               headerName: "FedWire Return File",
               flex: 1,
               minWidth: 82,
+              display: "flex",
               renderCell: (params: any) => (
                 <Tooltip title="Download Wire Return File" placement="right">
                   <div className="flex justify-center">

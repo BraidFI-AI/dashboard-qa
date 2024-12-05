@@ -150,12 +150,13 @@ const Accounts = () => {
             headerName: "Account Balance",
             flex: 1,
             minWidth: 160,
-            valueGetter(params: any) {
-              if (!params.value) {
-                return params.row.balance?.accountBalance;
+            valueGetter(value: any, row: any) {
+              if (!value) {
+                return row.balance?.accountBalance;
               }
-              return params.row.balance?.accountBalance;
+              return row.balance?.accountBalance;
             },
+            display: "flex",
             renderCell: (params: any) => (
               <MyText>
                 {toDollarFormat(params.row.balance?.accountBalance)}
@@ -167,12 +168,13 @@ const Accounts = () => {
             headerName: "Available Balance",
             flex: 1,
             minWidth: 160,
-            valueGetter(params: any) {
-              if (!params.value) {
-                return params.row.balance?.availableBalance;
+            valueGetter(value: any, row: any) {
+              if (!value) {
+                return row.balance?.availableBalance;
               }
-              return params.row.balance?.availableBalance;
+              return row.balance?.availableBalance;
             },
+            display: "flex",
             renderCell: (params: any) => (
               <MyText>
                 {toDollarFormat(params.row.balance?.availableBalance)}

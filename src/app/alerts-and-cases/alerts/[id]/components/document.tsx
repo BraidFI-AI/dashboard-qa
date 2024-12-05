@@ -3,7 +3,7 @@
 import { AlertDocument } from "@/core/api/ApiTypes";
 import Image from "next/image";
 import MyText from "@/core/components/Text/Text";
-import { boxBorderStyle } from "@/core/constants";
+import { boxStyle } from "@/core/constants";
 import timestampToDate from "@/core/utils/timestampToDate";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -31,7 +31,7 @@ const DocumentComponent: React.FC<DocumentComponentProps> = ({
 
   return (
     <div
-      className={`flex min-w-[400px] min-h-[187px] rounded-[10px] shadow-md justify-start items-center ${boxBorderStyle}`}
+      className={`flex min-w-[400px] min-h-[187px] rounded-[10px] justify-start items-center ${boxStyle}`}
     >
       <div className="flex flex-col w-full py-4 px-4">
         <div className="flex flex-row items-center">
@@ -64,17 +64,24 @@ const DocumentComponent: React.FC<DocumentComponentProps> = ({
             )}
           </div>
           <div className="flex flex-col pl-4 w-full">
-            <ItemRowHorizontal title="Name" value={alertDocument.name ?? ""} />
             <ItemRowHorizontal
+              colon
+              title="Name"
+              value={alertDocument.name ?? ""}
+            />
+            <ItemRowHorizontal
+              colon
               title="Type"
               value={alertDocument.documentType ?? ""}
             />
             <ItemRowHorizontal
               title="Created"
+              colon
               value={timestampToDate(alertDocument.createdAt ?? 0)}
             />
             <ItemRowHorizontal
               title="Updated"
+              colon
               value={timestampToDate(alertDocument.updatedAt ?? 0)}
             />
           </div>

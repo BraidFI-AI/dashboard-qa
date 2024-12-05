@@ -164,11 +164,11 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   headerName: "UBO ID",
                   flex: 1,
                   minWidth: 120,
-                  valueGetter(params: any) {
-                    if (!params.value) {
-                      return params.row.ubo.id;
+                  valueGetter(value: any, row: any) {
+                    if (!value) {
+                      return row.ubo.id;
                     }
-                    return params.row.ubo.id;
+                    return row.ubo.id;
                   },
                 },
                 {
@@ -176,6 +176,7 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   headerName: "Customer ID",
                   flex: 1,
                   minWidth: 120,
+                  display: "flex",
                   renderCell: (params: any) => (
                     <Link href={`/individuals/${params.row.id}`}>
                       <div className="underline text-[#12A7FF]">
@@ -183,18 +184,18 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                       </div>
                     </Link>
                   ),
-                  valueGetter: (params: any) => params.row.id,
+                  valueGetter: (value: any, row: any) => row.id,
                 },
                 {
                   field: "name",
                   headerName: "Name",
                   flex: 1,
                   minWidth: 160,
-                  valueGetter(params: any) {
-                    if (!params.value) {
-                      return params.row.firstName + " " + params.row.lastName;
+                  valueGetter(value: any, row: any) {
+                    if (!value) {
+                      return row.firstName + " " + row.lastName;
                     }
-                    return params.row.firstName + " " + params.row.lastName;
+                    return row.firstName + " " + row.lastName;
                   },
                 },
                 {
@@ -202,11 +203,11 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   headerName: "Email",
                   flex: 1,
                   minWidth: 180,
-                  valueGetter(params: any) {
-                    if (!params.value) {
-                      return params.row.ubo.email;
+                  valueGetter(value: any, row: any) {
+                    if (!value) {
+                      return row.ubo.email;
                     }
-                    return params.row.ubo.email;
+                    return row.ubo.email;
                   },
                 },
                 {
@@ -214,11 +215,11 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   headerName: "Title",
                   flex: 1,
                   minWidth: 120,
-                  valueGetter(params: any) {
-                    if (!params.value) {
-                      return params.row.ubo.title;
+                  valueGetter(value: any, row: any) {
+                    if (!value) {
+                      return row.ubo.title;
                     }
-                    return params.row.ubo.title;
+                    return row.ubo.title;
                   },
                 },
                 {
@@ -226,11 +227,11 @@ const UBOs = ({ params }: { params: { id: string } }) => {
                   headerName: "Ownership",
                   flex: 1,
                   minWidth: 120,
-                  valueGetter(params: any) {
-                    if (!params.value) {
-                      return `${params.row.ubo.ownership}%`;
+                  valueGetter(value: any, row: any) {
+                    if (!value) {
+                      return `${row.ubo.ownership}%`;
                     }
-                    return `${params.row.ubo.ownership}%`;
+                    return `${row.ubo.ownership}%`;
                   },
                 },
                 {

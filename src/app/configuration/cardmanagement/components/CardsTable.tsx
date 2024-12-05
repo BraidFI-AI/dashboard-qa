@@ -54,17 +54,17 @@ const CardsTable = () => {
               headerName: "Start Date",
               flex: 1,
               minWidth: 120,
-              valueGetter(params: any) {
-                if (!params.value) {
-                  return params.value;
+              valueGetter(value: any, row: any) {
+                if (!value) {
+                  return value;
                 }
 
                 const date = moment(
-                  params.value[0].toString() +
+                  value[0].toString() +
                     "-" +
-                    params.value[1].toString() +
+                    value[1].toString() +
                     "-" +
-                    params.value[2].toString()
+                    value[2].toString()
                 );
 
                 return date;
@@ -88,17 +88,17 @@ const CardsTable = () => {
               headerName: "End Date",
               flex: 1,
               minWidth: 120,
-              valueGetter(params: any) {
-                if (!params.value) {
-                  return params.value;
+              valueGetter(value: any, row: any) {
+                if (!value) {
+                  return value;
                 }
 
                 const date = moment(
-                  params.value[0].toString() +
+                  value[0].toString() +
                     "-" +
-                    params.value[1].toString() +
+                    value[1].toString() +
                     "-" +
-                    params.value[2].toString()
+                    value[2].toString()
                 );
 
                 return date;

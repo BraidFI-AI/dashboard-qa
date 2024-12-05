@@ -112,6 +112,7 @@ const DeveloperPage = ({ params }: { params: { id: string } }) => {
                 field: "delete",
                 headerName: "Delete IP",
                 width: 120,
+                display: "flex",
                 renderCell: (rowParams: any) =>
                   deleting.includes(rowParams.row.id) ? (
                     <CircularProgress size="25px" />

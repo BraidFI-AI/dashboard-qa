@@ -75,11 +75,12 @@ const CaseNotesPage = () => {
               headerName: "Created",
               flex: 1,
               minWidth: 140,
+              display: "flex",
               renderCell: (params: any) => (
                 <div>{timestampToDate(params.row.noteDateTime)}</div>
               ),
-              valueGetter: (params: any) =>
-                timestampToDate(params.row.noteDateTime),
+              valueGetter: (value: any, row: any) =>
+                timestampToDate(row.noteDateTime),
             },
             {
               field: "note",

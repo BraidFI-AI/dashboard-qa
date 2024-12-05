@@ -32,9 +32,13 @@ import ErrorPage from "../../error_page";
 
 interface CounterPartyViewProps {
   id: string;
+  editable?: boolean;
 }
 
-const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
+const CounterPartyView: React.FC<CounterPartyViewProps> = ({
+  id,
+  editable = true,
+}) => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [counterparty, setCounterparty] = useState<Counterparty | null>(null);
@@ -328,7 +332,11 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
         />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="w-[650px] flex flex-row justify-between">
+          <div
+            className={`${
+              editable ? "w-[650px]" : "w-[680px]"
+            } flex flex-row justify-between`}
+          >
             <div className="flex flex-col w-[300px]">
               <CounterpartyDetailsView
                 counterparty={counterparty}
@@ -338,6 +346,7 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
                 isEditing={isEditingDetails}
                 setIsEditing={setIsEditingDetails}
                 setRefresh={setRefresh}
+                editable={editable}
               />
             </div>
             <div className="flex flex-col w-[300px]">
@@ -348,6 +357,7 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
                 submitting={submitting}
                 isEditing={isEditingBraid}
                 setIsEditing={setIsEditingBraid}
+                editable={editable}
               />
               <CounterpartyACHDetailsView
                 counterparty={counterparty}
@@ -356,6 +366,7 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
                 submitting={submitting}
                 isEditing={isEditingAch}
                 setIsEditing={setIsEditingAch}
+                editable={editable}
               />
               <CounterpartyWireDetailsView
                 counterparty={counterparty}
@@ -364,17 +375,20 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({ id }) => {
                 submitting={submitting}
                 isEditing={isEditingWire}
                 setIsEditing={setIsEditingWire}
+                editable={editable}
               />
             </div>
           </div>
-          <div className="max-w-md">
-            <Box className="pb-8"></Box>
-            <Box className="w-fit">
-              <MyBlueButton type="submit" submitting={submitting}>
-                Update Counterparty
-              </MyBlueButton>
-            </Box>
-          </div>
+          {editable && (
+            <div className="max-w-md">
+              <Box className="pb-8"></Box>
+              <Box className="w-fit">
+                <MyBlueButton type="submit" submitting={submitting}>
+                  Update Counterparty
+                </MyBlueButton>
+              </Box>
+            </div>
+          )}
         </form>
       )}
     </div>

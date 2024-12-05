@@ -8,6 +8,7 @@ export interface Alert {
   alertNotes?: AlertNote[] | null;
   alertTimelines?: AlertTimeline[] | null;
   alertDocuments: AlertDocument[] | null;
+  assignedUsername?: string | null;
 }
 
 export interface Case {

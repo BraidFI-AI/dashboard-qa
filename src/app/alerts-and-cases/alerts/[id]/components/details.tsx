@@ -1,162 +1,173 @@
 "use client";
 
-import { Alert } from "@/core/api/ApiTypes";
+import { Alert, User } from "@/core/api/ApiTypes";
+import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import ErrorPage from "@/core/components/error_page";
 import ItemRow from "@/core/components/Text/ItemRow";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
+import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
-import { boxBorderStyle } from "@/core/constants";
+import { boxStyle } from "@/core/constants";
+import { enumTextToReadableText } from "@/core/utils/formatting_util";
+import linkToCounterparty from "@/core/utils/link_to_counterparty";
+import { assignAlertToUser, fetchAlert } from "@/redux/slices/alerts_slice";
+import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
+import { UserManagementState } from "@/redux/slices/UsermanagementSlice";
+import { useAppDispatch } from "@/redux/store/store";
+import { CircularProgress } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { enqueueSnackbar } from "notistack";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 
 type AlertDetailsComponentProps = {
   alert: Alert;
   context: any;
+  entity: string;
 };
 
 const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
   alert,
+  entity,
   context,
 }) => {
+  const dispatch = useAppDispatch();
+  const [submitting, setSubmitting] = useState<boolean>(false);
+
+  const users: User[] = useSelector((state: any) => state.userManagement.users);
+
+  const [tempUser, setTempUsers] = useState<string[]>([]);
+
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    getValues,
+    handleSubmit,
+  } = useForm<{ username: string; alertId: string }>({
+    defaultValues: {
+      username: alert.assignedUsername ?? "Unassigned",
+      alertId: alert.id?.toString() ?? "",
+    },
+  });
+  const onSubmit: SubmitHandler<{
+    username: string;
+    alertId: string;
+  }> = (data: { username: string; alertId: string }) => {
+    data = { ...data, alertId: alert.id?.toString() ?? "" };
+
+    setSubmitting(true);
+
+    dispatch(
+      assignAlertToUser({
+        alertId: data.alertId,
+        username: data.username == "Unassigned" ? null : data.username,
+      })
+    ).then((d: any) => {
+      if (typeof d.payload != "string") {
+        enqueueSnackbar(
+          `Alert ${
+            data.username == "Unassigned" ? "unassigned" : "assigned"
+          } successfully`,
+          { variant: "success" }
+        );
+      } else {
+        enqueueSnackbar(d.payload, { variant: "error", persist: true });
+      }
+      dispatch(fetchAlert(alert.id?.toString() ?? ""));
+      setSubmitting(false);
+    });
+  };
+
+  useEffect(() => {
+    setTempUsers([]);
+    let usersList = ["Unassigned"];
+
+    // convert users which is a list of User to a list of string
+    users.forEach((user: User) => {
+      usersList.push(user.Username ?? "");
+    });
+
+    setTempUsers(usersList);
+  }, [users]);
+
   return (
     <div
-      className={`flex flex-col min-w-[700px] min-h-fit rounded-[10px] shadow-md justify-center items-start ${boxBorderStyle}`}
+      className={`flex flex-col min-w-[700px] min-h-fit rounded-[10px] justify-center items-start ${boxStyle}`}
     >
       <div className="pt-6 pb-2 px-6">
         <MyText variant="label" size="lg" weight="semibold">
           Details
         </MyText>
       </div>
-      <div className="w-full py-2 px-6 flex flex-row justify-between">
-        <div className="flex flex-col justify-start pr-10">
+      <div className="w-full pt-2 px-6 flex flex-row justify-start">
+        <div className="flex flex-col justify-start w-[300px]">
           <ItemRowHorizontal
             title="Alert ID"
             value={alert.id?.toString() ?? ""}
           />
-          <div className="h-2" />
+          <div className="h-3" />
           <ItemRowHorizontal
             title="Status"
-            value={alert.status?.toString() ?? ""}
+            value={enumTextToReadableText(alert.status?.toString() ?? "")}
           />
-          <div className="h-2" />
+          <div className="h-3" />
           <ItemRowHorizontal
             title="Alert Type"
-            value={alert.type?.toString() ?? ""}
+            value={enumTextToReadableText(alert.type?.toString() ?? "")}
           />
         </div>
-        <div className="flex flex-col justify-start">
-          <ItemRowHorizontal
-            title="Asignee"
-            value={alert.status?.toString() ?? ""}
-          />
-          <div className="h-2" />
-          <ItemRowHorizontal
-            title="Entity Type"
-            value={alert.contextType?.toString() ?? ""}
-          />
-          <div className="h-2" />
-          {alert.type == "LIST_314A" ? (
-            <ItemRow
-              title="Entity ID"
-              value={{
-                value: alert.contextId,
-                link: `/compliance/314a/${alert.contextId}`,
-              }}
-            />
-          ) : alert.type == "OFAC" ? (
-            <ItemRow
-              title="Entity ID"
-              value={{
-                value: alert.contextId,
-                link: `/compliance/ofac/${alert.contextId}`,
-              }}
-            />
-          ) : alert.type == "TRANSACTION_MONITORING" ||
-            alert.type == "TRANSACTION_REVIEW" ? (
-            <div
-              className="cursor-pointer"
-              onClick={(e: any) => {
-                // if (alert.contextType == "TRANSACTION") {
-                //   handleReviewModalOpen();
-                //   e.preventDefault();
-                //   e.stopPropagation();
-                // }
-              }}
-            >
-              <ItemRowHorizontal
-                title="Entity ID"
-                value={alert.contextId ?? ""}
-                // primary={true}
+        <div className="w-[80px]" />
+        <div className="flex flex-col justify-start w-[300px]">
+          <div className="flex flex-row items-center">
+            <div className="pr-6">
+              <MyText size="sm" color="text-[#939DA6]">
+                Asignee
+              </MyText>
+            </div>
+            <div className={`${submitting ? "pointer-events-none pr-2" : ""}`}>
+              <MyControlledAutocomplete
+                clearable={false}
+                value={
+                  getValues("username") == null
+                    ? "Unassigned"
+                    : getValues("username")
+                }
+                displayName="Username"
+                name={"username"}
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={tempUser}
+                customOnChange={(value: string) => {
+                  handleSubmit(onSubmit)();
+                }}
               />
             </div>
-          ) : alert.type == "DUAL_APPROVAL" ? (
-            <>
-              {context == "loading" ? (
-                alert.contextType == "VELOCITY_LIMIT" ? (
-                  <ItemRowHorizontal
-                    title="Entity ID"
-                    value={alert.contextId ?? ""}
-                  />
-                ) : (
-                  <ItemRow
-                    title="Entity ID"
-                    value={{
-                      value: alert.contextId,
-                      link:
-                        alert.contextType == "PRODUCT"
-                          ? `/configuration/products/${alert.contextId}`
-                          : alert.contextType == "FILE_NAME"
-                          ? `/transactions/transactionHistory?wireFileHandle=${alert.contextId}`
-                          : "",
-                    }}
-                  />
-                )
-              ) : context == null || typeof context == "string" ? (
-                <ErrorPage
-                  error={
-                    typeof context == "string"
-                      ? context
-                      : `Failed to fetch ${alert.contextType
-                          ?.toLowerCase()
-                          ?.replaceAll("_", " ")}`
-                  }
-                  recoveryButtonTitle="Retry"
-                  recoveryButtonOnClick={() => {
-                    // dispatch(fetchLimit(alert.contextId.toString())).then(
-                    //   (data: any) => {
-                    //     setContext(data.payload);
-                    //   }
-                    // );
-                  }}
-                />
-              ) : (
-                <ItemRow
-                  title="Entity ID"
-                  value={{
-                    value:
-                      alert.contextType == "VELOCITY_LIMIT"
-                        ? context.limitName
-                        : alert.contextId,
-                    link:
-                      alert.contextType == "VELOCITY_LIMIT"
-                        ? context.productId != null
-                          ? `/configuration/products/${context.productId}/limits/${context.id}`
-                          : `/accounts/${context.accountNumber}/limits/${context.id}`
-                        : alert.contextType == "PRODUCT"
-                        ? `/configuration/products/${alert.contextId}`
-                        : alert.contextType == "FILE_NAME"
-                        ? `/transactions/transactionHistory?wireFileHandle=${alert.contextId}`
-                        : "",
-                  }}
-                />
-              )}
-            </>
-          ) : (
-            <ItemRowHorizontal
-              title="Entity ID"
-              value={alert.contextId ?? ""}
+            <CircularProgress
+              size={20}
+              className={submitting ? "block" : "hidden"}
             />
-          )}
+          </div>
+          <div className="h-3" />
+          <ItemRowHorizontal
+            title="Entity Type"
+            value={enumTextToReadableText(alert.contextType?.toString() ?? "")}
+          />
+          <div className="h-3" />
+          <AlertEntityIDComponent
+            entity={entity}
+            entityId={alert.contextId ?? ""}
+          />
         </div>
       </div>
+      <div className="h-3" />
       <div className="flex flex-col pb-6 px-6">
         <MyText size="sm" color="text-[#939DA6]">
           Description
@@ -170,3 +181,83 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
 };
 
 export default AlertDetailsComponent;
+
+const AlertEntityIDComponent: React.FC<{
+  entity: string;
+  entityId: string;
+}> = ({ entity, entityId }) => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  return (
+    <div className="flex flex-row w-full justify-between">
+      <div className="pr-1">
+        <MyText size="sm" color="text-[#939DA6]">
+          Entity ID
+        </MyText>
+      </div>
+      <div className="break-all">
+        {entity == "OFAC" ? (
+          <MyLinkText
+            textProps={{ size: "sm" }}
+            link={`/compliance/ofac/${entityId}`}
+          >
+            {entityId}
+          </MyLinkText>
+        ) : entity == "LIST_314A" ? (
+          <MyLinkText
+            textProps={{ size: "sm" }}
+            link={`/compliance/314a/${entityId}`}
+          >
+            {entityId}
+          </MyLinkText>
+        ) : entity == "PRODUCT" ? (
+          <MyLinkText
+            textProps={{ size: "sm" }}
+            link={`/configuration/products/${entityId}`}
+          >
+            {entityId}
+          </MyLinkText>
+        ) : entity == "INDIVIDUAL" ? (
+          <MyLinkText
+            textProps={{ size: "sm" }}
+            link={`/individuals/${entityId}`}
+          >
+            {entityId}
+          </MyLinkText>
+        ) : entity == "BUSINESS" ? (
+          <MyLinkText
+            textProps={{ size: "sm" }}
+            link={`/businesses/${entityId}`}
+          >
+            {entityId}
+          </MyLinkText>
+        ) : entity == "COUNTERPARTY" ? (
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              dispatch(fetchCounterParty(parseInt(entityId ?? "0"))).then(
+                (cp: any) => {
+                  if (cp.payload) {
+                    const link = linkToCounterparty(cp.payload);
+                    if (link) {
+                      router.push(link);
+                    }
+                  }
+                }
+              );
+            }}
+          >
+            <div className="pointer-events-none">
+              <MyText size="sm" primary underline>
+                {entityId}
+              </MyText>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    </div>
+  );
+};

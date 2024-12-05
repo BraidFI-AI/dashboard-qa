@@ -77,11 +77,12 @@ const CaseTimelinesPage = () => {
                   headerName: "Action Time",
                   flex: 1,
                   minWidth: 140,
+                  display: "flex",
                   renderCell: (params: any) => (
                     <div>{timestampToDate(params.row.actionDateTime)}</div>
                   ),
-                  valueGetter: (params: any) =>
-                    timestampToDate(params.row.actionDateTime),
+                  valueGetter: (value: any, row: any) =>
+                    timestampToDate(row.actionDateTime),
                 },
                 {
                   field: "action",
