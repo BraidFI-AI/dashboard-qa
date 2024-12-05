@@ -1,26 +1,27 @@
 "use client";
 
 import { useAppDispatch } from "@/redux/store/store";
-import MyBlueButton from "../../Button/MyBlueButton";
+import MyBlueButton from "../../../../../core/components/Button/MyBlueButton";
 import { useEffect, useState } from "react";
-import MyModal from "../../my_modal";
-import MyText from "../../Text/Text";
-import MyControlledTextField from "../../TextField/MyControlledTextField";
+import MyModal from "../../../../../core/components/my_modal";
+import MyText from "../../../../../core/components/Text/Text";
+import MyControlledTextField from "../../../../../core/components/TextField/MyControlledTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { addCaseNote } from "@/redux/slices/cases_slice";
 import { Case } from "@/core/api/ApiTypes";
-import { useSelector } from "react-redux";
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
 
-const AddCaseNodeButton = () => {
+type AddCaseNodeButtonProps = {
+  c: Case;
+};
+
+const AddCaseNodeButton: React.FC<AddCaseNodeButtonProps> = ({ c }) => {
   const params = useParams();
 
   const dispatch = useAppDispatch();
-
-  const c: "loading" | string | Case = useSelector(
-    (state: any) => state.cases.case
-  );
 
   const [isResolved, setIsResolved] = useState(false);
 
@@ -74,15 +75,13 @@ const AddCaseNodeButton = () => {
     <></>
   ) : (
     <>
-      <div className="w-fit">
-        <MyBlueButton
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          Add Note
-        </MyBlueButton>
-      </div>
+      <IconButton
+        onClick={() => {
+          setModalOpen(true);
+        }}
+      >
+        <AddIcon className="text-[#12A7FF] h-[34px] w-[34px]" />
+      </IconButton>
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}

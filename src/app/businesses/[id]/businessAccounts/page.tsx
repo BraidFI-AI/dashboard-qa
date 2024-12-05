@@ -15,12 +15,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
-import {
-  GridCellParams,
-  GridEventListener,
-  GridValueFormatterParams,
-  MuiEvent,
-} from "@mui/x-data-grid";
+import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useParams, useRouter } from "next/navigation";
@@ -155,12 +150,13 @@ const Accounts = () => {
             headerName: "Account Balance",
             flex: 1,
             minWidth: 160,
-            valueGetter(params: any) {
-              if (!params.value) {
-                return params.row.balance?.accountBalance;
+            valueGetter(value: any, row: any) {
+              if (!value) {
+                return row.balance?.accountBalance;
               }
-              return params.row.balance?.accountBalance;
+              return row.balance?.accountBalance;
             },
+            display: "flex",
             renderCell: (params: any) => (
               <MyText>
                 {toDollarFormat(params.row.balance?.accountBalance)}
@@ -172,12 +168,13 @@ const Accounts = () => {
             headerName: "Available Balance",
             flex: 1,
             minWidth: 160,
-            valueGetter(params: any) {
-              if (!params.value) {
-                return params.row.balance?.availableBalance;
+            valueGetter(value: any, row: any) {
+              if (!value) {
+                return row.balance?.availableBalance;
               }
-              return params.row.balance?.availableBalance;
+              return row.balance?.availableBalance;
             },
+            display: "flex",
             renderCell: (params: any) => (
               <MyText>
                 {toDollarFormat(params.row.balance?.availableBalance)}
@@ -189,13 +186,13 @@ const Accounts = () => {
             headerName: "Active",
             flex: 1,
             minWidth: 120,
-            valueFormatter: (params: GridValueFormatterParams<any>) => {
-              if (params.value == null) {
+            valueFormatter: (params: any) => {
+              if (params == null) {
                 return "";
               }
               return (
-                params.value?.toString()[0].toUpperCase()[0] +
-                params.value?.toString().slice(1)
+                params?.toString()[0].toUpperCase()[0] +
+                params?.toString().slice(1)
               );
             },
           },
@@ -204,13 +201,13 @@ const Accounts = () => {
             headerName: "Frozen",
             flex: 1,
             minWidth: 120,
-            valueFormatter: (params: GridValueFormatterParams<any>) => {
-              if (params.value == null) {
+            valueFormatter: (params: any) => {
+              if (params == null) {
                 return "";
               }
               return (
-                params.value?.toString()[0].toUpperCase()[0] +
-                params.value?.toString().slice(1)
+                params?.toString()[0].toUpperCase()[0] +
+                params?.toString().slice(1)
               );
             },
           },

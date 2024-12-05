@@ -221,7 +221,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
   }, [dispatch]);
 
   return (
-    <React.Fragment key="right">
+    (<React.Fragment key="right">
       <Box className="w-auto">
         <MyBlueButton onClick={toggleDrawer(true)}>Filters</MyBlueButton>
       </Box>
@@ -605,7 +605,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
           </Box>
         </Box>
       </Drawer>
-    </React.Fragment>
+    </React.Fragment>)
   );
 };
 

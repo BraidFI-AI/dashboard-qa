@@ -1,6 +1,5 @@
 "use client";
 
-import { Alert } from "@/core/api/ApiTypes";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyText from "@/core/components/Text/Text";
@@ -11,23 +10,26 @@ import { enqueueSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import MyModal from "../../my_modal";
-import { get } from "lodash";
+import MyModal from "../../../../../core/components/my_modal";
+import { Case } from "@/core/api/ApiTypes";
 import {
-  createAlertDocument,
-  fetchAlert,
-  uploadAlertDocument,
-} from "@/redux/slices/alerts_slice";
+  createCaseDocument,
+  fetchCase,
+  uploadCaseDocument,
+} from "@/redux/slices/cases_slice";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import IconButton from "@mui/material/IconButton";
 
-const UploadAlertDocumentButton = () => {
+type UploadCaseDocumentButtonProps = {
+  c: Case;
+};
+
+const UploadCaseDocumentButton: React.FC<UploadCaseDocumentButtonProps> = ({
+  c,
+}) => {
   const params = useParams();
-  const router = useRouter();
 
   const dispatch = useAppDispatch();
-
-  const alert: "loading" | string | Alert = useSelector(
-    (state: any) => state.alerts.alert
-  );
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,25 +50,25 @@ const UploadAlertDocumentButton = () => {
     control,
     handleSubmit,
   } = useForm<{
-    alertId: string;
+    caseId: string;
     description: string;
     documentType: string;
     name: string;
   }>({
     defaultValues: {
-      alertId: params.id.toString(),
+      caseId: params.id.toString(),
       description: "",
       documentType: "ID_DOCUMENT_FRONT",
       name: "",
     },
   });
   const onSubmit: SubmitHandler<{
-    alertId: string;
+    caseId: string;
     description: string;
     documentType: string;
     name: string;
   }> = (data: {
-    alertId: string;
+    caseId: string;
     description: string;
     documentType: string;
     name: string;
@@ -80,19 +82,19 @@ const UploadAlertDocumentButton = () => {
       return;
     }
 
-    dispatch(createAlertDocument(data)).then((doc: any) => {
+    dispatch(createCaseDocument(data)).then((doc: any) => {
       if (
         typeof doc.payload != "string" &&
-        doc.payload.alertDocuments != null &&
-        doc.payload.alertDocuments.length > 0
+        doc.payload.caseDocuments != null &&
+        doc.payload.caseDocuments.length > 0
       ) {
         const docId =
-          doc.payload.alertDocuments[doc.payload.alertDocuments.length - 1].id;
+          doc.payload.caseDocuments[doc.payload.caseDocuments.length - 1].id;
 
         if (docId != null) {
           dispatch(
-            uploadAlertDocument({
-              alertId: params.id.toString(),
+            uploadCaseDocument({
+              caseId: params.id.toString(),
               documentId: docId,
               file: document,
             })
@@ -102,7 +104,7 @@ const UploadAlertDocumentButton = () => {
                 variant: "success",
               });
 
-              dispatch(fetchAlert(params.id.toString()));
+              dispatch(fetchCase(params.id.toString()));
 
               handleModalClose();
             } else {
@@ -141,30 +143,30 @@ const UploadAlertDocumentButton = () => {
   };
 
   useEffect(() => {
-    if (typeof alert != "string") {
-      if (alert.status == "OPEN") {
-        setIsOpen(true);
-      } else {
+    if (typeof c != "string") {
+      console.log(c.status);
+
+      if (c.status == "CLOSED") {
         setIsOpen(false);
+      } else {
+        setIsOpen(true);
       }
     }
-  }, [alert]);
+  }, [c]);
 
   return isOpen == false ? (
     <></>
-  ) : typeof alert == "string" ? (
+  ) : typeof c == "string" ? (
     <></>
   ) : (
     <>
-      <div className="w-fit">
-        <MyBlueButton
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          Upload Document
-        </MyBlueButton>
-      </div>
+      <IconButton
+        onClick={() => {
+          setModalOpen(true);
+        }}
+      >
+        <FileUploadOutlinedIcon className="text-[#12A7FF] h-[34px] w-[34px]" />
+      </IconButton>
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
@@ -286,4 +288,4 @@ const UploadAlertDocumentButton = () => {
   );
 };
 
-export default UploadAlertDocumentButton;
+export default UploadCaseDocumentButton;

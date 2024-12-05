@@ -3,13 +3,7 @@
 import { Alert, AlertSearch } from "@/core/api/ApiTypes";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
-import MyLinkText from "@/core/components/Text/LinkText";
-import MyText from "@/core/components/Text/Text";
-import { paginationPageSize, PaginationStateType } from "@/core/constants";
-import {
-  fetchAlerts,
-  setAlertsPaginationPageNumber,
-} from "@/redux/slices/alerts_slice";
+import { fetchAlerts } from "@/redux/slices/alerts_slice";
 import { useAppDispatch } from "@/redux/store/store";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useRouter, useSearchParams } from "next/navigation";

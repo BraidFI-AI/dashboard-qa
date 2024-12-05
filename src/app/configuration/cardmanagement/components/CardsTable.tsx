@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { GridEventListener, GridValueFormatterParams } from "@mui/x-data-grid";
+import { GridEventListener } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Card } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -54,32 +54,32 @@ const CardsTable = () => {
               headerName: "Start Date",
               flex: 1,
               minWidth: 120,
-              valueGetter(params: any) {
-                if (!params.value) {
-                  return params.value;
+              valueGetter(value: any, row: any) {
+                if (!value) {
+                  return value;
                 }
 
                 const date = moment(
-                  params.value[0].toString() +
+                  value[0].toString() +
                     "-" +
-                    params.value[1].toString() +
+                    value[1].toString() +
                     "-" +
-                    params.value[2].toString()
+                    value[2].toString()
                 );
 
                 return date;
               },
-              valueFormatter: (params: GridValueFormatterParams<Moment>) => {
-                if (params.value == null) {
+              valueFormatter: (params: Moment) => {
+                if (params == null) {
                   return "";
                 }
 
                 return `${
-                  params.value.year() +
+                  params.year() +
                   "-" +
-                  (params.value.month() + 1) +
+                  (params.month() + 1) +
                   "-" +
-                  params.value.date()
+                  params.date()
                 }`;
               },
             },
@@ -88,31 +88,31 @@ const CardsTable = () => {
               headerName: "End Date",
               flex: 1,
               minWidth: 120,
-              valueGetter(params: any) {
-                if (!params.value) {
-                  return params.value;
+              valueGetter(value: any, row: any) {
+                if (!value) {
+                  return value;
                 }
 
                 const date = moment(
-                  params.value[0].toString() +
+                  value[0].toString() +
                     "-" +
-                    params.value[1].toString() +
+                    value[1].toString() +
                     "-" +
-                    params.value[2].toString()
+                    value[2].toString()
                 );
 
                 return date;
               },
-              valueFormatter: (params: GridValueFormatterParams<Moment>) => {
-                if (params.value == null) {
+              valueFormatter: (params: Moment) => {
+                if (params == null) {
                   return "";
                 }
                 return `${
-                  params.value.year() +
+                  params.year() +
                   "-" +
-                  (params.value.month() + 1) +
+                  (params.month() + 1) +
                   "-" +
-                  params.value.date()
+                  params.date()
                 }`;
               },
             },

@@ -140,15 +140,16 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
             flex: 1,
             minWidth: 140,
             valueFormatter: (params: any) => {
-              return `${timestampToDate(params.value)}`;
+              return `${timestampToDate(params)}`;
             },
-            valueGetter: (params: any) => params.row.createdAt,
+            valueGetter: (value: any, row: any) => row.createdAt,
           },
           {
             field: "entity",
             headerName: "Entity",
             flex: 1,
             minWidth: 160,
+            display: "flex",
             renderCell: (params: any) => (
               <MyText
                 primary={
@@ -176,11 +177,11 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
                   "Unknown"}
               </MyText>
             ),
-            valueGetter: (params: any) =>
-              params.row.businessName ??
-              params.row.individualName ??
-              params.row.counterpartyName ??
-              params.row.transactionPaymentId ??
+            valueGetter: (value: any, row: any) =>
+              row.businessName ??
+              row.individualName ??
+              row.counterpartyName ??
+              row.transactionPaymentId ??
               "Unknown",
           },
           {
@@ -188,6 +189,7 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
             headerName: "Entity Type",
             flex: 1,
             minWidth: 140,
+            display: "flex",
             renderCell: (params: any) => (
               <LabelBox
                 color={
@@ -216,16 +218,16 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
                   : "Unknown"}
               </LabelBox>
             ),
-            valueGetter: (params: any) =>
-              params.row.uboId
+            valueGetter: (value: any, row: any) =>
+              row.uboId
                 ? "UBO"
-                : params.row.businessName
+                : row.businessName
                 ? "Business"
-                : params.row.individualName
+                : row.individualName
                 ? "Individual"
-                : params.row.counterpartyName
+                : row.counterpartyName
                 ? "Counterparty"
-                : params.row.transactionPaymentId
+                : row.transactionPaymentId
                 ? "Transaction"
                 : "Unknown",
           },
@@ -240,6 +242,7 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
             headerName: "Status",
             flex: 1,
             minWidth: 120,
+            display: "flex",
             renderCell: (params: any) => (
               <LabelBox
                 color={
@@ -254,7 +257,7 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
                 {enumTextToReadableText(params.row?.status)}
               </LabelBox>
             ),
-            valueGetter: (params: any) => params.row?.status,
+            valueGetter: (value: any, row: any) => row?.status,
           },
           {
             field: "updatedAt",
@@ -262,9 +265,9 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
             flex: 1,
             minWidth: 140,
             valueFormatter: (params: any) => {
-              return `${timestampToDate(params.value)}`;
+              return `${timestampToDate(params)}`;
             },
-            valueGetter: (params: any) => params.row.updatedAt,
+            valueGetter: (value: any, row: any) => row.updatedAt,
           },
           {
             field: "updatedBy",
@@ -277,6 +280,7 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
             headerName: "Note",
             flex: 1,
             minWidth: 140,
+            display: "flex",
             renderCell: (params: any) =>
               params.row.note != undefined && params.row.note != null ? (
                 <IconButton className="text-[#12A7FF]">

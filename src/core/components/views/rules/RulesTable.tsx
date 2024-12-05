@@ -83,10 +83,11 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
           headerName: "Amount",
           flex: 1,
           minWidth: 120,
+          display: "flex",
           renderCell: (params: any) => (
             <div>{toDollarFormat(params.row.amount)}</div>
           ),
-          valueGetter: (params: any) => params.row.amount,
+          valueGetter: (value: any, row: any) => row.amount,
         },
         {
           field: "createdAt",
@@ -94,9 +95,9 @@ const RulesTableView: React.FC<RulesTableViewType> = ({
           flex: 1,
           minWidth: 120,
           valueFormatter: (params: any) => {
-            return `${timestampToDate(params.value)}`;
+            return `${timestampToDate(params)}`;
           },
-          valueGetter: (params: any) => params.row.createdAt,
+          valueGetter: (value: any, row: any) => row.createdAt,
         },
       ]}
       filterModel={{

@@ -76,9 +76,9 @@ const WireTransactionStatusPage = () => {
             flex: 1,
             minWidth: 120,
             valueFormatter: (params: any) => {
-              return `${timestampToDate(params.value)}`;
+              return `${timestampToDate(params)}`;
             },
-            valueGetter: (params: any) => params.row.createdAt,
+            valueGetter: (value: any, row: any) => row.createdAt,
           },
           {
             field: "errorCount",

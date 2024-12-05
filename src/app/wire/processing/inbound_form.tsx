@@ -47,7 +47,7 @@ const InboundWireForm: React.FC<InboundWireForm> = ({
   };
 
   return (
-    <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
+    (<MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
       <MyText size="lg">Inbound wire processing</MyText>
       <div className="pb-6" />
       <MyText>Originator bank name</MyText>
@@ -158,7 +158,7 @@ const InboundWireForm: React.FC<InboundWireForm> = ({
         </MyBlueButton>
       </div>
       <div className="pb-6" />
-    </MyModal>
+    </MyModal>)
   );
 };
 

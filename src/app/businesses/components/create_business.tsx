@@ -169,7 +169,7 @@ const CreateBusinessPage = () => {
   }, [dispatch]);
 
   return (
-    <React.Fragment key="right">
+    (<React.Fragment key="right">
       <Box className="w-auto">
         <div>
           <MyBlueButton onClick={toggleDrawer(true)}>
@@ -644,7 +644,7 @@ const CreateBusinessPage = () => {
           </div>
         </Box>
       </Drawer>
-    </React.Fragment>
+    </React.Fragment>)
   );
 };
 

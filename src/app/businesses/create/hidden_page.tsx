@@ -140,7 +140,7 @@ const CreateBusinessPage = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-[750px] flex flex-row justify-between">
+    (<div className="w-[750px] flex flex-row justify-between">
       <div className="w-[350px]">
         <>
           {productIdsList === "loading" ? (
@@ -586,7 +586,7 @@ const CreateBusinessPage = () => {
         />
         <div className="h-10"></div>
       </div>
-    </div>
+    </div>)
   );
 };
 

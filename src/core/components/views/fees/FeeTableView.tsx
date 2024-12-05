@@ -84,10 +84,8 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
           headerName: "Fee amount",
           flex: 1,
           minWidth: 160,
-          valueGetter: (params: any) =>
-            params.row.feeType == "PERCENT"
-              ? params.row.amount
-              : toDollarFormat(params.row?.amount),
+          valueGetter: (value: any, row: any) =>
+            row.feeType == "PERCENT" ? row.amount : toDollarFormat(row?.amount),
         },
         {
           field: "feeChargingAccountNumber",

@@ -148,6 +148,7 @@ const BusinessesTable = () => {
                 headerName: "Product Name",
                 minWidth: 140,
                 flex: 1,
+                display: "flex",
                 renderCell: (params: any) => (
                   <Link
                     className={`${params.row.productId < 1 ? "hidden" : ""}`}
@@ -158,13 +159,14 @@ const BusinessesTable = () => {
                     </div>
                   </Link>
                 ),
-                valueGetter: (params: any) => params.row.productName,
+                valueGetter: (value: any, row: any) => row.productName,
               },
               {
                 field: "cipStatus",
                 headerName: "CIP status",
                 flex: 1,
                 minWidth: 120,
+                display: "flex",
                 renderCell: (params: any) => (
                   <LabelBox
                     color={
@@ -179,12 +181,13 @@ const BusinessesTable = () => {
                     {enumTextToReadableText(params.row?.cipStatus)}
                   </LabelBox>
                 ),
-                valueGetter: (params: any) => params.row?.cipStatus,
+                valueGetter: (value: any, row: any) => row?.cipStatus,
               },
               {
                 field: "status",
                 headerName: "Status",
                 width: 120,
+                display: "flex",
                 renderCell: (params: any) => (
                   <LabelBox
                     color={
@@ -199,7 +202,7 @@ const BusinessesTable = () => {
                     {enumTextToReadableText(params.row?.status)}
                   </LabelBox>
                 ),
-                valueGetter: (params: any) => params.row?.status,
+                valueGetter: (value: any, row: any) => row?.status,
               },
               {
                 field: "createdAt",
@@ -207,9 +210,9 @@ const BusinessesTable = () => {
                 flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
-                  return `${timestampToDate(params.value)}`;
+                  return `${timestampToDate(params)}`;
                 },
-                valueGetter: (params: any) => params.row.createdAt,
+                valueGetter: (value: any, row: any) => row.createdAt,
               },
               {
                 field: "updatedAt",
@@ -217,9 +220,9 @@ const BusinessesTable = () => {
                 flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
-                  return `${timestampToDate(params.value)}`;
+                  return `${timestampToDate(params)}`;
                 },
-                valueGetter: (params: any) => params.row.updatedAt,
+                valueGetter: (value: any, row: any) => row.updatedAt,
               },
             ]}
             rows={businesses}

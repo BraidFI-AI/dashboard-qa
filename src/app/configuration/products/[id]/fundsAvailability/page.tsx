@@ -119,89 +119,87 @@ const ACHConfig = ({ params }: { params: { id: string } }) => {
     }
   }, [dispatch, params.id, refresh, reset]);
 
-  return (
-    <>
-      {loading ? (
-        <div className="flex flex-col items-center justify-center pt-10">
-          <CircularProgress></CircularProgress>
-          <div>Loading Funds Availability...</div>
-        </div>
-      ) : fundsAvailability == null || product == null ? (
-        <MyText size="md">No ACH Config found</MyText>
-      ) : (
-        <div className="w-[300px]">
-          <ItemRow
-            title="Product Name"
-            value={product.productName ?? ""}
-          ></ItemRow>
-          <MyEditableTextField
-            editing={isEditingACHHold}
-            setEditing={setIsEditingACHHold}
-            name="achHoldDays"
-            displayName="ACH Hold Days"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false, pattern: null }
-                : {
-                    required: true,
-                    pattern: /^[0-9]+$/,
-                  }
-            }
-            value={
-              fundsAvailability.achHoldDays != null
-                ? fundsAvailability.achHoldDays
-                : 0
-            }
-            submitting={false}
-          />
-          <MyEditableTextField
-            editing={isEditingIIH}
-            setEditing={setIsEditingIIH}
-            name="checkDepositHoldDays"
-            displayName="Check Deposit Hold Days"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false, pattern: null }
-                : {
-                    required: true,
-                    pattern: /^[0-9]+$/,
-                  }
-            }
-            value={
-              fundsAvailability.checkDepositHoldDays != null
-                ? fundsAvailability.checkDepositHoldDays
-                : 0
-            }
-            submitting={false}
-          />
-          <ItemRow
-            title="Created Date"
-            value={timestampToDate(fundsAvailability.createdAt)}
-          ></ItemRow>
-          <ItemRow
-            title="Updated Date"
-            value={timestampToDate(fundsAvailability.updatedAt)}
-          ></ItemRow>
-          {(isEditingACHHold || isEditingIIH) && (
-            <Box className="w-fit pt-4">
-              <MyBlueButton
-                submitting={submitting}
-                onClick={() => {
-                  handleSubmit(onSubmit)();
-                }}
-              >
-                Update funds availability
-              </MyBlueButton>
-            </Box>
-          )}
-        </div>
-      )}
-    </>
-  );
+  return (<>
+    {loading ? (
+      <div className="flex flex-col items-center justify-center pt-10">
+        <CircularProgress></CircularProgress>
+        <div>Loading Funds Availability...</div>
+      </div>
+    ) : fundsAvailability == null || product == null ? (
+      <MyText size="md">No ACH Config found</MyText>
+    ) : (
+      <div className="w-[300px]">
+        <ItemRow
+          title="Product Name"
+          value={product.productName ?? ""}
+        ></ItemRow>
+        <MyEditableTextField
+          editing={isEditingACHHold}
+          setEditing={setIsEditingACHHold}
+          name="achHoldDays"
+          displayName="ACH Hold Days"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false, pattern: null }
+              : {
+                  required: true,
+                  pattern: /^[0-9]+$/,
+                }
+          }
+          value={
+            fundsAvailability.achHoldDays != null
+              ? fundsAvailability.achHoldDays
+              : 0
+          }
+          submitting={false}
+        />
+        <MyEditableTextField
+          editing={isEditingIIH}
+          setEditing={setIsEditingIIH}
+          name="checkDepositHoldDays"
+          displayName="Check Deposit Hold Days"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false, pattern: null }
+              : {
+                  required: true,
+                  pattern: /^[0-9]+$/,
+                }
+          }
+          value={
+            fundsAvailability.checkDepositHoldDays != null
+              ? fundsAvailability.checkDepositHoldDays
+              : 0
+          }
+          submitting={false}
+        />
+        <ItemRow
+          title="Created Date"
+          value={timestampToDate(fundsAvailability.createdAt)}
+        ></ItemRow>
+        <ItemRow
+          title="Updated Date"
+          value={timestampToDate(fundsAvailability.updatedAt)}
+        ></ItemRow>
+        {(isEditingACHHold || isEditingIIH) && (
+          <Box className="w-fit pt-4">
+            <MyBlueButton
+              submitting={submitting}
+              onClick={() => {
+                handleSubmit(onSubmit)();
+              }}
+            >
+              Update funds availability
+            </MyBlueButton>
+          </Box>
+        )}
+      </div>
+    )}
+  </>);
 };
 
 export default ACHConfig;

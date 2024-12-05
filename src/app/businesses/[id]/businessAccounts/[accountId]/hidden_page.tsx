@@ -192,6 +192,7 @@ const Transactions = ({ params }: { params: any }) => {
               field: "created",
               headerName: "Created",
               width: 120,
+              display: "flex",
               renderCell: (params: any) => (
                 <div>{timestampToDate(params.row.created, true)}</div>
               ),
@@ -214,6 +215,7 @@ const Transactions = ({ params }: { params: any }) => {
               field: "ach.customer.id",
               headerName: "Customer",
               width: 120,
+              display: "flex",
               renderCell: (params: any) => (
                 <MyLinkText
                   link={`/${
@@ -230,6 +232,7 @@ const Transactions = ({ params }: { params: any }) => {
               field: "counterpartyId",
               headerName: "Counterparty",
               width: 160,
+              display: "flex",
               renderCell: (params: any) => (
                 <MyLinkText
                   link={`${
@@ -256,13 +259,14 @@ const Transactions = ({ params }: { params: any }) => {
               field: "amount",
               headerName: "Amount",
               width: 120,
-              valueGetter: (params: any) => toDollarFormat(params.row?.amount),
+              valueGetter: (value: any, row: any) =>
+                toDollarFormat(row?.amount),
             },
             {
               field: "ach.direction",
               headerName: "Direction",
               width: 110,
-              valueGetter: (params: any) => params.row?.ach?.direction,
+              valueGetter: (value: any, row: any) => row?.ach?.direction,
             },
             {
               field: "transactionCode",

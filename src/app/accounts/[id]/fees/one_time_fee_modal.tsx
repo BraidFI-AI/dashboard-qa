@@ -84,13 +84,13 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
   }, [accountId, dispatch, setIsOpen]);
 
   return (
-    <Modal
-      open={isOpen}
-      onClose={() => {
-        setIsOpen(false);
-      }}
-      className="overflow-auto"
-    >
+    (<Modal
+                                open={isOpen}
+                                onClose={() => {
+                                  setIsOpen(false);
+                                }}
+                                className="overflow-auto"
+                              >
       <Box
         className="w-[400px] flex items-center justify-center"
         sx={ModalBoxstyle}
@@ -218,7 +218,7 @@ const OneTimeFeeModal: React.FC<OneTimeFeeModalProps> = ({
           )}
         </>
       </Box>
-    </Modal>
+    </Modal>)
   );
 };
 

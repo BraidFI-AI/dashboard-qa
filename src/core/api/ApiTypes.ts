@@ -8,6 +8,7 @@ export interface Alert {
   alertNotes?: AlertNote[] | null;
   alertTimelines?: AlertTimeline[] | null;
   alertDocuments: AlertDocument[] | null;
+  assignedUsername?: string | null;
 }
 
 export interface Case {
@@ -73,7 +74,7 @@ export interface AlertTimeline {
 
 export interface AlertDocument {
   id: number | null;
-
+  name?: string | null;
   alertId: number | null;
   caseId: number | null;
   status: string | null;

@@ -297,22 +297,22 @@ const WireSettlement = () => {
                 flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
-                  return `${moment(params.value * 1000).year()}-${(
-                    moment(params.value * 1000).month() + 1
+                  return `${moment(params * 1000).year()}-${(
+                    moment(params * 1000).month() + 1
                   )
                     .toString()
-                    .padStart(2, "0")}-${moment(params.value * 1000)
+                    .padStart(2, "0")}-${moment(params * 1000)
                     .date()
                     .toString()
-                    .padStart(2, "0")} ${moment(params.value * 1000)
+                    .padStart(2, "0")} ${moment(params * 1000)
                     .hour()
                     .toString()
-                    .padStart(2, "0")}:${moment(params.value * 1000)
+                    .padStart(2, "0")}:${moment(params * 1000)
                     .minute()
                     .toString()
                     .padStart(2, "0")}`;
                 },
-                valueGetter: (params: any) => params.row.createdAt,
+                valueGetter: (value: any, row: any) => row.createdAt,
               },
               {
                 field: "updatedAt",
@@ -320,22 +320,22 @@ const WireSettlement = () => {
                 flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
-                  return `${moment(params.value * 1000).year()}-${(
-                    moment(params.value * 1000).month() + 1
+                  return `${moment(params * 1000).year()}-${(
+                    moment(params * 1000).month() + 1
                   )
                     .toString()
-                    .padStart(2, "0")}-${moment(params.value * 1000)
+                    .padStart(2, "0")}-${moment(params * 1000)
                     .date()
                     .toString()
-                    .padStart(2, "0")} ${moment(params.value * 1000)
+                    .padStart(2, "0")} ${moment(params * 1000)
                     .hour()
                     .toString()
-                    .padStart(2, "0")}:${moment(params.value * 1000)
+                    .padStart(2, "0")}:${moment(params * 1000)
                     .minute()
                     .toString()
                     .padStart(2, "0")}`;
                 },
-                valueGetter: (params: any) => params.row.updatedAt,
+                valueGetter: (value: any, row: any) => row.updatedAt,
               },
               {
                 field: "transactionCount",
@@ -354,6 +354,7 @@ const WireSettlement = () => {
                 headerName: "Status",
                 flex: 1,
                 minWidth: 120,
+                display: "flex",
                 renderCell: (params: any) =>
                   params.row.status == "SUBMITTED" ? (
                     <Tooltip title="Approve Settlement" placement="right">
@@ -400,6 +401,7 @@ const WireSettlement = () => {
                 headerName: "FedWire File",
                 flex: 1,
                 minWidth: 82,
+                display: "flex",
                 renderCell: (params: any) => (
                   <Tooltip
                     title="Download Wire Setllment File"
