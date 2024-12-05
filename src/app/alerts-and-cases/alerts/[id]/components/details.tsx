@@ -121,7 +121,7 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
         <div className="flex flex-col justify-start w-[300px]">
           <div className="flex flex-row items-center">
             <div className="pr-6">
-              <MyText size="sm" color="text-[#939DA6]">
+              <MyText size="sm" color="text-[#677990]">
                 Asignee
               </MyText>
             </div>
@@ -169,7 +169,7 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
       </div>
       <div className="h-3" />
       <div className="flex flex-col pb-6 px-6">
-        <MyText size="sm" color="text-[#939DA6]">
+        <MyText size="sm" color="text-[#677990]">
           Description
         </MyText>
         <div className="break-all">
@@ -192,7 +192,7 @@ const AlertEntityIDComponent: React.FC<{
   return (
     <div className="flex flex-row w-full justify-between">
       <div className="pr-1">
-        <MyText size="sm" color="text-[#939DA6]">
+        <MyText size="sm" color="text-[#677990]">
           Entity ID
         </MyText>
       </div>

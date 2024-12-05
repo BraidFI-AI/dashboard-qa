@@ -61,7 +61,7 @@ const CounterpartyBraidDetailsView: React.FC<
           {editable ? (
             <MyText size="md">No OFAC check</MyText>
           ) : (
-            <MyText size="sm" color="text-[#939DA6]">
+            <MyText size="sm" color="text-[#677990]">
               No OFAC check
             </MyText>
           )}
@@ -109,7 +109,7 @@ const CounterpartyBraidDetailsView: React.FC<
         <MyLinkText
           textProps={{
             size: editable ? "md" : "sm",
-            color: editable ? undefined : "text-[#939DA6]",
+            color: editable ? undefined : "text-[#677990]",
           }}
           link={`/compliance/ofac/${counterparty.ofacId}`}
         >

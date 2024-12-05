@@ -125,7 +125,7 @@ const EntityType314AComponent: React.FC<EntityType314AComponentProps> = ({
               <div className="pointer-events-none">
                 <div className="flex flex-row w-full justify-between">
                   <div className="pr-1">
-                    <MyText size="sm" color="text-[#939DA6]">
+                    <MyText size="sm" color="text-[#677990]">
                       Entity
                     </MyText>
                   </div>

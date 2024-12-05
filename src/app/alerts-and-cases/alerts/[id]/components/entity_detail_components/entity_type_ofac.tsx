@@ -126,7 +126,7 @@ const EntityTypeOFACComponent: React.FC<EntityTypeOFACComponentProps> = ({
               <div className="pointer-events-none">
                 <div className="flex flex-row w-full justify-between">
                   <div className="pr-1">
-                    <MyText size="sm" color="text-[#939DA6]">
+                    <MyText size="sm" color="text-[#677990]">
                       Entity
                     </MyText>
                   </div>
@@ -151,7 +151,7 @@ const EntityTypeOFACComponent: React.FC<EntityTypeOFACComponentProps> = ({
         </div>
         {context.rawResults && (
           <>
-            <MyText size="sm" color="text-[#939DA6]">
+            <MyText size="sm" color="text-[#677990]">
               Results
             </MyText>
             <JSONTree

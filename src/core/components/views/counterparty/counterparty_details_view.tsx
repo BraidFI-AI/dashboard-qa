@@ -242,7 +242,7 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
                 {editable ? (
                   <MyText size="md">Counterparty blocked results</MyText>
                 ) : (
-                  <MyText size="sm" color="text-[#939DA6]">
+                  <MyText size="sm" color="text-[#677990]">
                     Counterparty blocked results
                   </MyText>
                 )}

@@ -87,7 +87,7 @@ const DocumentComponent: React.FC<DocumentComponentProps> = ({
           </div>
         </div>
         <div className="flex flex-row px-6">
-          <MyText size="sm" color="text-[#939DA6]">
+          <MyText size="sm" color="text-[#677990]">
             Description:
           </MyText>
           <div className="break-all pl-1">

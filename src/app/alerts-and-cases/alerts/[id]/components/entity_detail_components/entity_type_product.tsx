@@ -48,7 +48,7 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
             />
             <div className="h-3" />
             <div className="pr-1">
-              <MyText size="sm" color="text-[#939DA6]">
+              <MyText size="sm" color="text-[#677990]">
                 Settlement Emails
               </MyText>
             </div>

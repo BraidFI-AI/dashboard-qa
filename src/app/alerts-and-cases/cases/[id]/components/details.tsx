@@ -39,7 +39,7 @@ const CaseDetailsComponent: React.FC<CaseDetailsComponentProps> = ({ c }) => {
       </div>
       <div className="h-3" />
       <div className="flex flex-col pb-6 px-6">
-        <MyText size="sm" color="text-[#939DA6]">
+        <MyText size="sm" color="text-[#677990]">
           Description
         </MyText>
         <div className="break-all">

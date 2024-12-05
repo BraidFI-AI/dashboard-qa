@@ -12,7 +12,7 @@ const ItemRowHorizontal: React.FC<{
   return (
     <div className="flex flex-row w-full justify-between">
       <div className="pr-1">
-        <MyText size="sm" color="text-[#939DA6]">
+        <MyText size="sm" color="text-[#677990]">
           {`${title}${colon ? ":" : ""}`}
         </MyText>
       </div>
