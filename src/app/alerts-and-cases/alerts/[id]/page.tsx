@@ -258,14 +258,6 @@ const AlertsPage = () => {
     />
   ) : (
     <div className={`${SCROLLBAR_STYLE}`}>
-      <ReviewTransactionModal
-        paymentId={alert.contextId}
-        modalOpen={reviewModalOpen}
-        handleModalClose={handleReviewModalClose}
-        alertId={alert.id}
-        ofacId={alert.ofacId ?? ""}
-        customActionOnCompletion={() => setRefresh(true)}
-      />
       <div className="flex flex-row">
         <div ref={columnRef} className="flex flex-col w-full pr-6">
           <div ref={detailsRef}>

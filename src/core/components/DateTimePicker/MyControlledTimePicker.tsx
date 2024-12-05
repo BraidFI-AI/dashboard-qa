@@ -65,7 +65,6 @@ const MyControlledTimePicker: React.FC<MyControlledTimePickerProps> = ({
               {
                 //   popper: { placement: "auto" },
                 //   actionBar: { actions: ["clear"] },
-                // TODO -- fix this
                 // textField: {
                 //   fullWidth: true,
                 //   variant: "outlined",

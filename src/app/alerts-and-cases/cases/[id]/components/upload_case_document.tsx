@@ -10,23 +10,26 @@ import { enqueueSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import MyModal from "../../my_modal";
+import MyModal from "../../../../../core/components/my_modal";
 import { Case } from "@/core/api/ApiTypes";
 import {
   createCaseDocument,
   fetchCase,
   uploadCaseDocument,
 } from "@/redux/slices/cases_slice";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import IconButton from "@mui/material/IconButton";
 
-const UploadCaseDocumentButton = () => {
+type UploadCaseDocumentButtonProps = {
+  c: Case;
+};
+
+const UploadCaseDocumentButton: React.FC<UploadCaseDocumentButtonProps> = ({
+  c,
+}) => {
   const params = useParams();
-  const router = useRouter();
 
   const dispatch = useAppDispatch();
-
-  const c: "loading" | string | Case = useSelector(
-    (state: any) => state.cases.case
-  );
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -141,10 +144,12 @@ const UploadCaseDocumentButton = () => {
 
   useEffect(() => {
     if (typeof c != "string") {
-      if (c.status == "OPEN") {
-        setIsOpen(true);
-      } else {
+      console.log(c.status);
+
+      if (c.status == "CLOSED") {
         setIsOpen(false);
+      } else {
+        setIsOpen(true);
       }
     }
   }, [c]);
@@ -155,15 +160,13 @@ const UploadCaseDocumentButton = () => {
     <></>
   ) : (
     <>
-      <div className="w-fit">
-        <MyBlueButton
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          Upload Document
-        </MyBlueButton>
-      </div>
+      <IconButton
+        onClick={() => {
+          setModalOpen(true);
+        }}
+      >
+        <FileUploadOutlinedIcon className="text-[#12A7FF] h-[34px] w-[34px]" />
+      </IconButton>
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
