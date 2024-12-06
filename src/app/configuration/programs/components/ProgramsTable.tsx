@@ -48,6 +48,12 @@ const ProgramsTable = () => {
           minWidth: 120,
         },
         {
+          field: "achOdfi",
+          headerName: "ACH ODFI",
+          flex: 1,
+          minWidth: 120,
+        },
+        {
           field: "type",
           headerName: "Program Type",
           flex: 1,

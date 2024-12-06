@@ -95,6 +95,22 @@ const CreateProgramPage = () => {
           }
           value={"Government"}
         />
+        <Box className="pb-4"></Box>
+        <MyText>ACH ODFI</MyText>
+        <MyControlledTextField
+          name="achOdfi"
+          displayName="ACH ODFI"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: true,
+                }
+          }
+          value=""
+        />
         <Box className="pb-8"></Box>
         <Box className="w-40">
           <MyBlueButton type="submit" submitting={submitting}>
