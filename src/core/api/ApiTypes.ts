@@ -371,6 +371,7 @@ export interface Program {
   updatedAt: number;
   customerId: number;
   baseUrl: string;
+  achOdfi?: string | null;
 }
 
 export interface Product {
@@ -764,6 +765,7 @@ export interface CreateProgram {
   name: string;
   isActive: boolean;
   type: string;
+  achOdfi: string;
 }
 
 export interface CreateDepositTokenProduct {
