@@ -43,27 +43,27 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    if (noc.changeCode == "C01") {
-      setAccountNumber(noc.correctedData);
+    if (noc.ach?.changeCode == "C01") {
+      setAccountNumber(noc.ach?.correctedData);
     }
-    if (noc.changeCode == "C02") {
-      setRTN(noc.correctedData);
+    if (noc.ach?.changeCode == "C02") {
+      setRTN(noc.ach?.correctedData);
     }
-    if (noc.changeCode == "C03") {
-      setRTN(parseCorrectedData(noc.correctedData)?.[0]);
-      setAccountNumber(parseCorrectedData(noc.correctedData)?.[1]);
+    if (noc.ach?.changeCode == "C03") {
+      setRTN(parseCorrectedData(noc.ach?.correctedData)?.[0]);
+      setAccountNumber(parseCorrectedData(noc.ach?.correctedData)?.[1]);
     }
-    if (noc.changeCode == "C05") {
-      setTransCode(noc.correctedData);
+    if (noc.ach?.changeCode == "C05") {
+      setTransCode(noc.ach?.correctedData);
     }
-    if (noc.changeCode == "C06") {
-      setAccountNumber(parseCorrectedData(noc.correctedData)?.[0]);
-      setTransCode(parseCorrectedData(noc.correctedData)?.[1]);
+    if (noc.ach?.changeCode == "C06") {
+      setAccountNumber(parseCorrectedData(noc.ach?.correctedData)?.[0]);
+      setTransCode(parseCorrectedData(noc.ach?.correctedData)?.[1]);
     }
-    if (noc.changeCode == "C07") {
-      setRTN(parseCorrectedData(noc.correctedData)?.[0]);
-      setAccountNumber(parseCorrectedData(noc.correctedData)?.[1]);
-      setTransCode(parseCorrectedData(noc.correctedData)?.[2]);
+    if (noc.ach?.changeCode == "C07") {
+      setRTN(parseCorrectedData(noc.ach?.correctedData)?.[0]);
+      setAccountNumber(parseCorrectedData(noc.ach?.correctedData)?.[1]);
+      setTransCode(parseCorrectedData(noc.ach?.correctedData)?.[2]);
     }
   }, [noc]);
 
@@ -75,10 +75,10 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
 
   return (
     <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
-      <MyText size="lg">Change invalid data</MyText>
+      <MyText size="lg">Change Invalid Data</MyText>
       <div className="pb-6" />
-      <ItemRow title="Change code" value={noc.changeCode ?? ""} />
-      <ItemRow title="Change reason" value={noc.changeReason ?? ""} />
+      <ItemRow title="Change code" value={noc.ach?.changeCode ?? ""} />
+      <ItemRow title="Change reason" value={noc.ach?.changeReason ?? ""} />
       {counterparty == "loading" ? (
         <MyCircularProgressIndicator />
       ) : counterparty == null ? (
@@ -129,24 +129,24 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
 
                     const updatedCounterparty = structuredClone(counterparty);
 
-                    if (noc.changeCode == "C01") {
+                    if (noc.ach?.changeCode == "C01") {
                       updatedCounterparty.ach.accountNumber = accountNumber;
                     }
-                    if (noc.changeCode == "C02") {
+                    if (noc.ach?.changeCode == "C02") {
                       updatedCounterparty.ach.routingNumber = rtn;
                     }
-                    if (noc.changeCode == "C03") {
+                    if (noc.ach?.changeCode == "C03") {
                       updatedCounterparty.ach.routingNumber = rtn;
                       updatedCounterparty.ach.accountNumber = accountNumber;
                     }
-                    if (noc.changeCode == "C05") {
+                    if (noc.ach?.changeCode == "C05") {
                       updatedCounterparty.ach.bankAccountType = transCode;
                     }
-                    if (noc.changeCode == "C06") {
+                    if (noc.ach?.changeCode == "C06") {
                       updatedCounterparty.ach.accountNumber = accountNumber;
                       updatedCounterparty.ach.bankAccountType = transCode;
                     }
-                    if (noc.changeCode == "C07") {
+                    if (noc.ach?.changeCode == "C07") {
                       updatedCounterparty.ach.routingNumber = rtn;
                       updatedCounterparty.ach.accountNumber = accountNumber;
                       updatedCounterparty.ach.bankAccountType = transCode;
