@@ -80,6 +80,24 @@ const CreateDeveloperPage = () => {
           }
           value=""
         />
+        <Box className="pb-4"></Box>
+
+        <MyText>Enable IP Restriction</MyText>
+        <MyControlledAutocomplete
+          name="enableIpRestriction"
+          displayName="Enable IP Restriction"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: false,
+                }
+          }
+          value="false"
+          options={["false", "true"]}
+        />
         <Box className="pb-8"></Box>
         <Box className="w-fit">
           <MyBlueButton type="submit" submitting={submitting}>

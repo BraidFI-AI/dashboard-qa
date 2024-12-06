@@ -55,6 +55,12 @@ const DevelopersTable = () => {
               flex: 1,
               minWidth: 200,
             },
+            {
+              field: "enableIpRestriction",
+              headerName: "Enable IP Restriction",
+              flex: 1,
+              minWidth: 200,
+            },
           ]}
           rows={developers}
         />

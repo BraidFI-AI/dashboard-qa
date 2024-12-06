@@ -1013,6 +1013,7 @@ export interface CreateCounterpartyACH {
 export interface Developer {
   tenantId: string | null;
   name: string | null;
+  enableIpRestriction?: string | null;
 }
 
 export interface WhitelistedIP {
