@@ -198,8 +198,10 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 title="ACH company ID"
                 value={business.achCompanyId ?? ""}
               ></ItemRow>
+              <ItemRow title="MCC" value={business.mcc ?? ""}></ItemRow>
             </div>
             <div className="w-[300px]">
+              <ItemRow title="NAICS" value={business.naics ?? ""}></ItemRow>
               <ItemRow
                 title="Doing Business as"
                 value={business.dba ?? ""}

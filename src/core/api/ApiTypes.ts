@@ -222,6 +222,8 @@ export interface Business {
   mobilePhone: string;
   productId: number | null;
   type: string;
+  mcc?: string | null;
+  naics: string | null;
   tcAgreed: boolean;
   mobilePhoneVerified: boolean;
   emailVerified: boolean;
