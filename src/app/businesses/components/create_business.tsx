@@ -169,7 +169,7 @@ const CreateBusinessPage = () => {
   }, [dispatch]);
 
   return (
-    (<React.Fragment key="right">
+    <React.Fragment key="right">
       <Box className="w-auto">
         <div>
           <MyBlueButton onClick={toggleDrawer(true)}>
@@ -273,6 +273,40 @@ const CreateBusinessPage = () => {
                 value=""
               />
               <div className="h-4"></div>
+              <MyText>MCC</MyText>
+              <MyControlledTextField
+                name="mcc"
+                displayName="MCC"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                        pattern: /^\d{4}$/,
+                      }
+                }
+                value=""
+              />
+              <div className="h-4"></div>
+              <MyText>NAICS</MyText>
+              <MyControlledTextField
+                name="naics"
+                displayName="NAICS"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                        pattern: /^\d{6}$/,
+                      }
+                }
+                value=""
+              />
+              <div className="h-4"></div>
               <MyText>Incorporation state</MyText>
               <MyControlledAutocomplete
                 value={States[0]}
@@ -333,7 +367,7 @@ const CreateBusinessPage = () => {
                             required: true,
                           }
                     }
-                    options={["EIN", "SSN", "OTHER_ID"]}
+                    options={["EIN", "SSN", "TIN", "OTHER_ID"]}
                   />
                 </div>
                 <div className="w-2" />
@@ -644,7 +678,7 @@ const CreateBusinessPage = () => {
           </div>
         </Box>
       </Drawer>
-    </React.Fragment>)
+    </React.Fragment>
   );
 };
 
