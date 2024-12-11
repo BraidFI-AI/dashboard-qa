@@ -127,7 +127,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
   }, [dispatch, ids]);
 
   return (
-    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-[420px]">
         <MyText>Fee amount/ Percentage</MyText>
         <MyControlledTextField
@@ -280,6 +280,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
         )}
         <MyText>Settlement Account</MyText>
         <MyControlledAsyncAutocomplete
+          freeSolo={true}
           displayName="Account"
           name={"settlementAccountNumber"}
           control={control}
@@ -388,7 +389,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
           </MyBlueButton>
         </Box>
       </Box>
-    </form>)
+    </form>
   );
 };
 

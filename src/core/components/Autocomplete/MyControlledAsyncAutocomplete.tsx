@@ -13,11 +13,20 @@ interface MyControlledAsyncAutocompleteProps {
   errors: any;
   rules: any;
   fetchOptions: any;
+  freeSolo?: boolean;
 }
 
 const MyControlledAsyncAutocomplete: React.FC<
   MyControlledAsyncAutocompleteProps
-> = ({ fetchOptions, displayName, name, control, errors, rules }) => {
+> = ({
+  fetchOptions,
+  displayName,
+  name,
+  control,
+  errors,
+  rules,
+  freeSolo = false,
+}) => {
   const [inputValue, setInputValue] = useState("");
 
   const [page, setPage] = useState(-1);
@@ -96,6 +105,7 @@ const MyControlledAsyncAutocomplete: React.FC<
       rules={rules}
       value={inputValue}
       options={paginatedOptions}
+      freeSolo={freeSolo}
     />
   );
 };
