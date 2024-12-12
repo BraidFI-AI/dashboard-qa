@@ -219,8 +219,27 @@ export const fetchUBOs = createAsyncThunk(
 
 export const createUBO = createAsyncThunk(
   "business/createUBO",
-  async (data: { ubo: CreateUBO; productId: number; businessId: number }) => {
+  async (
+    data: { ubo: CreateUBO; productId: number; businessId: number },
+    thunkApi: any
+  ) => {
     try {
+      let ubos = await thunkApi.dispatch(
+        fetchUBOs(data.businessId?.toString())
+      );
+
+      ubos = ubos.payload;
+
+      let total = 0.0;
+
+      ubos.forEach((ubo: UBODetailed) => {
+        total += parseFloat(ubo.ownership);
+      });
+
+      if (total + parseFloat(data.ubo.ownership) > 100.0) {
+        return `Error creating ubo: Total ownership cannot exceed 100%`;
+      }
+
       const acc = await businessRepo.createUBO(
         data.ubo,
         data.productId,
