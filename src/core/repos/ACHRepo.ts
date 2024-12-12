@@ -148,7 +148,7 @@ class ACHRepo {
   public async fetchACHTransactionStatus(pageSize: number, pageNumber: number) {
     const response = await this.apiClient.http<any>(
       Method.GET,
-      `/ach/file/status/v2?pageSize=${1}&pageNumber=${pageNumber}`
+      `/ach/file/status/v2?pageSize=${pageSize}&pageNumber=${pageNumber}`
     );
 
     return response;
