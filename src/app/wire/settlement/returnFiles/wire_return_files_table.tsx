@@ -11,7 +11,10 @@ import MyTable from "@/core/components/Table/MyTable";
 import Modal from "@mui/material/Modal";
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import { enqueueSnackbar } from "notistack";
-import { downloadWireReturnFile } from "@/redux/slices/wire_settlement_slice";
+import {
+  approveWireReturnSettlement,
+  downloadWireReturnFile,
+} from "@/redux/slices/wire_settlement_slice";
 import timestampToDate from "@/core/utils/timestampToDate";
 
 const WireReturnFilesTable = () => {
@@ -24,10 +27,24 @@ const WireReturnFilesTable = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedWireFile, setSelectedWireFile] = useState<any>(null);
 
+  const [approving, setApproving] = useState<string[]>([]);
+
   const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => setModalOpen(false);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {};
+
+  const updateApprovingArr = (filename: string, status: boolean) => {
+    if (status) {
+      const tempArr = [...approving];
+      tempArr.push(filename);
+      setApproving(tempArr);
+    } else {
+      const tempArr = [...approving];
+      const uArr = tempArr.filter((fname: string) => fname != filename);
+      setApproving(uArr);
+    }
+  };
 
   return (
     <>
@@ -59,12 +76,6 @@ const WireReturnFilesTable = () => {
               headerName: "File Name",
               flex: 1,
               minWidth: 260,
-            },
-            {
-              field: "status",
-              headerName: "Status",
-              flex: 1,
-              minWidth: 200,
             },
             {
               field: "transactionCount",
@@ -132,6 +143,53 @@ const WireReturnFilesTable = () => {
                   </div>
                 </Tooltip>
               ),
+            },
+            {
+              field: "status",
+              headerName: "Status",
+              flex: 1,
+              minWidth: 120,
+              display: "flex",
+              renderCell: (params: any) =>
+                params.row.status?.toLowerCase() == "PENDING" ? (
+                  <Tooltip title="Approve Settlement" placement="right">
+                    <div className="flex justify-center">
+                      <MyBlueButton
+                        submitting={approving.includes(params.row.filename)}
+                        onClick={() => {
+                          if (params != null) {
+                            updateApprovingArr(params.row.filename, true);
+                            dispatch(
+                              approveWireReturnSettlement(params.row.filename)
+                            ).then((d: any) => {
+                              updateApprovingArr(params.row.filename, false);
+                              console.log(d.payload);
+                              if (typeof d.payload != "string") {
+                                enqueueSnackbar("Settlement approved", {
+                                  variant: "success",
+                                });
+                              } else {
+                                enqueueSnackbar(d.payload, {
+                                  variant: "error",
+                                  persist: true,
+                                });
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        Approve
+                      </MyBlueButton>
+                    </div>
+                  </Tooltip>
+                ) : (
+                  <div>
+                    {params.row?.status
+                      ? params.row?.status?.[0] +
+                        params?.row?.status?.slice(1)?.toLowerCase()
+                      : "NaN"}
+                  </div>
+                ),
             },
           ]}
           rows={wireReturnFiles}
