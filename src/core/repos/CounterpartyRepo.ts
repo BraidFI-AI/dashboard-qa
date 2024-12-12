@@ -1,5 +1,10 @@
 import ApiClient, { Method } from "../api/ApiClient";
-import { Counterparty, CreateCounterparty, IdsListType } from "../api/ApiTypes";
+import {
+  Counterparty,
+  CreateCounterparty,
+  IdsListType,
+  SearchCounterparty,
+} from "../api/ApiTypes";
 
 class CounterpartyRepo {
   private apiClient: ApiClient;
@@ -17,7 +22,7 @@ class CounterpartyRepo {
   }
 
   public async fetchCounterparties(
-    id: string,
+    search: SearchCounterparty,
     pageSize: number,
     pageNumber: number
   ) {
@@ -26,20 +31,22 @@ class CounterpartyRepo {
       totalElements: number;
       number: number;
     }>(
-      Method.GET,
-      `/counterparty?searchKeyWords=${id}&pageSize=${pageSize}&pageNumber=${pageNumber}`
+      Method.POST,
+      `/counterparty/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      search
     );
     return response;
   }
 
   public async fetchCounterpartyIds(
-    id: string,
+    search: SearchCounterparty,
     pageSize: number,
     pageNumber: number
   ) {
     const response = await this.apiClient.http<any>(
-      Method.GET,
-      `/counterparty?searchKeyWords=${id}&pageSize=${pageSize}&pageNumber=${pageNumber}`
+      Method.POST,
+      `/counterparty/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      search
     );
 
     let idsList: IdsListType[] = [];
@@ -76,25 +83,6 @@ class CounterpartyRepo {
       `/counterparty/${id}`,
       counterparty
     );
-  }
-
-  public async fetchCounterpartyIdsList() {
-    const counterparties = await this.apiClient.http<Counterparty[]>(
-      Method.GET,
-      `/counterparty`
-    );
-
-    console.log("counterparties:", counterparties);
-
-    const counterpartyIds: { id: string; name: string }[] = [];
-    counterparties.map((counterparty: Counterparty) => {
-      counterpartyIds.push({
-        id: counterparty.id ? counterparty.id.toString() : "-1",
-        name: counterparty.name ?? "",
-      });
-    });
-
-    return counterpartyIds;
   }
 }
 

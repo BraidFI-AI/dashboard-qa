@@ -133,7 +133,9 @@ export const fetchAccountCounterparties = createAsyncThunk(
   async (data: { id: string; refresh?: boolean }, thunkApi: any) => {
     try {
       const counterparties = await counterpartyRepo.fetchCounterparties(
-        data.id,
+        {
+          accountId: data.id,
+        },
         paginationPageSize,
         data.refresh != null && data.refresh == true
           ? 0
@@ -161,7 +163,9 @@ export const fetchAccountCounterpartyIds = createAsyncThunk(
 
       const counterparties: IdsListType[] = [];
       var data = await counterpartyRepo.fetchCounterpartyIds(
-        id,
+        {
+          accountId: id,
+        },
         500,
         pageNumber
       );
@@ -169,7 +173,13 @@ export const fetchAccountCounterpartyIds = createAsyncThunk(
       counterparties.push(...data.ids);
 
       while (data.next == true) {
-        data = await counterpartyRepo.fetchCounterpartyIds(id, 500, pageNumber);
+        data = await counterpartyRepo.fetchCounterpartyIds(
+          {
+            accountId: id,
+          },
+          500,
+          pageNumber
+        );
         counterparties.push(...data.ids);
       }
 

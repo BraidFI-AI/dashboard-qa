@@ -1014,6 +1014,13 @@ export interface CreateCounterpartyACH {
   };
 }
 
+export interface SearchCounterparty {
+  accountId?: string | null;
+  businessId?: string | null;
+  individualId?: string | null;
+  productId?: string | null;
+}
+
 export interface Developer {
   tenantId: string | null;
   name: string | null;
