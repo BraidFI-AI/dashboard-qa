@@ -97,22 +97,5 @@ export const updateCounterparty = createAsyncThunk(
   }
 );
 
-export const fetchCounterpartyIdsList = createAsyncThunk(
-  "Counterparty/fetchCounterpartyIdsList",
-  async () => {
-    try {
-      const counterpartyIds = await counterpartyRepo.fetchCounterpartyIdsList();
-      return counterpartyIds;
-    } catch (e: any) {
-      enqueueSnackbar(
-        `Error fetching counterparties: ${generateErrorMessage(e)}`,
-        { variant: "error", persist: true }
-      );
-    }
-
-    return null;
-  }
-);
-
 export default CounterpartySlice;
 export const { setInitialCounterpartyState } = CounterpartySlice.actions;
