@@ -23,6 +23,7 @@ export interface MyControlledAutocompleteProps {
   loading?: boolean;
   loadingText?: string;
   onScroll?: any;
+  freeSolo?: boolean;
 }
 function getErrorByNameString(errors: any, name: string) {
   const properties = name.split(".");
@@ -52,6 +53,7 @@ const MyControlledAutocomplete: React.FC<MyControlledAutocompleteProps> = ({
   loading,
   loadingText,
   onScroll,
+  freeSolo = false,
 }) => {
   return (
     <Controller
@@ -75,6 +77,7 @@ const MyControlledAutocomplete: React.FC<MyControlledAutocompleteProps> = ({
               customOnChange(item, event.target.dataset.optionIndex);
             }
           }}
+          freeSolo={freeSolo}
           disabled={disabled}
           disableClearable={!clearable}
           value={value || null}
