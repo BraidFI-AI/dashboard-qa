@@ -274,13 +274,14 @@ export const fetchIndividualsPaginated = createAsyncThunk(
       }
 
       const individuals = await individualRepo.fetchIndividualsPaginated(
-        thunkApi.getState().business.businessPagination.pageSize ??
+        thunkApi.getState().individual.individualsPagination.pageSize ??
           paginationPageSize,
         data.refresh == true
           ? 0
-          : thunkApi.getState().business.businessPagination.pageNumber == -1
+          : thunkApi.getState().individual.individualsPagination.pageNumber ==
+            -1
           ? 0
-          : thunkApi.getState().business.businessPagination.pageNumber,
+          : thunkApi.getState().individual.individualsPagination.pageNumber,
         data.filters
       );
       console.log("individuals", individuals);
