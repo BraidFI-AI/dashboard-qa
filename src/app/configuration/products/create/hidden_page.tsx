@@ -84,7 +84,7 @@ const CreateProductPage = () => {
   }, [submitCount, errors, isSubmitted, isValid]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <div className="flex flex-row w-[650px] justify-between">
         <Box className="flex flex-col w-[300px]">
           <MyText>Product Name</MyText>
@@ -401,7 +401,7 @@ const CreateProductPage = () => {
           </Box>
         </Box>
       </div>
-    </form>
+    </form>)
   );
 };
 

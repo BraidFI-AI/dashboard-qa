@@ -18,6 +18,7 @@ export interface MyTextProps {
   white?: boolean;
   status?: boolean;
   color?: string;
+  weight?: "bold" | "semibold" | "regular";
 }
 
 const MyText: React.FC<MyTextProps> = ({
@@ -27,14 +28,21 @@ const MyText: React.FC<MyTextProps> = ({
   primary = false,
   underline,
   white = false,
+  weight = "regular",
   status,
   color,
 }) => {
+  const fontWeight =
+    weight === "bold"
+      ? "font-bold"
+      : weight === "semibold"
+      ? "font-semibold"
+      : "font-regular";
   return typeof children === "string" && children === "" ? (
     <div className="invisible">.</div>
   ) : (
     <Typography
-      className={`font-avenir-regular ${
+      className={`font-avenir-regular ${fontWeight} ${
         variant === "label"
           ? size == "xs"
             ? " text-[10px]"

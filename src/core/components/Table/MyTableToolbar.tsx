@@ -34,13 +34,19 @@ const MyTableToolbar: React.FC<MyTableToolbarProps> = ({
     <GridToolbarContainer className="flex flex-row justify-between bg-[#F4F5F7]">
       <Box>
         {hideColumnsButton == false && (
-          <GridToolbarColumnsButton className="text-[#12A7FF]" />
+          <GridToolbarColumnsButton
+            slotProps={{ button: { className: "text-[#12A7FF]" } }}
+          />
         )}
         {hideFilterButton == false && (
-          <GridToolbarFilterButton className="text-[#12A7FF]" />
+          <GridToolbarFilterButton
+            slotProps={{ button: { className: "text-[#12A7FF]" } }}
+          />
         )}
         {hideDensityButton == false && (
-          <GridToolbarDensitySelector className="text-[#12A7FF]" />
+          <GridToolbarDensitySelector
+            slotProps={{ button: { className: "text-[#12A7FF]" } }}
+          />
         )}
         {toggleExpand && (
           <Button
@@ -61,7 +67,7 @@ const MyTableToolbar: React.FC<MyTableToolbarProps> = ({
         {exp && (
           <GridToolbarExport
             printOptions={{ disableToolbarButton: true }}
-            className="text-[#12A7FF]"
+            slotProps={{ button: { className: "text-[#12A7FF]" } }}
           />
         )}
       </Box>

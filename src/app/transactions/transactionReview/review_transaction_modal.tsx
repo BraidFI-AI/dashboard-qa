@@ -292,10 +292,11 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                         headerName: "Amount",
                         flex: 1,
                         minWidth: 120,
+                        display: "flex",
                         renderCell: (params: any) => (
                           <div>{toDollarFormat(params.row.amount)}</div>
                         ),
-                        valueGetter: (params: any) => params.row.amount,
+                        valueGetter: (value: any, row: any) => row.amount,
                       },
                       {
                         field: "createdAt",
@@ -303,9 +304,9 @@ const ReviewTransactionModal: React.FC<ReviewTransactionModalProps> = ({
                         flex: 1,
                         minWidth: 120,
                         valueFormatter: (params: any) => {
-                          return `${timestampToDate(params.value)}`;
+                          return `${timestampToDate(params)}`;
                         },
-                        valueGetter: (params: any) => params.row.createdAt,
+                        valueGetter: (value: any, row: any) => row.createdAt,
                       },
                     ]}
                     rows={limits}

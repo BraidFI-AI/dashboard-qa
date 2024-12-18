@@ -110,8 +110,8 @@ const NocTable = () => {
           handleRowClick={handleRowClick}
           columns={[
             {
-              field: "id",
-              headerName: "ID",
+              field: "paymentId",
+              headerName: "Payment ID",
               flex: 1,
               minWidth: 200,
             },
@@ -120,6 +120,7 @@ const NocTable = () => {
               headerName: "Business Name",
               flex: 1,
               minWidth: 160,
+              display: "flex",
               renderCell: (params: any) => (
                 <MyLinkText
                   link={
@@ -134,13 +135,14 @@ const NocTable = () => {
                   {params.row.customerName}
                 </MyLinkText>
               ),
-              valueGetter: (params: any) => params.row.customerName,
+              valueGetter: (value: any, row: any) => row?.customerName,
             },
             {
               field: "counterpartyName",
               headerName: "Counterparty",
               flex: 1,
               minWidth: 160,
+              display: "flex",
               renderCell: (params: any) => (
                 <div
                   onClick={() => {
@@ -163,40 +165,44 @@ const NocTable = () => {
                   </MyText>
                 </div>
               ),
-              valueGetter: (params: any) => params.row.counterpartyName,
+              valueGetter: (value: any, row: any) => row?.counterpartyName,
             },
             {
-              field: "changeCode",
+              field: "ach.changeCode",
               headerName: "Change Code",
               flex: 1,
               minWidth: 120,
+              valueGetter: (value: any, row: any) => row?.ach?.changeCode ?? "",
             },
             {
-              field: "changeReason",
+              field: "ach.changeReason",
               headerName: "Change Reason",
               flex: 1,
               minWidth: 160,
+              valueGetter: (value: any, row: any) =>
+                row?.ach?.changeReason ?? "",
             },
             {
               field: "effectiveDate",
               headerName: "Effective Date",
               flex: 1,
               minWidth: 160,
+              display: "flex",
               renderCell: (params: any) => (
-                <div>{`${params.row.effective_date?.[0]
+                <div>{`${params.row?.ach?.effectiveDate?.[0]
                   .toString()
-                  .padStart(2, "0")}-${params.row.effective_date?.[1]
+                  .padStart(2, "0")}-${params.row?.ach?.effectiveDate?.[1]
                   .toString()
-                  .padStart(2, "0")}-${params.row.effective_date?.[2]
+                  .padStart(2, "0")}-${params.row?.ach?.effectiveDate?.[2]
                   .toString()
                   .padStart(2, "0")}`}</div>
               ),
-              valueGetter: (params: any) =>
-                `${params.row.effective_date?.[0]
+              valueGetter: (value: any, row: any) =>
+                `${row?.ach?.effectiveDate?.[0]
                   .toString()
-                  .padStart(2, "0")}-${params.row.effective_date?.[1]
+                  .padStart(2, "0")}-${row?.ach?.effectiveDate?.[1]
                   .toString()
-                  .padStart(2, "0")}-${params.row.effective_date?.[2]
+                  .padStart(2, "0")}-${row?.ach?.effectiveDate?.[2]
                   .toString()
                   .padStart(2, "0")}`,
             },
@@ -206,15 +212,16 @@ const NocTable = () => {
               flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
-                return `${timestampToDate(params.value)}`;
+                return `${timestampToDate(params)}`;
               },
-              valueGetter: (params: any) => params.row.updatedAt,
+              valueGetter: (value: any, row: any) => row?.updatedAt,
             },
             {
               field: "change",
               headerName: "Change",
               flex: 1,
               minWidth: 120,
+              display: "flex",
               renderCell: (params: any) => (
                 <div className="flex justify-center items-center">
                   <MyBlueButton

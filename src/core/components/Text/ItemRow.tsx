@@ -3,6 +3,7 @@
 import Box from "@mui/material/Box";
 import MyText from "./Text";
 import MyLinkText from "./LinkText";
+import ItemRowHorizontal from "./ItemRowHorizontal";
 
 interface LinkValue<T> {
   value: T | null | undefined;
@@ -43,6 +44,8 @@ type FormItemProps = ExclusiveFormItemValues & {
   boxValues?: boolean;
   primary?: boolean;
   status?: boolean;
+  horizontal?: boolean;
+  horizontalNoSpace?: boolean;
 };
 
 const ItemRow: React.FC<FormItemProps> = ({
@@ -52,8 +55,15 @@ const ItemRow: React.FC<FormItemProps> = ({
   values,
   boxValues,
   status,
+  horizontal = false,
+  horizontalNoSpace = false,
 }) => {
-  return (
+  return horizontal ? (
+    <>
+      <ItemRowHorizontal title={title} value={value?.toString() ?? ""} />
+      {!horizontalNoSpace && <div className="h-3" />}
+    </>
+  ) : (
     <Box className={`flex flex-col pb-2`}>
       <div className={`pb-0 text-slate-700`}>
         <MyText size={`sm`}>{title}</MyText>

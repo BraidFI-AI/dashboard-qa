@@ -66,8 +66,12 @@ const DeveloperPage = ({ params }: { params: { id: string } }) => {
     <MyText>Developer not found</MyText>
   ) : (
     <div className="">
-      <ItemRow title="Tenant ID" value={developer.tenantId!}></ItemRow>
-      <ItemRow title="Name" value={developer.name!}></ItemRow>
+      <ItemRow title="Tenant ID" value={developer.tenantId ?? ""}></ItemRow>
+      <ItemRow title="Name" value={developer.name ?? ""}></ItemRow>
+      <ItemRow
+        title="Enable IP Restriction"
+        value={developer.enableIpRestriction ?? ""}
+      ></ItemRow>
       <MyText>Whitelisted IP Addresses</MyText>
       <div className="pb-2" />
       {ips == "loading" ? (
@@ -112,6 +116,7 @@ const DeveloperPage = ({ params }: { params: { id: string } }) => {
                 field: "delete",
                 headerName: "Delete IP",
                 width: 120,
+                display: "flex",
                 renderCell: (rowParams: any) =>
                   deleting.includes(rowParams.row.id) ? (
                     <CircularProgress size="25px" />

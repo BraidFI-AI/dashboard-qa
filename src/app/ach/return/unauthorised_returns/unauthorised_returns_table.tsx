@@ -74,6 +74,7 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
             headerName: "Product ID",
             flex: 1,
             minWidth: 120,
+            display: "flex",
             renderCell: (params: any) => (
               <MyLinkText
                 link={
@@ -85,13 +86,14 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
                 {params.row.productId}
               </MyLinkText>
             ),
-            valueGetter: (params: any) => params.row.productId,
+            valueGetter: (value: any, row: any) => row.productId,
           },
           {
             field: "customerName",
             headerName: "Customer Name",
             flex: 1,
             minWidth: 160,
+            display: "flex",
             renderCell: (params: any) => (
               <MyLinkText
                 link={
@@ -105,13 +107,14 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
                 {params.row.customerName}
               </MyLinkText>
             ),
-            valueGetter: (params: any) => params.row.customerName,
+            valueGetter: (value: any, row: any) => row.customerName,
           },
           {
             field: "counterpartyName",
             headerName: "Counterparty Name",
             flex: 1,
             minWidth: 160,
+            display: "flex",
             renderCell: (params: any) => (
               <MyLinkText
                 link={linkToCounterparty(params.row.counterparty) ?? ""}
@@ -119,7 +122,7 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
                 {params.row.counterpartyName}
               </MyLinkText>
             ),
-            valueGetter: (params: any) => params.row.counterpartyName,
+            valueGetter: (value: any, row: any) => row.counterpartyName,
           },
           { field: "secCode", headerName: "Sec Code", width: 120 },
           { field: "returnCode", headerName: "Return Code", width: 120 },
@@ -128,16 +131,18 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
             headerName: "Amount",
             flex: 1,
             minWidth: 120,
+            display: "flex",
             renderCell: (params: any) => (
               <div>{toDollarFormat(params.row.amount)}</div>
             ),
-            valueGetter: (params: any) => params.row.amount,
+            valueGetter: (value: any, row: any) => row.amount,
           },
           {
             field: "effectiveDate",
             headerName: "Effective Date",
             flex: 1,
             minWidth: 160,
+            display: "flex",
             renderCell: (params: any) => (
               <div>{`${params.row.effective_date?.[0]
                 .toString()
@@ -147,12 +152,12 @@ const UnauthorizedReturnsTable: React.FC<UnauthorizedReturnsTableProps> = ({
                 .toString()
                 .padStart(2, "0")}`}</div>
             ),
-            valueGetter: (params: any) =>
-              `${params.row.effective_date?.[0]
+            valueGetter: (value: any, row: any) =>
+              `${row.effective_date?.[0]
                 .toString()
-                .padStart(2, "0")}-${params.row.effective_date?.[1]
+                .padStart(2, "0")}-${row.effective_date?.[1]
                 .toString()
-                .padStart(2, "0")}-${params.row.effective_date?.[2]
+                .padStart(2, "0")}-${row.effective_date?.[2]
                 .toString()
                 .padStart(2, "0")}`,
           },

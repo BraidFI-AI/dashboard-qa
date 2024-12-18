@@ -106,6 +106,8 @@ class BusinessRepo {
       ach: business.ach,
       email: business.submittedBy?.contactPersonEmail,
       productId: business.productId,
+      mcc: business.mcc,
+      naics: business.naics,
     };
 
     console.log("creating business:", businessData);

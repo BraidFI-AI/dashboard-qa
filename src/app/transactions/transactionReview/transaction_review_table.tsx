@@ -148,28 +148,29 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
             flex: 1,
             minWidth: 130,
             valueFormatter: (params: any) => {
-              return `${moment(params.value * 1000).year()}-${(
-                moment(params.value * 1000).month() + 1
+              return `${moment(params * 1000).year()}-${(
+                moment(params * 1000).month() + 1
               )
                 .toString()
-                .padStart(2, "0")}-${moment(params.value * 1000)
+                .padStart(2, "0")}-${moment(params * 1000)
                 .date()
                 .toString()
-                .padStart(2, "0")} ${moment(params.value * 1000)
+                .padStart(2, "0")} ${moment(params * 1000)
                 .hour()
                 .toString()
-                .padStart(2, "0")}:${moment(params.value * 1000)
+                .padStart(2, "0")}:${moment(params * 1000)
                 .minute()
                 .toString()
                 .padStart(2, "0")}`;
             },
-            valueGetter: (params: any) => params.row.createdAt,
+            valueGetter: (value: any, row: any) => row.createdAt,
           },
           {
             field: "productId",
             headerName: "Product ID",
             flex: 1,
             minWidth: 120,
+            display: "flex",
             renderCell: (params: any) => (
               <MyLinkText
                 link={`/configuration/products/${params.row.productId}`}
@@ -177,25 +178,27 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
                 {params.row.productId}
               </MyLinkText>
             ),
-            valueGetter: (params: any) => params.row.productId,
+            valueGetter: (value: any, row: any) => row.productId,
           },
           {
             field: "customerName",
             headerName: "Customer",
             flex: 1,
             minWidth: 180,
+            display: "flex",
             renderCell: (params: any) => (
               <MyLinkText link={`/businesses/${params.row.customerId}`}>
                 {params.row.customerName}
               </MyLinkText>
             ),
-            valueGetter: (params: any) => params.row.customerName,
+            valueGetter: (value: any, row: any) => row.customerName,
           },
           {
             field: "counterpartyName",
             headerName: "Counterparty",
             flex: 1,
             minWidth: 180,
+            display: "flex",
             renderCell: (params: any) => (
               <div
                 onClick={() => {
@@ -218,29 +221,31 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
                 </MyText>
               </div>
             ),
-            valueGetter: (params: any) => params.row.counterpartyName,
+            valueGetter: (value: any, row: any) => row.counterpartyName,
           },
           {
             field: "accountNumber",
             headerName: "Account number",
             flex: 1,
             minWidth: 140,
+            display: "flex",
             renderCell: (params: any) => (
               <MyLinkText link={`/accounts/${params.row.accountNumber}`}>
                 {params.row.accountNumber}
               </MyLinkText>
             ),
-            valueGetter: (params: any) => params.row.accountNumber,
+            valueGetter: (value: any, row: any) => row.accountNumber,
           },
           {
             field: "amount",
             headerName: "Amount",
             flex: 1,
             minWidth: 150,
+            display: "flex",
             renderCell: (params: any) => (
               <div>{toDollarFormat(params.row.amount)}</div>
             ),
-            valueGetter: (params: any) => params.row.amount,
+            valueGetter: (value: any, row: any) => row.amount,
           },
           {
             field: "transactionType",

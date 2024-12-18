@@ -36,6 +36,7 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
           headerName: "Name",
           flex: 1,
           minWidth: 200,
+          display: "flex",
           renderCell: (params: any) => (
             <div>
               {
@@ -45,7 +46,7 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
               }
             </div>
           ),
-          valueGetter: (params: any) => params.row.name,
+          valueGetter: (value: any, row: any) => row?.name,
         },
         {
           field: "unauthCount",
@@ -70,6 +71,7 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
           headerName: "Total Return",
           flex: 1,
           minWidth: 120,
+          display: "flex",
           renderCell: (params: any) => (
             <div>
               {params.row.unauthCount +
@@ -77,10 +79,8 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
                 params.row.otherCount}
             </div>
           ),
-          valueGetter: (params: any) =>
-            params.row.unauthCount +
-            params.row.adminCount +
-            params.row.otherCount,
+          valueGetter: (value: any, row: any) =>
+            row.unauthCount + row.adminCount + row.otherCount,
         },
         {
           field: "totalCount",
@@ -93,33 +93,36 @@ const ReturnRatesTable: React.FC<ReturnRatesTableProps> = ({
           headerName: "Unauthized return rate",
           flex: 1,
           minWidth: 120,
+          display: "flex",
           renderCell: (params: any) => (
             <div>{toPercentage(params.row.unauthReturnRate)}</div>
           ),
-          valueGetter: (params: any) =>
-            toPercentage(params.row.unauthReturnRate),
+          valueGetter: (value: any, row: any) =>
+            toPercentage(row.unauthReturnRate),
         },
         {
           field: "adminReturnRate",
           headerName: "Administrative return rate",
           flex: 1,
           minWidth: 120,
+          display: "flex",
           renderCell: (params: any) => (
             <div>{toPercentage(params.row.adminReturnRate)}</div>
           ),
-          valueGetter: (params: any) =>
-            toPercentage(params.row.adminReturnRate),
+          valueGetter: (value: any, row: any) =>
+            toPercentage(row.adminReturnRate),
         },
         {
           field: "totalReturnRate",
           headerName: "Total return rate",
           flex: 1,
           minWidth: 120,
+          display: "flex",
           renderCell: (params: any) => (
             <div>{toPercentage(params.row.totalReturnRate)}</div>
           ),
-          valueGetter: (params: any) =>
-            toPercentage(params.row.totalReturnRate),
+          valueGetter: (value: any, row: any) =>
+            toPercentage(row?.totalReturnRate),
         },
       ]}
       rows={returns}

@@ -219,8 +219,27 @@ export const fetchUBOs = createAsyncThunk(
 
 export const createUBO = createAsyncThunk(
   "business/createUBO",
-  async (data: { ubo: CreateUBO; productId: number; businessId: number }) => {
+  async (
+    data: { ubo: CreateUBO; productId: number; businessId: number },
+    thunkApi: any
+  ) => {
     try {
+      let ubos = await thunkApi.dispatch(
+        fetchUBOs(data.businessId?.toString())
+      );
+
+      ubos = ubos.payload;
+
+      let total = 0.0;
+
+      ubos.forEach((ubo: UBODetailed) => {
+        total += parseFloat(ubo.ownership);
+      });
+
+      if (total + parseFloat(data.ubo.ownership) > 100.0) {
+        return `Error creating ubo: Total ownership cannot exceed 100%`;
+      }
+
       const acc = await businessRepo.createUBO(
         data.ubo,
         data.productId,
@@ -313,7 +332,9 @@ export const fetchBusinessCounterparties = createAsyncThunk(
   async (data: { id: string; refresh?: boolean }, thunkApi: any) => {
     try {
       const counterparties = await counterpartyRepo.fetchCounterparties(
-        data.id,
+        {
+          businessId: data.id,
+        },
         paginationPageSize,
         data.refresh != null && data.refresh == true
           ? 0
@@ -341,7 +362,9 @@ export const fetchBusinessAccountCounterpartiesIds = createAsyncThunk(
 
       const counterparties: IdsListType[] = [];
       var data = await counterpartyRepo.fetchCounterpartyIds(
-        id,
+        {
+          businessId: id,
+        },
         500,
         pageNumber
       );
@@ -349,7 +372,13 @@ export const fetchBusinessAccountCounterpartiesIds = createAsyncThunk(
       counterparties.push(...data.ids);
 
       while (data.next == true) {
-        data = await counterpartyRepo.fetchCounterpartyIds(id, 500, pageNumber);
+        data = await counterpartyRepo.fetchCounterpartyIds(
+          {
+            businessId: id,
+          },
+          500,
+          pageNumber
+        );
         counterparties.push(...data.ids);
       }
 

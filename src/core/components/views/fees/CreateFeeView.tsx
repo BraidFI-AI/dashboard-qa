@@ -280,6 +280,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
         )}
         <MyText>Settlement Account</MyText>
         <MyControlledAsyncAutocomplete
+          freeSolo={true}
           displayName="Account"
           name={"settlementAccountNumber"}
           control={control}

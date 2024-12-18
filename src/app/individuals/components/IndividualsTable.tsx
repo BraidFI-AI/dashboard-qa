@@ -127,17 +127,19 @@ const IndividualsTable = () => {
                 headerName: "Name",
                 flex: 1,
                 minWidth: 200,
+                display: "flex",
                 renderCell: (params: any) => (
                   <div>{params.row.firstName + " " + params.row.lastName}</div>
                 ),
-                valueGetter: (params: any) =>
-                  params.row.firstName + " " + params.row.lastName,
+                valueGetter: (value: any, row: any) =>
+                  row.firstName + " " + row.lastName,
               },
               {
                 field: "productName",
                 headerName: "Product Name",
                 flex: 1,
                 minWidth: 160,
+                display: "flex",
                 renderCell: (params: any) => (
                   <MyLinkText
                     textProps={{ size: "table" }}
@@ -146,14 +148,15 @@ const IndividualsTable = () => {
                     {params.row.productName}
                   </MyLinkText>
                 ),
-                valueGetter: (params: any) =>
-                  params.row.firstName + " " + params.row.lastName,
+                valueGetter: (value: any, row: any) =>
+                  row.firstName + " " + row.lastName,
               },
               {
                 field: "cipStatus",
                 headerName: "CIP Status",
                 flex: 1,
                 minWidth: 160,
+                display: "flex",
                 renderCell: (params: any) => (
                   <LabelBox
                     color={
@@ -168,13 +171,14 @@ const IndividualsTable = () => {
                     {enumTextToReadableText(params.row?.cipStatus)}
                   </LabelBox>
                 ),
-                valueGetter: (params: any) => params.row?.cipStatus,
+                valueGetter: (value: any, row: any) => row?.cipStatus,
               },
               {
                 field: "status",
                 headerName: "Status",
                 flex: 1,
                 minWidth: 120,
+                display: "flex",
                 renderCell: (params: any) => (
                   <LabelBox
                     color={
@@ -189,7 +193,7 @@ const IndividualsTable = () => {
                     {enumTextToReadableText(params.row?.status)}
                   </LabelBox>
                 ),
-                valueGetter: (params: any) => params.row?.status,
+                valueGetter: (value: any, row: any) => row?.status,
               },
               {
                 field: "createdAt",
@@ -197,9 +201,9 @@ const IndividualsTable = () => {
                 flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
-                  return `${timestampToDate(params.value)}`;
+                  return `${timestampToDate(params)}`;
                 },
-                valueGetter: (params: any) => params.row.createdAt,
+                valueGetter: (value: any, row: any) => row.createdAt,
               },
               {
                 field: "updatedAt",
@@ -207,9 +211,9 @@ const IndividualsTable = () => {
                 flex: 1,
                 minWidth: 120,
                 valueFormatter: (params: any) => {
-                  return `${timestampToDate(params.value)}`;
+                  return `${timestampToDate(params)}`;
                 },
-                valueGetter: (params: any) => params.row.updatedAt,
+                valueGetter: (value: any, row: any) => row.updatedAt,
               },
             ]}
             rows={individuals}

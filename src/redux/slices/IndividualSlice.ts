@@ -206,7 +206,9 @@ export const fetchIndividualCounterparties = createAsyncThunk(
   async (data: { id: string; refresh?: boolean }, thunkApi: any) => {
     try {
       const counterparties = await counterpartyRepo.fetchCounterparties(
-        data.id,
+        {
+          businessId: data.id,
+        },
         paginationPageSize,
         data.refresh != null && data.refresh == true
           ? 0
@@ -272,13 +274,14 @@ export const fetchIndividualsPaginated = createAsyncThunk(
       }
 
       const individuals = await individualRepo.fetchIndividualsPaginated(
-        thunkApi.getState().business.businessPagination.pageSize ??
+        thunkApi.getState().individual.individualsPagination.pageSize ??
           paginationPageSize,
         data.refresh == true
           ? 0
-          : thunkApi.getState().business.businessPagination.pageNumber == -1
+          : thunkApi.getState().individual.individualsPagination.pageNumber ==
+            -1
           ? 0
-          : thunkApi.getState().business.businessPagination.pageNumber,
+          : thunkApi.getState().individual.individualsPagination.pageNumber,
         data.filters
       );
       console.log("individuals", individuals);
@@ -505,7 +508,9 @@ export const fetchIndividualAccountCounterpartiesIds = createAsyncThunk(
 
       const counterparties: IdsListType[] = [];
       var data = await counterpartyRepo.fetchCounterpartyIds(
-        id,
+        {
+          businessId: id,
+        },
         500,
         pageNumber
       );
@@ -513,7 +518,13 @@ export const fetchIndividualAccountCounterpartiesIds = createAsyncThunk(
       counterparties.push(...data.ids);
 
       while (data.next == true) {
-        data = await counterpartyRepo.fetchCounterpartyIds(id, 500, pageNumber);
+        data = await counterpartyRepo.fetchCounterpartyIds(
+          {
+            businessId: id,
+          },
+          500,
+          pageNumber
+        );
         counterparties.push(...data.ids);
       }
 

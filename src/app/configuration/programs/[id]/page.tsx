@@ -69,11 +69,13 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
     type: string;
     isActive: boolean;
     baseUrl: string;
+    achOdfi: string;
   }>({
     defaultValues: {
       name: program?.name,
       isActive: program?.isActive,
       type: program?.type,
+      achOdfi: program?.achOdfi ?? "",
     },
   });
   const onSubmit: SubmitHandler<{
@@ -81,11 +83,13 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
     type: string;
     isActive: boolean;
     baseUrl: string;
+    achOdfi: string;
   }> = (data: {
     name: string;
     type: string;
     isActive: boolean;
     baseUrl: string;
+    achOdfi: string;
   }) => {
     console.log("program type:", program?.type);
     console.log(data);
@@ -133,6 +137,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
               name: data.name,
               type: data.type,
               isActive: data.isActive,
+              achOdfi: data.achOdfi,
             },
           })
         ).then((data: any) => {
@@ -159,6 +164,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
               name: data.name,
               type: data.type,
               isActive: data.isActive,
+              achOdfi: data.achOdfi,
             },
           })
         ).then((prg: any) => {
@@ -282,6 +288,24 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
             value={
               program.type != null ? programTypeMappings(program.type) : ""
             }
+            submitting={false}
+          />
+          <MyEditableTextField
+            clearable={false}
+            editing={isEditingType}
+            setEditing={setIsEditingType}
+            name="achOdfi"
+            displayName="ACH ODFI"
+            control={control}
+            errors={errors}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: true,
+                  }
+            }
+            value={program.achOdfi ?? ""}
             submitting={false}
           />
           <ItemRow

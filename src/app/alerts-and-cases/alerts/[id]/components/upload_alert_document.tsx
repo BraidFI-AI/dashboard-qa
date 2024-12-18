@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert } from "@/core/api/ApiTypes";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyText from "@/core/components/Text/Text";
@@ -7,26 +8,26 @@ import MyControlledTextField from "@/core/components/TextField/MyControlledTextF
 import { useAppDispatch } from "@/redux/store/store";
 import { useParams, useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import MyModal from "../../my_modal";
-import { Case } from "@/core/api/ApiTypes";
+import MyModal from "../../../../../core/components/my_modal";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import {
-  createCaseDocument,
-  fetchCase,
-  uploadCaseDocument,
-} from "@/redux/slices/cases_slice";
+  createAlertDocument,
+  fetchAlert,
+  uploadAlertDocument,
+} from "@/redux/slices/alerts_slice";
+import IconButton from "@mui/material/IconButton";
 
-const UploadCaseDocumentButton = () => {
-  const params = useParams();
-  const router = useRouter();
+type UploadAlertDocumentButtonProps = {
+  alert: Alert;
+};
 
+const UploadAlertDocumentButton: React.FC<UploadAlertDocumentButtonProps> = ({
+  alert,
+}) => {
   const dispatch = useAppDispatch();
-
-  const c: "loading" | string | Case = useSelector(
-    (state: any) => state.cases.case
-  );
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -47,25 +48,25 @@ const UploadCaseDocumentButton = () => {
     control,
     handleSubmit,
   } = useForm<{
-    caseId: string;
+    alertId: string;
     description: string;
     documentType: string;
     name: string;
   }>({
     defaultValues: {
-      caseId: params.id.toString(),
+      alertId: alert.id?.toString() ?? "",
       description: "",
       documentType: "ID_DOCUMENT_FRONT",
       name: "",
     },
   });
   const onSubmit: SubmitHandler<{
-    caseId: string;
+    alertId: string;
     description: string;
     documentType: string;
     name: string;
   }> = (data: {
-    caseId: string;
+    alertId: string;
     description: string;
     documentType: string;
     name: string;
@@ -79,19 +80,19 @@ const UploadCaseDocumentButton = () => {
       return;
     }
 
-    dispatch(createCaseDocument(data)).then((doc: any) => {
+    dispatch(createAlertDocument(data)).then((doc: any) => {
       if (
         typeof doc.payload != "string" &&
-        doc.payload.caseDocuments != null &&
-        doc.payload.caseDocuments.length > 0
+        doc.payload.alertDocuments != null &&
+        doc.payload.alertDocuments.length > 0
       ) {
         const docId =
-          doc.payload.caseDocuments[doc.payload.caseDocuments.length - 1].id;
+          doc.payload.alertDocuments[doc.payload.alertDocuments.length - 1].id;
 
         if (docId != null) {
           dispatch(
-            uploadCaseDocument({
-              caseId: params.id.toString(),
+            uploadAlertDocument({
+              alertId: alert.id?.toString() ?? "",
               documentId: docId,
               file: document,
             })
@@ -101,7 +102,7 @@ const UploadCaseDocumentButton = () => {
                 variant: "success",
               });
 
-              dispatch(fetchCase(params.id.toString()));
+              dispatch(fetchAlert(alert.id?.toString() ?? ""));
 
               handleModalClose();
             } else {
@@ -140,30 +141,32 @@ const UploadCaseDocumentButton = () => {
   };
 
   useEffect(() => {
-    if (typeof c != "string") {
-      if (c.status == "OPEN") {
+    if (typeof alert != "string") {
+      if (
+        alert.status == "UNASSIGNED" ||
+        alert.status == "OPEN" ||
+        alert.status == "ASSIGNED"
+      ) {
         setIsOpen(true);
       } else {
         setIsOpen(false);
       }
     }
-  }, [c]);
+  }, [alert]);
 
   return isOpen == false ? (
     <></>
-  ) : typeof c == "string" ? (
+  ) : typeof alert == "string" ? (
     <></>
   ) : (
     <>
-      <div className="w-fit">
-        <MyBlueButton
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          Upload Document
-        </MyBlueButton>
-      </div>
+      <IconButton
+        onClick={() => {
+          setModalOpen(true);
+        }}
+      >
+        <FileUploadOutlinedIcon className="text-[#12A7FF] h-[34px] w-[34px]" />
+      </IconButton>
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
@@ -285,4 +288,4 @@ const UploadCaseDocumentButton = () => {
   );
 };
 
-export default UploadCaseDocumentButton;
+export default UploadAlertDocumentButton;

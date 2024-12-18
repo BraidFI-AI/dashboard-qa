@@ -58,7 +58,7 @@ const CreateLimitPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-[300px]">
         <MyText>Rule Name</MyText>
         <MyControlledTextField
@@ -205,7 +205,7 @@ const CreateLimitPage = () => {
           </MyBlueButton>
         </div>
       </Box>
-    </form>
+    </form>)
   );
 };
 

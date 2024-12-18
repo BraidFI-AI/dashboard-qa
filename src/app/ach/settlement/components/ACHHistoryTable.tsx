@@ -146,15 +146,16 @@ const ACHHistoryTable = () => {
               flex: 1,
               minWidth: 120,
               valueFormatter: (params: any) => {
-                return `${moment(params.value)}`;
+                return `${moment(params)}`;
               },
-              valueGetter: (params: any) => params.row.extracted,
+              valueGetter: (value: any, row: any) => row.extracted,
             },
             {
               field: "productName",
               headerName: "Product Name",
               flex: 1,
               minWidth: 120,
+              display: "flex",
               renderCell: (params: any) => (
                 <MyLinkText
                   link={`/configuration/products/${params.row.productId}`}
@@ -174,16 +175,16 @@ const ACHHistoryTable = () => {
               headerName: "Debit Amount",
               flex: 1,
               minWidth: 120,
-              valueGetter: (params: any) =>
-                toDollarFormat(params.row?.totalDebitAmount),
+              valueGetter: (value: any, row: any) =>
+                toDollarFormat(row?.totalDebitAmount),
             },
             {
               field: "totalCreditAmount",
               headerName: "Credit Amount",
               flex: 1,
               minWidth: 120,
-              valueGetter: (params: any) =>
-                toDollarFormat(params.row?.totalCreditAmount),
+              valueGetter: (value: any, row: any) =>
+                toDollarFormat(row?.totalCreditAmount),
             },
             {
               field: "totalDebitCount",
@@ -202,6 +203,7 @@ const ACHHistoryTable = () => {
               headerName: "Send To SFTP",
               flex: 1,
               minWidth: 165,
+              display: "flex",
               renderCell: (params: any) =>
                 params.row.sftpStatus == "FAIL" ||
                 params.row.sftpStatus == "NOT_START" ? (
@@ -272,6 +274,7 @@ const ACHHistoryTable = () => {
               headerName: "Status",
               flex: 1,
               minWidth: 120,
+              display: "flex",
               renderCell: (params: any) =>
                 params.row.status == "SUBMITTED" ? (
                   <Tooltip title="Send File to SFTP Folder" placement="right">
@@ -324,6 +327,7 @@ const ACHHistoryTable = () => {
               field: "file",
               headerName: "ACH File",
               width: 82,
+              display: "flex",
               renderCell: (params: any) => (
                 <Tooltip title="Download ACH Setllment File" placement="right">
                   <div className="flex justify-center">

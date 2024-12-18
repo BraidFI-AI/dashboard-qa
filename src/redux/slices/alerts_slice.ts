@@ -116,6 +116,23 @@ export const fetchAlerts = createAsyncThunk(
   }
 );
 
+export const assignAlertToUser = createAsyncThunk(
+  "alerts/assignAlertToUser",
+  async (data: { username: string | null; alertId: string }) => {
+    try {
+      const alert = await alertsRepo.assignAlertToUser(
+        data.alertId,
+        data.username
+      );
+      console.log("alert assigned", alert);
+
+      return alert;
+    } catch (e: any) {
+      return `Error assigning alert to user ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchAlert = createAsyncThunk(
   "alerts/fetchAlert",
   async (id: string | number) => {

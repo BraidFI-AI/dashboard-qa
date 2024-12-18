@@ -27,6 +27,19 @@ const CounterpartySlice = createSlice({
   extraReducers: (builder) => {},
 });
 
+export const fetchCounterPartyV2 = createAsyncThunk(
+  "Counterparty/fetchCounterParty",
+  async (id: number) => {
+    try {
+      const counterparty = await counterpartyRepo.fetchCounterparty(id);
+      console.log("counterparty:", counterparty);
+      return counterparty;
+    } catch (e: any) {
+      return `Error fetching counterparty: ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchCounterParty = createAsyncThunk(
   "Counterparty/fetchCounterParty",
   async (id: number) => {
@@ -81,23 +94,6 @@ export const updateCounterparty = createAsyncThunk(
     } catch (e: any) {
       return `Error updating counterparty: ${generateErrorMessage(e)}`;
     }
-  }
-);
-
-export const fetchCounterpartyIdsList = createAsyncThunk(
-  "Counterparty/fetchCounterpartyIdsList",
-  async () => {
-    try {
-      const counterpartyIds = await counterpartyRepo.fetchCounterpartyIdsList();
-      return counterpartyIds;
-    } catch (e: any) {
-      enqueueSnackbar(
-        `Error fetching counterparties: ${generateErrorMessage(e)}`,
-        { variant: "error", persist: true }
-      );
-    }
-
-    return null;
   }
 );
 

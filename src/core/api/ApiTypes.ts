@@ -8,6 +8,7 @@ export interface Alert {
   alertNotes?: AlertNote[] | null;
   alertTimelines?: AlertTimeline[] | null;
   alertDocuments: AlertDocument[] | null;
+  assignedUsername?: string | null;
 }
 
 export interface Case {
@@ -73,7 +74,7 @@ export interface AlertTimeline {
 
 export interface AlertDocument {
   id: number | null;
-
+  name?: string | null;
   alertId: number | null;
   caseId: number | null;
   status: string | null;
@@ -221,6 +222,8 @@ export interface Business {
   mobilePhone: string;
   productId: number | null;
   type: string;
+  mcc?: string | null;
+  naics: string | null;
   tcAgreed: boolean;
   mobilePhoneVerified: boolean;
   emailVerified: boolean;
@@ -370,6 +373,7 @@ export interface Program {
   updatedAt: number;
   customerId: number;
   baseUrl: string;
+  achOdfi?: string | null;
 }
 
 export interface Product {
@@ -763,6 +767,7 @@ export interface CreateProgram {
   name: string;
   isActive: boolean;
   type: string;
+  achOdfi: string;
 }
 
 export interface CreateDepositTokenProduct {
@@ -1009,9 +1014,17 @@ export interface CreateCounterpartyACH {
   };
 }
 
+export interface SearchCounterparty {
+  accountId?: string | null;
+  businessId?: string | null;
+  individualId?: string | null;
+  productId?: string | null;
+}
+
 export interface Developer {
   tenantId: string | null;
   name: string | null;
+  enableIpRestriction?: string | null;
 }
 
 export interface WhitelistedIP {

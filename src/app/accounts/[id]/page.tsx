@@ -101,13 +101,13 @@ const AccountPage = () => {
         data.canAcceptSweep = undefined;
       }
       if (data.sweepAccountNumber == null || data.sweepAccountNumber == "") {
-        data.sweepAccountNumber = undefined;
+        data.sweepAccountNumber = "";
       }
       if (
         data.fundingAccountNumber == null ||
         data.fundingAccountNumber == ""
       ) {
-        data.fundingAccountNumber = undefined;
+        data.fundingAccountNumber = "";
       }
 
       dispatch(updateAccount({ id: params.id.toString(), ...data })).then(
