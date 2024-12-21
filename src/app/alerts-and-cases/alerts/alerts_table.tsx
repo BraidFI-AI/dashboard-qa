@@ -235,53 +235,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             minWidth: 140,
             display: "flex",
             renderCell: (params: any) => {
-              return params.row.type == "LIST_314A" ? (
-                <MyLinkText
-                  textProps={{ size: "table" }}
-                  link={`/compliance/314a/${params.row.contextId}`}
-                >
-                  {params.row.contextId}
-                </MyLinkText>
-              ) : params.row.type == "OFAC" ? (
-                <MyLinkText
-                  textProps={{ size: "table" }}
-                  link={`/compliance/ofac/${params.row.contextId}`}
-                >
-                  {params.row.contextId}
-                </MyLinkText>
-              ) : params.row.type == "TRANSACTION_MONITORING" ||
-                params.row.type == "TRANSACTION_REVIEW" ? (
-                <div
-                  className="cursor-pointer"
-                  onClick={(e: any) => {
-                    if (params.row.contextType == "TRANSACTION") {
-                      setSelectedAlert(params.row);
-                      handleReviewModalOpen();
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }
-                  }}
-                >
-                  <MyText size="table" primary={true} underline={true}>
-                    {params.row.contextId}
-                  </MyText>
-                </div>
-              ) : params.row.type == "DUAL_APPROVAL" ? (
-                <div
-                  className="cursor-pointer"
-                  onClick={(e: any) => {
-                    navigateToDualApproval(params);
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <MyText primary underline size="table">
-                    {params.row.contextId}
-                  </MyText>
-                </div>
-              ) : (
-                <MyText size="table">{params.row.contextId}</MyText>
-              );
+              return <MyText size="table">{params.row.contextId}</MyText>;
             },
             valueGetter: (value: any, row: any) => row?.contextId,
           },
