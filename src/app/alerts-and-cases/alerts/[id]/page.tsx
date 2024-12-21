@@ -84,7 +84,10 @@ const AlertsPage = () => {
 
           // setting entity type to show details
           let entity = "";
-          if (
+          if (data.payload.additionalParam == "MANUAL_ALERT") {
+            setEntityType(data.payload.contextType);
+            entity = data.payload.contextType;
+          } else if (
             data.payload.type == "OFAC" ||
             data.payload.type == "LIST_314A" ||
             data.payload.type == "DUAL_APPROVAL" ||
