@@ -85,7 +85,7 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
 
     // convert users which is a list of User to a list of string
     users.forEach((user: User) => {
-      if (alert.tenantId == null && alert) {
+      if (alert && alert.tenantId == null) {
         const group = (user as any).Groups?.[0] ?? "";
 
         if (
