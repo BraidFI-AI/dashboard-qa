@@ -30,6 +30,8 @@ const OFAC = () => {
       }
     });
 
+    console.log("ofoaccc params:", params);
+
     setFilters(params as OFACSearch);
 
     console.log("params:", params);

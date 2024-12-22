@@ -13,11 +13,22 @@ class OFACRepo {
     pageNumber: number,
     filters?: OFACSearch
   ) {
+    // check if filters object is undefined or it has no properties
+    if (filters && Object.keys(filters).length === 0) {
+      filters = undefined;
+    }
+
+    let params: string = filters == undefined ? "" : "&";
+    params += filters?.status == null ? "" : `status=${filters.status}&`;
+    params +=
+      filters?.startDate == null ? "" : `startDate=${filters.startDate}&`;
+    params += filters?.endDate == null ? "" : `endDate=${filters.endDate}&`;
+    params +=
+      filters?.entityType == null ? "" : `entityType=${filters.entityType}`;
+
     const response = await this.apiClient.http<any>(
       Method.GET,
-      `/OFAC?pageSize=${pageSize}&pageNumber=${pageNumber}${
-        filters?.status == null ? "" : `&status=${filters?.status}`
-      }`
+      `/OFAC?pageSize=${pageSize}&pageNumber=${pageNumber}${params}`
     );
     return response;
   }

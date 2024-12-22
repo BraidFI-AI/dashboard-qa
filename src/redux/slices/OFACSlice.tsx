@@ -2,8 +2,10 @@ import ApiClient from "@/core/api/ApiClient";
 import { OFAC, OFACSearch } from "@/core/api/ApiTypes";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import OFACRepo from "@/core/repos/OFACRepo";
+import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 import { enqueueSnackbar } from "notistack";
 
 const apiClient = ApiClient.getInstance();
@@ -66,6 +68,19 @@ export const fetchOFACHits = createAsyncThunk(
   "individual/fetchOFACHits",
   async (data: { refresh: boolean; filters?: OFACSearch }, thunkApi: any) => {
     try {
+      if (data.filters?.startDate) {
+        data.filters = {
+          ...data.filters,
+          startDate: momentToPSTString(moment(data.filters.startDate), true),
+        };
+      }
+      if (data.filters?.endDate) {
+        data.filters = {
+          ...data.filters,
+          endDate: momentToPSTString(moment(data.filters.endDate), false),
+        };
+      }
+
       const ofacs = await ofacRepo.fetchOFACHits(
         thunkApi.getState().ofac.pagination.pageSize ?? 100,
         thunkApi.getState().ofac.pagination.pageNumber == -1 ||

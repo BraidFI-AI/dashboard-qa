@@ -732,6 +732,9 @@ export interface AlertSearch {
 
 export interface OFACSearch {
   status?: string;
+  entityType?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface CustomerSearch {
