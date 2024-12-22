@@ -16,6 +16,7 @@ import { resolveAlert } from "@/redux/slices/alerts_slice";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
+import { updateWireFileRecord } from "@/redux/slices/wire_processing_slice";
 
 const ResolveAlertButton = () => {
   const params = useParams();
@@ -27,6 +28,8 @@ const ResolveAlertButton = () => {
   );
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const [action, setAction] = useState<string>("");
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -66,7 +69,13 @@ const ResolveAlertButton = () => {
     alertId: string;
     action: string;
     note: string;
-  }> = (data: { alertId: string; action: string; note: string }) => {
+    note2?: string;
+  }> = (data: {
+    alertId: string;
+    action: string;
+    note: string;
+    note2?: string;
+  }) => {
     console.log("data:", data);
     setSubmitting(true);
 
@@ -74,6 +83,7 @@ const ResolveAlertButton = () => {
       alertId: string;
       action: string;
       note: string;
+      note2?: string;
       whiteList?: {
         ofacId: string;
       };
@@ -93,16 +103,47 @@ const ResolveAlertButton = () => {
       }
     }
 
-    dispatch(resolveAlert(resolveData)).then((result) => {
-      if (typeof result.payload == "string") {
-        enqueueSnackbar(result.payload, { variant: "error", persist: true });
-      } else {
-        enqueueSnackbar("Alert Resolved", { variant: "success" });
-        handleModalClose();
-      }
+    if (typeof alert != "string") {
+      if (
+        data.action == "APPROVE" &&
+        alert.contextType == "FILE_RECORD" &&
+        (alert.additionalParam == "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
+          alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+      ) {
+        dispatch(
+          updateWireFileRecord({
+            recordId: alert.contextId ?? "",
+            accountNumber: data.note,
+            beneficiaryCode: data.note2 ?? "",
+          })
+        ).then((result) => {
+          if (typeof result.payload == "string") {
+            enqueueSnackbar(result.payload, {
+              variant: "error",
+              persist: true,
+            });
+          } else {
+            enqueueSnackbar("Alert Resolved", { variant: "success" });
+            handleModalClose();
+          }
 
-      setSubmitting(false);
-    });
+          setSubmitting(false);
+        });
+      } else
+        dispatch(resolveAlert(resolveData)).then((result) => {
+          if (typeof result.payload == "string") {
+            enqueueSnackbar(result.payload, {
+              variant: "error",
+              persist: true,
+            });
+          } else {
+            enqueueSnackbar("Alert Resolved", { variant: "success" });
+            handleModalClose();
+          }
+
+          setSubmitting(false);
+        });
+    }
   };
 
   useEffect(() => {
@@ -159,7 +200,7 @@ const ResolveAlertButton = () => {
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
-        height="360px"
+        height="430px"
       >
         {ofacHit == "loading" ? (
           <MyCircularProgressIndicator />
@@ -203,9 +244,21 @@ const ResolveAlertButton = () => {
                 required: true,
               }}
               value={getValues("action")}
+              customOnChange={(value: any) => {
+                setAction(value);
+              }}
             />
             <div className="h-4" />
-            <MyText>Note</MyText>
+            <MyText>
+              {action != "Decline" &&
+              alert.contextType == "FILE_RECORD" &&
+              (alert.additionalParam ==
+                "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+                ? "Correct Account Number"
+                : "Note"}
+            </MyText>
             <MyControlledTextField
               name={"note"}
               displayName={"Note"}
@@ -216,6 +269,39 @@ const ResolveAlertButton = () => {
               }}
               value={getValues("note")}
             />
+            {action != "Decline" &&
+              alert.contextType == "FILE_RECORD" &&
+              (alert.additionalParam ==
+                "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE") && (
+                <>
+                  <div className="h-4" />
+                  <MyText>
+                    {action == "Decline"
+                      ? "Note"
+                      : alert.contextType == "FILE_RECORD"
+                      ? alert.additionalParam ==
+                        "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER"
+                        ? "Correct Account Number"
+                        : alert.additionalParam ==
+                          "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE"
+                        ? "Correct Beneficiary Code"
+                        : "Note"
+                      : "Note"}
+                  </MyText>
+                  <MyControlledTextField
+                    name={"note2"}
+                    displayName={"Note"}
+                    control={control}
+                    errors={errors}
+                    rules={{
+                      required: true,
+                    }}
+                    value={getValues("note")}
+                  />
+                </>
+              )}
             <div className="pb-8" />
             <div className="w-fit">
               <MyBlueButton

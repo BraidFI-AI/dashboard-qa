@@ -47,6 +47,29 @@ class WireProcessingRepo {
 
     return response;
   }
+
+  public async getWireFileProcessingError(id: string) {
+    const response = await this.apiClient.http<any>(
+      Method.GET,
+      `/wire/file-record/${id}`
+    );
+
+    return response;
+  }
+
+  public async updateWireFileRecord(data: {
+    recordId: string;
+    accountNumber: string;
+    beneficiaryCode: string;
+  }) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      `/wire/update-file-record`,
+      data
+    );
+
+    return response;
+  }
 }
 
 export default WireProcessingRepo;

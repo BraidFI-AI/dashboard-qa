@@ -34,6 +34,8 @@ import EntityTypeBusinessComponent from "./components/entity_detail_components/e
 import EntityTypeIndividualComponent from "./components/entity_detail_components/entity_type_individual";
 import EntityTypeCounterpartyComponent from "./components/entity_detail_components/entity_type_counterparty";
 import EntityTypeTransactionMonitoringComponent from "./components/entity_detail_components/entity_type_transaction_monitoring";
+import { getWireFileProcessingError } from "@/redux/slices/wire_processing_slice";
+import EntityTypeFileRecordComponent from "./components/entity_detail_components/file_record";
 
 const AlertsPage = () => {
   const dispatch = useAppDispatch();
@@ -82,7 +84,10 @@ const AlertsPage = () => {
 
           // setting entity type to show details
           let entity = "";
-          if (
+          if (data.payload.additionalParam == "MANUAL_ALERT") {
+            setEntityType(data.payload.contextType);
+            entity = data.payload.contextType;
+          } else if (
             data.payload.type == "OFAC" ||
             data.payload.type == "LIST_314A" ||
             data.payload.type == "DUAL_APPROVAL" ||
@@ -164,7 +169,11 @@ const AlertsPage = () => {
           } else if (entity == "TRANSACTION_REVIEW") {
             setContext({});
           } else if (entity == "FILE_RECORD") {
-            // ????
+            dispatch(
+              getWireFileProcessingError(data.payload.contextId.toString())
+            ).then((e: any) => {
+              setContext(e.payload);
+            });
           }
 
           if (data.payload.caseId != null) {
@@ -349,6 +358,11 @@ const AlertsPage = () => {
                     ofacId={alert.ofacId ?? ""}
                   />
                 </div>
+              ) : entityType == "FILE_RECORD" ? (
+                <EntityTypeFileRecordComponent
+                  alert={alert}
+                  context={context}
+                />
               ) : (
                 <></>
               )}

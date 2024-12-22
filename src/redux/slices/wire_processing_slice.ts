@@ -78,6 +78,41 @@ export const processInboundWire = createAsyncThunk(
   }
 );
 
+export const getWireFileProcessingError = createAsyncThunk(
+  "WireProcessingSlice/getWireFileProcessingError",
+  async (id: string, thunkAPI: any) => {
+    try {
+      const error: any = await wireProcessingRepo.getWireFileProcessingError(
+        id
+      );
+
+      console.log("wire file error", error);
+
+      return error;
+    } catch (e: any) {
+      return `Error fetching wire file error ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const updateWireFileRecord = createAsyncThunk(
+  "WireProcessingSlice/updateWireFileRecord",
+  async (
+    data: { recordId: string; accountNumber: string; beneficiaryCode: string },
+    thunkAPI: any
+  ) => {
+    try {
+      const error: any = await wireProcessingRepo.updateWireFileRecord(data);
+
+      console.log("wire file record updated", error);
+
+      return error;
+    } catch (e: any) {
+      return `Error updating wire file record ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const uploadInboundWireFile = createAsyncThunk(
   "WireProcessingSlice/uploadInboundWireFire",
   async (inbound: string, thunkAPI: any) => {

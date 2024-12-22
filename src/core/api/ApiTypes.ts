@@ -9,6 +9,7 @@ export interface Alert {
   alertTimelines?: AlertTimeline[] | null;
   alertDocuments: AlertDocument[] | null;
   assignedUsername?: string | null;
+  additionalParam?: string | null;
 }
 
 export interface Case {
@@ -743,6 +744,27 @@ export interface CustomerSearch {
   createdAtStart?: string;
   createdAtEnd?: string;
   status?: string;
+}
+
+export interface WireFireRecord {
+  id?: number | null;
+  fileId?: number | null;
+  lineNumber?: number | null;
+  text?: string | null;
+  importStatus?: string | null;
+  finalId?: string | null;
+  errors: {
+    level?: string | null;
+    message?: string | null;
+  }[];
+  tag1510?: string | null;
+  tag1520?: string | null;
+  tag2000?: string | null;
+  tag3100?: string | null;
+  tag3400?: string | null;
+  tag4100?: string | null;
+  tag4200?: string | null;
+  fileHandle?: string | null;
 }
 
 export interface TransactionSearch {
