@@ -1,4 +1,5 @@
 export interface Alert {
+  tenantId?: string | null;
   id?: number | null;
   type?: string | null;
   status?: string | null;
