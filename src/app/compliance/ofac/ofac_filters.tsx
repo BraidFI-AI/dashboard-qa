@@ -37,6 +37,18 @@ const OFACFilters: React.FC<OFACFiltersProps> = ({}) => {
       data.status = undefined;
     }
 
+    if (data.startDate == null || data.startDate == "") {
+      data.startDate = undefined;
+    }
+
+    if (data.endDate == null || data.endDate == "") {
+      data.endDate = undefined;
+    }
+
+    if (data.entityType == null || data.entityType == "") {
+      data.entityType = undefined;
+    }
+
     let params: string = "?";
 
     for (const key in data) {
