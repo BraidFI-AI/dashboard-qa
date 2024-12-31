@@ -58,6 +58,7 @@ const ResolveAlertButton = () => {
     alertId: string;
     action: string;
     note: string;
+    note2?: string;
   }>({
     defaultValues: {
       alertId: params.id.toString(),
@@ -277,19 +278,7 @@ const ResolveAlertButton = () => {
                   "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE") && (
                 <>
                   <div className="h-4" />
-                  <MyText>
-                    {action == "Decline"
-                      ? "Note"
-                      : alert.contextType == "FILE_RECORD"
-                      ? alert.additionalParam ==
-                        "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER"
-                        ? "Correct Account Number"
-                        : alert.additionalParam ==
-                          "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE"
-                        ? "Correct Beneficiary Code"
-                        : "Note"
-                      : "Note"}
-                  </MyText>
+                  <MyText>Correct Beneficiary Code</MyText>
                   <MyControlledTextField
                     name={"note2"}
                     displayName={"Note"}
@@ -298,7 +287,7 @@ const ResolveAlertButton = () => {
                     rules={{
                       required: true,
                     }}
-                    value={getValues("note")}
+                    value={getValues("note2")}
                   />
                 </>
               )}
