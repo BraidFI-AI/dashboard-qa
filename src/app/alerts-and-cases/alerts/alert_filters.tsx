@@ -141,6 +141,7 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
                 "VELOCITY_LIMIT",
                 "PRODUCT",
                 "FILE_NAME",
+                "FILE_RECORD",
               ]}
             />
           </div>
@@ -159,6 +160,7 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
                 "DUAL_APPROVAL",
                 "TRANSACTION_MONITORING",
                 "TRANSACTION_REVIEW",
+                "TRANSACTION_PROCESSING_ERROR",
               ]}
             />
           </Box>
@@ -171,7 +173,7 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
               control={control}
               errors={errors}
               rules={{}}
-              options={["OPEN", "CLOSED", "ESCALATED"]}
+              options={["ASSIGNED", "UNASSIGNED", "CLOSED", "ESCALATED"]}
             />
           </Box>
           <Box className="flex flex-row justify-between pb-10">
