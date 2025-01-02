@@ -90,15 +90,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
-      setStatusValues([
-        "ACTIVE",
-        "BLOCKED",
-        "INACTIVE",
-        "PENDING_APPROVAL",
-        "PENDING",
-        "INITIALIZED",
-        "PENDING_UNBLOCKED",
-      ]);
+      setStatusValues(["ACTIVE", "BLOCKED", "INACTIVE", "PENDING_APPROVAL"]);
     } else {
       setStatusValues(["BLOCKED", "INACTIVE"]);
     }
