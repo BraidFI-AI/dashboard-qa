@@ -107,6 +107,13 @@ const CreateBusinessPage = () => {
       contactPersonPhone: data.contactPersonPhone,
     };
 
+    if (data.naics == "" || data.naics == null) {
+      data.naics = undefined;
+    }
+    if (data.mcc == "" || data.mcc == null) {
+      data.mcc = undefined;
+    }
+
     // data.ach = {
     //   accountNumber: data.accountNumber,
     //   bankAccountType: data.bankAccountType,
