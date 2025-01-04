@@ -49,7 +49,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
     "INACTIVE",
     "BLOCKED",
   ]);
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [business, setBusiness] = useState<Business | null>(null);
@@ -74,7 +74,6 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
 
     setSubmitting(true);
 
-    // check if a field is null of empty string, make it undefined then
     for (const key in data) {
       if ((data as any)[key] === null || (data as any)[key] === "") {
         (data as any)[key] = undefined;
@@ -177,7 +176,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
       ) : (
         <div className="flex flex-row justify-between h-fit">
           <div className="w-full flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-fit px-3 pt-3">
-            <div className="flex flex-col w-full min-w-[200px]">
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
               <MyEditableTextField
                 editing={editing}
                 setEditing={() => {
@@ -357,8 +356,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 submitting={false}
               />
             </div>
-            <div className="w-10" />
-            <div className="flex flex-col w-full min-w-[200px]">
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
@@ -398,8 +396,8 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
-                name="website"
-                displayName="Website"
+                name="tcAgreed"
+                displayName="TC Agreed"
                 control={control}
                 errors={errors}
                 editable={false}
@@ -517,8 +515,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               </MyBlueButton> */}
               </div>
             </div>
-            <div className="w-10" />
-            <div className="flex flex-col w-full min-w-[200px]">
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
               <MyText size="md">Mailing Address</MyText>
               <div className="pb-2" />
               <MyEditableTextField
@@ -633,7 +630,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
           <div className="w-3" />
-          <div className="min-w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
+          <div className="w-[350px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
             <ItemRow title="Business ID" value={business.id ?? ""}></ItemRow>
             <ItemRow
               title="Product Name"
