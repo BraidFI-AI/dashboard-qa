@@ -389,10 +389,7 @@ class BusinessRepo {
     return resp;
   }
 
-  public async updateBusiness(
-    id: string,
-    data: { status: string; cipStatus: string }
-  ) {
+  public async updateBusiness(id: string, data: Business) {
     return await this.apiClient.http<any>(
       Method.PATCH,
       `/business/${id}`,
