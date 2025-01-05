@@ -285,46 +285,12 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 value={business.businessIdType ?? ""}
                 submitting={false}
               />
-              {editing ? (
-                <>
-                  <MyText size={`sm`}>Formation date</MyText>
-                  <MyControlledDatePicker
-                    name="formationDate"
-                    displayName="Formation date"
-                    control={control}
-                    errors={errors}
-                    rules={{
-                      required: false,
-                      validate: (value: any) => {
-                        if (value != null) {
-                          const dateObject = moment(value.toString());
-                          if (dateObject.toString() === "Invalid Date") {
-                            return "Invalid Date";
-                          } else {
-                          }
-                          return true;
-                        } else {
-                          return "Please select a date";
-                        }
-                      },
-                    }}
-                    value={
-                      business.formationDate
-                        ?.toString()
-                        ?.replaceAll(",", "-") ?? ""
-                    }
-                  />
-                  <div className="pb-3" />
-                </>
-              ) : (
-                <ItemRow
-                  title="Formation Date"
-                  value={
-                    business.formationDate?.toString()?.replaceAll(",", "-") ??
-                    ""
-                  }
-                ></ItemRow>
-              )}
+              <ItemRow
+                title="Formation Date"
+                value={
+                  business.formationDate?.toString()?.replaceAll(",", "-") ?? ""
+                }
+              />
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
