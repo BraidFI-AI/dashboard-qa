@@ -263,7 +263,7 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
                       name="returnCode"
                       displayName="Return Code"
                       control={control}
-                      errors={control}
+                      errors={errors}
                       clearable={false}
                       rules={
                         submitting
