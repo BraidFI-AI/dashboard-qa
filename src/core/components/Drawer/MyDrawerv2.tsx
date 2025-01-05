@@ -42,6 +42,7 @@ import TransactionsIcon from "./../../../../public/icons/transactions";
 import TransactionHistoryIcon from "./../../../../public/icons/transaction_history";
 import TransactionReviewIcon from "./../../../../public/icons/transaction_review";
 import IndividualsIcon from "./../../../../public/icons/individuals";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import BusinessesIcon from "./../../../../public/icons/businesses";
 import AccountsIcon from "./../../../../public/icons/accounts";
 import ComplianceIcon from "./../../../../public/icons/compliance";
@@ -465,6 +466,20 @@ export default function PersistentDrawerLeft(props: any) {
                     },
                   ]}
                 />
+                <Link href="/statements">
+                  <MyListItem
+                    path={"/statements"}
+                    name="Statement"
+                    selected={selected}
+                    setSelected={setSelcted}
+                    icon={
+                      <DescriptionOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                    }
+                    iconFocused={
+                      <DescriptionOutlinedIcon className="text-white w-[20px] h-[20px]" />
+                    }
+                  />
+                </Link>
                 <Link href="/individuals">
                   <MyListItem
                     path={"/individuals"}
