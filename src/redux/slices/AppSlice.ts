@@ -35,6 +35,7 @@ interface AppState {
   tenantId?: string | null;
   transactionTypes: TransactionTypesType;
   drawerOpen: boolean;
+  achReturnCodes: "loading" | string | string[];
 }
 
 const initialState: AppState = {
@@ -43,6 +44,7 @@ const initialState: AppState = {
   userType: null,
   username: null,
   transactionTypes: "loading",
+  achReturnCodes: "loading",
   tenantId: null,
   drawerOpen: true,
 };
@@ -89,6 +91,12 @@ const AppSlice = createSlice({
     builder.addCase(fetchTransactionTypes.fulfilled, (state, action) => {
       state.transactionTypes = action.payload;
     });
+    builder.addCase(fetchAchReturnCodes.pending, (state, action) => {
+      state.achReturnCodes = "loading";
+    });
+    builder.addCase(fetchAchReturnCodes.fulfilled, (state, action) => {
+      state.achReturnCodes = action.payload;
+    });
   },
 });
 
@@ -126,6 +134,19 @@ export const fetchTransactionTypes = createAsyncThunk(
       return transTypes;
     } catch (err: any) {
       return `Error fetching transaction types ${generateErrorMessage(err)}`;
+    }
+  }
+);
+
+export const fetchAchReturnCodes = createAsyncThunk(
+  "app/fetchAchReturnCodes",
+  async (_, thunkApi: any) => {
+    try {
+      const transTypes = await transactionRepo.fetchAchReturnCodes();
+      console.log("ach return codes:", transTypes);
+      return transTypes;
+    } catch (err: any) {
+      return `Error fetching ach return codes ${generateErrorMessage(err)}`;
     }
   }
 );

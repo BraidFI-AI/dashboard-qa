@@ -9,11 +9,14 @@ import {
   PaginationStateType,
   pageSizeOptions,
   paginationPageSize,
+  wireReturnCodes,
 } from "@/core/constants";
 import { useAppDispatch } from "@/redux/store/store";
 import { useSelector } from "react-redux";
 import {
   fetchTransactions,
+  returnAchTransaction,
+  returnWireTransaction,
   setPaginationPageNumber,
   setPaginationPageSize,
 } from "@/redux/slices/TransactionSlice";
@@ -25,6 +28,15 @@ import ItemRow from "../../Text/ItemRow";
 import timestampToDate from "@/core/utils/timestampToDate";
 import LabelBox from "../../label_box";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
+import MyRedButton from "../../Button/MyRedButton";
+import MyControlledAutocomplete from "../../Autocomplete/MyControlledAutocomplete";
+import { SubmitHandler, useForm } from "react-hook-form";
+import MyTextButton from "../../Button/MyTextButton";
+import MyBlueButton from "../../Button/MyBlueButton";
+import MyCircularProgressIndicator from "../../circular_progress_indicator";
+import ErrorPage from "../../error_page";
+import { fetchAchReturnCodes } from "@/redux/slices/AppSlice";
+import { enqueueSnackbar } from "notistack";
 
 type TransactionTableViewProps = {
   transactions: Transaction[];
@@ -45,13 +57,19 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
     (state: any) => state.transaction.pagination
   );
 
-  const [navigating, setNavigating] = useState(false);
+  const achReturnCodes: "loading" | string | string[] = useSelector(
+    (state: any) => state.app.achReturnCodes
+  );
+
+  const [returningTransaction, setReturningTransaction] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any | null>(
     null
   );
   const handleModalClose = () => {
     setModalOpen(false);
+    setReturningTransaction(false);
   };
 
   const navigateToEntity = async (row: any) => {
@@ -139,13 +157,164 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
     });
   };
 
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    getValues,
+    handleSubmit,
+    reset,
+  } = useForm<{
+    returnCode: string;
+  }>();
+  const onSubmit: SubmitHandler<{
+    returnCode: string;
+  }> = (data: { returnCode: string }) => {
+    console.log("data:", data);
+    setSubmitting(true);
+
+    if (selectedTransaction.ach != null) {
+      dispatch(
+        returnAchTransaction({
+          paymentId: selectedTransaction.paymentId,
+          returnCode: data.returnCode,
+        })
+      ).then((d: any) => {
+        setSubmitting(false);
+        if (typeof d.payload == "string") {
+          enqueueSnackbar(d.payload, { variant: "error", persist: true });
+        } else {
+          enqueueSnackbar("Transaction returned successfully", {
+            variant: "success",
+          });
+
+          setReturningTransaction(false);
+          setModalOpen(false);
+        }
+      });
+    } else if (selectedTransaction.wire != null) {
+      dispatch(
+        returnWireTransaction({
+          paymentId: selectedTransaction.paymentId,
+          returnCode: data.returnCode,
+        })
+      ).then((d: any) => {
+        setSubmitting(false);
+        if (typeof d.payload == "string") {
+          enqueueSnackbar(d.payload, { variant: "error", persist: true });
+        } else {
+          enqueueSnackbar("Transaction returned successfully", {
+            variant: "success",
+          });
+
+          setReturningTransaction(false);
+          setModalOpen(false);
+        }
+      });
+    }
+  };
+
   return (
     <>
       {selectedTransaction != null && modalOpen && (
-        <MyModal modalOpen={modalOpen} handleModalClose={handleModalClose}>
-          <MyText size="lg">Transaction Details</MyText>
+        <MyModal
+          modalOpen={modalOpen}
+          handleModalClose={handleModalClose}
+          height={returningTransaction == true ? "250px" : "500px"}
+        >
+          <div className="flex flex-row justify-between">
+            <MyText size="lg">Transaction Details</MyText>
+            {(selectedTransaction.ach != null ||
+              selectedTransaction.wire != null) &&
+            !returningTransaction ? (
+              <div className="w-fit">
+                <MyRedButton
+                  onClick={() => {
+                    setReturningTransaction(true);
+                  }}
+                >
+                  Return Transaction
+                </MyRedButton>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
           <div className="pb-3" />
-          {renderObject(selectedTransaction)}
+          {returningTransaction ? (
+            <div className="h-[140px] flex flex-col justify-between">
+              <div>
+                {selectedTransaction.ach != null &&
+                typeof achReturnCodes == "string" ? (
+                  achReturnCodes == "loading" ? (
+                    <MyCircularProgressIndicator />
+                  ) : (
+                    <ErrorPage
+                      error={achReturnCodes}
+                      recoveryButtonTitle="Retry"
+                      recoveryButtonOnClick={() => {
+                        dispatch(fetchAchReturnCodes());
+                      }}
+                    />
+                  )
+                ) : (
+                  <>
+                    <MyText>Return Code</MyText>
+                    <MyControlledAutocomplete
+                      name="returnCode"
+                      displayName="Return Code"
+                      control={control}
+                      errors={control}
+                      clearable={false}
+                      rules={
+                        submitting
+                          ? { required: false }
+                          : {
+                              required: false,
+                            }
+                      }
+                      value={
+                        selectedTransaction.ach != null
+                          ? achReturnCodes?.[0] ?? ""
+                          : selectedTransaction.wire != null
+                          ? wireReturnCodes[0]
+                          : ""
+                      }
+                      options={
+                        selectedTransaction.ach != null
+                          ? achReturnCodes
+                          : selectedTransaction.wire != null
+                          ? wireReturnCodes
+                          : []
+                      }
+                    />
+                    <div className="h-3" />
+                  </>
+                )}
+              </div>
+              <div className="flex flex-row">
+                <div className="w-fit pr-2">
+                  <MyTextButton
+                    onClick={() => {
+                      setReturningTransaction(false);
+                    }}
+                  >
+                    Cancel
+                  </MyTextButton>
+                </div>
+                <div className="w-fit">
+                  <MyBlueButton
+                    onClick={() => {
+                      handleSubmit(onSubmit)();
+                    }}
+                  >
+                    Return Transaction
+                  </MyBlueButton>
+                </div>
+              </div>
+            </div>
+          ) : (
+            renderObject(selectedTransaction)
+          )}
         </MyModal>
       )}
       <MyTable
