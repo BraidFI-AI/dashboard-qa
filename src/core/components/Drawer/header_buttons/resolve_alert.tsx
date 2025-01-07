@@ -17,6 +17,7 @@ import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
 import { updateWireFileRecord } from "@/redux/slices/wire_processing_slice";
+import { fetchAchReturnCodes } from "@/redux/slices/AppSlice";
 
 const ResolveAlertButton = () => {
   const params = useParams();
@@ -27,7 +28,8 @@ const ResolveAlertButton = () => {
     (state: any) => state.alerts.alert
   );
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false
+    );
 
   const [action, setAction] = useState<string>("");
 
@@ -36,7 +38,7 @@ const ResolveAlertButton = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [ofacHit, setOfacHit] = useState<"loading" | null | string | OFAC>(
-    "loading"
+    'loading'
   );
 
   const handleModalClose = () => {
@@ -47,6 +49,10 @@ const ResolveAlertButton = () => {
     "Approve",
     "Decline",
   ]);
+
+  const achReturnCodes: "loading" | string | string[] = useSelector(
+    (state: any) => state.app.achReturnCodes
+  );
 
   const {
     formState: { errors },
@@ -85,6 +91,7 @@ const ResolveAlertButton = () => {
       action: string;
       note: string;
       note2?: string;
+      returnCode?: string;
       whiteList?: {
         ofacId: string;
       };
@@ -105,6 +112,11 @@ const ResolveAlertButton = () => {
     }
 
     if (typeof alert != "string") {
+
+      if(data.action == 'DECLINE' && alert.contextType == 'ACH_INBOUND_TRANSACTION'){
+        resolveData.returnCode = data.note2;
+      }
+
       if (
         data.action == "APPROVE" &&
         alert.contextType == "FILE_RECORD" &&
@@ -148,39 +160,39 @@ const ResolveAlertButton = () => {
   };
 
   useEffect(() => {
-    if (typeof alert != "string") {
-      if (
-        alert.status == "UNASSIGNED" ||
-        alert.status == "OPEN" ||
-        alert.status == "ASSIGNED"
-      ) {
-        setIsOpen(true);
+    // if (typeof alert != "string") {
+    //   if (
+    //     alert.status == "UNASSIGNED" ||
+    //     alert.status == "OPEN" ||
+    //     alert.status == "ASSIGNED"
+    //   ) {
+    //     setIsOpen(true);
 
-        if (alert.type == "OFAC") {
-          dispatch(fetchOFACHitNew(alert.contextId?.toString() ?? "")).then(
-            (data: any) => {
-              setOfacHit(data.payload);
-              if (typeof data.payload != "string") {
-                if (
-                  data.payload?.individualId != null ||
-                  data.payload?.businessId != null
-                ) {
-                  setResolveOptions([
-                    "Approve",
-                    "Approve & Whitelist",
-                    "Decline",
-                  ]);
-                }
-              }
-            }
-          );
-        } else {
-          setOfacHit(null);
-        }
-      } else {
-        setIsOpen(false);
-      }
-    }
+    //     if (alert.type == "OFAC") {
+    //       dispatch(fetchOFACHitNew(alert.contextId?.toString() ?? "")).then(
+    //         (data: any) => {
+    //           setOfacHit(data.payload);
+    //           if (typeof data.payload != "string") {
+    //             if (
+    //               data.payload?.individualId != null ||
+    //               data.payload?.businessId != null
+    //             ) {
+    //               setResolveOptions([
+    //                 "Approve",
+    //                 "Approve & Whitelist",
+    //                 "Decline",
+    //               ]);
+    //             }
+    //           }
+    //         }
+    //       );
+    //     } else {
+    //       setOfacHit(null);
+    //     }
+    //   } else {
+    //     setIsOpen(false);
+    //   }
+    // }
   }, [alert]);
 
   return isOpen == false ? (
@@ -270,6 +282,40 @@ const ResolveAlertButton = () => {
               }}
               value={getValues("note")}
             />
+            {action == "Decline" &&
+              alert.contextType == "ACH_INBOUND_TRANSACTION" &&
+              (
+                <>
+                <div className="h-4" />
+                <MyText>Reason Code</MyText>
+                  {
+                     achReturnCodes == "loading" ? (
+                      <MyCircularProgressIndicator />
+                    ) : typeof achReturnCodes == "string" ? (
+                      <ErrorPage
+                        error={achReturnCodes}
+                        recoveryButtonTitle="Retry"
+                        recoveryButtonOnClick={() => {
+                          dispatch(fetchAchReturnCodes());
+                        }}
+                      />
+                    )
+                  :  
+                  <MyControlledAutocomplete
+                  clearable={false}
+                  name="note2"
+                  displayName="Reason Code"
+                  control={control}
+                  errors={errors}
+                  options={achReturnCodes}
+                  rules={{
+                    required: true,
+                  }}
+                  value={getValues("note2")??''}
+            />
+                  }
+                </>
+              )}
             {action != "Decline" &&
               alert.contextType == "FILE_RECORD" &&
               (alert.additionalParam ==

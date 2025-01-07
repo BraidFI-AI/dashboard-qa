@@ -74,11 +74,16 @@ class AlertsRepo {
     alertId: string;
     action: string;
     note: string;
+    returnCode?: string;
   }) {
     const response = await this.apiClient.http<any>(
       Method.PUT,
       `/alerts/${data.alertId}/status`,
-      { action: data.action, note: data.note }
+      {
+        action: data.action,
+        note: data.note,
+        returnCode: data.returnCode,
+      }
     );
     return response;
   }
