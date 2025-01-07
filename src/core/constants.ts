@@ -129,6 +129,54 @@ export const userGroupMappingToReadableNames: any = {
   "": "",
 };
 
+export function mapStringToBusinessType(value: string) {
+  if (value === "Sole Proprietor") {
+    return "SOLE_PROPRIETOR";
+  } else if (value === "Limited Liability Company (LLC)") {
+    return "LIMITED_LIABILITY_COMPANY";
+  } else if (value === "S or C Corporation") {
+    return "CORPORATION";
+  } else if (value === "General Partnership") {
+    return "GENERAL_PARTNERSHIP";
+  } else if (value === "Limited Liability Partnership") {
+    return "LIMITED_LIABILITY_PARTNERSHIP";
+  } else if (value === "Non-Profit Corporation") {
+    return "NON_PROFIT";
+  } else if (value === "Government Organization") {
+    return "GOVERNMENT_ORGANIZATION";
+  } else if (value === "Publicly Traded Company") {
+    return "PUBLICLY_TRADED_COMPANY";
+  } else if (value === "Trusts") {
+    return "PUBLICALLY_TRADED_COMPANY";
+  } else {
+    return "";
+  }
+}
+
+export function mapBusinessTypeToString(value: string) {
+  if (value === "SOLE_PROPRIETOR") {
+    return "Sole Proprietor";
+  } else if (value === "LIMITED_LIABILITY_COMPANY") {
+    return "Limited Liability Company (LLC)";
+  } else if (value === "CORPORATION") {
+    return "S or C Corporation";
+  } else if (value === "GENERAL_PARTNERSHIP") {
+    return "General Partnership";
+  } else if (value === "LIMITED_LIABILITY_PARTNERSHIP") {
+    return "Limited Liability Partnership";
+  } else if (value === "NON_PROFIT") {
+    return "Non-Profit Corporation";
+  } else if (value === "GOVERNMENT_ORGANIZATION") {
+    return "Government Organization";
+  } else if (value === "PUBLICLY_TRADED_COMPANY") {
+    return "Publicly Traded Company";
+  } else if (value === "PUBLICALLY_TRADED_COMPANY") {
+    return "Trusts";
+  } else {
+    return "";
+  }
+}
+
 export const UnauthorisedReturnCodes = ["R05", "R07", "R10", "R11", "R29"];
 
 export const boxStyle = "border-[#F4F5F7] border-[1px] shadow-sm";

@@ -26,10 +26,18 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import MyLinkText from "@/core/components/Text/LinkText";
 import { useSelector } from "react-redux";
-import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_ROLE,
+  mapBusinessTypeToString,
+  mapStringToBusinessType,
+  States,
+} from "@/core/constants";
 import { SubmitHandler, useForm } from "react-hook-form";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
+import moment from "moment";
+import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 // import { generatePdf } from "@/core/utils/pdfUtils";
 
 const BusinessDetails = ({ params }: { params: { id: string } }) => {
@@ -60,19 +68,29 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
     getValues,
     reset,
     handleSubmit,
-  } = useForm<{ status: string; cipStatus: string }>();
-  const onSubmit: SubmitHandler<{
-    status: string;
-    cipStatus: string;
-  }> = (data: { status: string; cipStatus: string }) => {
+  } = useForm<Business>({ defaultValues: { ...business } });
+  const onSubmit: SubmitHandler<Business> = (data: Business) => {
     console.log("data", data);
 
     setSubmitting(true);
+
+    for (const key in data) {
+      if ((data as any)[key] === null || (data as any)[key] === "") {
+        (data as any)[key] = undefined;
+      }
+    }
+
+    data = {
+      ...data,
+      businessEntityType: mapStringToBusinessType(
+        data.businessEntityType ?? ""
+      ),
+    };
+
     dispatch(
       updateBusiness({
         id: params.id.toString(),
-        status: data.status,
-        cipStatus: data.cipStatus,
+        business: data,
       })
     ).then((d: any) => {
       if (typeof d.payload == "string") {
@@ -156,72 +174,291 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
           recoveryButtonTitle="Retry"
         />
       ) : (
-        <div className="w-[1260px] flex flex-row justify-between h-fit">
-          <div className="flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-fit px-3 pt-3">
-            <div className="w-[300px]">
-              <ItemRow
-                title="Business Name"
+        <div className="flex flex-row justify-between h-fit">
+          <div className="w-full flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-fit px-3 pt-3">
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
+              <MyEditableTextField
+                editing={editing}
+                setEditing={() => {
+                  // reset({...business})
+                  setEditing(!editing);
+                }}
+                name="name"
+                displayName="Business Name"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={business.name ?? ""}
-              ></ItemRow>
-              <ItemRow title="Type" value={business.type ?? ""}></ItemRow>
-              <ItemRow
-                title="Company Type"
-                value={business.businessEntityType ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Incorporation State"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="businessEntityType"
+                displayName="Company Type"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={mapBusinessTypeToString(
+                  business.businessEntityType ?? ""
+                )}
+                options={[
+                  "Sole Proprietor",
+                  "Limited Liability Company (LLC)",
+                  "S or C Corporation",
+                  "General Partnership",
+                  "Limited Liability Partnership",
+                  "Non-Profit Corporation",
+                  "Trusts",
+                  "Government Organization",
+                  "Publicly Traded Company",
+                ]}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="incorporationState"
+                displayName="Incorporation State"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={States}
                 value={business.incorporationState ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="ID Number"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="idNumber"
+                displayName="ID Number"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                        pattern: /^[0-9]+$/,
+                      }
+                }
                 value={business.idNumber ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="ID Number Type"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="businessIdType"
+                displayName="ID Number Type"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={["EIN", "SSN", "TIN", "OTHER_ID"]}
                 value={business.businessIdType ?? ""}
-              ></ItemRow>
+                submitting={false}
+              />
               <ItemRow
                 title="Formation Date"
                 value={
                   business.formationDate?.toString()?.replaceAll(",", "-") ?? ""
                 }
-              ></ItemRow>
-              <ItemRow
-                title="ACH company ID"
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="achCompanyId"
+                displayName="ACH company ID"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={business.achCompanyId ?? ""}
-              ></ItemRow>
-              <ItemRow title="MCC" value={business.mcc ?? ""}></ItemRow>
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="mcc"
+                displayName="MCC"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={{ required: false }}
+                value={business.mcc ?? ""}
+                submitting={false}
+              />
             </div>
-            <div className="w-[300px]">
-              <ItemRow title="NAICS" value={business.naics ?? ""}></ItemRow>
-              <ItemRow
-                title="Doing Business as"
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="naics"
+                displayName="NAICS"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={{ required: false }}
+                value={business.naics ?? ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="dba"
+                displayName="Doing Business as"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={{ required: false }}
                 value={business.dba ?? ""}
-              ></ItemRow>
-              <ItemRow title="Website" value={business.website ?? ""}></ItemRow>
-              <ItemRow
-                status={business.tcAgreed}
-                title="TC Agreed"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="website"
+                displayName="Website"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={{ required: false }}
+                value={business.website ?? ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="tcAgreed"
+                displayName="TC Agreed"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={{ required: false }}
+                options={["true", "false"]}
                 value={business.tcAgreed?.toString() ?? ""}
-              ></ItemRow>
+                submitting={false}
+              />
               <MyText size="md">Contact Person</MyText>
               <div className="pb-2" />
-              <ItemRow
-                title="First Name"
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="submittedBy.contactPersonFirstName"
+                displayName="First Name"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={business.submittedBy?.contactPersonFirstName ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Last Name"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="submittedBy.contactPersonLastName"
+                displayName="Last Name"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={business.submittedBy?.contactPersonLastName ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Email"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="submittedBy.contactPersonEmail"
+                displayName="Email"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                        validate: (value: any, formValues: any) => {
+                          const chars = value.split("");
+                          if (
+                            !(
+                              chars.filter((c: any) => c == "@").length == 1 &&
+                              chars.filter((c: any) => c == ".").length >= 1
+                            )
+                          ) {
+                            return "Invalid Email";
+                          }
+                        },
+                      }
+                }
                 value={business.submittedBy?.contactPersonEmail ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Phone Number"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="submittedBy.contactPersonPhone"
+                displayName="Phone Number"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                        pattern:
+                          /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+                      }
+                }
                 value={business.submittedBy?.contactPersonPhone ?? ""}
-              ></ItemRow>
+                submitting={false}
+              />
               <div className="w-fit">
                 {/* <MyBlueButton
                 submitting={downloadingPdf}
@@ -244,36 +481,122 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               </MyBlueButton> */}
               </div>
             </div>
-            <div className="w-[300px]">
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
               <MyText size="md">Mailing Address</MyText>
               <div className="pb-2" />
-              <ItemRow
-                title="Street Address"
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.line1"
+                displayName="Street Address"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={(business as any)?.addresses?.[0]?.line1 ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Apartment, suite, or floor"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.line2"
+                displayName="Apartment, suite, or floor"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={(business as any)?.addresses?.[0]?.line2 ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Country Code"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.countryCode"
+                displayName="Country Code"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
                 value={(business as any)?.addresses?.[0]?.countryCode ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="State"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.state"
+                displayName="State"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                options={States}
                 value={(business as any)?.addresses?.[0]?.state ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="City"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.city"
+                displayName="City"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={(business as any)?.addresses?.[0]?.city ?? ""}
-              ></ItemRow>
-              <ItemRow
-                title="Postal Code"
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.postalCode"
+                displayName="Postal Code"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={(business as any)?.addresses?.[0]?.postalCode ?? ""}
-              ></ItemRow>
+                submitting={false}
+              />
             </div>
           </div>
-          <div className="w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
+          <div className="w-3" />
+          <div className="w-[350px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
             <ItemRow title="Business ID" value={business.id ?? ""}></ItemRow>
             <ItemRow
               title="Product Name"

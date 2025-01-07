@@ -218,14 +218,11 @@ class IndividualRepo {
     });
   }
 
-  public async updateIndividual(
-    id: string,
-    data: { status: string; cipStatus: string }
-  ) {
+  public async updateIndividual(id: string, individual: Individual) {
     return await this.apiClient.http<any>(
       Method.PATCH,
       `/individual/${id}`,
-      data
+      individual
     );
   }
 }
