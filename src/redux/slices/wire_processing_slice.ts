@@ -106,7 +106,7 @@ export const updateWireFileRecord = createAsyncThunk(
 
       console.log("wire file record updated", error);
 
-      return error;
+      return { fileUpdated: error };
     } catch (e: any) {
       return `Error updating wire file record ${generateErrorMessage(e)}`;
     }

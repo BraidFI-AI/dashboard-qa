@@ -51,7 +51,7 @@ const BarChart: React.FC<BarChartProps> = ({
       .append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x).tickFormat((d, i) => (i % 3 === 0 ? d : "")))
       .selectAll("text")
       .attr("transform", "rotate(-40) translate(-7, 0)")
       .style("text-anchor", "end");
@@ -86,7 +86,7 @@ const BarChart: React.FC<BarChartProps> = ({
       .on("mouseover", (event, d) => {
         tooltip
           .style("opacity", 1)
-          .html(`Value: ${toDollarFormat(d.value)}`)
+          .html(`Date: ${d.hover}<br/>Value: ${toDollarFormat(d.value)}`)
           .style("left", `${event.pageX + 5}px`)
           .style("top", `${event.pageY - 28}px`);
       })
@@ -103,8 +103,8 @@ const BarChart: React.FC<BarChartProps> = ({
         style={{
           position: "absolute",
           textAlign: "center",
-          height: "20px",
-          padding: "4px",
+          height: "40px", // Increased height
+          padding: "8px", // Increased padding
           font: "12px sans-serif",
           background: "#ccc",
           border: "0px",
