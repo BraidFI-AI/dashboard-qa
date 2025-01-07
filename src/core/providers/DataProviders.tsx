@@ -3,6 +3,7 @@
 import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
 import { fetchApiKey } from "@/redux/slices/ApiKeySlice";
 import {
+  fetchAchReturnCodes,
   fetchTransactionTypes,
   setTenantId,
   setUsername,
@@ -67,6 +68,7 @@ const DataProviders = (props: any) => {
     setUser();
 
     dispatch(fetchTransactionTypes());
+    dispatch(fetchAchReturnCodes());
     dispatch(fetchUsers(""));
     dispatch(fetchApiKey());
     dispatch(fetchOpenAlertsCount());

@@ -132,3 +132,8 @@ export const userGroupMappingToReadableNames: any = {
 export const UnauthorisedReturnCodes = ["R05", "R07", "R10", "R11", "R29"];
 
 export const boxStyle = "border-[#F4F5F7] border-[1px] shadow-sm";
+
+export const wireReturnCodes = [
+  "RETURN_ACCOUNT_INCORRECT",
+  "RETURN_BY_BENE_BANK",
+];
