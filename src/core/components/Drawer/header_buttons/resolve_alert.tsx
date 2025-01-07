@@ -18,6 +18,7 @@ import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
 import { updateWireFileRecord } from "@/redux/slices/wire_processing_slice";
 import { fetchAchReturnCodes } from "@/redux/slices/AppSlice";
+import { wireReturnCodes } from "@/core/constants";
 
 const ResolveAlertButton = () => {
   const params = useParams();
@@ -160,39 +161,39 @@ const ResolveAlertButton = () => {
   };
 
   useEffect(() => {
-    // if (typeof alert != "string") {
-    //   if (
-    //     alert.status == "UNASSIGNED" ||
-    //     alert.status == "OPEN" ||
-    //     alert.status == "ASSIGNED"
-    //   ) {
-    //     setIsOpen(true);
+    if (typeof alert != "string") {
+      if (
+        alert.status == "UNASSIGNED" ||
+        alert.status == "OPEN" ||
+        alert.status == "ASSIGNED"
+      ) {
+        setIsOpen(true);
 
-    //     if (alert.type == "OFAC") {
-    //       dispatch(fetchOFACHitNew(alert.contextId?.toString() ?? "")).then(
-    //         (data: any) => {
-    //           setOfacHit(data.payload);
-    //           if (typeof data.payload != "string") {
-    //             if (
-    //               data.payload?.individualId != null ||
-    //               data.payload?.businessId != null
-    //             ) {
-    //               setResolveOptions([
-    //                 "Approve",
-    //                 "Approve & Whitelist",
-    //                 "Decline",
-    //               ]);
-    //             }
-    //           }
-    //         }
-    //       );
-    //     } else {
-    //       setOfacHit(null);
-    //     }
-    //   } else {
-    //     setIsOpen(false);
-    //   }
-    // }
+        if (alert.type == "OFAC") {
+          dispatch(fetchOFACHitNew(alert.contextId?.toString() ?? "")).then(
+            (data: any) => {
+              setOfacHit(data.payload);
+              if (typeof data.payload != "string") {
+                if (
+                  data.payload?.individualId != null ||
+                  data.payload?.businessId != null
+                ) {
+                  setResolveOptions([
+                    "Approve",
+                    "Approve & Whitelist",
+                    "Decline",
+                  ]);
+                }
+              }
+            }
+          );
+        } else {
+          setOfacHit(null);
+        }
+      } else {
+        setIsOpen(false);
+      }
+    }
   }, [alert]);
 
   return isOpen == false ? (
@@ -314,6 +315,27 @@ const ResolveAlertButton = () => {
                   value={getValues("note2")??''}
             />
                   }
+                </>
+              )}
+              {action == "Decline" &&
+              alert.contextType == "WIRE_INBOUND_TRANSACTION" &&
+              (
+                <>
+                <div className="h-4" />
+                <MyText>Reason Code</MyText>
+                  <MyControlledAutocomplete
+                  clearable={false}
+                  name="note2"
+                  displayName="Reason Code"
+                  control={control}
+                  errors={errors}
+                  options={wireReturnCodes}
+                  rules={{
+                    required: true,
+                  }}
+                  value={getValues("note2")??''}
+            />
+                
                 </>
               )}
             {action != "Decline" &&
