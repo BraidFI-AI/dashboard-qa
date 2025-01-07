@@ -157,6 +157,21 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.transactionType = undefined;
     }
 
+    
+    
+    
+    if (data.originalFileName == null || data.enoriginalFileNamedDate == "") {
+      data.originalFileName = undefined;
+    }
+
+    if (data.requesterIpAddress == null || data.requesterIpAddress == "") {
+      data.requesterIpAddress = undefined;
+    }
+
+    if (data.requesterUsername == null || data.requesterUsername == "") {
+      data.requesterUsername = undefined;
+    }
+
     let params: string = "?";
 
     for (const key in data) {
@@ -205,6 +220,9 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       excludeWire: qParams.get("excludeWire") == "true",
       excludeAch: qParams.get("excludeAch") == "true",
       showAchNoc: qParams.get("showAchNoc") == "true",
+      originalFileName: qParams.get("originalFileName") ?? "",
+      requesterIpAddress: qParams.get("requesterIpAddress") ?? "",
+      requesterUsername: qParams.get("requesterUsername") ?? "",
     });
     setProductId(qParams.get("productId") ?? undefined);
     setIsInbound(qParams.get("isInbound") == "true");
@@ -316,6 +334,39 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
               errors={errors}
               rules={{}}
               value={getValues("settlementFileName") ?? ""}
+            />
+          </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Original File Name</MyText>
+            <MyControlledTextField
+              name="originalFileName"
+              displayName="Original File Name"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("originalFileName") ?? ""}
+            />
+          </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Requester IP Address</MyText>
+            <MyControlledTextField
+              name="requesterIpAddress"
+              displayName="Requester IP Address"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("requesterIpAddress") ?? ""}
+            />
+          </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Requester Username</MyText>
+            <MyControlledTextField
+              name="requesterUsername"
+              displayName="Requester Username"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("requesterUsername") ?? ""}
             />
           </Box>
           <Box className="pb-4 w-full">
@@ -586,6 +637,9 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                     transactionStatus: [],
                     transactionType: [],
                     paymentId: "",
+                    originalFileName: "",
+                    requesterIpAddress: "",
+                    requesterUsername: "",
                   });
                   setProductId(undefined);
                   setDrawerOpen(false);

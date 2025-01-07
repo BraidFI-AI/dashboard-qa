@@ -78,11 +78,11 @@ class ACHRepo {
     }
   }
 
-  public async uploadInboundFile(data: string) {
+  public async uploadInboundFile(data: string, filename?: string) {
     console.log(data);
     const response = await this.apiClient.http(
       Method.POST,
-      "/ach/load/inbound",
+      `/ach/load/inbound${filename != null && filename != '' ? `?filename=${filename}` : ""}`,
       data,
       {
         headers: {
@@ -94,10 +94,10 @@ class ACHRepo {
     return response;
   }
 
-  public async uploadOutboundFile(data: string) {
+  public async uploadOutboundFile(data: string, filename?: string) {
     const response = await this.apiClient.http(
       Method.POST,
-      "/ach/load/outbound",
+      `/ach/load/outbound${filename != null && filename != '' ? `?filename=${filename}` : ""}`,
       data,
       {
         headers: {

@@ -769,6 +769,9 @@ export interface WireFireRecord {
 }
 
 export interface TransactionSearch {
+  originalFileName?: string;
+  requesterIpAddress?: string;
+  requesterUsername?: string;
   showAchNoc?: boolean;
   excludeWire?: boolean;
   excludeAch?: boolean;
