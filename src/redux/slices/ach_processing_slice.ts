@@ -135,6 +135,21 @@ export const fetchACHTransactionStatus = createAsyncThunk(
   }
 );
 
+export const fetchRawACHTransaction = createAsyncThunk(
+  "ach/fetchACHTransactionStatus",
+  async (id: string, thunkApi: any) => {
+    try {
+      const data = await achRepo.fetchRawACHTransaction(
+        id
+      );
+
+      return data;
+    } catch (e: any) {
+      return `Error fetching transactions status! ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchACHFileErrors = createAsyncThunk(
   "ach/fetchACHFileErrors",
   async (data: { filename: string; reset?: boolean }, thunkApi: any) => {

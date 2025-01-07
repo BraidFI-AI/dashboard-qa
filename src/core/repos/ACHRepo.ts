@@ -154,6 +154,15 @@ class ACHRepo {
     return response;
   }
 
+  public async fetchRawACHTransaction(transactionId: string) {
+    const response = await this.apiClient.http<any>(
+      Method.GET,
+      `/ach/file/status/v2/tran/${transactionId}`
+    );
+
+    return response;
+  }
+
   public async fetchACHFileErrors(
     filename: String,
     pageSize: number,
