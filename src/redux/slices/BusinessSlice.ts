@@ -881,12 +881,9 @@ export const deletePaymentInstrument = createAsyncThunk(
 
 export const updateBusiness = createAsyncThunk(
   "individual/updateBusiness",
-  async (data: { id: string; status: string; cipStatus: string }) => {
+  async (data: { id: string; business: Business }) => {
     try {
-      return await businessRepo.updateBusiness(data.id, {
-        status: data.status,
-        cipStatus: data.cipStatus,
-      });
+      return await businessRepo.updateBusiness(data.id, data.business);
     } catch (e: any) {
       return `Error updating Business ${generateErrorMessage(e)}`;
     }

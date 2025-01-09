@@ -106,7 +106,7 @@ export const updateWireFileRecord = createAsyncThunk(
 
       console.log("wire file record updated", error);
 
-      return error;
+      return { fileUpdated: error };
     } catch (e: any) {
       return `Error updating wire file record ${generateErrorMessage(e)}`;
     }
@@ -115,9 +115,9 @@ export const updateWireFileRecord = createAsyncThunk(
 
 export const uploadInboundWireFile = createAsyncThunk(
   "WireProcessingSlice/uploadInboundWireFire",
-  async (inbound: string, thunkAPI: any) => {
+  async (data: {inbound: string, filename?: string}, thunkAPI: any) => {
     try {
-      const ib: any = await wireProcessingRepo.uploadInboundWireFile(inbound);
+      const ib: any = await wireProcessingRepo.uploadInboundWireFile(data.inbound, data.filename);
 
       console.log("Inbound wire processed", ib.errors.join(" "));
 

@@ -17,12 +17,12 @@ class WireProcessingRepo {
     return response;
   }
 
-  public async uploadInboundWireFile(data: string) {
-    console.log(data);
+  public async uploadInboundWireFile(inbound: string, filename?: string) {
+    console.log(inbound);
     const response = await this.apiClient.http(
       Method.POST,
-      "/wire/load/inbound?continueWithErrors=true",
-      data,
+      `/wire/load/inbound?continueWithErrors=true${filename != null && filename != '' ? `&filename=${filename}` : ""}`,
+      inbound,
       {
         headers: {
           "Content-Type": "text/plain",

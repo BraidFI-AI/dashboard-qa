@@ -161,6 +161,7 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
                 "TRANSACTION_MONITORING",
                 "TRANSACTION_REVIEW",
                 "TRANSACTION_PROCESSING_ERROR",
+                "ACH_RETURN_PROCESSING"
               ]}
             />
           </Box>

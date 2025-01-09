@@ -1,17 +1,9 @@
 "use client";
 
-import { Alert, Counterparty, OFAC, WireFireRecord } from "@/core/api/ApiTypes";
+import { Alert, WireFireRecord } from "@/core/api/ApiTypes";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
-import { enumTextToReadableText } from "@/core/utils/formatting_util";
-import linkToCounterparty from "@/core/utils/link_to_counterparty";
-import timestampToDate from "@/core/utils/timestampToDate";
-import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
-import { useAppDispatch } from "@/redux/store/store";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { JSONTree } from "react-json-tree";
 
 type EntityTypeFileRecordComponentProps = {
   alert: Alert;

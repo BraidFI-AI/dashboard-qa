@@ -279,34 +279,20 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
           </>
         )}
         <MyText>Settlement Account</MyText>
-        <MyControlledAsyncAutocomplete
-          freeSolo={true}
-          displayName="Account"
-          name={"settlementAccountNumber"}
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: true,
-                }
-          }
-          fetchOptions={async (query: any, page: any) => {
-            const accNumbers: any = await dispatch(
-              fetchAccountNumbersList(page)
-            );
-
-            if (typeof accNumbers.payload == "string") {
-              return accNumbers.payload;
-            } else {
-              return {
-                data: accNumbers.payload.accountIds,
-                totalPages: accNumbers.payload.totalPages,
-              };
-            }
-          }}
-        />
+        <MyControlledTextField
+              value={""}
+              displayName="Account"
+              name={"settlementAccountNumber"}
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: false,
+                    }
+              }
+            />
         <Box className="pb-4"></Box>
         <RadioButton
           title="Fee Level"

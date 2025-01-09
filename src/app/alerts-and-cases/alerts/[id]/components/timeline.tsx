@@ -72,7 +72,7 @@ const AlertTimelineComponent: React.FC<AlertTimelineComponentProps> = ({
                         {enumTextToReadableText(timeline.action ?? "")}
                       </MyText>
                       <MyText size="sm" color="text-[#5C5C5C]">
-                        {timeline.username}
+                        {`by ${timeline.username}`}
                       </MyText>
                     </div>
                   </TimelineContent>

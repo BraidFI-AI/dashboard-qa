@@ -88,9 +88,9 @@ const ACHProcessingSlice = createSlice({
 
 export const uploadInboundFile = createAsyncThunk(
   "ach/uploadInboundFile",
-  async (data: string) => {
+  async (data: {filename?: string, file: string}) => {
     try {
-      const filename = await achRepo.uploadInboundFile(data);
+      const filename = await achRepo.uploadInboundFile(data.file, data.filename);
 
       return filename;
     } catch (e: any) {
@@ -101,9 +101,9 @@ export const uploadInboundFile = createAsyncThunk(
 
 export const uploadOutboundFile = createAsyncThunk(
   "ach/uploadOutboundFile",
-  async (data: string) => {
+  async (data: {file: string, filename?: string}) => {
     try {
-      const filename = await achRepo.uploadOutboundFile(data);
+      const filename = await achRepo.uploadOutboundFile(data.file, data.filename);
 
       return filename;
     } catch (e: any) {
@@ -129,6 +129,21 @@ export const fetchACHTransactionStatus = createAsyncThunk(
         rowCount: data.totalElements,
         pageNumber: data.number,
       };
+    } catch (e: any) {
+      return `Error fetching transactions status! ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchRawACHTransaction = createAsyncThunk(
+  "ach/fetchACHTransactionStatus",
+  async (id: string, thunkApi: any) => {
+    try {
+      const data = await achRepo.fetchRawACHTransaction(
+        id
+      );
+
+      return data;
     } catch (e: any) {
       return `Error fetching transactions status! ${generateErrorMessage(e)}`;
     }

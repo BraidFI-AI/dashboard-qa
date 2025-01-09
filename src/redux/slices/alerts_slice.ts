@@ -203,6 +203,7 @@ export const resolveAlert = createAsyncThunk(
       alertId: string;
       action: string;
       note: string;
+      returnCode?: string;
       whiteList?: {
         ofacId: string;
       };
@@ -218,6 +219,7 @@ export const resolveAlert = createAsyncThunk(
         alertId: data.alertId,
         action: action.toUpperCase(),
         note: data.note,
+        returnCode: data.returnCode,
       });
 
       if (
