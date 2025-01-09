@@ -8,6 +8,8 @@ import MyText from "@/core/components/Text/Text";
 import RadioButton from "@/core/components/Button/RadioButton";
 import { getTextFromFile } from "@/core/utils/file_processing_util";
 import { uploadInboundWireFile } from "@/redux/slices/wire_processing_slice";
+import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const WireProcessPage = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +20,25 @@ const WireProcessPage = () => {
   );
 
   const [wireFile, setWireFile] = useState<any>(null);
+
+  const [filename, setFilename] = useState<string | undefined>(undefined);
+
+  const {
+    formState: {
+      errors,
+      submitCount,
+      isSubmitted,
+      isValid,
+    },
+    getValues,
+    control,
+    handleSubmit,
+  } = useForm<{filename: string}>();
+  const achOnSubmit: SubmitHandler<{filename: string}> = (
+    data: {filename: string}
+  ) => {
+    console.log("ach:", data);
+  }
 
   return (
     <>
@@ -35,6 +56,27 @@ const WireProcessPage = () => {
           layout="horizontal"
         />
         <div className="pb-4" />
+        <MyText size="sm">File Name</MyText>
+      <div className="w-[300px]">
+      <MyControlledTextField
+                  name="filename"
+                  displayName="File Name"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                  customOnChange={(value: string) => {
+                    setFilename(value);
+                  }}
+                />
+                </div>
+      <div className="pb-4" />
         <input
           type="file"
           accept="application/text, application/wire"
@@ -87,7 +129,7 @@ const WireProcessPage = () => {
 
               let up: any;
               if (fileType == "Receiving") {
-                up = await dispatch(uploadInboundWireFile(fileText));
+                up = await dispatch(uploadInboundWireFile({inbound: fileText, filename: filename}));
               } else {
                 // up = await dispatch(uploadOutboundFile(fileText));
               }
