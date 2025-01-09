@@ -22,6 +22,7 @@ const initialState: ACHPProcessingState = {
     rowCount: 0,
     pageNumber: -1,
     loadingPage: false,
+    pageSize: 5,
   },
   fileErrors: "loading",
   fileErrorsPagination: {
@@ -43,6 +44,9 @@ const ACHProcessingSlice = createSlice({
     },
     setACHFilesPaginationPageNumber(state, action) {
       state.filesPagination.pageNumber = action.payload;
+    },
+    setACHFilesPaginationPageSize(state, action) {
+      state.filesPagination.pageSize = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -117,7 +121,7 @@ export const fetchACHTransactionStatus = createAsyncThunk(
   async (reset: boolean, thunkApi: any) => {
     try {
       const data = await achRepo.fetchACHTransactionStatus(
-        paginationPageSize,
+        5,
         thunkApi.getState().processing.filesPagination.pageNumber == -1 ||
           reset == true
           ? 0
@@ -139,9 +143,7 @@ export const fetchRawACHTransaction = createAsyncThunk(
   "ach/fetchACHTransactionStatus",
   async (id: string, thunkApi: any) => {
     try {
-      const data = await achRepo.fetchRawACHTransaction(
-        id
-      );
+      const data = await achRepo.fetchRawACHTransaction(id);
 
       return data;
     } catch (e: any) {
@@ -156,7 +158,7 @@ export const fetchACHFileErrors = createAsyncThunk(
     try {
       const errors = await achRepo.fetchACHFileErrors(
         data.filename,
-        paginationPageSize,
+        thunkApi.getState().processing.fileErrorsPagination.pageSize,
         thunkApi.getState().processing.fileErrorsPagination.pageNumber == -1 ||
           (data.reset != null && data.reset == true)
           ? 0
