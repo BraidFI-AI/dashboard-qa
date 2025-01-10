@@ -4,7 +4,11 @@ import { ACHTransactionStatus } from "@/core/api/ApiTypes";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import MyTable from "@/core/components/Table/MyTable";
-import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import {
+  pageSizeOptions,
+  paginationPageSize,
+  PaginationStateType,
+} from "@/core/constants";
 import {
   fetchACHFileErrors,
   fetchACHTransactionStatus,
@@ -32,7 +36,7 @@ const ACHTransactionStatusPage = () => {
   useEffect(() => {
     dispatch(setTitle("Transactions Status"));
     dispatch(fetchACHTransactionStatus(true));
-  }, []);
+  }, [dispatch]);
 
   return files == "loading" ? (
     <MyCircularProgressIndicator />
@@ -47,12 +51,13 @@ const ACHTransactionStatusPage = () => {
   ) : (
     <div style={{ height: "67vh" }}>
       <MyTable
+        sizeOptions={[5, 10, 20, 50, ...pageSizeOptions]}
         pagination={{
           rowCount: pagination.rowCount,
           loading: pagination.loadingPage,
           paginationModel: {
             page: pagination.pageNumber,
-            pageSize: paginationPageSize,
+            pageSize: 5,
           },
           setPaginationModel: (page: number) => {
             dispatch(setACHFilesPaginationPageNumber(page));
