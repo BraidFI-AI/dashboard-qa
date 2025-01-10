@@ -1,20 +1,30 @@
 "use client";
 
-import { Product, Program } from "@/core/api/ApiTypes";
+import { Product, Program, Statement } from "@/core/api/ApiTypes";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
-import MyControlledTimePicker from "@/core/components/DateTimePicker/MyControlledTimePicker";
+import { v4 as uuidv4 } from "uuid";
+
 import ErrorPage from "@/core/components/error_page";
+import MyTable from "@/core/components/Table/MyTable";
+import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
 import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
 import { fetchProductIdsList } from "@/redux/slices/ProductSlice";
 import { fetchProgramIdsListWithNames } from "@/redux/slices/ProgramSlice";
+import {
+  fetchAccountStatement,
+  fetchProductStatement,
+  fetchProgramStatement,
+  fetchRootStatement,
+} from "@/redux/slices/statement_slice";
 import { useAppDispatch } from "@/redux/store/store";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { enqueueSnackbar } from "notistack";
 
 export enum StatementType {
   root = "Root",
@@ -29,6 +39,10 @@ const StatementsPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [statementType, setStatementType] = useState(StatementType.root);
 
+  const [statement, setStatement] = useState<
+    "initial" | "loading" | string | Statement
+  >("initial");
+
   const [productId, setProductId] = useState<string | null>(null);
   const [productIds, setProductIds] = useState<
     "loading" | string | { id: string; name: string }[]
@@ -38,6 +52,8 @@ const StatementsPage = () => {
   const [programIds, setProgramIds] = useState<
     "loading" | string | { id: string; name: string }[]
   >("loading");
+
+  const [accountId, setAccountId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchProgramIdsListWithNames()).then((programs: any) => {
@@ -53,22 +69,80 @@ const StatementsPage = () => {
         setProductId(products.payload?.[0]?.id ?? null);
       }
     });
-  }, []);
+  }, [dispatch]);
 
   const {
     formState: { errors },
     getValues,
     control,
     handleSubmit,
-  } = useForm<{ type: string }>({
+  } = useForm<{ type: string; start: string; end: string }>({
     defaultValues: {
       type: statementType,
+      start: "",
+      end: "",
     },
   });
-  const onSubmit: SubmitHandler<{ type: string }> = (data: {
+  const onSubmit: SubmitHandler<{
     type: string;
-  }) => {
+    start: string;
+    end: string;
+  }> = (data: { type: string; start: string; end: string }) => {
     console.log("data:", data);
+
+    setStatement("loading");
+
+    if (data.type == StatementType.root) {
+      dispatch(fetchRootStatement({ start: data.start, end: data.end })).then(
+        (statement: any) => {
+          setStatement(statement.payload);
+        }
+      );
+    } else if (data.type == StatementType.program) {
+      if (programId == null) {
+        enqueueSnackbar("Program ID is required", { variant: "error" });
+        return;
+      }
+      dispatch(
+        fetchProgramStatement({
+          start: data.start,
+          end: data.end,
+          programId: programId,
+        })
+      ).then((statement: any) => {
+        setStatement(statement.payload);
+      });
+    } else if (data.type == StatementType.product) {
+      if (productId == null) {
+        enqueueSnackbar("Product ID is required", { variant: "error" });
+        return;
+      }
+      dispatch(
+        fetchProductStatement({
+          start: data.start,
+          end: data.end,
+          productId: productId,
+        })
+      ).then((statement: any) => {
+        setStatement(statement.payload);
+      });
+    } else if (data.type == StatementType.accountNumber) {
+      if (accountId == null) {
+        enqueueSnackbar("Account ID is required", { variant: "error" });
+        return;
+      }
+      dispatch(
+        fetchAccountStatement({
+          start: data.start,
+          end: data.end,
+          accountId: accountId,
+        })
+      ).then((statement: any) => {
+        setStatement(statement.payload);
+      });
+    } else {
+      enqueueSnackbar("Invalid statement type", { variant: "error" });
+    }
   };
 
   return (
@@ -205,6 +279,9 @@ const StatementsPage = () => {
                       required: true,
                     }
               }
+              customOnChange={(val: any) => {
+                setAccountId(val);
+              }}
               value=""
             />
           </div>
@@ -214,7 +291,7 @@ const StatementsPage = () => {
         <div className="pr-2">
           <MyText size="sm">Start Date</MyText>
           <MyControlledDatePicker
-            name="startDate"
+            name="start"
             displayName="Start Date"
             control={control}
             errors={errors}
@@ -232,7 +309,7 @@ const StatementsPage = () => {
             value={""}
           />
         </div>
-        <div className="pr-2">
+        {/* <div className="pr-2">
           <MyText size="sm">Start Time</MyText>
           <MyControlledTimePicker
             name="startTime"
@@ -251,7 +328,7 @@ const StatementsPage = () => {
             }}
             value={"00:00"}
           />
-        </div>
+        </div> */}
         <div className="pr-6">
           <div className="invisible">
             <MyText size="sm">PST</MyText>
@@ -261,7 +338,7 @@ const StatementsPage = () => {
         <div className="pr-2">
           <MyText size="sm">End Date</MyText>
           <MyControlledDatePicker
-            name="endDate"
+            name="end"
             displayName="End Date"
             control={control}
             errors={errors}
@@ -279,7 +356,7 @@ const StatementsPage = () => {
             value={""}
           />
         </div>
-        <div className="pr-2">
+        {/* <div className="pr-2">
           <MyText size="sm">End Time</MyText>
           <MyControlledTimePicker
             name="endTime"
@@ -298,7 +375,7 @@ const StatementsPage = () => {
             }}
             value={""}
           />
-        </div>
+        </div> */}
         <div>
           <div className="invisible">
             <MyText size="sm">PST</MyText>
@@ -307,10 +384,98 @@ const StatementsPage = () => {
         </div>
       </div>
       <div className="w-fit">
-        <MyBlueButton submitting={submitting} onClick={() => {}}>
+        <MyBlueButton
+          submitting={submitting}
+          onClick={() => {
+            handleSubmit(onSubmit)();
+          }}
+        >
           Get Statement
         </MyBlueButton>
       </div>
+      {statement == "loading" ? (
+        <MyCircularProgressIndicator />
+      ) : statement == "initial" ? (
+        <></>
+      ) : typeof statement == "string" ? (
+        <ErrorPage
+          error={statement}
+          recoveryButtonOnClick={() => {
+            setStatement("initial");
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : (
+        <>
+          <div className="mt-4">
+            <MyText size="lg">{`${statementType} Statement`}</MyText>
+          </div>
+          <div className="mt-4 flex flex-row w-[900px]">
+            <ItemRowHorizontal
+              title="Account"
+              value={statement.accountName ?? ""}
+            />
+            <div className="pr-2" />
+            <ItemRowHorizontal
+              title="Product ID"
+              value={statement.productId ?? ""}
+            />
+            <div className="pr-2" />
+            <ItemRowHorizontal
+              title="Program ID"
+              value={statement.programId ?? ""}
+            />
+          </div>
+          <div className="mt-4 flex flex-row w-[500px]">
+            <ItemRowHorizontal
+              title="Starting"
+              value={statement.starting ?? ""}
+            />
+            <div className="pr-2" />
+            <ItemRowHorizontal title="Ending" value={statement.ending ?? ""} />
+          </div>
+          <div className="mt-4 flex flex-row w-[500px]">
+            <ItemRowHorizontal
+              title="Starting Balance"
+              value={statement.startingBalance?.toString() ?? ""}
+            />
+            <div className="pr-2" />
+            <ItemRowHorizontal
+              title="Ending Balance"
+              value={statement.endingBalance?.toString() ?? ""}
+            />
+          </div>
+          <div className="mt-4" />
+          <div style={{ height: "calc(100vh - 470px)" }}>
+            <MyTable
+              handleRowClick={() => {}}
+              customId={(row: any) => uuidv4()}
+              columns={[
+                {
+                  field: "amount",
+                  headerName: "Amount",
+                  flex: 1,
+                  minWidth: 120,
+                },
+                {
+                  field: "count",
+                  headerName: "Count",
+                  flex: 1,
+                  minWidth: 120,
+                },
+                {
+                  field: "polarity",
+                  headerName: "Polarity",
+                  flex: 1,
+                  minWidth: 120,
+                },
+                { field: "type", headerName: "Type", flex: 2, minWidth: 220 },
+              ]}
+              rows={statement.transactionSummary}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };
