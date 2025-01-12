@@ -207,7 +207,7 @@ export const fetchIndividualCounterparties = createAsyncThunk(
     try {
       const counterparties = await counterpartyRepo.fetchCounterparties(
         {
-          businessId: data.id,
+          individualId: data.id,
         },
         paginationPageSize,
         data.refresh != null && data.refresh == true
