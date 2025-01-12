@@ -9,10 +9,12 @@ import {
   paginationPageSize,
   PaginationStateType,
 } from "@/core/constants";
+import timestampToDate from "@/core/utils/timestampToDate";
 import {
   fetchACHFileErrors,
   fetchACHTransactionStatus,
   setACHFilesPaginationPageNumber,
+  setACHFilesPaginationPageSize,
 } from "@/redux/slices/ach_processing_slice";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -57,9 +59,10 @@ const ACHTransactionStatusPage = () => {
           loading: pagination.loadingPage,
           paginationModel: {
             page: pagination.pageNumber,
-            pageSize: 5,
+            pageSize: pagination.pageSize ?? 5,
           },
-          setPaginationModel: (page: number) => {
+          setPaginationModel: (page: number, size: number) => {
+            dispatch(setACHFilesPaginationPageSize(size));
             dispatch(setACHFilesPaginationPageNumber(page));
             dispatch(fetchACHTransactionStatus(false));
           },
@@ -82,6 +85,10 @@ const ACHTransactionStatusPage = () => {
             headerName: "Processing Date",
             flex: 1,
             minWidth: 120,
+            valueFormatter: (params: any) => {
+              return `${timestampToDate(params, false, true)}`;
+            },
+            valueGetter: (value: any, row: any) => row?.processingDate,
           },
           {
             field: "errorTransactionsCount",
@@ -96,20 +103,8 @@ const ACHTransactionStatusPage = () => {
             minWidth: 120,
           },
           {
-            field: "offsetTransactionsCount",
-            headerName: "Offset Transactions",
-            flex: 1,
-            minWidth: 120,
-          },
-          {
             field: "postedTransactionsCount",
             headerName: "Posted Transactions",
-            flex: 1,
-            minWidth: 120,
-          },
-          {
-            field: "rejectedTransactionsCount",
-            headerName: "Rejected Transactions",
             flex: 1,
             minWidth: 120,
           },
@@ -120,13 +115,25 @@ const ACHTransactionStatusPage = () => {
             minWidth: 120,
           },
           {
+            field: "rejectedTransactionsCount",
+            headerName: "Rejected Transactions",
+            flex: 1,
+            minWidth: 120,
+          },
+          {
             field: "duplicateTransactionsCount",
             headerName: "Duplicate Transactions",
             flex: 1,
             minWidth: 120,
           },
           {
-            field: "totalTransactionsCount",
+            field: "offsetTransactionsCount",
+            headerName: "Offset Transactions",
+            flex: 1,
+            minWidth: 120,
+          },
+          {
+            field: "totalTransactions",
             headerName: "Total Transactions",
             flex: 1,
             minWidth: 120,
