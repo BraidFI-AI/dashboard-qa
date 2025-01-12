@@ -13,6 +13,7 @@ import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
+import { fetchAlert } from "./alerts_slice";
 
 const apiClient = ApiClient.getInstance();
 const wireProcessingRepo: WireProcessingRepo = new WireProcessingRepo(
@@ -98,13 +99,19 @@ export const getWireFileProcessingError = createAsyncThunk(
 export const updateWireFileRecord = createAsyncThunk(
   "WireProcessingSlice/updateWireFileRecord",
   async (
-    data: { recordId: string; accountNumber: string; beneficiaryCode: string },
+    data: {
+      recordId: string;
+      accountNumber: string;
+      beneficiaryCode: string;
+      alertId: string;
+    },
     thunkAPI: any
   ) => {
     try {
       const error: any = await wireProcessingRepo.updateWireFileRecord(data);
 
       console.log("wire file record updated", error);
+      thunkAPI.dispatch(fetchAlert(data.alertId));
 
       return { fileUpdated: error };
     } catch (e: any) {
