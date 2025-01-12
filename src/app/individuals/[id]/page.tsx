@@ -28,6 +28,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE, States } from "@/core/constants";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
+import MyRedButton from "@/core/components/Button/MyRedButton";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
   const userType = useSelector((state: any) => state.app.userType);
@@ -151,7 +152,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         required: true,
                       }
                 }
-                value={individual.firstName}
+                value={individual.firstName != null ? individual.firstName : ""}
                 submitting={false}
               />
               <MyEditableTextField
@@ -169,7 +170,9 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         required: false,
                       }
                 }
-                value={individual.middleName}
+                value={
+                  individual.middleName != null ? individual.middleName : ""
+                }
                 submitting={false}
               />
               <MyEditableTextField
@@ -187,7 +190,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         required: true,
                       }
                 }
-                value={individual.lastName}
+                value={individual.lastName != null ? individual.lastName : ""}
                 submitting={false}
               />
               <MyEditableTextField
@@ -225,7 +228,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         required: true,
                       }
                 }
-                value={individual.idType}
+                value={individual.idType != null ? individual.idType : ""}
                 submitting={false}
               />
               <MyEditableTextField
@@ -243,7 +246,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         required: true,
                       }
                 }
-                value={individual.idNumber}
+                value={individual.idNumber != null ? individual.idNumber : ""}
                 submitting={false}
               />
               <MyEditableTextField
@@ -261,7 +264,9 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         required: true,
                       }
                 }
-                value={individual.achCompanyId}
+                value={
+                  individual.achCompanyId != null ? individual.achCompanyId : ""
+                }
                 submitting={false}
               />
               <ItemRow
@@ -296,7 +301,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                         },
                       }
                 }
-                value={individual.email}
+                value={individual.email != null ? individual.email : ""}
                 submitting={false}
               />
               <MyEditableTextField
@@ -316,7 +321,9 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                           /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
                       }
                 }
-                value={individual.mobilePhone}
+                value={
+                  individual.mobilePhone != null ? individual.mobilePhone : ""
+                }
                 submitting={false}
               />
               <MyText size="md">Address</MyText>
@@ -619,13 +626,25 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               </div>
             )}
             {editing && (
-              <div className="w-fit pt-2 pb-10">
-                <MyBlueButton
-                  onClick={handleSubmit(onSubmit)}
-                  submitting={submitting}
-                >
-                  Update Customer
-                </MyBlueButton>
+              <div className="flex flex-row justify-between">
+                <div className="w-fit pt-2 pb-10">
+                  <MyRedButton
+                    submitting={submitting}
+                    onClick={() => {
+                      setEditing(false);
+                    }}
+                  >
+                    Cancel
+                  </MyRedButton>
+                </div>
+                <div className="w-fit pt-2 pb-10">
+                  <MyBlueButton
+                    onClick={handleSubmit(onSubmit)}
+                    submitting={submitting}
+                  >
+                    Update Customer
+                  </MyBlueButton>
+                </div>
               </div>
             )}
           </div>

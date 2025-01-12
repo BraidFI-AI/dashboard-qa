@@ -38,6 +38,7 @@ import MyEditButton from "@/core/components/Button/MyEditButton";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import moment from "moment";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
+import MyRedButton from "@/core/components/Button/MyRedButton";
 // import { generatePdf } from "@/core/utils/pdfUtils";
 
 const BusinessDetails = ({ params }: { params: { id: string } }) => {
@@ -781,14 +782,26 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               </div>
             )}
             {editing && (
-              <div className="w-fit pt-2 pb-10">
-                <MyBlueButton
-                  onClick={handleSubmit(onSubmit)}
-                  submitting={submitting}
-                >
-                  Update Customer
-                </MyBlueButton>
-                <div className="pb-6" />
+              <div className="flex flex-row justify-between">
+                <div className="w-fit pt-2 pb-10">
+                  <MyRedButton
+                    submitting={submitting}
+                    onClick={() => {
+                      setEditing(false);
+                    }}
+                  >
+                    Cancel
+                  </MyRedButton>
+                </div>
+                <div className="w-fit pt-2 pb-10">
+                  <MyBlueButton
+                    onClick={handleSubmit(onSubmit)}
+                    submitting={submitting}
+                  >
+                    Update Customer
+                  </MyBlueButton>
+                  <div className="pb-6" />
+                </div>
               </div>
             )}
 
