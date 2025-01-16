@@ -129,6 +129,7 @@ const ResolveAlertButton = () => {
             recordId: alert.contextId ?? "",
             accountNumber: data.note,
             beneficiaryCode: data.note2 ?? "",
+            alertId: alert.id?.toString() ?? "",
           })
         ).then((result) => {
           if (typeof result.payload == "string") {
