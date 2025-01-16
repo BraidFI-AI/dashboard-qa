@@ -121,7 +121,7 @@ export const fetchACHTransactionStatus = createAsyncThunk(
   async (reset: boolean, thunkApi: any) => {
     try {
       const data = await achRepo.fetchACHTransactionStatus(
-        5,
+        thunkApi.getState().processing.filesPagination.pageSize,
         thunkApi.getState().processing.filesPagination.pageNumber == -1 ||
           reset == true
           ? 0
@@ -158,7 +158,7 @@ export const fetchACHFileErrors = createAsyncThunk(
     try {
       const errors = await achRepo.fetchACHFileErrors(
         data.filename,
-        thunkApi.getState().processing.fileErrorsPagination.pageSize,
+        paginationPageSize,
         thunkApi.getState().processing.fileErrorsPagination.pageNumber == -1 ||
           (data.reset != null && data.reset == true)
           ? 0
@@ -180,5 +180,6 @@ export default ACHProcessingSlice;
 export const {
   setInitialACHProcessingState,
   setACHFileErrorsPaginationPageNumber,
+  setACHFilesPaginationPageSize,
   setACHFilesPaginationPageNumber,
 } = ACHProcessingSlice.actions;
