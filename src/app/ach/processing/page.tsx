@@ -33,21 +33,16 @@ const ProcessingPage = () => {
   const [filename, setFilename] = useState<string | undefined>(undefined);
 
   const {
-    formState: {
-      errors,
-      submitCount,
-      isSubmitted,
-      isValid,
-    },
+    formState: { errors, submitCount, isSubmitted, isValid },
     getValues,
     control,
     handleSubmit,
-  } = useForm<{filename: string}>();
-  const achOnSubmit: SubmitHandler<{filename: string}> = (
-    data: {filename: string}
-  ) => {
+  } = useForm<{ filename: string }>();
+  const achOnSubmit: SubmitHandler<{ filename: string }> = (data: {
+    filename: string;
+  }) => {
     console.log("ach:", data);
-  }
+  };
 
   return (
     <div>
@@ -65,27 +60,27 @@ const ProcessingPage = () => {
         layout="horizontal"
       />
       <div className="pb-4" />
-      <MyText size="sm">File Name</MyText>
+      {/* <MyText size="sm">File Name</MyText>
       <div className="w-[300px]">
-      <MyControlledTextField
-                  name="filename"
-                  displayName="File Name"
-                  control={control}
-                  errors={errors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: false,
-                        }
-                  }
-                  value=""
-                  customOnChange={(value: string) => {
-                    setFilename(value);
-                  }}
-                />
-                </div>
-      <div className="pb-4" />
+        <MyControlledTextField
+          name="filename"
+          displayName="File Name"
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false, pattern: null }
+              : {
+                  required: false,
+                }
+          }
+          value=""
+          customOnChange={(value: string) => {
+            setFilename(value);
+          }}
+        />
+      </div>
+      <div className="pb-4" /> */}
       <input
         type="file"
         accept="application/text, application/ach"
@@ -137,11 +132,16 @@ const ProcessingPage = () => {
               return;
             }
 
+            const filename = achFile.name;
             let up: any;
             if (fileType == "Receiving") {
-              up = await dispatch(uploadInboundFile({file: fileText, filename: filename}));
+              up = await dispatch(
+                uploadInboundFile({ file: fileText, filename: filename })
+              );
             } else {
-              up = await dispatch(uploadOutboundFile({file: fileText, filename: filename}));
+              up = await dispatch(
+                uploadOutboundFile({ file: fileText, filename: filename })
+              );
             }
 
             if (!up.payload || typeof up.payload == "string") {
