@@ -768,6 +768,23 @@ export interface WireFireRecord {
   fileHandle?: string | null;
 }
 
+export interface Statement {
+  id?: string;
+  productId?: string | null;
+  programId?: string | null;
+  accountName?: string;
+  starting?: string;
+  ending?: string;
+  startingBalance?: number | null;
+  endingBalance?: number | null;
+  transactionSummary: {
+    count?: number | null;
+    type?: string | null;
+    amount?: number | null;
+    polarity?: string | null;
+  }[];
+}
+
 export interface TransactionSearch {
   originalFileName?: string;
   requesterIpAddress?: string;
