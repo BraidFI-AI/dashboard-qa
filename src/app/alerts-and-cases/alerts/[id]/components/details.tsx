@@ -96,18 +96,27 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
           usersList.push(user.Username ?? "");
         }
       } else {
-        const tenantId = user.Attributes?.filter((attr: any) => {
-          return attr?.Name == "custom:tenantId";
-        })?.[0]?.Value;
-
-        if (tenantId == alert.tenantId) {
+        const group = (user as any).Groups?.[0] ?? "";
+        if (
+          group == "admin-admin" ||
+          group == "admin-ops" ||
+          group == "admins"
+        ) {
           usersList.push(user.Username ?? "");
+        } else {
+          const tenantId = user.Attributes?.filter((attr: any) => {
+            return attr?.Name == "custom:tenantId";
+          })?.[0]?.Value;
+
+          if (tenantId == alert.tenantId) {
+            usersList.push(user.Username ?? "");
+          }
         }
       }
     });
 
     setTempUsers(usersList);
-  }, [users]);
+  }, [users, alert]);
 
   return (
     <div
