@@ -29,6 +29,8 @@ import { ADMIN_OPS_ROLE, ADMIN_ROLE, States } from "@/core/constants";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import MyRedButton from "@/core/components/Button/MyRedButton";
+import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
+import moment from "moment";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
   const userType = useSelector((state: any) => state.app.userType);
@@ -269,10 +271,46 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                 }
                 submitting={false}
               />
-              <ItemRow
-                title="Date of Birth"
-                value={`${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`}
-              ></ItemRow>
+              {editing ? (
+                <>
+                  <MyText>Date of Birth</MyText>
+                  <MyControlledDatePicker
+                    name="dateOfBirth"
+                    displayName="Date of Birth"
+                    control={control}
+                    errors={errors}
+                    rules={{
+                      required: true,
+                      validate: (value: any) => {
+                        const dateObject = moment(value.toString());
+                        if (dateObject.toString() === "Invalid Date") {
+                          return "Invalid Date";
+                        } else {
+                          // const now = moment();
+                          // dateObject.setHours(0, 0, 0, 0);
+                          // today.setHours(0, 0, 0, 0);
+                          // if (dateObject > today) {
+                          //   return "Date cannot be greater the today's date";
+                          // }
+                        }
+                        return true;
+                      },
+                    }}
+                    value={
+                      individual.dateOfBirth != null
+                        ? moment(
+                            `${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`
+                          ).toString()
+                        : ""
+                    }
+                  />
+                </>
+              ) : (
+                <ItemRow
+                  title="Date of Birth"
+                  value={`${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`}
+                ></ItemRow>
+              )}
             </div>
             <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
               <MyEditableTextField

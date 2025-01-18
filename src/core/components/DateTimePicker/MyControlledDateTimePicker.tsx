@@ -43,7 +43,7 @@ const MyControlledDatePicker: React.FC<MyControlledDateTimePickerProps> = ({
     <Controller
       key={value}
       name={name}
-      defaultValue={noDefault == true ? null : moment()}
+      defaultValue={noDefault == true ? null : moment(value)}
       control={control}
       rules={rules}
       render={({ field: { onChange, value } }) => (
