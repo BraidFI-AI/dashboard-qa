@@ -25,13 +25,7 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
-
-export enum StatementType {
-  root = "Root",
-  program = "Program",
-  product = "Product",
-  accountNumber = "Account Number",
-}
+import { StatementType } from "@/core/constants";
 
 const StatementsPage = () => {
   const dispatch = useAppDispatch();
