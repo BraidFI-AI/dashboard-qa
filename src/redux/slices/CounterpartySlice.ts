@@ -64,14 +64,14 @@ export const createCounterparty = createAsyncThunk(
     try {
       if (counterparty.wire != null) {
         if (
-          counterparty.wire.intermediaryRoutingNumber == null ||
-          counterparty.wire.intermediaryRoutingNumber === ""
+          counterparty.wire.intermediaryFIIdNumber == null ||
+          counterparty.wire.intermediaryFIIdNumber === ""
         ) {
           counterparty = {
             ...counterparty,
             wire: {
               ...counterparty.wire,
-              intermediaryRoutingNumber: undefined,
+              intermediaryFIIdNumber: undefined,
             },
           };
         }
