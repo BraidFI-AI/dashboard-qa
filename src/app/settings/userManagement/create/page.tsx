@@ -34,6 +34,8 @@ const CreateUserPage = () => {
     "Bank Ops",
     "Fintech Admin",
     "Fintech Ops",
+    "Bank readonly",
+    "Fintech readonly",
   ]);
 
   const {
