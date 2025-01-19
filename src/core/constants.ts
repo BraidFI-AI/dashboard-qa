@@ -185,3 +185,10 @@ export const wireReturnCodes = [
   "RETURN_ACCOUNT_INCORRECT",
   "RETURN_BY_BENE_BANK",
 ];
+
+export enum StatementType {
+  root = "Root",
+  program = "Program",
+  product = "Product",
+  accountNumber = "Account Number",
+}
