@@ -155,18 +155,79 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             ? data?.wire?.contactId
             : counterparty?.wire?.contactId,
           name: isEditingWire ? data?.wire?.name : counterparty?.wire?.name,
-          routingNumber: isEditingWire
-            ? data?.wire?.routingNumber
-            : counterparty?.wire?.routingNumber,
-          intermediaryRoutingNumber: isEditingWire
-            ? data?.wire?.intermediaryRoutingNumber
-            : counterparty?.wire?.intermediaryRoutingNumber,
-          accountNumber: isEditingWire
-            ? data?.wire?.accountNumber
-            : counterparty?.wire?.accountNumber,
-          bankName: isEditingWire
-            ? data?.wire?.bankName
-            : counterparty?.wire?.bankName,
+          receiverShortName: isEditingWire
+            ? data?.wire?.receiverShortName
+            : counterparty?.wire?.receiverShortName,
+          receiverRoutingNumber: isEditingWire
+            ? data?.wire?.receiverRoutingNumber
+            : counterparty?.wire?.receiverRoutingNumber,
+          intermediaryFIIdType: isEditingWire
+            ? data?.wire?.intermediaryFIIdType
+            : counterparty?.wire?.intermediaryFIIdType,
+          intermediaryFIIdNumber: isEditingWire
+            ? data?.wire?.intermediaryFIIdNumber
+            : counterparty?.wire?.intermediaryFIIdNumber,
+          intermediaryFIName: isEditingWire
+            ? data?.wire?.intermediaryFIName
+            : counterparty?.wire?.intermediaryFIName,
+          beneficiaryFIIdType: isEditingWire
+            ? data?.wire?.beneficiaryFIIdType
+            : counterparty?.wire?.beneficiaryFIIdType,
+          beneficiaryIdNumber: isEditingWire
+            ? data?.wire?.beneficiaryIdNumber
+            : counterparty?.wire?.beneficiaryIdNumber,
+          beneficiaryFIName: isEditingWire
+            ? data?.wire?.beneficiaryFIName
+            : counterparty?.wire?.beneficiaryFIName,
+          beneficiaryAccountNumber: isEditingWire
+            ? data?.wire?.beneficiaryAccountNumber
+            : counterparty?.wire?.beneficiaryAccountNumber,
+          beneficiaryFIAddress: {
+            line1: isEditingWire
+              ? (data?.wire as any).address?.line1
+              : counterparty?.wire?.line1,
+            line2: isEditingWire
+              ? (data?.wire as any).address?.line2
+              : counterparty?.wire?.line2,
+            city: isEditingWire
+              ? (data?.wire as any).address?.city
+              : counterparty?.wire?.city,
+            state: isEditingWire
+              ? (data?.wire as any).address?.state
+              : counterparty?.wire?.state,
+            postalCode: isEditingWire
+              ? (data?.wire as any).address?.postalCode
+              : counterparty?.wire?.postalCode,
+            countryCode: isEditingWire
+              ? (data?.wire as any).address?.countryCode
+              : counterparty?.wire?.countryCode,
+            type: isEditingWire
+              ? (data?.wire as any).address?.type
+              : counterparty?.wire?.type,
+          },
+          intermediaryFIAddress: {
+            line1: isEditingWire
+              ? (data?.wire as any).address?.line1
+              : counterparty?.wire?.line1,
+            line2: isEditingWire
+              ? (data?.wire as any).address?.line2
+              : counterparty?.wire?.line2,
+            city: isEditingWire
+              ? (data?.wire as any).address?.city
+              : counterparty?.wire?.city,
+            state: isEditingWire
+              ? (data?.wire as any).address?.state
+              : counterparty?.wire?.state,
+            postalCode: isEditingWire
+              ? (data?.wire as any).address?.postalCode
+              : counterparty?.wire?.postalCode,
+            countryCode: isEditingWire
+              ? (data?.wire as any).address?.countryCode
+              : counterparty?.wire?.countryCode,
+            type: isEditingWire
+              ? (data?.wire as any).address?.type
+              : counterparty?.wire?.type,
+          },
           address: {
             line1: isEditingWire
               ? (data?.wire as any).address?.line1
@@ -198,9 +259,6 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             : counterparty?.wire?.status,
           phone: isEditingWire ? data?.wire?.phone : counterparty?.wire?.phone,
           email: isEditingWire ? data?.wire?.email : counterparty?.wire?.email,
-          routingNumberType: isEditingWire
-            ? data?.wire?.routingNumberType
-            : counterparty?.wire?.routingNumberType,
           blockedResults: isEditingWire
             ? data?.wire?.blockedResults
             : counterparty?.wire?.blockedResults,
