@@ -428,23 +428,20 @@ const StatementsPage = () => {
           <div className="mt-4 flex flex-row w-[500px]">
             <ItemRowHorizontal
               title="Starting"
-              value={toDollarFormat(statement.starting ?? 0)}
+              value={statement.starting ?? ""}
             />
             <div className="pr-2" />
-            <ItemRowHorizontal
-              title="Ending"
-              value={toDollarFormat(statement.ending ?? 0)}
-            />
+            <ItemRowHorizontal title="Ending" value={statement.ending ?? ""} />
           </div>
           <div className="mt-4 flex flex-row w-[500px]">
             <ItemRowHorizontal
               title="Starting Balance"
-              value={statement.startingBalance?.toString() ?? ""}
+              value={toDollarFormat(statement.startingBalance?.toString() ?? 0)}
             />
             <div className="pr-2" />
             <ItemRowHorizontal
               title="Ending Balance"
-              value={statement.endingBalance?.toString() ?? ""}
+              value={toDollarFormat(statement.endingBalance?.toString() ?? 0)}
             />
           </div>
           <div className="mt-4" />
