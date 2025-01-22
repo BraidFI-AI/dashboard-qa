@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 import { StatementType } from "@/core/constants";
+import toDollarFormat from "@/core/utils/toDollarFormat";
 
 const StatementsPage = () => {
   const dispatch = useAppDispatch();
@@ -343,6 +344,10 @@ const StatementsPage = () => {
                 if (dateObject.toString() === "Invalid Date") {
                   return "Invalid Date";
                 } else {
+                  const startDate = moment(getValues("start").toString());
+                  if (dateObject < startDate && dateObject != startDate) {
+                    return "End date cannot be before start date";
+                  }
                 }
                 return true;
               },
@@ -423,10 +428,13 @@ const StatementsPage = () => {
           <div className="mt-4 flex flex-row w-[500px]">
             <ItemRowHorizontal
               title="Starting"
-              value={statement.starting ?? ""}
+              value={toDollarFormat(statement.starting ?? 0)}
             />
             <div className="pr-2" />
-            <ItemRowHorizontal title="Ending" value={statement.ending ?? ""} />
+            <ItemRowHorizontal
+              title="Ending"
+              value={toDollarFormat(statement.ending ?? 0)}
+            />
           </div>
           <div className="mt-4 flex flex-row w-[500px]">
             <ItemRowHorizontal
@@ -446,10 +454,28 @@ const StatementsPage = () => {
               customId={(row: any) => uuidv4()}
               columns={[
                 {
+                  field: "type",
+                  headerName: "Transaction Type",
+                  flex: 2,
+                  minWidth: 220,
+                },
+                {
+                  field: "polarity",
+                  headerName: "Direction",
+                  flex: 1,
+                  minWidth: 120,
+                },
+                {
                   field: "amount",
                   headerName: "Amount",
                   flex: 1,
                   minWidth: 120,
+                  align: "right",
+                  display: "flex",
+                  renderCell: (params: any) => (
+                    <div>{toDollarFormat(params.row.amount)}</div>
+                  ),
+                  valueGetter: (value: any, row: any) => row.amount,
                 },
                 {
                   field: "count",
@@ -457,13 +483,6 @@ const StatementsPage = () => {
                   flex: 1,
                   minWidth: 120,
                 },
-                {
-                  field: "polarity",
-                  headerName: "Polarity",
-                  flex: 1,
-                  minWidth: 120,
-                },
-                { field: "type", headerName: "Type", flex: 2, minWidth: 220 },
               ]}
               rows={statement.transactionSummary}
             />
