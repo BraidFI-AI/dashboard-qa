@@ -115,6 +115,18 @@ const ACHTransactionStatusPage = () => {
             minWidth: 120,
           },
           {
+            field: "successfulReturnsCount",
+            headerName: "Returned",
+            flex: 1,
+            minWidth: 120,
+          },
+          {
+            field: "notificationOfChangeCount",
+            headerName: "NOC",
+            flex: 1,
+            minWidth: 120,
+          },
+          {
             field: "rejectedTransactionsCount",
             headerName: "Rejected Transactions",
             flex: 1,
