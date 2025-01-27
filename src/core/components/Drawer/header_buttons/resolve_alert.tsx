@@ -117,10 +117,7 @@ const ResolveAlertButton = () => {
         (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
           (alert.type == "TRANSACTION_MONITORING" &&
             (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
-              alert.description?.includes("ACH_RECEIVER_DEBIT"))) ||
-          (alert.type == "TRANSACTION_MONITORING" &&
-            (alert.description?.includes("WIRE") ||
-              alert.description?.includes("CREDIT"))))
+              alert.description?.includes("ACH_RECEIVER_DEBIT"))))
       ) {
         resolveData.returnCode = data.note2;
       }
@@ -325,28 +322,6 @@ const ResolveAlertButton = () => {
                   )}
                 </>
               )}
-            {(action == "Decline" &&
-              alert.contextType == "WIRE_INBOUND_TRANSACTION") ||
-              (alert.type == "TRANSACTION_MONITORING" &&
-                alert.description?.includes("WIRE_") &&
-                alert.description?.includes("CREDIT") && (
-                  <>
-                    <div className="h-4" />
-                    <MyText>Reason Code</MyText>
-                    <MyControlledAutocomplete
-                      clearable={false}
-                      name="note2"
-                      displayName="Reason Code"
-                      control={control}
-                      errors={errors}
-                      options={wireReturnCodes}
-                      rules={{
-                        required: true,
-                      }}
-                      value={getValues("note2") ?? ""}
-                    />
-                  </>
-                ))}
             {action != "Decline" &&
               alert.contextType == "FILE_RECORD" &&
               (alert.additionalParam ==
