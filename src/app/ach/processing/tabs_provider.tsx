@@ -22,7 +22,7 @@ const TabsProvider = (props: any) => {
       path: `/ach/processing`,
     },
     {
-      name: "Transactions Status",
+      name: "Processing Status",
       path: `/ach/processing/achTransStatus`,
     },
     {
@@ -43,7 +43,7 @@ const TabsProvider = (props: any) => {
     } else {
       setCurrentTab(0);
     }
-  }, [pathname]);
+  }, [pathname, tabs]);
 
   return (
     <div>

@@ -36,7 +36,7 @@ const ACHTransactionStatusPage = () => {
   );
 
   useEffect(() => {
-    dispatch(setTitle("Transactions Status"));
+    dispatch(setTitle("Processing Status"));
     dispatch(fetchACHTransactionStatus(true));
   }, [dispatch]);
 
