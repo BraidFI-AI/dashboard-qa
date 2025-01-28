@@ -207,7 +207,7 @@ export const fetchIndividualCounterparties = createAsyncThunk(
     try {
       const counterparties = await counterpartyRepo.fetchCounterparties(
         {
-          businessId: data.id,
+          individualId: data.id,
         },
         paginationPageSize,
         data.refresh != null && data.refresh == true
@@ -642,12 +642,9 @@ export const fetchIndividualDocumentUrl = createAsyncThunk(
 
 export const updateIndividual = createAsyncThunk(
   "individual/updateIndividual",
-  async (data: { id: string; status: string; cipStatus: string }) => {
+  async (data: { id: string; individual: Individual }) => {
     try {
-      return await individualRepo.updateIndividual(data.id, {
-        status: data.status,
-        cipStatus: data.cipStatus,
-      });
+      return await individualRepo.updateIndividual(data.id, data.individual);
     } catch (e: any) {
       return `Error updating Individual ${generateErrorMessage(e)}`;
     }

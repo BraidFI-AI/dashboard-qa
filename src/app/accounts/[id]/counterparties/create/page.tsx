@@ -43,6 +43,8 @@ const CreateCounterpartyPage = () => {
   const [braidAdded, setBraidAdded] = useState(false);
   const [wireAdded, setWireAdded] = useState(false);
 
+  const [wireType, setWireType] = useState("DOMESTIC");
+
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
@@ -84,19 +86,28 @@ const CreateCounterpartyPage = () => {
 
     if (wireAdded) {
       data.wire = {
-        accountNumber: wireGetValues("accountNumber"),
-        address: {
-          city: wireGetValues("address.city"),
-          line1: wireGetValues("address.line1"),
-          line2: wireGetValues("address.line2"),
-          state: wireGetValues("address.state"),
-          postalCode: wireGetValues("address.postalCode"),
-          countryCode: wireGetValues("address.countryCode"),
+        beneficiaryAccountNumber: wireGetValues("beneficiaryAccountNumber"),
+        beneficiaryFIAddress: {
+          city: wireGetValues("beneficiaryFIAddress.city"),
+          countryCode: wireGetValues("beneficiaryFIAddress.countryCode"),
+          line1: wireGetValues("beneficiaryFIAddress.line1"),
+          line2: wireGetValues("beneficiaryFIAddress.line2"),
+          postalCode: wireGetValues("beneficiaryFIAddress.postalCode"),
+          state: wireGetValues("beneficiaryFIAddress.state"),
         },
-        routingNumberType: wireGetValues("routingNumberType"),
-        bankName: wireGetValues("bankName"),
-        intermediaryRoutingNumber: wireGetValues("intermediaryRoutingNumber"),
-        routingNumber: wireGetValues("routingNumber"),
+        beneficiaryFIName: wireGetValues("beneficiaryFIName"),
+        beneficiaryIdNumber: wireGetValues("beneficiaryIdNumber"),
+        intermediaryFIAddress: {
+          city: wireGetValues("intermediaryFIAddress.city"),
+          countryCode: wireGetValues("intermediaryFIAddress.countryCode"),
+          line1: wireGetValues("intermediaryFIAddress.line1"),
+          line2: wireGetValues("intermediaryFIAddress.line2"),
+          postalCode: wireGetValues("intermediaryFIAddress.postalCode"),
+          state: wireGetValues("intermediaryFIAddress.state"),
+        },
+        beneficiaryFIIdType: wireGetValues("beneficiaryFIIdType"),
+        receiverShortName: wireGetValues("receiverShortName"),
+        type: wireType,
       };
     }
 
@@ -212,7 +223,7 @@ const CreateCounterpartyPage = () => {
   }, [submitCount, isValid, isSubmitted]);
 
   return (
-    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-1/3">
         <MyText>Counterparty Name</MyText>
         <MyControlledTextField
@@ -554,34 +565,164 @@ const CreateCounterpartyPage = () => {
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
-              <MyText>Routing Number Type</MyText>
+              <MyText>Type</MyText>
               <Box className="pr-2" />
-              <MyText primary>{wireGetValues("routingNumberType")}</MyText>
+              <MyText primary>{wireGetValues("type")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
-              <MyText>Account number</MyText>
+              <MyText>Receiver Short Name</MyText>
               <Box className="pr-2" />
-              <MyText primary>{wireGetValues("accountNumber")}</MyText>
+              <MyText primary>{wireGetValues("receiverShortName")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
-              <MyText>Routing number</MyText>
+              <MyText>Receiver Routing Number</MyText>
               <Box className="pr-2" />
-              <MyText primary>{wireGetValues("routingNumber")}</MyText>
+              <MyText primary>{wireGetValues("receiverRoutingNumber")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
-              <MyText>Bank Name</MyText>
+              <MyText>Intermediary FI Id Type</MyText>
               <Box className="pr-2" />
-              <MyText primary>{wireGetValues("bankName")}</MyText>
+              <MyText primary>{wireGetValues("intermediaryFIIdType")}</MyText>
             </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
-              <MyText>Intermediary Routing Number</MyText>
+              <MyText>Intermediary FI Id Number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("intermediaryFIIdNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI Name</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("intermediaryFIName")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI Name</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("intermediaryFIName")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI State</MyText>
               <Box className="pr-2" />
               <MyText primary>
-                {wireGetValues("intermediaryRoutingNumber")}
+                {wireGetValues("intermediaryFIAddress.state")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI City</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("intermediaryFIAddress.city")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI Address line 1</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("intermediaryFIAddress.line1")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI Address line 2</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("intermediaryFIAddress.line2")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI Postal Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("intermediaryFIAddress.postalCode")}
+              </MyText>
+            </Box>
+            <Box className="flex flex-row">
+              <MyText>Intermediary FI Country Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("intermediaryFIAddress.countryCode")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Id Type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("beneficiaryFIIdType")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Id Number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("beneficiaryIdNumber")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Name</MyText>
+              <Box className="pr-2" />
+              <MyText primary>{wireGetValues("beneficiaryFIName")}</MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary Account Number</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryAccountNumber")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI State</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.state")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI City</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.city")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Address line 1</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.line1")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Address line 2</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.line2")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Postal Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.postalCode")}
+              </MyText>
+            </Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Country Code</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.countryCode")}
               </MyText>
             </Box>
             <Box className="pb-2"></Box>
@@ -865,61 +1006,63 @@ const CreateCounterpartyPage = () => {
             )}
             {paymentInfoType == "Wire" && (
               <>
-                <MyText>Account Number</MyText>
-                <MyControlledTextField
-                  name="accountNumber"
-                  displayName="Account Number"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Routing Number</MyText>
-                <MyControlledTextField
-                  name="routingNumber"
-                  displayName="Routing Number"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Bank Name</MyText>
-                <MyControlledTextField
-                  name="bankName"
-                  displayName="Bank Name"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: true,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Routing Number Type</MyText>
+                <MyText>Wire Type</MyText>
                 <MyControlledAutocomplete
-                  value={"ABA"}
-                  displayName="Routing Number Type"
-                  name={"routingNumberType"}
+                  value={wireType}
+                  displayName="Wire Type"
+                  name={"type"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  customOnChange={(value: string) => {
+                    setWireType(value);
+                  }}
+                  options={["DOMESTIC", "INTERNATIONAL"]}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Receiver Short Name</MyText>
+                <MyControlledTextField
+                  name="receiverShortName"
+                  displayName="Receiver Short Name"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Receiver Routing Number</MyText>
+                <MyControlledTextField
+                  name="receiverRoutingNumber"
+                  displayName="Receiver Routing Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI ID Type</MyText>
+                <MyControlledAutocomplete
+                  name="intermediaryFIIdType"
+                  displayName="Intermediary FI ID Type"
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -930,12 +1073,13 @@ const CreateCounterpartyPage = () => {
                         }
                   }
                   options={["ABA", "BIC"]}
+                  value="ABA"
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Intermediary Routing Number</MyText>
+                <MyText>Intermediary FI ID Number</MyText>
                 <MyControlledTextField
-                  name="intermediaryRoutingNumber"
-                  displayName="Intermediary Routing Number"
+                  name="intermediaryFIIdNumber"
+                  displayName="Intermediary FI ID Number"
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -943,6 +1087,300 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: false,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI Name</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIName"
+                  displayName="Intermediary FI Name"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI Address</MyText>
+                <Box className="pb-2"></Box>
+                <MyText>State</MyText>
+                <MyControlledAutocomplete
+                  value={States[0]}
+                  displayName="State"
+                  name={"intermediaryFIAddress.state"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  options={States}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>City</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIAddress.city"
+                  displayName="City"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 1</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIAddress.line1"
+                  displayName="Account line 1"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 2</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIAddress.line2"
+                  displayName="Account line 2"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Postal Code</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIAddress.postalCode"
+                  displayName="Postal Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Country Code</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIAddress.countryCode"
+                  displayName="Country Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                          validate: (value: string, _: any) => {
+                            const countryCodeRegex = /^[A-Z]{2}$/;
+                            if (!countryCodeRegex.test(value) || value == "") {
+                              return "Country code must be 2 uppercase letters";
+                            }
+                          },
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Beneficiary FI ID Type</MyText>
+                <MyControlledAutocomplete
+                  name="beneficiaryFIIdType"
+                  displayName="Beneficiary FI ID Type"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                        }
+                  }
+                  options={["ABA", "BIC"]}
+                  value="ABA"
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Beneficiary FI ID Number</MyText>
+                <MyControlledTextField
+                  name="beneficiaryIdNumber"
+                  displayName="Beneficiary FI ID Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Beneficiary FI Name</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIName"
+                  displayName="Beneficiary FI Name"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Beneficiary FI Account Number</MyText>
+                <MyControlledTextField
+                  name="beneficiaryAccountNumber"
+                  displayName="Beneficiary FI Account Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Beneficiary FI Address</MyText>
+                <Box className="pb-2"></Box>
+                <MyText>State</MyText>
+                <MyControlledAutocomplete
+                  value={States[0]}
+                  displayName="State"
+                  name={"beneficiaryFIAddress.state"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  options={States}
+                />
+                <Box className="pb-4"></Box>
+                <MyText>City</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIAddress.city"
+                  displayName="City"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 1</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIAddress.line1"
+                  displayName="Account line 1"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 2</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIAddress.line2"
+                  displayName="Account line 2"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Postal Code</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIAddress.postalCode"
+                  displayName="Postal Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Country Code</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIAddress.countryCode"
+                  displayName="Country Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                          validate: (value: string, _: any) => {
+                            const countryCodeRegex = /^[A-Z]{2}$/;
+                            if (!countryCodeRegex.test(value) || value == "") {
+                              return "Country code must be 2 uppercase letters";
+                            }
+                          },
                         }
                   }
                   value=""
@@ -1099,7 +1537,7 @@ const CreateCounterpartyPage = () => {
           </MyBlueButton>
         </Box>
       </Box>
-    </form>)
+    </form>
   );
 };
 

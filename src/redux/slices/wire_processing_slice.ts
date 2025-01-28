@@ -13,6 +13,7 @@ import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
+import { fetchAlert } from "./alerts_slice";
 
 const apiClient = ApiClient.getInstance();
 const wireProcessingRepo: WireProcessingRepo = new WireProcessingRepo(
@@ -78,11 +79,52 @@ export const processInboundWire = createAsyncThunk(
   }
 );
 
+export const getWireFileProcessingError = createAsyncThunk(
+  "WireProcessingSlice/getWireFileProcessingError",
+  async (id: string, thunkAPI: any) => {
+    try {
+      const error: any = await wireProcessingRepo.getWireFileProcessingError(
+        id
+      );
+
+      console.log("wire file error", error);
+
+      return error;
+    } catch (e: any) {
+      return `Error fetching wire file error ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const updateWireFileRecord = createAsyncThunk(
+  "WireProcessingSlice/updateWireFileRecord",
+  async (
+    data: {
+      recordId: string;
+      accountNumber: string;
+      beneficiaryCode: string;
+      alertId: string;
+    },
+    thunkAPI: any
+  ) => {
+    try {
+      const error: any = await wireProcessingRepo.updateWireFileRecord(data);
+
+      console.log("wire file record updated", error);
+      thunkAPI.dispatch(fetchAlert(data.alertId));
+
+      return { fileUpdated: error };
+    } catch (e: any) {
+      return `Error updating wire file record ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const uploadInboundWireFile = createAsyncThunk(
   "WireProcessingSlice/uploadInboundWireFire",
-  async (inbound: string, thunkAPI: any) => {
+  async (data: {inbound: string, filename?: string}, thunkAPI: any) => {
     try {
-      const ib: any = await wireProcessingRepo.uploadInboundWireFile(inbound);
+      const ib: any = await wireProcessingRepo.uploadInboundWireFile(data.inbound, data.filename);
 
       console.log("Inbound wire processed", ib.errors.join(" "));
 

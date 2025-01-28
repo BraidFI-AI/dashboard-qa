@@ -237,6 +237,19 @@ export const approveWireSettlement = createAsyncThunk(
   }
 );
 
+export const approveWireReturnSettlement = createAsyncThunk(
+  "wire/approveWireReturnSettlement",
+  async (filename: string) => {
+    try {
+      const resp = await wireRepo.approveReturnSettlement(filename);
+      console.log("Return settlement approved:", resp);
+      return { filename: filename };
+    } catch (e: any) {
+      return `Error approving return settlement ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const downloadWireFile = createAsyncThunk(
   "wire/downloadWireFile",
   async (filename: string) => {

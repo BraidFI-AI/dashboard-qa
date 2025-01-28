@@ -17,12 +17,12 @@ class WireProcessingRepo {
     return response;
   }
 
-  public async uploadInboundWireFile(data: string) {
-    console.log(data);
+  public async uploadInboundWireFile(inbound: string, filename?: string) {
+    console.log(inbound);
     const response = await this.apiClient.http(
       Method.POST,
-      "/wire/load/inbound?continueWithErrors=true",
-      data,
+      `/wire/load/inbound?continueWithErrors=true${filename != null && filename != '' ? `&filename=${filename}` : ""}`,
+      inbound,
       {
         headers: {
           "Content-Type": "text/plain",
@@ -43,6 +43,29 @@ class WireProcessingRepo {
       `/wire/load/inbound/status?page=${pageNumber}&size=${pageSize}&${
         filename != null ? `filename=${filename}` : ""
       }`
+    );
+
+    return response;
+  }
+
+  public async getWireFileProcessingError(id: string) {
+    const response = await this.apiClient.http<any>(
+      Method.GET,
+      `/wire/file-record/${id}`
+    );
+
+    return response;
+  }
+
+  public async updateWireFileRecord(data: {
+    recordId: string;
+    accountNumber: string;
+    beneficiaryCode: string;
+  }) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      `/wire/update-file-record`,
+      data
     );
 
     return response;

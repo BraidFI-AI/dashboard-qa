@@ -7,7 +7,7 @@ import ItemRow from "@/core/components/Text/ItemRow";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
-import { boxStyle } from "@/core/constants";
+import { boxStyle, userGroupMappingToReadableNames } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import { assignAlertToUser, fetchAlert } from "@/redux/slices/alerts_slice";
@@ -85,11 +85,38 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
 
     // convert users which is a list of User to a list of string
     users.forEach((user: User) => {
-      usersList.push(user.Username ?? "");
+      if (alert && alert.tenantId == null) {
+        const group = (user as any).Groups?.[0] ?? "";
+
+        if (
+          group == "admin-admin" ||
+          group == "admin-ops" ||
+          group == "admins"
+        ) {
+          usersList.push(user.Username ?? "");
+        }
+      } else {
+        const group = (user as any).Groups?.[0] ?? "";
+        if (
+          group == "admin-admin" ||
+          group == "admin-ops" ||
+          group == "admins"
+        ) {
+          usersList.push(user.Username ?? "");
+        } else {
+          const tenantId = user.Attributes?.filter((attr: any) => {
+            return attr?.Name == "custom:tenantId";
+          })?.[0]?.Value;
+
+          if (tenantId == alert.tenantId) {
+            usersList.push(user.Username ?? "");
+          }
+        }
+      }
     });
 
     setTempUsers(usersList);
-  }, [users]);
+  }, [users, alert]);
 
   return (
     <div

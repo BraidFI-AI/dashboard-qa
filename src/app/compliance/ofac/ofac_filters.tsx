@@ -11,6 +11,8 @@ import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlle
 import { useAppDispatch } from "@/redux/store/store";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import { useRouter, useSearchParams } from "next/navigation";
+import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
+import moment from "moment";
 
 type OFACFiltersProps = {};
 
@@ -33,6 +35,18 @@ const OFACFilters: React.FC<OFACFiltersProps> = ({}) => {
 
     if (data.status == null || data.status == "") {
       data.status = undefined;
+    }
+
+    if (data.startDate == null || data.startDate == "") {
+      data.startDate = undefined;
+    }
+
+    if (data.endDate == null || data.endDate == "") {
+      data.endDate = undefined;
+    }
+
+    if (data.entityType == null || data.entityType == "") {
+      data.entityType = undefined;
     }
 
     let params: string = "?";
@@ -65,6 +79,9 @@ const OFACFilters: React.FC<OFACFiltersProps> = ({}) => {
   useEffect(() => {
     reset({
       status: qParams.get("status") ?? "",
+      startDate: qParams.get("startDate") ?? undefined,
+      endDate: qParams.get("endDate") ?? undefined,
+      entityType: qParams.get("entityType") ?? "",
     });
   }, [qParams]);
 
@@ -85,7 +102,7 @@ const OFACFilters: React.FC<OFACFiltersProps> = ({}) => {
           <div className="h-[50px]" />
           <MyText size="lg">OFAC Filters</MyText>
           <div className="pb-4 w-full">
-            <MyText>status</MyText>
+            <MyText>Status</MyText>
             <MyControlledAutocomplete
               value={getValues("status") ?? ""}
               displayName="Status"
@@ -102,12 +119,88 @@ const OFACFilters: React.FC<OFACFiltersProps> = ({}) => {
               ]}
             />
           </div>
+          <div className="pb-4 w-full">
+            <MyText>Entity Type</MyText>
+            <MyControlledAutocomplete
+              value={getValues("entityType") ?? ""}
+              displayName="Entity Type"
+              name={"entityType"}
+              control={control}
+              errors={errors}
+              rules={{}}
+              options={[
+                "INDIVIDUAL",
+                "BUSINESS",
+                "TRANSACTION",
+                "UBO",
+                "COUNTERPARTY",
+              ]}
+            />
+          </div>
+          <Box className="flex flex-row">
+            <Box className="pb-4 w-full">
+              <MyText>Start Date</MyText>
+              <MyControlledDatePicker
+                noDefault={true}
+                name="startDate"
+                displayName="Start Date"
+                control={control}
+                errors={errors}
+                rules={{
+                  validate: (value: any) => {
+                    if (value == null) {
+                      return;
+                    }
+                    const dateObject = moment(value.toString());
+                    if (dateObject.toString() === "Invalid Date") {
+                      return "Invalid Date";
+                    } else {
+                    }
+                    return true;
+                  },
+                }}
+                value={getValues("startDate") ?? ""}
+              />
+            </Box>
+            <Box className="w-4"></Box>
+            <Box className="pb-4 w-full">
+              <MyText>End Date</MyText>
+              <MyControlledDatePicker
+                noDefault={true}
+                name="endDate"
+                displayName="End Date"
+                control={control}
+                errors={errors}
+                rules={{
+                  validate: (value: any) => {
+                    console.log("value:", value);
+                    if (value == null) {
+                      return;
+                    }
+                    const dateObject = moment(value.toString());
+                    if (dateObject.toString() === "Invalid Date") {
+                      return "Invalid Date";
+                    } else {
+                    }
+                    if (dateObject.isBefore(getValues("startDate"))) {
+                      return "End Date cannot be before start date";
+                    }
+                    return true;
+                  },
+                }}
+                value={getValues("endDate") ?? ""}
+              />
+            </Box>
+          </Box>
           <Box className="flex flex-row justify-between pb-10">
             <Box className="w-32 pt-6">
               <MyTextButton
                 onClick={() => {
                   reset({
                     status: "",
+                    startDate: undefined,
+                    endDate: undefined,
+                    entityType: "",
                   });
                   setDrawerOpen(false);
 

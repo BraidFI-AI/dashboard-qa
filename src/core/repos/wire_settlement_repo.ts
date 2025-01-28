@@ -58,6 +58,14 @@ class WireRepo {
     return response;
   }
 
+  public async approveReturnSettlement(filename: string) {
+    const response = await this.apiClient.http<any[]>(
+      Method.POST,
+      `/wire/returnFiles/${filename}/approve`
+    );
+    return response;
+  }
+
   public async runSettlement() {
     const response = await this.apiClient.http<any[]>(
       Method.POST,

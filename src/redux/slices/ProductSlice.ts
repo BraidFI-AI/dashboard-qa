@@ -361,7 +361,7 @@ export const fetchProductCounterparties = createAsyncThunk(
     try {
       const counterparties = await counterpartyRepo.fetchCounterparties(
         {
-          businessId: data.id,
+          productId: data.id,
         },
         paginationPageSize,
         data.refresh != null && data.refresh == true

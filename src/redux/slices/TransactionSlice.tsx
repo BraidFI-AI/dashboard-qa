@@ -240,6 +240,44 @@ export const fetchCustomerInformation = createAsyncThunk(
   }
 );
 
+export const returnAchTransaction = createAsyncThunk(
+  "app/returnAchTransaction",
+  async (
+    data: {
+      paymentId: string;
+      returnCode: string;
+    },
+    thunkApi: any
+  ) => {
+    try {
+      const returnAch = await transactionRepo.returnAchTransaction(data);
+      console.log("ach transaction returned:", returnAch);
+      return returnAch;
+    } catch (err: any) {
+      return `Error returning ach transaction ${generateErrorMessage(err)}`;
+    }
+  }
+);
+
+export const returnWireTransaction = createAsyncThunk(
+  "app/returnWireTransaction",
+  async (
+    data: {
+      paymentId: string;
+      returnCode: string;
+    },
+    thunkApi: any
+  ) => {
+    try {
+      const returnWire = await transactionRepo.returnWireTransaction(data);
+      console.log("wire transaction returned:", returnWire);
+      return returnWire;
+    } catch (err: any) {
+      return `Error returning wire transaction ${generateErrorMessage(err)}`;
+    }
+  }
+);
+
 export default TransactionSlice;
 export const {
   setInitialTransactionState,

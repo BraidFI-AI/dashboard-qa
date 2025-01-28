@@ -34,6 +34,10 @@ import EntityTypeBusinessComponent from "./components/entity_detail_components/e
 import EntityTypeIndividualComponent from "./components/entity_detail_components/entity_type_individual";
 import EntityTypeCounterpartyComponent from "./components/entity_detail_components/entity_type_counterparty";
 import EntityTypeTransactionMonitoringComponent from "./components/entity_detail_components/entity_type_transaction_monitoring";
+import { getWireFileProcessingError } from "@/redux/slices/wire_processing_slice";
+import EntityTypeFileRecordComponent from "./components/entity_detail_components/file_record";
+import { fetchRawACHTransaction } from "@/redux/slices/ach_processing_slice";
+import ACHReturnProcessingComponent from "./components/entity_detail_components/ach_return_processing";
 
 const AlertsPage = () => {
   const dispatch = useAppDispatch();
@@ -68,6 +72,7 @@ const AlertsPage = () => {
     | "BUSINESS" // prohibited entity
     | "COUNTERPARTY" // prohibited entity
     | "FILE_RECORD" // transaction processing error
+    | "ACH_RETURN_PROCESSING" // ach inbound transaction processing error
   >("");
 
   const [refresh, setRefresh] = useState<boolean>(true);
@@ -82,12 +87,15 @@ const AlertsPage = () => {
 
           // setting entity type to show details
           let entity = "";
-          if (
+          if (data.payload.additionalParam == "MANUAL_ALERT") {
+            setEntityType(data.payload.contextType);
+            entity = data.payload.contextType;
+          } else if (
             data.payload.type == "OFAC" ||
             data.payload.type == "LIST_314A" ||
             data.payload.type == "DUAL_APPROVAL" ||
             data.payload.type == "PROHIBITED_ENTITY" ||
-            data.payload.type == "TRANSACTION_PROCESSING_ERROR"
+            data.payload.type == "TRANSACTION_PROCESSING_ERROR" 
           ) {
             setEntityType(data.payload.contextType);
             entity = data.payload.contextType;
@@ -97,6 +105,10 @@ const AlertsPage = () => {
           } else if (data.payload.type == "TRANSACTION_REVIEW") {
             setEntityType("TRANSACTION_REVIEW");
             entity = "TRANSACTION_REVIEW";
+          }
+          else if (data.payload.type == "ACH_RETURN_PROCESSING") {
+            setEntityType("ACH_RETURN_PROCESSING");
+            entity = "ACH_RETURN_PROCESSING";
           }
 
           if (entity == "OFAC") {
@@ -164,7 +176,16 @@ const AlertsPage = () => {
           } else if (entity == "TRANSACTION_REVIEW") {
             setContext({});
           } else if (entity == "FILE_RECORD") {
-            // ????
+            dispatch(
+              getWireFileProcessingError(data.payload.contextId.toString())
+            ).then((e: any) => {
+              setContext(e.payload);
+            });
+          }
+          else if (entity == 'ACH_RETURN_PROCESSING'){
+            dispatch(fetchRawACHTransaction(data.payload.contextId.toString())).then((e: any) => { 
+              setContext(e.payload);
+            });
           }
 
           if (data.payload.caseId != null) {
@@ -349,6 +370,16 @@ const AlertsPage = () => {
                     ofacId={alert.ofacId ?? ""}
                   />
                 </div>
+              ) : entityType == "FILE_RECORD" ? (
+                <EntityTypeFileRecordComponent
+                  alert={alert}
+                  context={context}
+                />
+              ) : entityType == "ACH_RETURN_PROCESSING" ? (
+                <ACHReturnProcessingComponent
+                  alert={alert}
+                  context={context}
+                />
               ) : (
                 <></>
               )}

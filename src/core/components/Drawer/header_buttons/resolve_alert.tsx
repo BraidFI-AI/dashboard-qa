@@ -16,6 +16,9 @@ import { resolveAlert } from "@/redux/slices/alerts_slice";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
+import { updateWireFileRecord } from "@/redux/slices/wire_processing_slice";
+import { fetchAchReturnCodes } from "@/redux/slices/AppSlice";
+import { wireReturnCodes } from "@/core/constants";
 
 const ResolveAlertButton = () => {
   const params = useParams();
@@ -27,6 +30,8 @@ const ResolveAlertButton = () => {
   );
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const [action, setAction] = useState<string>("");
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -45,6 +50,10 @@ const ResolveAlertButton = () => {
     "Decline",
   ]);
 
+  const achReturnCodes: "loading" | string | string[] = useSelector(
+    (state: any) => state.app.achReturnCodes
+  );
+
   const {
     formState: { errors },
     control,
@@ -55,6 +64,7 @@ const ResolveAlertButton = () => {
     alertId: string;
     action: string;
     note: string;
+    note2?: string;
   }>({
     defaultValues: {
       alertId: params.id.toString(),
@@ -66,7 +76,13 @@ const ResolveAlertButton = () => {
     alertId: string;
     action: string;
     note: string;
-  }> = (data: { alertId: string; action: string; note: string }) => {
+    note2?: string;
+  }> = (data: {
+    alertId: string;
+    action: string;
+    note: string;
+    note2?: string;
+  }) => {
     console.log("data:", data);
     setSubmitting(true);
 
@@ -74,6 +90,8 @@ const ResolveAlertButton = () => {
       alertId: string;
       action: string;
       note: string;
+      note2?: string;
+      returnCode?: string;
       whiteList?: {
         ofacId: string;
       };
@@ -93,16 +111,58 @@ const ResolveAlertButton = () => {
       }
     }
 
-    dispatch(resolveAlert(resolveData)).then((result) => {
-      if (typeof result.payload == "string") {
-        enqueueSnackbar(result.payload, { variant: "error", persist: true });
-      } else {
-        enqueueSnackbar("Alert Resolved", { variant: "success" });
-        handleModalClose();
+    if (typeof alert != "string") {
+      if (
+        data.action == "DECLINE" &&
+        (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
+          (alert.type == "TRANSACTION_MONITORING" &&
+            (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
+              alert.description?.includes("ACH_RECEIVER_DEBIT"))))
+      ) {
+        resolveData.returnCode = data.note2;
       }
 
-      setSubmitting(false);
-    });
+      if (
+        data.action == "APPROVE" &&
+        alert.contextType == "FILE_RECORD" &&
+        (alert.additionalParam == "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
+          alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+      ) {
+        dispatch(
+          updateWireFileRecord({
+            recordId: alert.contextId ?? "",
+            accountNumber: data.note,
+            beneficiaryCode: data.note2 ?? "",
+            alertId: alert.id?.toString() ?? "",
+          })
+        ).then((result) => {
+          if (typeof result.payload == "string") {
+            enqueueSnackbar(result.payload, {
+              variant: "error",
+              persist: true,
+            });
+          } else {
+            enqueueSnackbar("Alert Resolved", { variant: "success" });
+            handleModalClose();
+          }
+
+          setSubmitting(false);
+        });
+      } else
+        dispatch(resolveAlert(resolveData)).then((result) => {
+          if (typeof result.payload == "string") {
+            enqueueSnackbar(result.payload, {
+              variant: "error",
+              persist: true,
+            });
+          } else {
+            enqueueSnackbar("Alert Resolved", { variant: "success" });
+            handleModalClose();
+          }
+
+          setSubmitting(false);
+        });
+    }
   };
 
   useEffect(() => {
@@ -159,7 +219,7 @@ const ResolveAlertButton = () => {
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
-        height="360px"
+        height="430px"
       >
         {ofacHit == "loading" ? (
           <MyCircularProgressIndicator />
@@ -203,9 +263,21 @@ const ResolveAlertButton = () => {
                 required: true,
               }}
               value={getValues("action")}
+              customOnChange={(value: any) => {
+                setAction(value);
+              }}
             />
             <div className="h-4" />
-            <MyText>Note</MyText>
+            <MyText>
+              {action != "Decline" &&
+              alert.contextType == "FILE_RECORD" &&
+              (alert.additionalParam ==
+                "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+                ? "Correct Account Number"
+                : "Note"}
+            </MyText>
             <MyControlledTextField
               name={"note"}
               displayName={"Note"}
@@ -216,6 +288,61 @@ const ResolveAlertButton = () => {
               }}
               value={getValues("note")}
             />
+            {action == "Decline" &&
+              (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
+                (alert.type == "TRANSACTION_MONITORING" &&
+                  (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
+                    alert.description?.includes("ACH_RECEIVER_DEBIT")))) && (
+                <>
+                  <div className="h-4" />
+                  <MyText>Reason Code</MyText>
+                  {achReturnCodes == "loading" ? (
+                    <MyCircularProgressIndicator />
+                  ) : typeof achReturnCodes == "string" ? (
+                    <ErrorPage
+                      error={achReturnCodes}
+                      recoveryButtonTitle="Retry"
+                      recoveryButtonOnClick={() => {
+                        dispatch(fetchAchReturnCodes());
+                      }}
+                    />
+                  ) : (
+                    <MyControlledAutocomplete
+                      clearable={false}
+                      name="note2"
+                      displayName="Reason Code"
+                      control={control}
+                      errors={errors}
+                      options={achReturnCodes}
+                      rules={{
+                        required: true,
+                      }}
+                      value={getValues("note2") ?? ""}
+                    />
+                  )}
+                </>
+              )}
+            {action != "Decline" &&
+              alert.contextType == "FILE_RECORD" &&
+              (alert.additionalParam ==
+                "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE") && (
+                <>
+                  <div className="h-4" />
+                  <MyText>Correct Beneficiary Code</MyText>
+                  <MyControlledTextField
+                    name={"note2"}
+                    displayName={"Note"}
+                    control={control}
+                    errors={errors}
+                    rules={{
+                      required: true,
+                    }}
+                    value={getValues("note2")}
+                  />
+                </>
+              )}
             <div className="pb-8" />
             <div className="w-fit">
               <MyBlueButton

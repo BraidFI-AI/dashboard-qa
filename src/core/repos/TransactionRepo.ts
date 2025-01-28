@@ -57,6 +57,19 @@ class TransactionRepo {
     return types;
   }
 
+  public async fetchAchReturnCodes() {
+    const types = await this.apiClient.http<string[]>(
+      Method.GET,
+      "/transaction/ach/returnCodes"
+    );
+
+    const codes = types.map((code: any) => {
+      return code.name ?? "";
+    });
+
+    return codes;
+  }
+
   public async fetchToReviewACHTransactions(
     pageSize: number,
     pageNumber: number,
@@ -97,6 +110,32 @@ class TransactionRepo {
     }
 
     return limits;
+  }
+
+  public async returnAchTransaction(data: {
+    paymentId: string;
+    returnCode: string;
+  }) {
+    const types = await this.apiClient.http<any>(
+      Method.POST,
+      "/transaction/ach/return",
+      { ...data, sendReturnFile: true }
+    );
+
+    return types;
+  }
+
+  public async returnWireTransaction(data: {
+    paymentId: string;
+    returnCode: string;
+  }) {
+    const types = await this.apiClient.http<any>(
+      Method.POST,
+      "/transaction/wire/return",
+      data
+    );
+
+    return types;
   }
 }
 

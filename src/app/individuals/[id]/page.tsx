@@ -25,9 +25,12 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useSelector } from "react-redux";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE, States } from "@/core/constants";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
+import MyRedButton from "@/core/components/Button/MyRedButton";
+import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
+import moment from "moment";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
   const userType = useSelector((state: any) => state.app.userType);
@@ -58,19 +61,24 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
     getValues,
     reset,
     handleSubmit,
-  } = useForm<{ status: string; cipStatus: string }>();
-  const onSubmit: SubmitHandler<{
-    status: string;
-    cipStatus: string;
-  }> = (data: { status: string; cipStatus: string }) => {
+  } = useForm<Individual>({
+    defaultValues: { ...individual },
+  });
+  const onSubmit: SubmitHandler<Individual> = (data: Individual) => {
     console.log("data", data);
 
     setSubmitting(true);
+
+    for (const key in data) {
+      if ((data as any)[key] === null || (data as any)[key] === "") {
+        (data as any)[key] = undefined;
+      }
+    }
+
     dispatch(
       updateIndividual({
         id: params.id.toString(),
-        status: data.status,
-        cipStatus: data.cipStatus,
+        individual: data,
       })
     ).then((d: any) => {
       if (typeof d.payload == "string") {
@@ -129,71 +137,348 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   return (
     <Box className="h-full">
       {!loading && individual != null ? (
-        <div className="w-[1000px] flex flex-row justify-between h-full">
-          <div className="flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-full px-3 pt-3">
-            <div className="w-[320px] h-full">
-              <ItemRow title="Customer ID" value={individual.id}></ItemRow>
-              <ItemRow
-                title="First Name"
-                value={individual.firstName}
-              ></ItemRow>
-              <ItemRow
-                title="Middle Name"
-                value={individual.middleName}
-              ></ItemRow>
-              <ItemRow title="Last Name" value={individual.lastName}></ItemRow>
-              <ItemRow
-                status={individual.tcAgreed}
-                title="TC Agreed"
-                value={individual.tcAgreed?.toString()}
-              ></ItemRow>
-              <ItemRow title="ID Type" value={individual.idType}></ItemRow>
-              <ItemRow title="ID Number" value={individual.idNumber}></ItemRow>
-              <ItemRow
-                title="ACH Company ID"
-                value={
-                  individual.achCompanyId != null
-                    ? individual.achCompanyId.toString()
-                    : ""
+        <div className="flex flex-row justify-between h-full">
+          <div className="w-full flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-full px-3 pt-3">
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="firstName"
+                displayName="First Name"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
                 }
-              ></ItemRow>
-              <ItemRow
-                title="Date of Birth"
-                value={`${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`}
-              ></ItemRow>
+                value={individual.firstName != null ? individual.firstName : ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="middleName"
+                displayName="Middle Name"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  individual.middleName != null ? individual.middleName : ""
+                }
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="lastName"
+                displayName="Last Name"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={individual.lastName != null ? individual.lastName : ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="tcAgreed"
+                displayName="TC Agreed"
+                control={control}
+                errors={errors}
+                editable={false}
+                options={["true", "false"]}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={individual.tcAgreed}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="idType"
+                displayName="ID Type"
+                control={control}
+                errors={errors}
+                editable={false}
+                options={["EIN", "SSN", "ITIN", "PASSPORT", "OTHER_ID"]}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={individual.idType != null ? individual.idType : ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="idNumber"
+                displayName="ID Number"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={individual.idNumber != null ? individual.idNumber : ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="achCompanyId"
+                displayName="ACH Company ID"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={
+                  individual.achCompanyId != null ? individual.achCompanyId : ""
+                }
+                submitting={false}
+              />
+              {editing ? (
+                <>
+                  <MyText>Date of Birth</MyText>
+                  <MyControlledDatePicker
+                    name="dateOfBirth"
+                    displayName="Date of Birth"
+                    control={control}
+                    errors={errors}
+                    rules={{
+                      required: true,
+                      validate: (value: any) => {
+                        const dateObject = moment(value.toString());
+                        if (dateObject.toString() === "Invalid Date") {
+                          return "Invalid Date";
+                        } else {
+                          // const now = moment();
+                          // dateObject.setHours(0, 0, 0, 0);
+                          // today.setHours(0, 0, 0, 0);
+                          // if (dateObject > today) {
+                          //   return "Date cannot be greater the today's date";
+                          // }
+                        }
+                        return true;
+                      },
+                    }}
+                    value={
+                      individual.dateOfBirth != null
+                        ? moment(
+                            `${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`
+                          ).toString()
+                        : ""
+                    }
+                  />
+                </>
+              ) : (
+                <ItemRow
+                  title="Date of Birth"
+                  value={`${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`}
+                ></ItemRow>
+              )}
             </div>
-            <div className="w-[320px] h-full">
-              <ItemRow title="Email" value={individual.email}></ItemRow>
-              <ItemRow
-                title="Mobile Number"
-                value={individual.mobilePhone}
-              ></ItemRow>
+            <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="email"
+                displayName="Email"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                        validate: (value: any, formValues: any) => {
+                          const chars = value.split("");
+                          if (
+                            !(
+                              chars.filter((c: any) => c == "@").length == 1 &&
+                              chars.filter((c: any) => c == ".").length >= 1
+                            )
+                          ) {
+                            return "Invalid Email";
+                          }
+                        },
+                      }
+                }
+                value={individual.email != null ? individual.email : ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="mobilePhone"
+                displayName="Mobile Number"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                        pattern:
+                          /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+                      }
+                }
+                value={
+                  individual.mobilePhone != null ? individual.mobilePhone : ""
+                }
+                submitting={false}
+              />
               <MyText size="md">Address</MyText>
-              <ItemRow
-                title="State"
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.state"
+                displayName="State"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={States}
                 value={individual.addresses?.[0]?.state ?? ""}
+                submitting={false}
               />
-              <ItemRow
-                title="City"
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.city"
+                displayName="City"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={individual.addresses?.[0]?.city ?? ""}
+                submitting={false}
               />
-              <ItemRow
-                title="Street Address"
-                value={`${individual.addresses?.[0]?.line1 ?? ""} ${
-                  individual.addresses?.[0]?.line2 ?? ""
-                } `}
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.line1"
+                displayName="Street Address"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={individual.addresses?.[0]?.line1 ?? ""}
+                submitting={false}
               />
-              <ItemRow
-                title="Postal Code"
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.line2"
+                displayName="Apartment, suite, or floor"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={individual.addresses?.[0]?.line2 ?? ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.postalCode"
+                displayName="Postal Code"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={individual.addresses?.[0]?.postalCode ?? ""}
+                submitting={false}
               />
-              <ItemRow
-                title="Country Code"
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.countryCode"
+                displayName="Country Code"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
                 value={individual.addresses?.[0]?.countryCode ?? ""}
+                submitting={false}
               />
             </div>
           </div>
-          <div className="h-full w-[320px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
+          <div className="w-3" />
+          <div className="h-full w-[350px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
+            <ItemRow title="Individual ID" value={individual.id}></ItemRow>
             <ItemRow
               title="Product Name"
               value={{
@@ -379,13 +664,25 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               </div>
             )}
             {editing && (
-              <div className="w-fit pt-2 pb-10">
-                <MyBlueButton
-                  onClick={handleSubmit(onSubmit)}
-                  submitting={submitting}
-                >
-                  Update Customer
-                </MyBlueButton>
+              <div className="flex flex-row justify-between">
+                <div className="w-fit pt-2 pb-10">
+                  <MyRedButton
+                    submitting={submitting}
+                    onClick={() => {
+                      setEditing(false);
+                    }}
+                  >
+                    Cancel
+                  </MyRedButton>
+                </div>
+                <div className="w-fit pt-2 pb-10">
+                  <MyBlueButton
+                    onClick={handleSubmit(onSubmit)}
+                    submitting={submitting}
+                  >
+                    Update Customer
+                  </MyBlueButton>
+                </div>
               </div>
             )}
           </div>

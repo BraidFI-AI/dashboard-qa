@@ -1,4 +1,5 @@
 export interface Alert {
+  tenantId?: string | null;
   id?: number | null;
   type?: string | null;
   status?: string | null;
@@ -9,6 +10,7 @@ export interface Alert {
   alertTimelines?: AlertTimeline[] | null;
   alertDocuments: AlertDocument[] | null;
   assignedUsername?: string | null;
+  additionalParam?: string | null;
 }
 
 export interface Case {
@@ -223,7 +225,7 @@ export interface Business {
   productId: number | null;
   type: string;
   mcc?: string | null;
-  naics: string | null;
+  naics?: string | null;
   tcAgreed: boolean;
   mobilePhoneVerified: boolean;
   emailVerified: boolean;
@@ -732,6 +734,9 @@ export interface AlertSearch {
 
 export interface OFACSearch {
   status?: string;
+  entityType?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface CustomerSearch {
@@ -742,7 +747,48 @@ export interface CustomerSearch {
   status?: string;
 }
 
+export interface WireFireRecord {
+  id?: number | null;
+  fileId?: number | null;
+  lineNumber?: number | null;
+  text?: string | null;
+  importStatus?: string | null;
+  finalId?: string | null;
+  errors: {
+    level?: string | null;
+    message?: string | null;
+  }[];
+  tag1510?: string | null;
+  tag1520?: string | null;
+  tag2000?: string | null;
+  tag3100?: string | null;
+  tag3400?: string | null;
+  tag4100?: string | null;
+  tag4200?: string | null;
+  fileHandle?: string | null;
+}
+
+export interface Statement {
+  id?: string;
+  productId?: string | null;
+  programId?: string | null;
+  accountName?: string;
+  starting?: string;
+  ending?: string;
+  startingBalance?: number | null;
+  endingBalance?: number | null;
+  transactionSummary: {
+    count?: number | null;
+    type?: string | null;
+    amount?: number | null;
+    polarity?: string | null;
+  }[];
+}
+
 export interface TransactionSearch {
+  originalFileName?: string;
+  requesterIpAddress?: string;
+  requesterUsername?: string;
   showAchNoc?: boolean;
   excludeWire?: boolean;
   excludeAch?: boolean;
@@ -936,22 +982,38 @@ export interface CounterpartyWire {
   custId: number | null;
   contactId: number | null;
   name: string | null;
-  intermediaryRoutingNumber: string | null;
-  routingNumber: string | null;
-  accountNumber: string | null;
-  bankName: string | null;
-  line1: string | null;
-  line2: string | null;
-  city: string | null;
-  state: string | null;
-  postalCode: string | null;
-  countryCode: string | null;
-  type: string | null;
+  city?: string | null;
+  countryCode?: string | null;
+  line1?: string | null;
+  line2?: string | null;
+  postalCode?: string | null;
+  state?: string | null;
+  beneficiaryAccountNumber?: string | null;
+  beneficiaryFIAddressCity?: string | null;
+  beneficiaryFIAddressCountryCode?: string | null;
+  beneficiaryFIAddressLine1?: string | null;
+  beneficiaryFIAddressLine2?: string | null;
+  beneficiaryFIAddressPostalCode?: string | null;
+  beneficiaryFIAddressState?: string | null;
+  beneficiaryFIIdType?: string | null;
+  beneficiaryFIName?: string | null;
+  beneficiaryIdNumber?: string | null;
+  intermediaryFIAddressCity?: string | null;
+  intermediaryFIAddressCountryCode?: string | null;
+  intermediaryFIAddressLine1?: string | null;
+  intermediaryFIAddressLine2?: string | null;
+  intermediaryFIAddressPostalCode?: string | null;
+  intermediaryFIAddressState?: string | null;
+  intermediaryFIIdNumber?: string | null;
+  intermediaryFIIdType?: string | null;
+  intermediaryFIName?: string | null;
+  receiverRoutingNumber?: string | null;
+  receiverShortName?: string | null;
+  type?: string | null;
   instrumentType: string | null;
   status: string | null;
   phone: string | null;
   email: string | null;
-  routingNumberType: string | null;
   blockedResults: null | null;
   createdAt: number | null;
   updatedAt: number | null;
@@ -977,19 +1039,43 @@ export interface CreateCounterparty {
 }
 
 export interface CreateCounterPartyWire {
-  accountNumber: string;
-  address: {
-    city: string;
-    line1: string;
-    line2: string;
-    state: string;
-    postalCode: string;
-    countryCode: string;
+  address?: {
+    city?: string | null;
+    countryCode?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    postalCode?: string | null;
+    state?: string | null;
+    type?: string | null;
   };
-  routingNumberType: string;
-  bankName: string;
-  intermediaryRoutingNumber?: string;
-  routingNumber: string;
+  beneficiaryAccountNumber?: string | null;
+  beneficiaryFIAddress?: {
+    city?: string | null;
+    countryCode?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    postalCode?: string | null;
+    state?: string | null;
+    type?: string | null;
+  };
+  beneficiaryFIIdType?: string | null;
+  beneficiaryFIName?: string | null;
+  beneficiaryIdNumber?: string | null;
+  intermediaryFIAddress: {
+    city?: string | null;
+    countryCode?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    postalCode?: string | null;
+    state?: string | null;
+    type?: string | null;
+  };
+  intermediaryFIIdNumber?: string | null;
+  intermediaryFIIdType?: string | null;
+  intermediaryFIName?: string | null;
+  receiverRoutingNumber?: string | null;
+  receiverShortName?: string | null;
+  type?: string | null;
 }
 
 export interface CreateCounterpartyBraid {

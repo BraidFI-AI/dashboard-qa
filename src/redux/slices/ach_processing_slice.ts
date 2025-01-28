@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { ACHFileError } from "@/core/api/ApiTypes";
+import { ACHFileError, ACHTransactionStatus } from "@/core/api/ApiTypes";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import ACHRepo from "@/core/repos/ACHRepo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
@@ -12,9 +12,18 @@ const achRepo: ACHRepo = new ACHRepo(apiClient);
 interface ACHPProcessingState {
   fileErrors: "loading" | string | ACHFileError[];
   fileErrorsPagination: PaginationStateType;
+  files: "loading" | string | ACHTransactionStatus[];
+  filesPagination: PaginationStateType;
 }
 
 const initialState: ACHPProcessingState = {
+  files: "loading",
+  filesPagination: {
+    rowCount: 0,
+    pageNumber: -1,
+    loadingPage: false,
+    pageSize: 5,
+  },
   fileErrors: "loading",
   fileErrorsPagination: {
     rowCount: 0,
@@ -33,8 +42,31 @@ const ACHProcessingSlice = createSlice({
     setACHFileErrorsPaginationPageNumber(state, action) {
       state.fileErrorsPagination.pageNumber = action.payload;
     },
+    setACHFilesPaginationPageNumber(state, action) {
+      state.filesPagination.pageNumber = action.payload;
+    },
+    setACHFilesPaginationPageSize(state, action) {
+      state.filesPagination.pageSize = action.payload;
+    },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchACHTransactionStatus.pending, (state, action) => {
+      if (state.filesPagination.pageNumber == -1 || action.meta.arg) {
+        state.files = "loading";
+      }
+      state.filesPagination.loadingPage = true;
+    });
+    builder.addCase(fetchACHTransactionStatus.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.files = action.payload;
+      } else {
+        state.files = action.payload.files;
+        state.filesPagination.rowCount = action.payload.rowCount;
+        state.filesPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.filesPagination.loadingPage = false;
+    });
     builder.addCase(fetchACHFileErrors.pending, (state, action) => {
       if (
         state.fileErrorsPagination.pageNumber == -1 ||
@@ -60,9 +92,9 @@ const ACHProcessingSlice = createSlice({
 
 export const uploadInboundFile = createAsyncThunk(
   "ach/uploadInboundFile",
-  async (data: string) => {
+  async (data: {filename?: string, file: string}) => {
     try {
-      const filename = await achRepo.uploadInboundFile(data);
+      const filename = await achRepo.uploadInboundFile(data.file, data.filename);
 
       return filename;
     } catch (e: any) {
@@ -73,9 +105,9 @@ export const uploadInboundFile = createAsyncThunk(
 
 export const uploadOutboundFile = createAsyncThunk(
   "ach/uploadOutboundFile",
-  async (data: string) => {
+  async (data: {file: string, filename?: string}) => {
     try {
-      const filename = await achRepo.uploadOutboundFile(data);
+      const filename = await achRepo.uploadOutboundFile(data.file, data.filename);
 
       return filename;
     } catch (e: any) {
@@ -86,15 +118,34 @@ export const uploadOutboundFile = createAsyncThunk(
 
 export const fetchACHTransactionStatus = createAsyncThunk(
   "ach/fetchACHTransactionStatus",
-  async () => {
+  async (reset: boolean, thunkApi: any) => {
     try {
-      const startDate: string = moment()
-        .subtract(2, "days")
-        .format("YYYY-MM-DD");
+      const data = await achRepo.fetchACHTransactionStatus(
+        thunkApi.getState().processing.filesPagination.pageSize,
+        thunkApi.getState().processing.filesPagination.pageNumber == -1 ||
+          reset == true
+          ? 0
+          : thunkApi.getState().processing.filesPagination.pageNumber
+      );
 
-      const filename = await achRepo.fetchACHTransactionStatus(startDate);
+      return {
+        files: data.content,
+        rowCount: data.totalElements,
+        pageNumber: data.number,
+      };
+    } catch (e: any) {
+      return `Error fetching transactions status! ${generateErrorMessage(e)}`;
+    }
+  }
+);
 
-      return filename;
+export const fetchRawACHTransaction = createAsyncThunk(
+  "ach/fetchACHTransactionStatus",
+  async (id: string, thunkApi: any) => {
+    try {
+      const data = await achRepo.fetchRawACHTransaction(id);
+
+      return data;
     } catch (e: any) {
       return `Error fetching transactions status! ${generateErrorMessage(e)}`;
     }
@@ -129,4 +180,6 @@ export default ACHProcessingSlice;
 export const {
   setInitialACHProcessingState,
   setACHFileErrorsPaginationPageNumber,
+  setACHFilesPaginationPageSize,
+  setACHFilesPaginationPageNumber,
 } = ACHProcessingSlice.actions;
