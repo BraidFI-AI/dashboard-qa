@@ -73,6 +73,10 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.settlementFileName = undefined;
     }
 
+    if (data.originalFileName == null || data.originalFileName == "") {
+      data.originalFileName = undefined;
+    }
+
     if (data.direction == null || data.direction == "") {
       data.direction = undefined;
     }
@@ -157,9 +161,6 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.transactionType = undefined;
     }
 
-    
-    
-    
     if (data.originalFileName == null || data.enoriginalFileNamedDate == "") {
       data.originalFileName = undefined;
     }
