@@ -70,9 +70,13 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
     setSubmitting(true);
 
     for (const key in data) {
-      if ((data as any)[key] === null || (data as any)[key] === "") {
+      if ((data as any)[key] === null) {
         (data as any)[key] = undefined;
       }
+    }
+
+    if (data.dateOfBirth == null) {
+      data.dateOfBirth = undefined;
     }
 
     dispatch(
@@ -280,9 +284,12 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                     control={control}
                     errors={errors}
                     rules={{
-                      required: true,
+                      required: false,
                       validate: (value: any) => {
-                        const dateObject = moment(value.toString());
+                        if (value == null) {
+                          return true;
+                        }
+                        const dateObject = moment(value?.toString());
                         if (dateObject.toString() === "Invalid Date") {
                           return "Invalid Date";
                         } else {
@@ -355,43 +362,6 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
-                name="address.state"
-                displayName="State"
-                control={control}
-                errors={errors}
-                editable={false}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: false,
-                      }
-                }
-                options={States}
-                value={individual.addresses?.[0]?.state ?? ""}
-                submitting={false}
-              />
-              <MyEditableTextField
-                editing={editing}
-                setEditing={setEditing}
-                name="address.city"
-                displayName="City"
-                control={control}
-                errors={errors}
-                editable={false}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: false,
-                      }
-                }
-                value={individual.addresses?.[0]?.city ?? ""}
-                submitting={false}
-              />
-              <MyEditableTextField
-                editing={editing}
-                setEditing={setEditing}
                 name="address.line1"
                 displayName="Street Address"
                 control={control}
@@ -423,6 +393,43 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                       }
                 }
                 value={individual.addresses?.[0]?.line2 ?? ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.city"
+                displayName="City"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={individual.addresses?.[0]?.city ?? ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.state"
+                displayName="State"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                options={States}
+                value={individual.addresses?.[0]?.state ?? ""}
                 submitting={false}
               />
               <MyEditableTextField
