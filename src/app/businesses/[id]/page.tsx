@@ -76,7 +76,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
     setSubmitting(true);
 
     for (const key in data) {
-      if ((data as any)[key] === null || (data as any)[key] === "") {
+      if ((data as any)[key] === null) {
         (data as any)[key] = undefined;
       }
     }
@@ -87,6 +87,9 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
         data.businessEntityType ?? ""
       ),
     };
+    if (data.businessEntityType == null || data.businessEntityType == "") {
+      data.businessEntityType = undefined;
+    }
 
     dispatch(
       updateBusiness({
@@ -510,8 +513,8 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
-                name="address.countryCode"
-                displayName="Country Code"
+                name="address.city"
+                displayName="City"
                 control={control}
                 errors={errors}
                 editable={false}
@@ -519,10 +522,10 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
-                value={(business as any)?.addresses?.[0]?.countryCode ?? ""}
+                value={(business as any)?.addresses?.[0]?.city ?? ""}
                 submitting={false}
               />
               <MyEditableTextField
@@ -547,24 +550,6 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
-                name="address.city"
-                displayName="r"
-                control={control}
-                errors={errors}
-                editable={false}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: false,
-                      }
-                }
-                value={(business as any)?.addresses?.[0]?.city ?? ""}
-                submitting={false}
-              />
-              <MyEditableTextField
-                editing={editing}
-                setEditing={setEditing}
                 name="address.postalCode"
                 displayName="Postal Code"
                 control={control}
@@ -578,6 +563,24 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                       }
                 }
                 value={(business as any)?.addresses?.[0]?.postalCode ?? ""}
+                submitting={false}
+              />
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="address.countryCode"
+                displayName="Country Code"
+                control={control}
+                errors={errors}
+                editable={false}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={(business as any)?.addresses?.[0]?.countryCode ?? ""}
                 submitting={false}
               />
             </div>

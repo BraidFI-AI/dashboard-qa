@@ -99,7 +99,6 @@ const CreateBusinessPage = () => {
     data.businessEntityType = businessType;
     data.productId = parseInt(productId);
     data.address = addr;
-    console.log("data.formationDate:", data.formationDate);
     if (
       data.formationDate == null ||
       data.formationDate == "" ||

@@ -125,7 +125,7 @@ export interface Individual {
   status: string;
   idNumber: string;
   ssn: string;
-  dateOfBirth: number[];
+  dateOfBirth?: number[];
   idType: string;
   createdAt: number;
   updatedAt: number;
@@ -235,7 +235,7 @@ export interface Business {
   businessIdType: string;
   idNumber: string;
   dba: string;
-  businessEntityType: string;
+  businessEntityType?: string;
   formationDate: number;
   incorporationState: string;
   website: string;
