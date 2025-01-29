@@ -70,7 +70,6 @@ class RulesAndLimitsRepo {
       `/rule/search`,
       {
         accountNumber: accountNumber,
-        productId: productId,
       }
     );
     return response;
