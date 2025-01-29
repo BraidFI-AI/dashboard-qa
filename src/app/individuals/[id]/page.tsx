@@ -208,7 +208,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={individual.tcAgreed}
@@ -263,7 +263,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
@@ -325,18 +325,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
-                        validate: (value: any, formValues: any) => {
-                          const chars = value.split("");
-                          if (
-                            !(
-                              chars.filter((c: any) => c == "@").length == 1 &&
-                              chars.filter((c: any) => c == ".").length >= 1
-                            )
-                          ) {
-                            return "Invalid Email";
-                          }
-                        },
+                        required: false,
                       }
                 }
                 value={individual.email != null ? individual.email : ""}
@@ -354,9 +343,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
-                        pattern:
-                          /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+                        required: false,
                       }
                 }
                 value={
@@ -377,7 +364,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 options={States}
@@ -396,7 +383,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={individual.addresses?.[0]?.city ?? ""}
@@ -414,7 +401,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={individual.addresses?.[0]?.line1 ?? ""}
@@ -450,7 +437,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={individual.addresses?.[0]?.postalCode ?? ""}
