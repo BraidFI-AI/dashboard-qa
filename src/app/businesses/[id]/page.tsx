@@ -210,7 +210,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={mapBusinessTypeToString(
@@ -241,7 +241,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 options={States}
@@ -261,7 +261,6 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                     ? { required: false }
                     : {
                         required: true,
-                        pattern: /^[0-9]+$/,
                       }
                 }
                 value={business.idNumber ?? ""}
@@ -304,7 +303,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={business.achCompanyId ?? ""}
@@ -387,7 +386,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={business.submittedBy?.contactPersonFirstName ?? ""}
@@ -405,7 +404,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={business.submittedBy?.contactPersonLastName ?? ""}
@@ -423,18 +422,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
-                        validate: (value: any, formValues: any) => {
-                          const chars = value.split("");
-                          if (
-                            !(
-                              chars.filter((c: any) => c == "@").length == 1 &&
-                              chars.filter((c: any) => c == ".").length >= 1
-                            )
-                          ) {
-                            return "Invalid Email";
-                          }
-                        },
+                        required: false,
                       }
                 }
                 value={business.submittedBy?.contactPersonEmail ?? ""}
@@ -453,8 +441,6 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                     ? { required: false }
                     : {
                         required: false,
-                        pattern:
-                          /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
                       }
                 }
                 value={business.submittedBy?.contactPersonPhone ?? ""}
@@ -497,7 +483,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={(business as any)?.addresses?.[0]?.line1 ?? ""}
@@ -515,7 +501,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={(business as any)?.addresses?.[0]?.line2 ?? ""}
@@ -533,7 +519,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: false,
+                        required: true,
                       }
                 }
                 value={(business as any)?.addresses?.[0]?.countryCode ?? ""}
@@ -562,7 +548,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 editing={editing}
                 setEditing={setEditing}
                 name="address.city"
-                displayName="City"
+                displayName="r"
                 control={control}
                 errors={errors}
                 editable={false}
@@ -570,7 +556,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={(business as any)?.addresses?.[0]?.city ?? ""}
@@ -588,7 +574,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={(business as any)?.addresses?.[0]?.postalCode ?? ""}

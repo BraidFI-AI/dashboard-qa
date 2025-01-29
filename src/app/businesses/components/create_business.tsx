@@ -14,7 +14,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Business, BusinessAddress } from "@/core/api/ApiTypes";
 import { enqueueSnackbar } from "notistack";
 import { useAppDispatch } from "@/redux/store/store";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import MyText from "@/core/components/Text/Text";
 import { States } from "@/core/constants";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
@@ -99,7 +99,16 @@ const CreateBusinessPage = () => {
     data.businessEntityType = businessType;
     data.productId = parseInt(productId);
     data.address = addr;
-    data.formationDate = moment(data.formationDate).format("YYYY-MM-DD");
+    console.log("data.formationDate:", data.formationDate);
+    if (
+      data.formationDate == null ||
+      data.formationDate == "" ||
+      (data.formationDate as Moment).toString() == "Invalid date"
+    ) {
+      data.formationDate = undefined;
+    } else {
+      data.formationDate = moment(data.formationDate).format("YYYY-MM-DD");
+    }
     data.submittedBy = {
       contactPersonEmail: data.contactPersonEmail,
       contactPersonFirstName: data.contactPersonFirstName,
@@ -390,7 +399,6 @@ const CreateBusinessPage = () => {
                         ? { required: false }
                         : {
                             required: true,
-                            pattern: /^[0-9]+$/,
                           }
                     }
                     value=""
@@ -438,7 +446,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value=""
@@ -485,7 +493,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value=""
@@ -517,7 +525,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value=""
@@ -554,7 +562,7 @@ const CreateBusinessPage = () => {
                       submitting
                         ? { required: false }
                         : {
-                            required: true,
+                            required: false,
                           }
                     }
                     value=""
@@ -572,7 +580,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: false,
+                        required: true,
                       }
                 }
                 value=""
@@ -610,7 +618,7 @@ const CreateBusinessPage = () => {
                       submitting
                         ? { required: false }
                         : {
-                            required: true,
+                            required: false,
                           }
                     }
                     value=""
@@ -628,7 +636,7 @@ const CreateBusinessPage = () => {
                       submitting
                         ? { required: false }
                         : {
-                            required: true,
+                            required: false,
                           }
                     }
                     value=""
@@ -646,18 +654,7 @@ const CreateBusinessPage = () => {
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
-                        validate: (value: any, formValues: any) => {
-                          const chars = value.split("");
-                          if (
-                            !(
-                              chars.filter((c: any) => c == "@").length == 1 &&
-                              chars.filter((c: any) => c == ".").length >= 1
-                            )
-                          ) {
-                            return "Invalid Email";
-                          }
-                        },
+                        required: false,
                       }
                 }
                 value=""
@@ -674,8 +671,6 @@ const CreateBusinessPage = () => {
                     ? { required: false }
                     : {
                         required: false,
-                        pattern:
-                          /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
                       }
                 }
                 value=""
