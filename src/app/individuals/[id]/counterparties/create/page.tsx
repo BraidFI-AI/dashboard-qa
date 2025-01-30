@@ -24,7 +24,6 @@ import RadioButton from "@/core/components/Button/RadioButton";
 import AddIcon from "@mui/icons-material/Add";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import ItemRow from "@/core/components/Text/ItemRow";
-import { States } from "@/core/constants";
 import { createCounterparty } from "@/redux/slices/CounterpartySlice";
 import React from "react";
 
@@ -85,7 +84,17 @@ const CreateCounterpartyPage = () => {
 
     if (wireAdded) {
       data.wire = {
+        address: {
+          city: wireGetValues("address.city"),
+          countryCode: wireGetValues("address.countryCode"),
+          line1: wireGetValues("address.line1"),
+          line2: wireGetValues("address.line2"),
+          postalCode: wireGetValues("address.postalCode"),
+          state: wireGetValues("address.state"),
+        },
+
         beneficiaryAccountNumber: wireGetValues("beneficiaryAccountNumber"),
+        beneficiaryFIIdType: wireGetValues("beneficiaryFIIdType"),
         beneficiaryFIAddress: {
           city: wireGetValues("beneficiaryFIAddress.city"),
           countryCode: wireGetValues("beneficiaryFIAddress.countryCode"),
@@ -104,8 +113,11 @@ const CreateCounterpartyPage = () => {
           postalCode: wireGetValues("intermediaryFIAddress.postalCode"),
           state: wireGetValues("intermediaryFIAddress.state"),
         },
-        beneficiaryFIIdType: wireGetValues("beneficiaryFIIdType"),
+        intermediaryFIIdNumber: wireGetValues("intermediaryFIIdNumber"),
+        intermediaryFIIdType: wireGetValues("intermediaryFIIdType"),
+        intermediaryFIName: wireGetValues("intermediaryFIName"),
         receiverShortName: wireGetValues("receiverShortName"),
+        receiverRoutingNumber: wireGetValues("receiverRoutingNumber"),
         type: wireType,
       };
     }
@@ -304,7 +316,6 @@ const CreateCounterpartyPage = () => {
               ? { required: false, pattern: false, validate: null }
               : {
                   required: false,
-                  pattern: /^[0-9]+$/,
                 }
           }
           value=""
@@ -839,7 +850,6 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: true,
-                          pattern: /^[0-9]+$/,
                         }
                   }
                   value=""
@@ -856,7 +866,6 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: true,
-                          pattern: /^[0-9]+$/,
                         }
                   }
                   value=""
@@ -930,8 +939,8 @@ const CreateCounterpartyPage = () => {
                 />
                 <Box className="pb-4"></Box>
                 <MyText>State</MyText>
-                <MyControlledAutocomplete
-                  value={States[0]}
+                <MyControlledTextField
+                  value={""}
                   displayName="State"
                   name={"address.state"}
                   control={achControl}
@@ -943,7 +952,6 @@ const CreateCounterpartyPage = () => {
                           required: false,
                         }
                   }
-                  options={States}
                 />
                 <Box className="pb-4"></Box>
                 <MyText>City</MyText>
@@ -1008,7 +1016,6 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: true,
-                          pattern: /^[0-9]+$/,
                         }
                   }
                   value=""
@@ -1064,7 +1071,6 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: true,
-                          pattern: /^[0-9]+$/,
                         }
                   }
                   value=""
@@ -1098,7 +1104,6 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: false,
-                          pattern: /^[0-9]+$/,
                         }
                   }
                   value=""
@@ -1123,8 +1128,8 @@ const CreateCounterpartyPage = () => {
                 <MyText>Intermediary FI Address</MyText>
                 <Box className="pb-2"></Box>
                 <MyText>State</MyText>
-                <MyControlledAutocomplete
-                  value={States[0]}
+                <MyControlledTextField
+                  value={""}
                   displayName="State"
                   name={"intermediaryFIAddress.state"}
                   control={wireControl}
@@ -1136,7 +1141,6 @@ const CreateCounterpartyPage = () => {
                           required: false,
                         }
                   }
-                  options={States}
                 />
                 <Box className="pb-4"></Box>
                 <MyText>City</MyText>
@@ -1252,8 +1256,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: false,
-                          pattern: /^[0-9]+$/,
+                          required: true,
                         }
                   }
                   value=""
@@ -1269,7 +1272,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: false,
+                          required: true,
                         }
                   }
                   value=""
@@ -1286,7 +1289,6 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: true,
-                          pattern: /^[0-9]+$/,
                         }
                   }
                   value=""
@@ -1295,8 +1297,8 @@ const CreateCounterpartyPage = () => {
                 <MyText>Beneficiary FI Address</MyText>
                 <Box className="pb-2"></Box>
                 <MyText>State</MyText>
-                <MyControlledAutocomplete
-                  value={States[0]}
+                <MyControlledTextField
+                  value={""}
                   displayName="State"
                   name={"beneficiaryFIAddress.state"}
                   control={wireControl}
@@ -1308,7 +1310,6 @@ const CreateCounterpartyPage = () => {
                           required: false,
                         }
                   }
-                  options={States}
                 />
                 <Box className="pb-4"></Box>
                 <MyText>City</MyText>
@@ -1400,8 +1401,8 @@ const CreateCounterpartyPage = () => {
                 <MyText>Address details</MyText>
                 <Box className="pb-2"></Box>
                 <MyText>State</MyText>
-                <MyControlledAutocomplete
-                  value={States[0]}
+                <MyControlledTextField
+                  value={""}
                   displayName="State"
                   name={"address.state"}
                   control={wireControl}
@@ -1413,7 +1414,6 @@ const CreateCounterpartyPage = () => {
                           required: false,
                         }
                   }
-                  options={States}
                 />
                 <Box className="pb-4"></Box>
                 <MyText>City</MyText>
