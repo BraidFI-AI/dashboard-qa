@@ -10,27 +10,23 @@ import {
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import ItemRow from "@/core/components/Text/ItemRow";
-import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import ErrorPage from "@/core/components/error_page";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 import timestampToDate from "@/core/utils/timestampToDate";
 import { setTitle } from "@/redux/slices/AppSlice";
-import { fetchCard } from "@/redux/slices/CardManagementSlice";
 import { fetchDeveloper } from "@/redux/slices/DeveloperSlice";
 import { fetchProduct, updateProduct } from "@/redux/slices/ProductSlice";
 import { fetchProgram } from "@/redux/slices/ProgramSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import Link from "next/link";
 import { enqueueSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
-import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
 import MyTextField from "@/core/components/TextField/MyTextField";
 import { IconButton } from "@mui/material";
 import _ from "lodash";
@@ -52,6 +48,14 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   const [newEmail, setNewEmail] = useState("");
   const [emails, setEmails] = useState<{ settlementEmail: string }[]>([]);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [isEditingInterestRate, setIsEditingInterestRate] = useState(false);
+  const [isEditingInterestPayoutDate, setIsEditingInterestPayoutDate] =
+    useState(false);
+  const [
+    isEditingDuplicatePaymentCheckDays,
+    setIsEditingDuplicatePaymentCheckDays,
+  ] = useState(false);
+  const [isEditingCipConfig, setIsEditingCipConfig] = useState(false);
   const [isEditingId, setIsEditingId] = useState(false);
   const [isEditingActive, setIsEditingActive] = useState(false);
 
@@ -100,6 +104,10 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
 
       console.log(data);
 
+      if (isEditingCipConfig && data.cipConfig == "REQUIRED") {
+        data.cipConfig = null;
+      }
+
       dispatch(updateProduct({ id: parseInt(params.id), product: data })).then(
         (data: any) => {
           if (data.payload) {
@@ -114,6 +122,10 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
           setIsEditingBankName(false);
           setIsEditingEmail(false);
           setIsEditingPhone(false);
+          setIsEditingCipConfig(false);
+          setIsEditingInterestRate(false);
+          setIsEditingInterestPayoutDate(false);
+          setIsEditingDuplicatePaymentCheckDays(false);
           setRefresh(true);
         }
       );
@@ -161,7 +173,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   }, [dispatch, params.id, refresh, reset, userType]);
 
   return (
-    (<div className="pb-10">
+    <div className="pb-10">
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -338,6 +350,10 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 title="Length"
                 value={product.length?.toString() ?? 0}
               ></ItemRow>
+              <ItemRow
+                title="Created Date"
+                value={timestampToDate(product.createdAt ?? 0)}
+              ></ItemRow>
             </div>
             <div className="w-[300px]">
               {(userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) && (
@@ -361,27 +377,77 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                       link: `/configuration/developers/${product.tenantId}`,
                     }}
                   ></ItemRow>
-                  <ItemRow
-                    title="Interest Rate"
-                    value={`${
-                      ((product as any)?.interestRate as number)?.toFixed(4) ??
-                      "0.0000"
-                    }%`}
-                  ></ItemRow>
-                  <ItemRow
-                    title="Interest Payout Date"
-                    value={`${
-                      (product as any)?.interestPayDayOfMonth?.toString() ?? ""
-                    }`}
-                  ></ItemRow>
-                  <ItemRow
-                    title="Duplicate Payment Check Days"
-                    value={`${
-                      (product as any)?.duplicatePaymentDays?.toString() ?? ""
-                    }`}
-                  ></ItemRow>
+                  <MyEditableTextField
+                    editing={isEditingInterestRate}
+                    setEditing={setIsEditingInterestRate}
+                    name="interestRate"
+                    displayName="Interest Rate"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false, pattern: null }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={product?.interestRate?.toFixed(4) ?? "0.0000"}
+                    submitting={false}
+                  />
+                  <MyEditableTextField
+                    editing={isEditingInterestPayoutDate}
+                    setEditing={setIsEditingInterestPayoutDate}
+                    name="interestPayDayOfMonth"
+                    displayName="Interest Payout Date"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false, pattern: null }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={product?.interestPayDayOfMonth?.toString() ?? ""}
+                    submitting={false}
+                  />
+                  <MyEditableTextField
+                    editing={isEditingDuplicatePaymentCheckDays}
+                    setEditing={setIsEditingDuplicatePaymentCheckDays}
+                    name="duplicatePaymentDays"
+                    displayName="Duplicate Payment Check Days"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false, pattern: null }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={product?.duplicatePaymentDays?.toString() ?? ""}
+                    submitting={false}
+                  />
                 </>
               )}
+              <MyEditableTextField
+                editing={isEditingCipConfig}
+                setEditing={setIsEditingCipConfig}
+                name="cipConfig"
+                displayName="CIP Config"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={["BYPASS", "REQUIRED"]}
+                value={product?.cipConfig ?? "REQUIRED"}
+                submitting={false}
+              />
               <ItemRow
                 title="Account Type"
                 value={product.customerAccountType ?? ""}
@@ -410,10 +476,6 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 submitting={false}
               />
               <ItemRow
-                title="Created Date"
-                value={timestampToDate(product.createdAt ?? 0)}
-              ></ItemRow>
-              <ItemRow
                 title="Updated Date"
                 value={timestampToDate(product.updatedAt ?? 0)}
               ></ItemRow>
@@ -424,6 +486,10 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
             isEditingActive ||
             isEditingBankName ||
             isEditingPhone ||
+            isEditingInterestRate ||
+            isEditingInterestPayoutDate ||
+            isEditingDuplicatePaymentCheckDays ||
+            isEditingCipConfig ||
             isEditingEmail) && (
             <Box className="w-fit pt-4">
               <MyBlueButton
@@ -438,7 +504,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
           )}
         </div>
       )}
-    </div>)
+    </div>
   );
 };
 

@@ -85,6 +85,10 @@ const CreateProductPage = () => {
 
     console.log(data);
 
+    if (data.cipConfig == "REQUIRED") {
+      data.cipConfig = null;
+    }
+
     dispatch(createProduct(data)).then((d: any) => {
       if (d.payload != null) {
         enqueueSnackbar("Product Created Successfully", {
@@ -261,6 +265,23 @@ const CreateProductPage = () => {
                       }
                 }
                 value=""
+              />
+              <Box className="pb-4"></Box>
+              <MyText>CIP Config</MyText>
+              <MyControlledAutocomplete
+                name="cipConfig"
+                displayName="CIP Config"
+                control={control}
+                errors={errors}
+                options={["BYPASS", "REQUIRED"]}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={"REQUIRED"}
               />
               <Box className="pb-4"></Box>
               <MyText>Is Active</MyText>
