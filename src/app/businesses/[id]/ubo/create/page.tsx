@@ -293,6 +293,92 @@ const CreateUBOPage = () => {
         value=""
       />
       <div className="h-4"></div>
+      <MyText size="sm">Address Details</MyText>
+      <div className="h-2"></div>
+      <MyText>City</MyText>
+      <MyControlledTextField
+        name="address.city"
+        displayName="City"
+        control={control}
+        errors={errors}
+        rules={
+          submitting
+            ? { required: false }
+            : {
+                required: true,
+              }
+        }
+        value=""
+      />
+      <div className="h-4"></div>
+      <MyText>State</MyText>
+      <MyControlledTextField
+        name="address.state"
+        displayName="State"
+        control={control}
+        errors={errors}
+        rules={
+          submitting
+            ? { required: false }
+            : {
+                required: true,
+              }
+        }
+        value=""
+      />
+      <div className="h-4"></div>
+      <MyText>Street Address</MyText>
+      <MyControlledTextField
+        name="address.line1"
+        displayName="Street Address"
+        control={control}
+        errors={errors}
+        rules={
+          submitting
+            ? { required: false }
+            : {
+                required: true,
+              }
+        }
+        value=""
+      />
+      <div className="h-4"></div>
+      <MyText>Apartment, suite, or floor</MyText>
+      <MyControlledTextField
+        name="address.line2"
+        displayName="Apartment, suite, or floor"
+        control={control}
+        errors={errors}
+        rules={
+          submitting
+            ? { required: false }
+            : {
+                required: false,
+              }
+        }
+        value=""
+      />
+      <div className="h-4"></div>
+      <MyText>Postal Code</MyText>
+      <MyControlledTextField
+        name="address.postalCode"
+        displayName="Postal Code"
+        control={control}
+        errors={errors}
+        rules={submitting ? { required: false } : { required: false }}
+        value=""
+      />
+      <div className="h-4"></div>
+      <MyText>Country Code</MyText>
+      <MyControlledTextField
+        name="address.countryCode"
+        displayName="Country Code"
+        control={control}
+        errors={errors}
+        rules={submitting ? { required: false } : { required: true }}
+        value=""
+      />
+      <div className="h-4"></div>
       <div className="w-fit">
         <MyBlueButton
           submitting={submitting}

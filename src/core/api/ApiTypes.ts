@@ -213,6 +213,14 @@ export interface CreateUBO {
   dateOfBirth: string;
   ssn: string;
   idNumber: string;
+  address: {
+    city?: string | null;
+    countryCode?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+  };
 }
 
 export interface Business {
