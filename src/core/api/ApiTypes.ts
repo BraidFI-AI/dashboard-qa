@@ -389,6 +389,10 @@ export interface Product {
   currency?: string | null;
   accountingCurrency?: string | null;
   programId?: number | null;
+  interestRate?: number | null;
+  interestPayDayOfMonth?: number | null;
+  duplicatePaymentCheckDays?: number | null;
+  cipConfig?: string | null;
   type?: string | null;
   customerAccountType?: string | null;
   defaultCardManagementId?: number | null;
@@ -397,7 +401,7 @@ export interface Product {
   bankName?: string | null;
   settlementPhoneNumber?: string | null;
   productSettlementEmails?: { settlementEmail: string }[] | null;
-  duplicatePaymentDays?: null;
+  duplicatePaymentDays?: number | null;
   createdAt?: number | null;
   updatedAt?: number | null;
 }
@@ -868,6 +872,7 @@ export interface UpdateProduct {
   settlementPhoneNumber?: string | null;
   productSettlementEmails?: { settlementEmail: string }[] | null;
   productName: string;
+  cipConfig?: string | null;
 }
 
 export interface CreateForm {
