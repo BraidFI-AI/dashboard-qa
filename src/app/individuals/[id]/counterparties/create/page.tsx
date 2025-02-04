@@ -1044,10 +1044,60 @@ const CreateCounterpartyPage = () => {
                   options={["DOMESTIC", "INTERNATIONAL"]}
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Receiver Short Name</MyText>
+                <MyText>Beneficiary Address details</MyText>
+                <Box className="pb-2"></Box>
+                <MyText>State</MyText>
                 <MyControlledTextField
-                  name="receiverShortName"
-                  displayName="Receiver Short Name"
+                  value={""}
+                  displayName="State"
+                  name={"address.state"}
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                />
+                <Box className="pb-4"></Box>
+                <MyText>City</MyText>
+                <MyControlledTextField
+                  name="address.city"
+                  displayName="City"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 1</MyText>
+                <MyControlledTextField
+                  name="address.line1"
+                  displayName="Account line 1"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address line 2</MyText>
+                <MyControlledTextField
+                  name="address.line2"
+                  displayName="Account line 2"
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -1055,6 +1105,44 @@ const CreateCounterpartyPage = () => {
                       ? { required: false, pattern: null }
                       : {
                           required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Postal Code</MyText>
+                <MyControlledTextField
+                  name="address.postalCode"
+                  displayName="Postal Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Country Code</MyText>
+                <MyControlledTextField
+                  name="address.countryCode"
+                  displayName="Country Code"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: true,
+                          validate: (value: string, _: any) => {
+                            const countryCodeRegex = /^[A-Z]{2}$/;
+                            if (!countryCodeRegex.test(value) || value == "") {
+                              return "Country code must be 2 uppercase letters";
+                            }
+                          },
                         }
                   }
                   value=""
@@ -1076,27 +1164,10 @@ const CreateCounterpartyPage = () => {
                   value=""
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Intermediary FI ID Type</MyText>
-                <MyControlledAutocomplete
-                  name="intermediaryFIIdType"
-                  displayName="Intermediary FI ID Type"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: false,
-                        }
-                  }
-                  options={["ABA", "BIC"]}
-                  value="ABA"
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Intermediary FI ID Number</MyText>
+                <MyText>Receiver Bank Short Name</MyText>
                 <MyControlledTextField
-                  name="intermediaryFIIdNumber"
-                  displayName="Intermediary FI ID Number"
+                  name="receiverShortName"
+                  displayName="Receiver Bank Short Name"
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -1109,147 +1180,10 @@ const CreateCounterpartyPage = () => {
                   value=""
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Intermediary FI Name</MyText>
+                <MyText>Beneficiary FI Account Number</MyText>
                 <MyControlledTextField
-                  name="intermediaryFIName"
-                  displayName="Intermediary FI Name"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: false,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Intermediary FI Address</MyText>
-                <Box className="pb-2"></Box>
-                <MyText>State</MyText>
-                <MyControlledTextField
-                  value={""}
-                  displayName="State"
-                  name={"intermediaryFIAddress.state"}
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: false,
-                        }
-                  }
-                />
-                <Box className="pb-4"></Box>
-                <MyText>City</MyText>
-                <MyControlledTextField
-                  name="intermediaryFIAddress.city"
-                  displayName="City"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: false,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Address line 1</MyText>
-                <MyControlledTextField
-                  name="intermediaryFIAddress.line1"
-                  displayName="Account line 1"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: false,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Address line 2</MyText>
-                <MyControlledTextField
-                  name="intermediaryFIAddress.line2"
-                  displayName="Account line 2"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: false,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Postal Code</MyText>
-                <MyControlledTextField
-                  name="intermediaryFIAddress.postalCode"
-                  displayName="Postal Code"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: false,
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Country Code</MyText>
-                <MyControlledTextField
-                  name="intermediaryFIAddress.countryCode"
-                  displayName="Country Code"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false, pattern: null }
-                      : {
-                          required: false,
-                          validate: (value: string, _: any) => {
-                            const countryCodeRegex = /^[A-Z]{2}$/;
-                            if (!countryCodeRegex.test(value) || value == "") {
-                              return "Country code must be 2 uppercase letters";
-                            }
-                          },
-                        }
-                  }
-                  value=""
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Beneficiary FI ID Type</MyText>
-                <MyControlledAutocomplete
-                  name="beneficiaryFIIdType"
-                  displayName="Beneficiary FI ID Type"
-                  control={wireControl}
-                  errors={wireErrors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
-                        }
-                  }
-                  options={["ABA", "BIC"]}
-                  value="ABA"
-                />
-                <Box className="pb-4"></Box>
-                <MyText>Beneficiary FI ID Number</MyText>
-                <MyControlledTextField
-                  name="beneficiaryIdNumber"
-                  displayName="Beneficiary FI ID Number"
+                  name="beneficiaryAccountNumber"
+                  displayName="Beneficiary FI Account Number"
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -1278,10 +1212,27 @@ const CreateCounterpartyPage = () => {
                   value=""
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Beneficiary FI Account Number</MyText>
+                <MyText>Beneficiary FI ID Type</MyText>
+                <MyControlledAutocomplete
+                  name="beneficiaryFIIdType"
+                  displayName="Beneficiary FI ID Type"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                        }
+                  }
+                  options={["ABA", "BIC"]}
+                  value="ABA"
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Beneficiary FI ID Number</MyText>
                 <MyControlledTextField
-                  name="beneficiaryAccountNumber"
-                  displayName="Beneficiary FI Account Number"
+                  name="beneficiaryIdNumber"
+                  displayName="Beneficiary FI ID Number"
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -1398,13 +1349,78 @@ const CreateCounterpartyPage = () => {
                   value=""
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Address details</MyText>
+                <MyText>Country Code</MyText>
+                <MyControlledTextField
+                  name="beneficiaryFIAddress.type"
+                  displayName="Address Type"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: wireType == "INTERNATIONAL" ? true : false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI Name</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIName"
+                  displayName="Intermediary FI Name"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI ID Type</MyText>
+                <MyControlledAutocomplete
+                  name="intermediaryFIIdType"
+                  displayName="Intermediary FI ID Type"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  options={["ABA", "BIC"]}
+                  value="ABA"
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI ID Number</MyText>
+                <MyControlledTextField
+                  name="intermediaryFIIdNumber"
+                  displayName="Intermediary FI ID Number"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Intermediary FI Address</MyText>
                 <Box className="pb-2"></Box>
                 <MyText>State</MyText>
                 <MyControlledTextField
                   value={""}
                   displayName="State"
-                  name={"address.state"}
+                  name={"intermediaryFIAddress.state"}
                   control={wireControl}
                   errors={wireErrors}
                   rules={
@@ -1418,7 +1434,7 @@ const CreateCounterpartyPage = () => {
                 <Box className="pb-4"></Box>
                 <MyText>City</MyText>
                 <MyControlledTextField
-                  name="address.city"
+                  name="intermediaryFIAddress.city"
                   displayName="City"
                   control={wireControl}
                   errors={wireErrors}
@@ -1426,7 +1442,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1434,7 +1450,7 @@ const CreateCounterpartyPage = () => {
                 <Box className="pb-4"></Box>
                 <MyText>Address line 1</MyText>
                 <MyControlledTextField
-                  name="address.line1"
+                  name="intermediaryFIAddress.line1"
                   displayName="Account line 1"
                   control={wireControl}
                   errors={wireErrors}
@@ -1442,7 +1458,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1450,7 +1466,7 @@ const CreateCounterpartyPage = () => {
                 <Box className="pb-4"></Box>
                 <MyText>Address line 2</MyText>
                 <MyControlledTextField
-                  name="address.line2"
+                  name="intermediaryFIAddress.line2"
                   displayName="Account line 2"
                   control={wireControl}
                   errors={wireErrors}
@@ -1466,7 +1482,7 @@ const CreateCounterpartyPage = () => {
                 <Box className="pb-4"></Box>
                 <MyText>Postal Code</MyText>
                 <MyControlledTextField
-                  name="address.postalCode"
+                  name="intermediaryFIAddress.postalCode"
                   displayName="Postal Code"
                   control={wireControl}
                   errors={wireErrors}
@@ -1474,7 +1490,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1482,7 +1498,7 @@ const CreateCounterpartyPage = () => {
                 <Box className="pb-4"></Box>
                 <MyText>Country Code</MyText>
                 <MyControlledTextField
-                  name="address.countryCode"
+                  name="intermediaryFIAddress.countryCode"
                   displayName="Country Code"
                   control={wireControl}
                   errors={wireErrors}
@@ -1490,17 +1506,12 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
-                          validate: (value: string, _: any) => {
-                            const countryCodeRegex = /^[A-Z]{2}$/;
-                            if (!countryCodeRegex.test(value) || value == "") {
-                              return "Country code must be 2 uppercase letters";
-                            }
-                          },
+                          required: false,
                         }
                   }
                   value=""
                 />
+                <Box className="pb-4"></Box>
               </>
             )}
             <Box className="pb-6"></Box>
