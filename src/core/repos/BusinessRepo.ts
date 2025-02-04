@@ -45,6 +45,7 @@ class BusinessRepo {
       ssn: ubo.ssn,
       dateOfBirth: ubo.dateOfBirth,
       idNumber: ubo.idNumber,
+      address: ubo.address,
     };
 
     const indv = await this.apiClient.http<Individual>(
