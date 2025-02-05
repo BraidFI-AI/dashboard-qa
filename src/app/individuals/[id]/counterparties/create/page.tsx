@@ -1190,7 +1190,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
                   value=""
@@ -1206,7 +1206,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
                   value=""
@@ -1339,9 +1339,14 @@ const CreateCounterpartyPage = () => {
                       : {
                           required: wireType == "INTERNATIONAL" ? true : false,
                           validate: (value: string, _: any) => {
-                            const countryCodeRegex = /^[A-Z]{2}$/;
-                            if (!countryCodeRegex.test(value) || value == "") {
-                              return "Country code must be 2 uppercase letters";
+                            if (wireType == "INTERNATIONAL") {
+                              const countryCodeRegex = /^[A-Z]{2}$/;
+                              if (
+                                !countryCodeRegex.test(value) ||
+                                value == ""
+                              ) {
+                                return "Country code must be 2 uppercase letters";
+                              }
                             }
                           },
                         }
@@ -1349,7 +1354,7 @@ const CreateCounterpartyPage = () => {
                   value=""
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Country Code</MyText>
+                <MyText>Address Type</MyText>
                 <MyControlledTextField
                   name="beneficiaryFIAddress.type"
                   displayName="Address Type"
