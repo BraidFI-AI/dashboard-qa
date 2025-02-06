@@ -25,11 +25,14 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
-import { StatementType } from "@/core/constants";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE, StatementType } from "@/core/constants";
 import toDollarFormat from "@/core/utils/toDollarFormat";
+import { useSelector } from "react-redux";
 
 const StatementsPage = () => {
   const dispatch = useAppDispatch();
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const [submitting, setSubmitting] = useState(false);
   const [statementType, setStatementType] = useState(StatementType.root);
@@ -49,6 +52,8 @@ const StatementsPage = () => {
   >("loading");
 
   const [accountId, setAccountId] = useState<string | null>(null);
+
+  const [statementTypes, setStatementTypes] = useState<StatementType[]>([]);
 
   useEffect(() => {
     dispatch(fetchProgramIdsListWithNames()).then((programs: any) => {
@@ -70,6 +75,7 @@ const StatementsPage = () => {
     formState: { errors },
     getValues,
     control,
+    setValue,
     handleSubmit,
   } = useForm<{ type: string; start: string; end: string }>({
     defaultValues: {
@@ -140,6 +146,21 @@ const StatementsPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
+      setStatementTypes([
+        StatementType.root,
+        StatementType.program,
+        StatementType.product,
+        StatementType.accountNumber,
+      ]);
+    } else {
+      setStatementTypes([StatementType.product, StatementType.accountNumber]);
+      setValue("type", StatementType.product);
+      setStatementType(StatementType.product);
+    }
+  }, [userType, setValue]);
+
   return (
     <div>
       <div className="flex flex-row pb-4">
@@ -162,7 +183,9 @@ const StatementsPage = () => {
             customOnChange={(val: any) => {
               setStatementType(val);
             }}
-            options={Object.values(StatementType)}
+            options={statementTypes.map((type) => {
+              return type;
+            })}
           />
         </div>
         {statementType == StatementType.program && (
