@@ -39,6 +39,8 @@ export const ADMIN_OPS_ROLE = "admin-ops";
 export const DEVELOPER_ROLE = "developer-developer";
 export const DEVELOPER_OPS_ROLE = "developer-ops";
 export const CUSTOMER_ROLE = "customers";
+export const ADMIN_READONLY_ROLE = "admin-readonly";
+export const DEVELOPER_READONLY_ROLE = "developer-readonly";
 
 export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE];
 export const DEVELOPER_ROUTE = [
