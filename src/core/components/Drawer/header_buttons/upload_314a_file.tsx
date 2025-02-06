@@ -7,6 +7,8 @@ import { useAppDispatch } from "@/redux/store/store";
 import MyText from "../../Text/Text";
 import { enqueueSnackbar } from "notistack";
 import { upload314aFile } from "@/redux/slices/314a_slice";
+import { useSelector } from "react-redux";
+import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
 
 const Upload314AFile = () => {
   const dispatch = useAppDispatch();
@@ -15,6 +17,8 @@ const Upload314AFile = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const handleModalClose = () => {
     setModalOpen(false);
@@ -92,16 +96,18 @@ const Upload314AFile = () => {
           </div>
         </div>
       </MyModal>
-      <div className="w-fit">
-        <MyBlueButton
-          submitting={submitting}
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          Upload 314A File
-        </MyBlueButton>
-      </div>
+      {(userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) && (
+        <div className="w-fit">
+          <MyBlueButton
+            submitting={submitting}
+            onClick={() => {
+              setModalOpen(true);
+            }}
+          >
+            Upload 314A File
+          </MyBlueButton>
+        </div>
+      )}
     </>
   );
 };
