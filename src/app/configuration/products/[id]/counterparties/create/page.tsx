@@ -119,6 +119,18 @@ const CreateCounterpartyPage = () => {
         receiverRoutingNumber: wireGetValues("receiverRoutingNumber"),
         type: wireType,
       };
+
+      if (
+        wireGetValues("intermediaryFIAddress.city") == "" &&
+        wireGetValues("intermediaryFIAddress.countryCode") == "" &&
+        wireGetValues("intermediaryFIAddress.line1") == "" &&
+        wireGetValues("intermediaryFIAddress.line2") == "" &&
+        wireGetValues("intermediaryFIAddress.postalCode") == "" &&
+        wireGetValues("intermediaryFIAddress.state") == "" &&
+        wireGetValues("intermediaryFIAddress.type") == ""
+      ) {
+        data.wire.intermediaryFIAddress = undefined;
+      }
     }
 
     // if (association == "Product") {
@@ -1189,7 +1201,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
                   value=""
@@ -1205,7 +1217,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
                   value=""
@@ -1338,9 +1350,14 @@ const CreateCounterpartyPage = () => {
                       : {
                           required: wireType == "INTERNATIONAL" ? true : false,
                           validate: (value: string, _: any) => {
-                            const countryCodeRegex = /^[A-Z]{2}$/;
-                            if (!countryCodeRegex.test(value) || value == "") {
-                              return "Country code must be 2 uppercase letters";
+                            if (wireType == "INTERNATIONAL") {
+                              const countryCodeRegex = /^[A-Z]{2}$/;
+                              if (
+                                !countryCodeRegex.test(value) ||
+                                value == ""
+                              ) {
+                                return "Country code must be 2 uppercase letters";
+                              }
                             }
                           },
                         }
@@ -1348,8 +1365,8 @@ const CreateCounterpartyPage = () => {
                   value=""
                 />
                 <Box className="pb-4"></Box>
-                <MyText>Country Code</MyText>
-                <MyControlledTextField
+                <MyText>Address Type</MyText>
+                <MyControlledAutocomplete
                   name="beneficiaryFIAddress.type"
                   displayName="Address Type"
                   control={wireControl}
@@ -1361,7 +1378,8 @@ const CreateCounterpartyPage = () => {
                           required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
-                  value=""
+                  value="OTHER"
+                  options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
                 />
                 <Box className="pb-4"></Box>
                 <MyText>Intermediary FI Name</MyText>
@@ -1509,6 +1527,23 @@ const CreateCounterpartyPage = () => {
                         }
                   }
                   value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address Type</MyText>
+                <MyControlledAutocomplete
+                  name="intermediaryFIAddress.type"
+                  displayName="Address Type"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                  options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
                 />
                 <Box className="pb-4"></Box>
               </>
