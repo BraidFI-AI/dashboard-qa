@@ -102,6 +102,7 @@ const CreateCounterpartyPage = () => {
           line2: wireGetValues("beneficiaryFIAddress.line2"),
           postalCode: wireGetValues("beneficiaryFIAddress.postalCode"),
           state: wireGetValues("beneficiaryFIAddress.state"),
+          type: wireGetValues("beneficiaryFIAddress.type"),
         },
         beneficiaryFIName: wireGetValues("beneficiaryFIName"),
         beneficiaryIdNumber: wireGetValues("beneficiaryIdNumber"),
@@ -112,6 +113,7 @@ const CreateCounterpartyPage = () => {
           line2: wireGetValues("intermediaryFIAddress.line2"),
           postalCode: wireGetValues("intermediaryFIAddress.postalCode"),
           state: wireGetValues("intermediaryFIAddress.state"),
+          type: wireGetValues("intermediaryFIAddress.type"),
         },
         intermediaryFIIdNumber: wireGetValues("intermediaryFIIdNumber"),
         intermediaryFIIdType: wireGetValues("intermediaryFIIdType"),
@@ -120,6 +122,18 @@ const CreateCounterpartyPage = () => {
         receiverRoutingNumber: wireGetValues("receiverRoutingNumber"),
         type: wireType,
       };
+
+      if (
+        wireGetValues("intermediaryFIAddress.city") == "" &&
+        wireGetValues("intermediaryFIAddress.countryCode") == "" &&
+        wireGetValues("intermediaryFIAddress.line1") == "" &&
+        wireGetValues("intermediaryFIAddress.line2") == "" &&
+        wireGetValues("intermediaryFIAddress.postalCode") == "" &&
+        wireGetValues("intermediaryFIAddress.state") == "" &&
+        wireGetValues("intermediaryFIAddress.type") == ""
+      ) {
+        data.wire.intermediaryFIAddress = undefined;
+      }
     }
 
     // if (association == "Product") {
@@ -1355,7 +1369,7 @@ const CreateCounterpartyPage = () => {
                 />
                 <Box className="pb-4"></Box>
                 <MyText>Address Type</MyText>
-                <MyControlledTextField
+                <MyControlledAutocomplete
                   name="beneficiaryFIAddress.type"
                   displayName="Address Type"
                   control={wireControl}
@@ -1367,7 +1381,8 @@ const CreateCounterpartyPage = () => {
                           required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
-                  value=""
+                  value="OTHER"
+                  options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
                 />
                 <Box className="pb-4"></Box>
                 <MyText>Intermediary FI Name</MyText>
@@ -1515,6 +1530,23 @@ const CreateCounterpartyPage = () => {
                         }
                   }
                   value=""
+                />
+                <Box className="pb-4"></Box>
+                <MyText>Address Type</MyText>
+                <MyControlledAutocomplete
+                  name="intermediaryFIAddress.type"
+                  displayName="Address Type"
+                  control={wireControl}
+                  errors={wireErrors}
+                  rules={
+                    submitting
+                      ? { required: false, pattern: null }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value=""
+                  options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
                 />
                 <Box className="pb-4"></Box>
               </>

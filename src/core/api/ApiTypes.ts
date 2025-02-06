@@ -1067,7 +1067,7 @@ export interface CreateCounterPartyWire {
   beneficiaryFIIdType?: string | null;
   beneficiaryFIName?: string | null;
   beneficiaryIdNumber?: string | null;
-  intermediaryFIAddress: {
+  intermediaryFIAddress?: {
     city?: string | null;
     countryCode?: string | null;
     line1?: string | null;
