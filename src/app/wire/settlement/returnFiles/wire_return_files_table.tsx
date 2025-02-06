@@ -151,7 +151,7 @@ const WireReturnFilesTable = () => {
               minWidth: 120,
               display: "flex",
               renderCell: (params: any) =>
-                params.row.status?.toLowerCase() == "pending" ? (
+                params.row.status?.toLowerCase() == "submitted" ? (
                   <Tooltip title="Approve Settlement" placement="right">
                     <div className="flex justify-center">
                       <MyBlueButton
