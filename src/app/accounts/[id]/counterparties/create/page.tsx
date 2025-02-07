@@ -221,6 +221,7 @@ const CreateCounterpartyPage = () => {
     },
     getValues: wireGetValues,
     control: wireControl,
+    reset: wireReset,
     handleSubmit: wireHandleSubmit,
   } = useForm<CreateCounterPartyWire>();
   const wireOnSubmit: SubmitHandler<CreateCounterPartyWire> = (
@@ -580,6 +581,10 @@ const CreateCounterpartyPage = () => {
                 edge="end"
                 onClick={() => {
                   setWireAdded(false);
+                  setWireType("DOMESTIC");
+                  wireReset({
+                    type: "DOMESTIC",
+                  });
                 }}
               >
                 <DeleteOutlineRoundedIcon />
@@ -1190,7 +1195,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: true,
                         }
                   }
                   value=""
@@ -1239,7 +1244,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
                   value=""
