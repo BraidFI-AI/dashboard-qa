@@ -15,7 +15,7 @@ const Compliance314aPage = () => {
   useEffect(() => {
     dispatch(setTitle("314A"));
     dispatch(fetch314aData(true));
-  }, []);
+  }, [dispatch]);
 
   return <Compliance314aTable />;
 };
