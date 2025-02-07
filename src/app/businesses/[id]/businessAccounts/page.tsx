@@ -62,7 +62,7 @@ const Accounts = () => {
       setstatus(business.status);
       setRefreshAccounts(true);
     }
-  }, [business]);
+  }, [dispatch, business]);
 
   useEffect(() => {
     if (typeof business != "string" && refreshAccounts) {
@@ -72,7 +72,7 @@ const Accounts = () => {
         }
       );
     }
-  }, [business, refreshAccounts]);
+  }, [dispatch, business, refreshAccounts]);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {
     router.push(`/accounts/${params.row.accountNumber}/`);
@@ -96,8 +96,6 @@ const Accounts = () => {
       }}
       recoveryButtonTitle="Retry"
     />
-  ) : status != "ACTIVE" ? (
-    <MyText>Business is Not Approved</MyText>
   ) : accounts.length == 0 ? (
     <MyText>No Accounts Found</MyText>
   ) : (
