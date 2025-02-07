@@ -55,8 +55,10 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import {
   ADMIN_OPS_ROLE,
+  ADMIN_READONLY_ROLE,
   ADMIN_ROLE,
   DEVELOPER_OPS_ROLE,
+  DEVELOPER_READONLY_ROLE,
   DEVELOPER_ROLE,
   SCROLLBAR_STYLE,
 } from "@/core/constants";
@@ -157,6 +159,8 @@ export default function PersistentDrawerLeft(props: any) {
 
   const userType = useSelector((state: any) => state.app.userType);
 
+  console.log("userType", userType);
+
   const openAlerts = useSelector((state: any) => state.alerts.openAlerts);
 
   const [open, setOpen] = React.useState(true);
@@ -222,6 +226,32 @@ export default function PersistentDrawerLeft(props: any) {
             ),
             path: "/settings/userManagement",
           },
+          {
+            name: "API Key",
+            icon: (
+              <KeyOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <KeyOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/settings/apikey",
+          },
+        ]}
+      />
+    );
+  } else if (
+    userType == ADMIN_READONLY_ROLE ||
+    userType == DEVELOPER_READONLY_ROLE
+  ) {
+    settingsOptions = (
+      <MyExpandableListItem
+        name="Settings"
+        path={"/settings"}
+        selected={selected}
+        setSelected={setSelcted}
+        icon={<SettingsIcon />}
+        iconFocused={<SettingsIcon focused={true} />}
+        options={[
           {
             name: "API Key",
             icon: (

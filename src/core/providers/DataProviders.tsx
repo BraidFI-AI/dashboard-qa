@@ -16,9 +16,11 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   ADMIN_OPS_ROLE,
+  ADMIN_READONLY_ROLE,
   ADMIN_ROLE,
   CUSTOMER_ROLE,
   DEVELOPER_OPS_ROLE,
+  DEVELOPER_READONLY_ROLE,
   DEVELOPER_ROLE,
 } from "../constants";
 import { fetchClearSightData } from "@/redux/slices/clear_sight_slice";
@@ -58,6 +60,10 @@ const DataProviders = (props: any) => {
         userType = DEVELOPER_OPS_ROLE;
       } else if (groups?.includes("customers")) {
         userType = CUSTOMER_ROLE;
+      } else if (groups?.includes("admin-readonly")) {
+        userType = ADMIN_READONLY_ROLE;
+      } else if (groups?.includes("developer-readonly")) {
+        userType = DEVELOPER_READONLY_ROLE;
       }
 
       dispatch(setUserType(userType));
