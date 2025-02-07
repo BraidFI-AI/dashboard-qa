@@ -22,6 +22,16 @@ const ACHReturnProcessingComponent: React.FC<
   const [rawTransactionModalOpen, setRawTransactionModalOpen] =
     useState<boolean>(false);
 
+  const [finalTransactionModalOpen, setFinalTransactionModalOpen] =
+    useState<boolean>(false);
+
+  const [
+    transactionBeingReturnedModalOpen,
+    setTransactionBeingReturnedModalOpen,
+  ] = useState<boolean>(false);
+
+  console.log("context", context);
+
   const formatTitle = (key: any) => {
     return (
       key
@@ -114,17 +124,17 @@ const ACHReturnProcessingComponent: React.FC<
           {context.finalTransaction != null && (
             <>
               <div
-                onClick={() => setRawTransactionModalOpen(true)}
+                onClick={() => setFinalTransactionModalOpen(true)}
                 className="cursor-pointer"
               >
                 <MyText size="md" primary>
                   Final Transaction
                 </MyText>
               </div>
-              {rawTransactionModalOpen && (
+              {finalTransactionModalOpen && (
                 <MyModal
-                  modalOpen={rawTransactionModalOpen}
-                  handleModalClose={() => setRawTransactionModalOpen(false)}
+                  modalOpen={finalTransactionModalOpen}
+                  handleModalClose={() => setFinalTransactionModalOpen(false)}
                 >
                   {renderObject(context.finalTransaction ?? {})}
                 </MyModal>
@@ -135,17 +145,19 @@ const ACHReturnProcessingComponent: React.FC<
           {context.transactionBeingReturned != null && (
             <>
               <div
-                onClick={() => setRawTransactionModalOpen(true)}
+                onClick={() => setTransactionBeingReturnedModalOpen(true)}
                 className="cursor-pointer"
               >
                 <MyText size="md" primary>
                   Transaction Being Returned
                 </MyText>
               </div>
-              {rawTransactionModalOpen && (
+              {transactionBeingReturnedModalOpen && (
                 <MyModal
-                  modalOpen={rawTransactionModalOpen}
-                  handleModalClose={() => setRawTransactionModalOpen(false)}
+                  modalOpen={transactionBeingReturnedModalOpen}
+                  handleModalClose={() =>
+                    setTransactionBeingReturnedModalOpen(false)
+                  }
                 >
                   {renderObject(context.transactionBeingReturned ?? {})}
                 </MyModal>
