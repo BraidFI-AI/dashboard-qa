@@ -95,6 +95,22 @@ const WireSlice = createSlice({
         }
       }
     });
+    builder.addCase(approveWireReturnSettlement.fulfilled, (state, action) => {
+      if (
+        typeof action.payload != "string" &&
+        typeof state.wireReturnFiles != "string"
+      ) {
+        const filename = action.payload.filename;
+        const updatedFilename = state.wireReturnFiles.find(
+          (e) => e.filename == filename
+        );
+
+        if (updatedFilename != undefined) {
+          const index = state.wireReturnFiles.indexOf(updatedFilename);
+          state.wireReturnFiles[index].status = "SENT";
+        }
+      }
+    });
   },
 });
 
