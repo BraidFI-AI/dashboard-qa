@@ -134,6 +134,27 @@ const CreateCounterpartyPage = () => {
       ) {
         data.wire.intermediaryFIAddress = undefined;
       }
+
+      if (
+        wireGetValues("beneficiaryFIAddress.city") == "" &&
+        wireGetValues("beneficiaryFIAddress.countryCode") == "" &&
+        wireGetValues("beneficiaryFIAddress.line1") == "" &&
+        wireGetValues("beneficiaryFIAddress.line2") == "" &&
+        wireGetValues("beneficiaryFIAddress.postalCode") == "" &&
+        wireGetValues("beneficiaryFIAddress.state") == "" &&
+        wireGetValues("beneficiaryFIAddress.type") == ""
+      ) {
+        data.wire.beneficiaryFIAddress = undefined;
+      }
+
+      for (const key in data.wire) {
+        if (
+          (data.wire as any)[key] === null ||
+          (data.wire as any)[key] === ""
+        ) {
+          (data.wire as any)[key] = undefined;
+        }
+      }
     }
 
     // if (association == "Product") {
@@ -1245,7 +1266,7 @@ const CreateCounterpartyPage = () => {
                         }
                   }
                   options={["ABA", "BIC"]}
-                  value="ABA"
+                  value=""
                 />
                 <Box className="pb-4"></Box>
                 <MyText>Beneficiary FI ID Number</MyText>
@@ -1386,7 +1407,7 @@ const CreateCounterpartyPage = () => {
                           required: wireType == "INTERNATIONAL" ? true : false,
                         }
                   }
-                  value="OTHER"
+                  value=""
                   options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
                 />
                 <Box className="pb-4"></Box>
@@ -1420,7 +1441,7 @@ const CreateCounterpartyPage = () => {
                         }
                   }
                   options={["ABA", "BIC"]}
-                  value="ABA"
+                  value=""
                 />
                 <Box className="pb-4"></Box>
                 <MyText>Intermediary FI ID Number</MyText>
