@@ -45,6 +45,14 @@ class ACHRepo {
     return response;
   }
 
+  public async approveReturnFile(filename: string) {
+    const response = await this.apiClient.http<any[]>(
+      Method.POST,
+      `/ach/returnFiles/${filename}/approve`
+    );
+    return response;
+  }
+
   public async sendFileToSFTP(filename: string) {
     const response = await this.apiClient.http<any[]>(
       Method.POST,
@@ -82,7 +90,9 @@ class ACHRepo {
     console.log(data);
     const response = await this.apiClient.http(
       Method.POST,
-      `/ach/load/inbound${filename != null && filename != '' ? `?filename=${filename}` : ""}`,
+      `/ach/load/inbound${
+        filename != null && filename != "" ? `?filename=${filename}` : ""
+      }`,
       data,
       {
         headers: {
@@ -97,7 +107,9 @@ class ACHRepo {
   public async uploadOutboundFile(data: string, filename?: string) {
     const response = await this.apiClient.http(
       Method.POST,
-      `/ach/load/outbound${filename != null && filename != '' ? `?filename=${filename}` : ""}`,
+      `/ach/load/outbound${
+        filename != null && filename != "" ? `?filename=${filename}` : ""
+      }`,
       data,
       {
         headers: {

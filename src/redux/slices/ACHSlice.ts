@@ -85,6 +85,19 @@ const ACHSlice = createSlice({
         }
       }
     });
+    builder.addCase(approveReturnFile.fulfilled, (state, action) => {
+      if (action.payload != null && typeof state.achReturnFiles != "string") {
+        const filename = action.payload;
+        const updatedFilename = state.achReturnFiles.find(
+          (e) => e.filename == filename
+        );
+
+        if (updatedFilename != undefined) {
+          const index = state.achReturnFiles.indexOf(updatedFilename);
+          state.achReturnFiles[index].status = "SENT";
+        }
+      }
+    });
     builder.addCase(sendFileToSFTP.fulfilled, (state, action) => {
       if (
         action.payload != null &&
@@ -117,6 +130,27 @@ export const sendFileToSFTP = createAsyncThunk(
       return `Error sending file to SFTP the settlement ${generateErrorMessage(
         e
       )}`;
+    }
+  }
+);
+
+export const approveReturnFile = createAsyncThunk(
+  "ach/approveReturnFile",
+  async (filename: string) => {
+    try {
+      const resp = await achRepo.approveReturnFile(filename);
+      console.log("return file approved:", resp);
+      return filename;
+    } catch (e: any) {
+      console.log("error approving the return file", e);
+      enqueueSnackbar(
+        `Error approving return file ${generateErrorMessage(e)}`,
+        {
+          variant: "error",
+          persist: true,
+        }
+      );
+      return null;
     }
   }
 );
