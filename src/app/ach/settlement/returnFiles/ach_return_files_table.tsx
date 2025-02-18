@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { ACHSettlementHistory } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
+  approveReturnFile,
   approveSettlement,
   downloadACHFile,
   downloadACHReturnFile,
@@ -217,10 +218,7 @@ const ACHReturnFilesTable = () => {
                               (send: any) => {
                                 if (typeof send.payload != "string") {
                                   dispatch(
-                                    approveSettlement({
-                                      productId: params.row.productId,
-                                      filename: params.row.filename,
-                                    })
+                                    approveReturnFile(params.row.filename)
                                   ).then((appr: any) => {
                                     updateApprovingArr(
                                       params.row.filename,
