@@ -144,10 +144,12 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
         };
       }
 
-      let wire = data.wire == null && counterparty.wire == null ? null : {};
+      let wire: any =
+        data.wire == null && counterparty.wire == null ? null : {};
       if (wire != null) {
         wire = {
           id: isEditingWire ? data?.wire?.id : counterparty?.wire?.id,
+          type: isEditingWire ? data?.wire?.type : counterparty?.wire?.type,
           custId: isEditingWire
             ? data?.wire?.custId
             : counterparty?.wire?.custId,
@@ -184,72 +186,72 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             : counterparty?.wire?.beneficiaryAccountNumber,
           beneficiaryFIAddress: {
             line1: isEditingWire
-              ? (data?.wire as any).address?.line1
-              : counterparty?.wire?.line1,
+              ? (data?.wire as any).beneficiaryFIAddress?.line1
+              : counterparty?.wire?.beneficiaryFIAddress?.line1,
             line2: isEditingWire
-              ? (data?.wire as any).address?.line2
-              : counterparty?.wire?.line2,
+              ? (data?.wire as any).beneficiaryFIAddress?.line2
+              : counterparty?.wire?.beneficiaryFIAddress?.line2,
             city: isEditingWire
-              ? (data?.wire as any).address?.city
-              : counterparty?.wire?.city,
+              ? (data?.wire as any).beneficiaryFIAddress?.city
+              : counterparty?.wire?.beneficiaryFIAddress?.city,
             state: isEditingWire
-              ? (data?.wire as any).address?.state
-              : counterparty?.wire?.state,
+              ? (data?.wire as any).beneficiaryFIAddress?.state
+              : counterparty?.wire?.beneficiaryFIAddress?.state,
             postalCode: isEditingWire
-              ? (data?.wire as any).address?.postalCode
-              : counterparty?.wire?.postalCode,
+              ? (data?.wire as any).beneficiaryFIAddress?.postalCode
+              : counterparty?.wire?.beneficiaryFIAddress?.postalCode,
             countryCode: isEditingWire
-              ? (data?.wire as any).address?.countryCode
-              : counterparty?.wire?.countryCode,
+              ? (data?.wire as any).beneficiaryFIAddress?.countryCode
+              : counterparty?.wire?.beneficiaryFIAddress?.countryCode,
             type: isEditingWire
-              ? (data?.wire as any).address?.type
-              : counterparty?.wire?.type,
+              ? (data?.wire as any).beneficiaryFIAddress?.type
+              : counterparty?.wire?.beneficiaryFIAddress?.type,
           },
           intermediaryFIAddress: {
             line1: isEditingWire
-              ? (data?.wire as any).address?.line1
-              : counterparty?.wire?.line1,
+              ? (data?.wire as any).intermediaryFIAddress?.line1
+              : counterparty?.wire?.intermediaryFIAddress?.line1,
             line2: isEditingWire
-              ? (data?.wire as any).address?.line2
-              : counterparty?.wire?.line2,
+              ? (data?.wire as any).intermediaryFIAddress?.line2
+              : counterparty?.wire?.intermediaryFIAddress?.line2,
             city: isEditingWire
-              ? (data?.wire as any).address?.city
-              : counterparty?.wire?.city,
+              ? (data?.wire as any).intermediaryFIAddress?.city
+              : counterparty?.wire?.intermediaryFIAddress?.city,
             state: isEditingWire
-              ? (data?.wire as any).address?.state
-              : counterparty?.wire?.state,
+              ? (data?.wire as any).intermediaryFIAddress?.state
+              : counterparty?.wire?.intermediaryFIAddress?.state,
             postalCode: isEditingWire
-              ? (data?.wire as any).address?.postalCode
-              : counterparty?.wire?.postalCode,
+              ? (data?.wire as any).intermediaryFIAddress?.postalCode
+              : counterparty?.wire?.intermediaryFIAddress?.postalCode,
             countryCode: isEditingWire
-              ? (data?.wire as any).address?.countryCode
-              : counterparty?.wire?.countryCode,
+              ? (data?.wire as any).intermediaryFIAddress?.countryCode
+              : counterparty?.wire?.intermediaryFIAddress?.countryCode,
             type: isEditingWire
-              ? (data?.wire as any).address?.type
-              : counterparty?.wire?.type,
+              ? (data?.wire as any).intermediaryFIAddress?.type
+              : counterparty?.wire?.intermediaryFIAddress?.type,
           },
           address: {
             line1: isEditingWire
               ? (data?.wire as any).address?.line1
-              : counterparty?.wire?.line1,
+              : counterparty?.wire?.address?.line1,
             line2: isEditingWire
               ? (data?.wire as any).address?.line2
-              : counterparty?.wire?.line2,
+              : counterparty?.wire?.address?.line2,
             city: isEditingWire
               ? (data?.wire as any).address?.city
-              : counterparty?.wire?.city,
+              : counterparty?.wire?.address?.city,
             state: isEditingWire
               ? (data?.wire as any).address?.state
-              : counterparty?.wire?.state,
+              : counterparty?.wire?.address?.state,
             postalCode: isEditingWire
               ? (data?.wire as any).address?.postalCode
-              : counterparty?.wire?.postalCode,
+              : counterparty?.wire?.address?.postalCode,
             countryCode: isEditingWire
               ? (data?.wire as any).address?.countryCode
-              : counterparty?.wire?.countryCode,
+              : counterparty?.wire?.address?.countryCode,
             type: isEditingWire
               ? (data?.wire as any).address?.type
-              : counterparty?.wire?.type,
+              : counterparty?.wire?.address?.type,
           },
           instrumentType: isEditingWire
             ? data?.wire?.instrumentType
@@ -269,6 +271,49 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             ? data?.wire?.updatedAt
             : counterparty?.wire?.updatedAt,
         };
+
+        if (
+          (wire?.intermediaryFIAddress?.city == null ||
+            wire?.intermediaryFIAddress?.city == "") &&
+          (wire?.intermediaryFIAddress?.countryCode == null ||
+            wire?.intermediaryFIAddress?.countryCode == "") &&
+          (wire?.intermediaryFIAddress?.line1 == null ||
+            wire?.intermediaryFIAddress?.line1 == "") &&
+          (wire?.intermediaryFIAddress?.line2 == null ||
+            wire?.intermediaryFIAddress?.line2 == "") &&
+          (wire?.intermediaryFIAddress?.postalCode == null ||
+            wire?.intermediaryFIAddress?.postalCode == "") &&
+          (wire?.intermediaryFIAddress?.state == null ||
+            wire?.intermediaryFIAddress?.state == "") &&
+          (wire?.intermediaryFIAddress?.type == null ||
+            wire?.intermediaryFIAddress?.type == "")
+        ) {
+          wire.intermediaryFIAddress = undefined;
+        }
+        if (
+          (wire?.beneficiaryFIAddress?.city == null ||
+            wire?.beneficiaryFIAddress?.city == "") &&
+          (wire?.beneficiaryFIAddress?.countryCode == null ||
+            wire?.beneficiaryFIAddress?.countryCode == "") &&
+          (wire?.beneficiaryFIAddress?.line1 == null ||
+            wire?.beneficiaryFIAddress?.line1 == "") &&
+          (wire?.beneficiaryFIAddress?.line2 == null ||
+            wire?.beneficiaryFIAddress?.line2 == "") &&
+          (wire?.beneficiaryFIAddress?.postalCode == null ||
+            wire?.beneficiaryFIAddress?.postalCode == "") &&
+          (wire?.beneficiaryFIAddress?.state == null ||
+            wire?.beneficiaryFIAddress?.state == "") &&
+          (wire?.beneficiaryFIAddress?.type == null ||
+            wire?.beneficiaryFIAddress?.type == "")
+        ) {
+          wire.beneficiaryFIAddress = undefined;
+        }
+
+        for (const key in wire) {
+          if ((wire as any)[key] === null || (wire as any)[key] === "") {
+            (wire as any)[key] = null;
+          }
+        }
       }
 
       let braid = data.braid == null && counterparty.braid == null ? null : {};
