@@ -158,13 +158,15 @@ export const fetchUsers = createAsyncThunk(
       );
       console.log("users", users);
 
-      if (users._metadata?.paginations?.next != null) {
-        thunkAPI.dispatch(fetchUsers(users._metadata.paginations.next));
+      console.log("fetching next page", users._metadata?.pagination?.next);
+      if (users._metadata?.pagination?.next != null) {
+        console.log("fetching next page");
+        thunkAPI.dispatch(fetchUsers(users._metadata.pagination.next));
       }
 
       return {
         users: users.users,
-        nextToken: users._metadata?.paginations?.next ?? "",
+        nextToken: users._metadata?.pagination?.next ?? "",
       };
     } catch (e: any) {
       let errorMessage = "Error fetching users! ";

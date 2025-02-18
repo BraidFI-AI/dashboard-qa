@@ -1285,7 +1285,7 @@ export interface User {
 export interface UserResponse {
   users: User[];
   _metadata: {
-    paginations: {
+    pagination: {
       next: string;
     };
   };
