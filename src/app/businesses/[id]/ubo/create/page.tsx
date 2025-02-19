@@ -217,14 +217,6 @@ const CreateUBOPage = () => {
             : {
                 required: true,
                 pattern: /^[0-9]+$/,
-                validate: (value: any, formValues: any) => {
-                  if (parseInt(value) && parseInt(value) > 100) {
-                    return "Ownership percentage cannot be greater than 100";
-                  }
-                  if ((parseInt(value) && parseInt(value) < 25) || value == 0) {
-                    return "Ownership percentage should at least be 25";
-                  }
-                },
               }
         }
         value=""
@@ -276,16 +268,6 @@ const CreateUBOPage = () => {
             const dateObject = moment(value.toString());
             if (dateObject.toString() === "Invalid Date") {
               return "Invalid Date";
-            } else {
-              const now = moment();
-
-              if (now.diff(dateObject, "years") < 18) {
-                return "Date of birth cannot be less than 18 years";
-              }
-
-              if (now.diff(dateObject, "days") < 0) {
-                return "Date of birth cannot be greater than current date";
-              }
             }
             return true;
           },
