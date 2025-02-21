@@ -52,6 +52,7 @@
     "react-json-tree": "^0.18.0",
     "react-pdf": "^9.1.0",
     "react-redux": "^8.1.2",
+    "react-xml-viewer": "^2.0.4",
     "server-only": "^0.0.1",
     "tailwind-scrollbar": "^3.0.5",
     "tailwind-scrollbar-hide": "^1.1.7",

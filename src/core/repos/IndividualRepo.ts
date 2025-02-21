@@ -225,6 +225,13 @@ class IndividualRepo {
       individual
     );
   }
+
+  public async fetchCIPStatus(id: number) {
+    return await this.apiClient.http<any>(
+      Method.GET,
+      `/identity-verification/${id}`
+    );
+  }
 }
 
 export default IndividualRepo;
