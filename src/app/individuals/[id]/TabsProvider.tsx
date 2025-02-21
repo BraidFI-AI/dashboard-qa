@@ -22,6 +22,10 @@ const TabsProvider = (props: any) => {
       path: `/individuals/${parseInt(params.id.toString())}`,
     },
     {
+      name: "CIP",
+      path: `/individuals/${parseInt(params.id.toString())}/cip`,
+    },
+    {
       name: "External Account",
       path: `/individuals/${parseInt(params.id.toString())}/externalAccount`,
     },
@@ -56,6 +60,8 @@ const TabsProvider = (props: any) => {
       setCurrentTab(
         tabs.findIndex((tab) => tab.path.includes("externalAccount"))
       );
+    } else if (pathname.includes("cip")) {
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("cip")));
     } else if (pathname.includes("individualAccounts")) {
       setCurrentTab(
         tabs.findIndex((tab) => tab.path.includes("individualAccounts"))

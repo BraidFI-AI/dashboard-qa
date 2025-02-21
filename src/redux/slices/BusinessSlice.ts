@@ -202,6 +202,21 @@ export const createBusiness = createAsyncThunk(
   }
 );
 
+export const fetchCIPStatus = createAsyncThunk(
+  "business/fetchCIPStatus",
+  async (id: string) => {
+    try {
+      const acc = await businessRepo.fetchCIPStatus(id);
+
+      console.log("CIP status:", acc);
+
+      return acc;
+    } catch (e: any) {
+      return `Error fetching CIP status ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchUBOs = createAsyncThunk(
   "business/fetchUBOs",
   async (id: string) => {

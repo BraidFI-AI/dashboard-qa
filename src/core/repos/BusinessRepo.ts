@@ -158,6 +158,15 @@ class BusinessRepo {
     return submission;
   }
 
+  public async fetchCIPStatus(id: string) {
+    const status = await this.apiClient.http<any>(
+      Method.GET,
+      `/identity-verification/${id}`
+    );
+
+    return status;
+  }
+
   public async fetchBusinessAccountsBalance(id: number) {
     const accounts = await this.apiClient.http<CustomerAccount[]>(
       Method.GET,

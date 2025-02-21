@@ -651,6 +651,17 @@ export const updateIndividual = createAsyncThunk(
   }
 );
 
+export const fetchIndividualCIPStatus = createAsyncThunk(
+  "individual/fetchIndividualCIPStatus",
+  async (id: number) => {
+    try {
+      return await individualRepo.fetchCIPStatus(id);
+    } catch (e: any) {
+      return `Error fetching CIP status ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const approveIndividual = createAsyncThunk(
   "individual/approveIndividual",
   async (id: number) => {
