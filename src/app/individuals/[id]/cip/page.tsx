@@ -81,17 +81,15 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col justify-between h-fit">
           <div className="flex flex-row justify-between w-[400px]">
             <div className="flex flex-row pb-6 items-center">
-              <MyText>Type</MyText>
+              <MyText>Is Developer Initiated</MyText>
               {cipStatus.isDeveloperInitiated ? (
                 <LabelBox color={"gray"} fill>
-                  Developer Initiated
+                  True
                 </LabelBox>
               ) : (
-                cipStatus.resultType && (
-                  <LabelBox color={"gray"} fill>
-                    {cipStatus.resultType}
-                  </LabelBox>
-                )
+                <LabelBox color={"gray"} fill>
+                  False
+                </LabelBox>
               )}
             </div>
             <div className="flex flex-row items-center">
