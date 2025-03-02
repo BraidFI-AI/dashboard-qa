@@ -75,14 +75,22 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
           }}
           recoveryButtonTitle="Retry"
         />
+      ) : cipStatus.cipStatus == null ? (
+        <MyText>No CIP Information found</MyText>
       ) : (
         <div className="flex flex-col justify-between h-fit">
           <div className="flex flex-row justify-between w-[400px]">
             <div className="flex flex-row pb-6 items-center">
-              <MyText>Type</MyText>
-              {cipStatus.resultType && (
+              <div className="pr-2">
+                <MyText>Is Developer Initiated</MyText>
+              </div>
+              {cipStatus.isDeveloperInitiated ? (
                 <LabelBox color={"gray"} fill>
-                  {cipStatus.resultType}
+                  True
+                </LabelBox>
+              ) : (
+                <LabelBox color={"gray"} fill>
+                  False
                 </LabelBox>
               )}
             </div>
