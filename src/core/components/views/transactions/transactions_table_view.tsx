@@ -347,8 +347,11 @@ const TransactionTableView: React.FC<TransactionTableViewProps> = ({
         }
         customId={(row: Transaction) => row.customUUID}
         handleRowClick={(params: any) => {
-          setSelectedTransaction(params.row);
-          setModalOpen(true);
+          // setSelectedTransaction(params.row);
+          // setModalOpen(true);
+          router.push(
+            `/transactions/transactionHistory/${params.row.paymentId}`
+          );
         }}
         handleCellClick={(
           params: GridCellParams,

@@ -700,6 +700,7 @@ export interface SubmissionAnswerAnswer {
 
 export interface Transaction {
   ach?: any | null;
+  wire?: any | null;
   customUUID: string;
   customerId?: number | null;
   customerType?: string | null;
