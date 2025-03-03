@@ -16,3 +16,12 @@ export function enumTextToReadableText(text: string) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
+
+export function formatTitle(key: any) {
+  return (
+    key
+      ?.split(/(?=[A-Z])/)
+      ?.map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
+      ?.join(" ") ?? ""
+  );
+}
