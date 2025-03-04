@@ -84,7 +84,7 @@ export default function TransactionDetails({
               Alerts
             </MyText>
             <div>
-              {(transaction as any).alerts.length != null &&
+              {(transaction as any).alerts != null &&
               (transaction as any).alerts.length > 0 ? (
                 (transaction as any).alerts.map((alert: any, index: number) => (
                   <MyLinkText
