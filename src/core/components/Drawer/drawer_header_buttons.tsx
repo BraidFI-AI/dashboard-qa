@@ -18,6 +18,8 @@ import CreateIndividualAccount from "../views/account/create_individual_account"
 import WhitelistDeveloperID from "./header_buttons/white_developer_id";
 import WireRunReturnSettlementButton from "./header_buttons/wire_run_return_settlement";
 import Upload314AFile from "./header_buttons/upload_314a_file";
+import ReturnTransactionButton from "./header_buttons/return_transaction";
+import CancelTransactionButton from "./header_buttons/cancel_transaction";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -59,6 +61,13 @@ const DrawerHeaderButtons = () => {
       <WireRunReturnSettlementButton />
     )) ||
     (pathname == "/wire/processing" && <ProcessInboundWire />) ||
+    (pathname == `/transactions/transactionHistory/${params.id}` && (
+      <div className="flex flex-row">
+        <ReturnTransactionButton />
+        <div className="w-4" />
+        <CancelTransactionButton />
+      </div>
+    )) ||
     (pathname == `/alerts-and-cases/alerts/${params.id}` && (
       <div className="flex flex-row">
         <EsclateAlertButton />

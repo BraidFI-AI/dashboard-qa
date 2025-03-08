@@ -13,6 +13,7 @@ import { SCROLLBAR_STYLE } from "@/core/constants";
 import { TransactionTimeline } from "./components/transaction_timeline";
 import AchDetails from "./components/ach_details";
 import WireDetails from "./components/wire_details";
+import { useSelector } from "react-redux";
 
 export default function TransactionHistoryPage() {
   const params = useParams();
@@ -22,9 +23,9 @@ export default function TransactionHistoryPage() {
   const columnRef = useRef<HTMLDivElement>(null);
   const [columnHeight, setColumnHeight] = useState<number | null>(null);
 
-  const [transaction, setTransaction] = useState<
-    "loading" | "not_found" | Transaction
-  >("loading");
+  const transactions: "loading" | string | Transaction[] = useSelector(
+    (state: any) => state.transaction.transactions
+  );
 
   useEffect(() => {
     dispatch(setTitle("Transaction Details"));
@@ -35,65 +36,16 @@ export default function TransactionHistoryPage() {
           paymentId: params.id.toString() ?? "",
         },
       })
-    ).then((data: any) => {
-      if (typeof data.payload == "string") {
-        setTransaction(data.payload);
-      } else if (data.payload?.transactions?.length > 0) {
-        setTransaction(data.payload.transactions[0]);
-      } else {
-        setTransaction("not_found");
-      }
-    });
+    );
   }, [dispatch, params]);
-
-  const calculateHeight = useCallback(() => {
-    const column = columnRef.current;
-    if (!column) return null;
-
-    // Calculate total height of children, accounting for margin/padding
-    const children = Array.from(column.children);
-    const totalHeight = children.reduce((sum, child) => {
-      // Use getBoundingClientRect to get precise height including margins
-      const rect = child.getBoundingClientRect();
-      return sum + rect.height;
-    }, 0);
-
-    return totalHeight;
-  }, []);
-
-  useEffect(() => {
-    const column = columnRef.current;
-    if (!column) return;
-
-    // Create a ResizeObserver to track height changes
-    const resizeObserver = new ResizeObserver(() => {
-      const newHeight = calculateHeight();
-      setColumnHeight(newHeight);
-    });
-
-    // Observe each child to capture height changes in nested components
-    const children = Array.from(column.children);
-    children.forEach((child) => resizeObserver.observe(child));
-
-    // Initial height calculation
-    const initialHeight = calculateHeight();
-    setColumnHeight(initialHeight);
-
-    // Cleanup
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [calculateHeight, transaction]);
 
   return (
     <div>
-      {transaction == "loading" ? (
+      {transactions == "loading" ? (
         <MyCircularProgressIndicator />
-      ) : transaction == "not_found" ? (
-        <div>Transaction not found</div>
-      ) : typeof transaction == "string" ? (
+      ) : typeof transactions == "string" ? (
         <ErrorPage
-          error={transaction}
+          error={transactions}
           recoveryButtonTitle="Retry"
           recoveryButtonOnClick={() => {
             dispatch(
@@ -102,45 +54,37 @@ export default function TransactionHistoryPage() {
                   paymentId: params.id.toString() ?? "",
                 },
               })
-            ).then((data: any) => {
-              if (typeof data.payload == "string") {
-                setTransaction(data.payload);
-              } else if (data.payload?.transactions?.length > 0) {
-                setTransaction(data.payload.transactions[0]);
-              } else {
-                setTransaction("not_found");
-              }
-            });
+            );
           }}
         />
+      ) : transactions?.length == 0 ? (
+        <div>Transaction not found</div>
       ) : (
         <div className={`${SCROLLBAR_STYLE}`}>
           <div className="min-w-[1026px] flex flex-row">
-            <div ref={columnRef} className="w-full">
-              <TransactionDetails transaction={transaction} />
+            <div className="w-full">
+              <div>
+                <TransactionDetails transaction={transactions?.[0]} />
+              </div>
+
+              {transactions?.[0]?.ach != null && (
+                <>
+                  <div className="h-[10px]" />
+                  <AchDetails transaction={transactions?.[0]} />
+                </>
+              )}
+              {transactions?.[0]?.wire != null && (
+                <>
+                  <div className="h-[10px]" />
+                  <WireDetails transaction={transactions?.[0]} />
+                </>
+              )}
             </div>
-            <div className="min-w-[10px]" />
-            <div
-              style={{
-                height: columnHeight ? `${columnHeight}px` : "auto",
-                maxHeight: columnHeight ? `${columnHeight}px` : "none",
-              }}
-            >
-              <TransactionTimeline transaction={transaction} />
+            <div className="pr-[10px]" />
+            <div>
+              <TransactionTimeline transaction={transactions?.[0]} />
             </div>
           </div>
-          {transaction.ach != null && (
-            <>
-              <div className="h-[20px]" />
-              <AchDetails transaction={transaction} />
-            </>
-          )}
-          {transaction.wire != null && (
-            <>
-              <div className="h-[20px]" />
-              <WireDetails transaction={transaction} />
-            </>
-          )}
           <div className="h-[20px]" />
         </div>
       )}
