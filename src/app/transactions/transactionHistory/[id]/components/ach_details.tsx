@@ -24,7 +24,7 @@ export default function AchDetails({
         </MyText>
       </div>
       <div className="w-full pt-2 px-6 flex flex-row justify-start">
-        <div className="flex flex-col justify-start min-w-[370px] w-full">
+        <div className="flex flex-col justify-start min-w-[340px] w-full">
           <ItemRowHorizontal
             title="Return Code"
             value={enumTextToReadableText(transaction?.ach?.returnCode ?? "")}
@@ -85,8 +85,8 @@ export default function AchDetails({
           />
           <div className="h-3" />
         </div>
-        <div className="min-w-[80px]" />
-        <div className="flex flex-col justify-start min-w-[370px] w-full">
+        <div className="min-w-[60px]" />
+        <div className="flex flex-col justify-start min-w-[340px] w-full">
           <ItemRowHorizontal
             title="NOC Received At"
             value={timestampToDate(

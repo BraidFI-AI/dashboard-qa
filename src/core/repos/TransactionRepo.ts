@@ -137,6 +137,19 @@ class TransactionRepo {
 
     return types;
   }
+
+  public async cancelTransaction(data: { paymentId: string; reason: string }) {
+    const types = await this.apiClient.http<any>(
+      Method.PUT,
+      "/transaction/pending/cancel",
+      {
+        paymentId: data.paymentId,
+        reason: data.reason,
+      }
+    );
+
+    return types;
+  }
 }
 
 export default TransactionRepo;

@@ -147,7 +147,10 @@ export const fetchTransactions = createAsyncThunk(
         };
       }
 
-      if (data.criteria.transactionType == null) {
+      if (
+        data.criteria.transactionType == null &&
+        data.criteria.transactionType != undefined
+      ) {
         data.criteria.transactionType = undefined;
       }
 
@@ -236,6 +239,25 @@ export const fetchCustomerInformation = createAsyncThunk(
       return updatedTransactions;
     } catch (e: any) {
       return `Error fetching transactions ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const cancelTransaction = createAsyncThunk(
+  "app/cancelTransaction",
+  async (
+    data: {
+      paymentId: string;
+      reason: string;
+    },
+    thunkApi: any
+  ) => {
+    try {
+      const cancelTransaction = await transactionRepo.cancelTransaction(data);
+      console.log("Transaction cancelled:", cancelTransaction);
+      return { success: true, data: cancelTransaction };
+    } catch (err: any) {
+      return `Error cancelling transaction ${generateErrorMessage(err)}`;
     }
   }
 );
