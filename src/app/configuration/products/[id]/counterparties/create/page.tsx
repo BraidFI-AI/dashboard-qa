@@ -101,6 +101,7 @@ const CreateCounterpartyPage = () => {
           line2: wireGetValues("beneficiaryFIAddress.line2"),
           postalCode: wireGetValues("beneficiaryFIAddress.postalCode"),
           state: wireGetValues("beneficiaryFIAddress.state"),
+          type: wireGetValues("beneficiaryFIAddress.type"),
         },
         beneficiaryFIName: wireGetValues("beneficiaryFIName"),
         beneficiaryIdNumber: wireGetValues("beneficiaryIdNumber"),
@@ -111,6 +112,7 @@ const CreateCounterpartyPage = () => {
           line2: wireGetValues("intermediaryFIAddress.line2"),
           postalCode: wireGetValues("intermediaryFIAddress.postalCode"),
           state: wireGetValues("intermediaryFIAddress.state"),
+          type: wireGetValues("intermediaryFIAddress.type"),
         },
         intermediaryFIIdNumber: wireGetValues("intermediaryFIIdNumber"),
         intermediaryFIIdType: wireGetValues("intermediaryFIIdType"),
@@ -787,6 +789,14 @@ const CreateCounterpartyPage = () => {
               <Box className="pr-2" />
               <MyText primary>
                 {wireGetValues("beneficiaryFIAddress.countryCode")}
+              </MyText>
+            </Box>
+            <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Address Type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.type")}
               </MyText>
             </Box>
             <Box className="pb-2"></Box>

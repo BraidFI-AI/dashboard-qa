@@ -785,6 +785,7 @@ const CreateCounterpartyPage = () => {
                 {wireGetValues("beneficiaryFIAddress.postalCode")}
               </MyText>
             </Box>
+            <Box className="pb-2"></Box>
             <Box className="flex flex-row">
               <MyText>Beneficiary FI Country Code</MyText>
               <Box className="pr-2" />
@@ -793,6 +794,13 @@ const CreateCounterpartyPage = () => {
               </MyText>
             </Box>
             <Box className="pb-2"></Box>
+            <Box className="flex flex-row">
+              <MyText>Beneficiary FI Address Type</MyText>
+              <Box className="pr-2" />
+              <MyText primary>
+                {wireGetValues("beneficiaryFIAddress.type")}
+              </MyText>
+            </Box>
             <Box className="pb-2"></Box>
             <Box className="flex flex-row">
               <MyText>State</MyText>
