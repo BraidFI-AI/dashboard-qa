@@ -4,7 +4,6 @@ import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import Compliance314aRepo from "@/core/repos/314a_repo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { enqueueSnackbar } from "notistack";
 
 const apiClient = ApiClient.getInstance();
 const repo: Compliance314aRepo = new Compliance314aRepo(apiClient);
@@ -102,6 +101,27 @@ export const fetch314ARecord = createAsyncThunk(
       const upload = await repo.fetch314aRecord(id);
       console.log("314a data", upload);
       return upload;
+    } catch (e: any) {
+      return `Error fetching 314a data ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetch314ALog = createAsyncThunk(
+  "314a/fetch314ALog",
+  async (data: {
+    filename: string;
+    startDateTime: string;
+    endDateTime: string;
+  }) => {
+    try {
+      const logs = await repo.fetch314aLog(
+        data.filename,
+        data.startDateTime,
+        data.endDateTime
+      );
+
+      return logs;
     } catch (e: any) {
       return `Error fetching 314a data ${generateErrorMessage(e)}`;
     }

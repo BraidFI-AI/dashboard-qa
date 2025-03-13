@@ -1188,6 +1188,18 @@ export interface CreateAcount {
   productId: Number | null;
 }
 
+export interface Compliance314ALog {
+  id?: number | null;
+  requesterIpAddress?: string | null;
+  requesterUsername?: string | null;
+  filename?: string | null;
+  fileUploadedAt?: number | null;
+  numberOfRecordsUploaded?: number | null;
+  numberOfBusinessesScanned?: number | null;
+  numberOfIndividualsScanned?: number | null;
+  numberOfAlertsCreated?: number | null;
+}
+
 export interface Compliance314A {
   list314aId?: string | null;
   counterpartyName?: string | null;
