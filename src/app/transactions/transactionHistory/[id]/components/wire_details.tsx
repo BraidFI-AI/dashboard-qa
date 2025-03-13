@@ -31,18 +31,8 @@ export default function WireDetails({
           />
           <div className="h-3" />
           <ItemRowHorizontal
-            title="Beneficiary Account Number"
-            value={(transaction as any).wire?.beneficiaryAccountNumber ?? ""}
-          />
-          <div className="h-3" />
-          <ItemRowHorizontal
-            title="Beneficiary Routing Number"
-            value={(transaction as any).wire?.beneficiaryRoutingNumber ?? ""}
-          />
-          <div className="h-3" />
-          <ItemRowHorizontal
-            title="Beneficiary Name"
-            value={(transaction as any).wire?.beneficiaryName ?? ""}
+            title="Originator Name"
+            value={(transaction as any).wire?.originatorName ?? ""}
           />
           <div className="h-3" />
           <ItemRowHorizontal
@@ -61,10 +51,33 @@ export default function WireDetails({
           />
           <div className="h-3" />
           <ItemRowHorizontal
-            title="Originator To Beneficiary Info"
-            value={(transaction as any).wire?.originatorToBeneficiaryInfo ?? ""}
+            title="Beneficiary Name"
+            value={(transaction as any).wire?.beneficiaryName ?? ""}
           />
           <div className="h-3" />
+          <ItemRowHorizontal
+            title="Beneficiary Account Number"
+            value={(transaction as any).wire?.beneficiaryAccountNumber ?? ""}
+          />
+          <div className="h-3" />
+          <ItemRowHorizontal
+            title="Beneficiary Routing Number"
+            value={(transaction as any).wire?.beneficiaryRoutingNumber ?? ""}
+          />
+          <div className="h-3" />
+          <ItemRowHorizontal
+            title="Beneficiary Bank Name"
+            value={(transaction as any).wire?.beneficiaryBankName ?? ""}
+          />
+          <div className="h-3" />
+          <ItemRowHorizontal
+            title="Intermediary Routing Number"
+            value={(transaction as any).wire?.intermediaryRoutingNumber ?? ""}
+          />
+          <div className="h-3" />
+        </div>
+        <div className="min-w-[60px]" />
+        <div className="flex flex-col justify-start min-w-[340px] w-full">
           <ItemRowHorizontal
             title="IMAD"
             value={(transaction as any).wire?.imad ?? ""}
@@ -75,22 +88,9 @@ export default function WireDetails({
             value={(transaction as any).wire?.omad ?? ""}
           />
           <div className="h-3" />
-        </div>
-        <div className="min-w-[60px]" />
-        <div className="flex flex-col justify-start min-w-[340px] w-full">
           <ItemRowHorizontal
-            title="Originator Name"
-            value={(transaction as any).wire?.originatorName ?? ""}
-          />
-          <div className="h-3" />
-          <ItemRowHorizontal
-            title="Intermediary Routing Number"
-            value={(transaction as any).wire?.intermediaryRoutingNumber ?? ""}
-          />
-          <div className="h-3" />
-          <ItemRowHorizontal
-            title="Beneficiary Bank Name"
-            value={(transaction as any).wire?.beneficiaryBankName ?? ""}
+            title="Originator To Beneficiary Info"
+            value={(transaction as any).wire?.originatorToBeneficiaryInfo ?? ""}
           />
           <div className="h-3" />
           <ItemRowHorizontal
