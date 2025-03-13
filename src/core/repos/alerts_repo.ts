@@ -123,6 +123,17 @@ class AlertsRepo {
     );
     return response;
   }
+
+  public async updateAlertRfiStatus(data: {
+    alertId: string;
+    rfiStatus: string;
+  }) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      `/alerts/rfi/${data.alertId}?rfiStatus=${data.rfiStatus}`
+    );
+    return response;
+  }
 }
 
 export default AlertsRepo;

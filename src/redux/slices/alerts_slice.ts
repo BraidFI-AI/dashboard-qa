@@ -147,6 +147,20 @@ export const fetchAlert = createAsyncThunk(
   }
 );
 
+export const updateAlertRfiStatus = createAsyncThunk(
+  "alerts/updateAlertRfiStatus",
+  async (data: { alertId: string; rfiStatus: string }) => {
+    try {
+      const alert = await alertsRepo.updateAlertRfiStatus(data);
+      console.log("alert rfi status updated", alert);
+
+      return alert;
+    } catch (e: any) {
+      return `Error updating alert rfi status ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchOpenAlertsCount = createAsyncThunk(
   "alerts/fetchOpenAlertsCount",
   async () => {
