@@ -4,7 +4,6 @@ import { Compliance314A } from "@/core/api/ApiTypes";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import ItemRow from "@/core/components/Text/ItemRow";
-import MyText from "@/core/components/Text/Text";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import timestampToDate from "@/core/utils/timestampToDate";
 import { fetch314ARecord } from "@/redux/slices/314a_slice";

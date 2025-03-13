@@ -24,6 +24,18 @@ class Compliance314aRepo {
     const data = await this.apiClient.http<any>(Method.GET, `/314A/${id}`);
     return data;
   }
+
+  public async fetch314aLog(
+    filename: string,
+    startDateTime: string,
+    endDateTime: string
+  ) {
+    const data = await this.apiClient.http<any>(
+      Method.GET,
+      `/314A/audits?filename=${filename}&startDateTime=${startDateTime}&endDateTime=${endDateTime}`
+    );
+    return data;
+  }
 }
 
 export default Compliance314aRepo;
