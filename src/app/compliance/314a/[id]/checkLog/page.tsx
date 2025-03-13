@@ -34,7 +34,7 @@ const CheckLogTable = () => {
 
   const [logs, setLogs] = useState<
     "initial" | "loading" | string | Compliance314ALog[]
-  >("loading");
+  >("initial");
 
   const [submitting, setSubmitting] = useState(false);
 
