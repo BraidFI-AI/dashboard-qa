@@ -7,10 +7,19 @@ import ItemRow from "@/core/components/Text/ItemRow";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
-import { boxStyle, userGroupMappingToReadableNames } from "@/core/constants";
+import {
+  boxStyle,
+  DEVELOPER_OPS_ROLE,
+  DEVELOPER_ROLE,
+  userGroupMappingToReadableNames,
+} from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
-import { assignAlertToUser, fetchAlert } from "@/redux/slices/alerts_slice";
+import {
+  assignAlertToUser,
+  fetchAlert,
+  updateAlertRfiStatus,
+} from "@/redux/slices/alerts_slice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { UserManagementState } from "@/redux/slices/UsermanagementSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -37,7 +46,18 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
 
   const users: User[] = useSelector((state: any) => state.userManagement.users);
 
+  const userType = useSelector((state: any) => state.app.userType);
+
   const [tempUser, setTempUsers] = useState<string[]>([]);
+
+  const [rfiStatus, setRfiStatus] = useState<string | null>(null);
+  const [rfiStatusOptions, setRfiStatusOptions] = useState<string[]>([
+    "REQUESTED",
+    "CONFIRMED",
+    "COMPLETED",
+  ]);
+  const [rfiStatusSubmitting, setRfiStatusSubmitting] =
+    useState<boolean>(false);
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -78,6 +98,12 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
       setSubmitting(false);
     });
   };
+
+  useEffect(() => {
+    if (userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE) {
+      setRfiStatusOptions(["REQUESTED", "CONFIRMED"]);
+    }
+  }, [userType, alert]);
 
   useEffect(() => {
     setTempUsers([]);
@@ -138,6 +164,62 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
             title="Status"
             value={enumTextToReadableText(alert.status?.toString() ?? "")}
           />
+          <div className="h-3" />
+          <div className="flex flex-row items-center">
+            <div className="pr-6">
+              <MyText size="sm" color="text-[#677990]">
+                RFI Status
+              </MyText>
+            </div>
+            <div className={`${submitting ? "pointer-events-none pr-2" : ""}`}>
+              <MyControlledAutocomplete
+                clearable={false}
+                value={rfiStatus ?? ""}
+                displayName="RFI Status"
+                name={"rfiStatus"}
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={rfiStatusOptions}
+                customOnChange={(value: string) => {
+                  setRfiStatus(value);
+
+                  setRfiStatusSubmitting(true);
+
+                  dispatch(
+                    updateAlertRfiStatus({
+                      alertId: alert.id?.toString() ?? "",
+                      rfiStatus: value,
+                    })
+                  ).then((d: any) => {
+                    if (typeof d.payload != "string") {
+                      enqueueSnackbar(`RFI status updated`, {
+                        variant: "success",
+                      });
+
+                      dispatch(fetchAlert(alert.id?.toString() ?? ""));
+                    } else {
+                      enqueueSnackbar(d.payload, {
+                        variant: "error",
+                        persist: true,
+                      });
+                    }
+                    setRfiStatusSubmitting(false);
+                  });
+                }}
+              />
+            </div>
+            <CircularProgress
+              size={20}
+              className={rfiStatusSubmitting ? "block" : "hidden"}
+            />
+          </div>
           <div className="h-3" />
           <ItemRowHorizontal
             title="Alert Type"
