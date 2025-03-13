@@ -109,14 +109,9 @@ export const fetch314ARecord = createAsyncThunk(
 
 export const fetch314ALog = createAsyncThunk(
   "314a/fetch314ALog",
-  async (data: {
-    filename: string;
-    startDateTime: string;
-    endDateTime: string;
-  }) => {
+  async (data: { startDateTime: string; endDateTime: string }) => {
     try {
       const logs = await repo.fetch314aLog(
-        data.filename,
         data.startDateTime,
         data.endDateTime
       );

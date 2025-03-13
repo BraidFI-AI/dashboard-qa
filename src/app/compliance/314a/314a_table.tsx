@@ -95,7 +95,11 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
   ) : data.length == 0 ? (
     <MyText>No 314A Data found</MyText>
   ) : (
-    <>
+    <div
+      style={{
+        height: "calc(100vh - 190px)",
+      }}
+    >
       <MyTable
         pagination={{
           rowCount: pagination.rowCount,
@@ -294,8 +298,7 @@ const Compliance314aTable: React.FC<Compliance314aTableProps> = ({}) => {
         rows={data}
         sortModel={[{ field: "createdAt", sort: "desc" }]}
       />
-      {/* </div> */}
-    </>
+    </div>
   );
 };
 
