@@ -14,6 +14,7 @@ import { TransactionTimeline } from "./components/transaction_timeline";
 import AchDetails from "./components/ach_details";
 import WireDetails from "./components/wire_details";
 import { useSelector } from "react-redux";
+import TransferDetails from "./components/transfer_details";
 
 export default function TransactionHistoryPage() {
   const params = useParams();
@@ -66,7 +67,12 @@ export default function TransactionHistoryPage() {
               <div>
                 <TransactionDetails transaction={transactions?.[0]} />
               </div>
-
+              {(transactions?.[0] as any).transfer != null && (
+                <>
+                  <div className="h-[10px]" />
+                  <TransferDetails transaction={transactions?.[0]} />
+                </>
+              )}
               {transactions?.[0]?.ach != null && (
                 <>
                   <div className="h-[10px]" />
