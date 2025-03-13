@@ -15,11 +15,11 @@ const TabsProvider = (props: any) => {
   const tabs = [
     {
       name: "Record Details",
-      path: `/compliance/314a/${parseInt(params.id.toString())}`,
+      path: `/compliance/314a`,
     },
     {
       name: "Check Log",
-      path: `/compliance/314a/${parseInt(params.id.toString())}/checkLog`,
+      path: `/compliance/314a/checkLog`,
     },
   ];
 
