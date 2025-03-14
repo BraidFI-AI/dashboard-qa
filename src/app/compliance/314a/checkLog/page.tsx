@@ -180,11 +180,11 @@ const CheckLogTable = () => {
               {
                 field: "fileUploadedAt",
                 headerName: "File Uploaded At",
-                minWidth: 140,
+                minWidth: 180,
                 flex: 1,
                 display: "flex",
                 valueFormatter: (params: any) => {
-                  return `${timestampToDate(params)}`;
+                  return `${timestampToDate(params, false, true)}`;
                 },
                 valueGetter: (value: any, row: any) => row.fileUploadedAt,
               },
@@ -192,14 +192,14 @@ const CheckLogTable = () => {
                 field: "filename",
                 headerName: "Filename",
                 flex: 1,
-                minWidth: 120,
+                minWidth: 140,
                 display: "flex",
               },
               {
-                field: "filename",
-                headerName: "Filename",
+                field: "requesterUsername",
+                headerName: "Upload By",
                 flex: 1,
-                minWidth: 120,
+                minWidth: 160,
                 display: "flex",
               },
               {
