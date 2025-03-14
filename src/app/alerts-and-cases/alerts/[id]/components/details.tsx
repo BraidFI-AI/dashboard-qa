@@ -53,7 +53,7 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
   const [rfiStatus, setRfiStatus] = useState<string | null>(null);
   const [rfiStatusOptions, setRfiStatusOptions] = useState<string[]>([
     "REQUESTED",
-    "CONFIRMED",
+    "PROVIDED",
     "COMPLETED",
   ]);
   const [rfiStatusSubmitting, setRfiStatusSubmitting] =
@@ -101,7 +101,11 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
 
   useEffect(() => {
     if (userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE) {
-      setRfiStatusOptions(["REQUESTED", "CONFIRMED"]);
+      setRfiStatusOptions(["REQUESTED", "PROVIDED"]);
+    }
+
+    if (typeof alert != "string") {
+      setRfiStatus((alert as any).requestForInformationStatus);
     }
   }, [userType, alert]);
 
@@ -174,7 +178,7 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
             <div className={`${submitting ? "pointer-events-none pr-2" : ""}`}>
               <MyControlledAutocomplete
                 clearable={false}
-                value={rfiStatus ?? ""}
+                value={(alert as any).requestForInformationStatus}
                 displayName="RFI Status"
                 name={"rfiStatus"}
                 control={control}
