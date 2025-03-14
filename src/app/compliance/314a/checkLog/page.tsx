@@ -44,31 +44,25 @@ const CheckLogTable = () => {
     handleSubmit,
     getValues,
   } = useForm<{
-    filename: string;
     startDateTime: Moment;
     endDateTime: Moment;
   }>();
   const onSubmit: SubmitHandler<{
-    filename: string;
     startDateTime: Moment;
     endDateTime: Moment;
-  }> = (data: {
-    filename: string;
-    startDateTime: Moment;
-    endDateTime: Moment;
-  }) => {
+  }> = (data: { startDateTime: Moment; endDateTime: Moment }) => {
     console.log("data:", data);
 
     setSubmitting(true);
 
     dispatch(
       fetch314ALog({
-        filename: data.filename,
         startDateTime: momentToPSTString(data.startDateTime, true),
         endDateTime: momentToPSTString(data.endDateTime, false),
       })
     ).then((d: any) => {
       setSubmitting(false);
+      setLogs(d.payload);
     });
   };
 
@@ -79,21 +73,7 @@ const CheckLogTable = () => {
   return (
     <>
       <div>
-        <div className="flex flex-row pb-4 w-[950px]">
-          <div className="w-[300px]">
-            <MyText size="sm">Filename</MyText>
-            <MyControlledTextField
-              name="filename"
-              displayName="Filename"
-              control={control}
-              errors={errors}
-              rules={{
-                required: true,
-              }}
-              value=""
-            />
-          </div>
-          <div className="w-4"></div>
+        <div className="flex flex-row pb-4 w-[650px] items-end">
           <div className="w-[300px]">
             <MyText size="sm">Start Date</MyText>
             <MyControlledDatePicker
@@ -105,7 +85,7 @@ const CheckLogTable = () => {
                 required: true,
                 validate: (value: any) => {
                   const dateObject = moment(value.toString());
-                  if (dateObject.toString() === "Invalid Date") {
+                  if (dateObject.isValid() == false) {
                     return "Invalid Date";
                   } else {
                   }
@@ -127,7 +107,7 @@ const CheckLogTable = () => {
                 required: true,
                 validate: (value: any) => {
                   const dateObject = moment(value.toString());
-                  if (dateObject.toString() === "Invalid Date") {
+                  if (dateObject.isValid() == false) {
                     return "Invalid Date";
                   } else {
                   }
@@ -137,9 +117,8 @@ const CheckLogTable = () => {
               value=""
             />
           </div>
-        </div>
-        <div className="h-4">
-          <div className="w-fit">
+          <div className="w-4"></div>
+          <div className="w-fit pb-[2px]">
             <MyBlueButton
               onClick={handleSubmit(onSubmit)}
               submitting={submitting}
@@ -149,7 +128,7 @@ const CheckLogTable = () => {
           </div>
         </div>
       </div>
-      <div className="h-10"></div>
+      <div className="h-2"></div>
       {logs == "initial" ? (
         <></>
       ) : logs == "loading" ? (
@@ -161,9 +140,11 @@ const CheckLogTable = () => {
             setLogs("loading");
             dispatch(
               fetch314ALog({
-                filename: qParams.get("filename") ?? "",
-                startDateTime: qParams.get("startDateTime") ?? "",
-                endDateTime: qParams.get("endDateTime") ?? "",
+                startDateTime: momentToPSTString(
+                  getValues("startDateTime"),
+                  true
+                ),
+                endDateTime: momentToPSTString(getValues("endDateTime"), false),
               })
             ).then((res: any) => {
               setLogs(res.payload);
@@ -176,7 +157,7 @@ const CheckLogTable = () => {
       ) : (
         <div
           style={{
-            height: "calc(100vh - 150px)",
+            height: "calc(100vh - 260px)",
           }}
         >
           <MyTable

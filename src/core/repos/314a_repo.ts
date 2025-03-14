@@ -25,14 +25,10 @@ class Compliance314aRepo {
     return data;
   }
 
-  public async fetch314aLog(
-    filename: string,
-    startDateTime: string,
-    endDateTime: string
-  ) {
+  public async fetch314aLog(startDateTime: string, endDateTime: string) {
     const data = await this.apiClient.http<any>(
       Method.GET,
-      `/314A/audits?filename=${filename}&startDateTime=${startDateTime}&endDateTime=${endDateTime}`
+      `/314A/audits?startDateTime=${startDateTime}&endDateTime=${endDateTime}`
     );
     return data;
   }
