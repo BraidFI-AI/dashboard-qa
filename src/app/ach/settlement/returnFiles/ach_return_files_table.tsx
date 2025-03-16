@@ -8,8 +8,6 @@ import { ACHSettlementHistory } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
   approveReturnFile,
-  approveSettlement,
-  downloadACHFile,
   downloadACHReturnFile,
   sendFileToSFTP,
 } from "@/redux/slices/ACHSlice";
@@ -282,10 +280,7 @@ const ACHReturnFilesTable = () => {
                           if (params != null) {
                             updateApprovingArr(params.row.filename, true);
                             dispatch(
-                              approveSettlement({
-                                productId: params.row.productId,
-                                filename: params.row.filename,
-                              })
+                              approveReturnFile(params.row.filename)
                             ).then((d: any) => {
                               updateApprovingArr(params.row.filename, false);
                               if (d.payload) {
