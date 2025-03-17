@@ -187,7 +187,7 @@ const AlertDetailsComponent: React.FC<AlertDetailsComponentProps> = ({
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 options={rfiStatusOptions}
