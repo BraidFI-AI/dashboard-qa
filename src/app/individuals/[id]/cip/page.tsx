@@ -79,7 +79,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
         <MyText>No CIP Information found</MyText>
       ) : (
         <div className="flex flex-col justify-between h-fit">
-          <div className="flex flex-row justify-between w-[400px]">
+          <div className="flex flex-row justify-between w-[400px] items-start">
             <div className="flex flex-row pb-6 items-center">
               <MyText>Is Developer Initiated</MyText>
               {cipStatus.isDeveloperInitiated ? (
@@ -111,9 +111,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
             <MyText>{cipStatus.provider}</MyText>
           </div>
           <div className="pb-6">
-            {typeof cipStatus.result == "string" ? (
-              <MyText>{cipStatus.result}</MyText>
-            ) : tryParse(cipStatus.result) ? (
+            {tryParse(cipStatus.result) ? (
               <JSONTree
                 data={JSON.parse(cipStatus.result)}
                 hideRoot
@@ -136,6 +134,8 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   base0F: "#000000",
                 }}
               />
+            ) : typeof cipStatus.result == "string" ? (
+              <MyText>{cipStatus.result}</MyText>
             ) : (
               <div className="pb-6">
                 <XMLViewer xml={cipStatus.result} />
