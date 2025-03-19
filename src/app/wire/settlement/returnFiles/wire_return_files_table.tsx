@@ -16,6 +16,7 @@ import {
   downloadWireReturnFile,
 } from "@/redux/slices/wire_settlement_slice";
 import timestampToDate from "@/core/utils/timestampToDate";
+import toDollarFormat from "@/core/utils/toDollarFormat";
 
 const WireReturnFilesTable = () => {
   const dispatch = useAppDispatch();
@@ -88,6 +89,10 @@ const WireReturnFilesTable = () => {
               headerName: "Transaction Amount",
               flex: 1,
               minWidth: 200,
+              valueFormatter: (params: any) => {
+                return params == null ? "" : `${toDollarFormat(params)}`;
+              },
+              valueGetter: (value: any, row: any) => row.transactionAmount,
             },
             {
               field: "createdAt",
@@ -193,6 +198,7 @@ const WireReturnFilesTable = () => {
             },
           ]}
           rows={wireReturnFiles}
+          sortModel={[{ field: "createdAt", sort: "desc" }]}
         />
       </div>
     </>
