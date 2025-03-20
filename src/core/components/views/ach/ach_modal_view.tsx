@@ -40,53 +40,77 @@ const ACHModelView: React.FC<ACHModelProps> = ({
         >
           <MyText size="lg">ACH Details</MyText>
           <div className="h-4"></div>
-          <ItemRow title="ID" value={ach.id ?? ""}></ItemRow>
-          <ItemRow title="Product ID" value={ach.productId ?? ""}></ItemRow>
-          <ItemRow title="Account ID" value={ach.accountId ?? ""}></ItemRow>
-          <ItemRow title="Inbound" value={ach.inbound ?? ""}></ItemRow>
+          <ItemRow title="ID" value={(ach as any)?.ach?.id ?? ""}></ItemRow>
+          <ItemRow title="Product ID" value={ach?.productId ?? ""}></ItemRow>
+          <ItemRow title="Account ID" value={ach?.accountId ?? ""}></ItemRow>
+          <ItemRow
+            title="Inbound"
+            value={(ach as any)?.isInbound ?? ""}
+          ></ItemRow>
           <ItemRow
             title="Amount"
-            value={toDollarFormat(ach.amount ?? "")}
+            value={toDollarFormat(ach?.amount ?? "")}
           ></ItemRow>
-          <ItemRow title="Description" value={ach.description ?? ""}></ItemRow>
-          <ItemRow title="Direction" value={ach.direction ?? ""}></ItemRow>
-          <ItemRow title="Return Code" value={ach.returnCode ?? ""}></ItemRow>
+          <ItemRow title="Description" value={ach?.description ?? ""}></ItemRow>
+          <ItemRow title="Direction" value={ach?.direction ?? ""}></ItemRow>
+          <ItemRow
+            title="Return Code"
+            value={(ach as any)?.ach?.returnCode ?? ""}
+          ></ItemRow>
           <ItemRow
             title="Return Reason"
-            value={ach.returnReason ?? ""}
+            value={(ach as any)?.ach?.returnReason ?? ""}
           ></ItemRow>
-          <ItemRow title="Change Code" value={ach.changeCode ?? ""}></ItemRow>
+          <ItemRow
+            title="Change Code"
+            value={(ach as any)?.ach?.changeCode ?? ""}
+          ></ItemRow>
           <ItemRow
             title="Change Reason"
-            value={ach.changeReason ?? ""}
+            value={(ach as any)?.ach?.changeReason ?? ""}
           ></ItemRow>
           <ItemRow
             title="Corrected Data"
-            value={ach.correctedData ?? ""}
+            value={(ach as any)?.ach?.correctedData ?? ""}
           ></ItemRow>
           <ItemRow
             title="Corrected In File"
-            value={ach.correctedInFile ?? ""}
+            value={(ach as any)?.ach?.correctedInFile ?? ""}
           ></ItemRow>
-          <ItemRow title="Sec Code" value={ach.secCode ?? ""}></ItemRow>
-          <ItemRow title="Service" value={ach.service ?? ""}></ItemRow>
+          <ItemRow
+            title="Sec Code"
+            value={(ach as any)?.ach?.secCode ?? ""}
+          ></ItemRow>
+          <ItemRow
+            title="Service"
+            value={(ach as any)?.ach?.service ?? ""}
+          ></ItemRow>
           <ItemRow
             title="Scheduled Settlement"
-            value={ach.scheduledSettlement ?? ""}
+            value={(ach as any)?.ach?.scheduledSettlement ?? ""}
           ></ItemRow>
-          <ItemRow title="Trace Number" value={ach.traceNumber ?? ""}></ItemRow>
-          <ItemRow title="Initiated At" value={ach.initiatedAt ?? ""}></ItemRow>
-          <ItemRow title="Submitted At" value={ach.submittedAt ?? ""}></ItemRow>
+          <ItemRow
+            title="Trace Number"
+            value={(ach as any)?.ach?.traceNumber ?? ""}
+          ></ItemRow>
+          <ItemRow
+            title="Initiated At"
+            value={ach?.initiatedAt ?? ""}
+          ></ItemRow>
+          <ItemRow
+            title="Submitted At"
+            value={ach?.submittedAt ?? ""}
+          ></ItemRow>
           <ItemRow
             title="Settlement File Name"
-            value={ach.settlementFileName ?? ""}
+            value={ach?.settlementFileName ?? ""}
           ></ItemRow>
           <ItemRow
             title="NOC Received At"
-            value={ach.nocReceivedAt ?? ""}
+            value={(ach as any)?.ach?.nocReceivedAt ?? ""}
           ></ItemRow>
-          <ItemRow title="Updated At" value={ach.updatedAt ?? ""}></ItemRow>
-          <ItemRow title="Status" value={ach.status ?? ""}></ItemRow>
+          <ItemRow title="Updated At" value={ach?.updatedAt ?? ""}></ItemRow>
+          <ItemRow title="Status" value={ach?.status ?? ""}></ItemRow>
         </Box>
       </Modal>
     </div>
