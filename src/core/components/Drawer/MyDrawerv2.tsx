@@ -69,6 +69,7 @@ import AnnouncementIcon from "@mui/icons-material/Announcement";
 import ClientLogo from "../client_logo";
 import PoweredByBraid from "../powered_by_braid";
 import InsightsIcon from "@mui/icons-material/Insights";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -175,6 +176,34 @@ export default function PersistentDrawerLeft(props: any) {
     setOpen(false);
   };
 
+  const transactionOptions = [
+    {
+      name: "Transaction History",
+      icon: <TransactionHistoryIcon />,
+      iconFocused: <TransactionHistoryIcon focused={true} />,
+      path: "/transactions/transactionHistory",
+    },
+    {
+      name: "Transaction Review",
+      icon: <TransactionReviewIcon />,
+      iconFocused: <TransactionReviewIcon focused={true} />,
+      path: "/transactions/transactionReview",
+    },
+    {
+      name: "New Transaction",
+      icon: (
+        <CurrencyExchangeIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+      ),
+      iconFocused: (
+        <CurrencyExchangeIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+      ),
+      path: "/transactions/newTransaction",
+    },
+  ];
+
+  if (userType == ADMIN_READONLY_ROLE || userType == ADMIN_OPS_ROLE) {
+    transactionOptions.splice(2, 1);
+  }
   const achOptions = [
     {
       name: "Processing",
@@ -481,20 +510,7 @@ export default function PersistentDrawerLeft(props: any) {
                   setSelected={setSelcted}
                   icon={<TransactionsIcon />}
                   iconFocused={<TransactionsIcon focused={true} />}
-                  options={[
-                    {
-                      name: "Transaction History",
-                      icon: <TransactionHistoryIcon />,
-                      iconFocused: <TransactionHistoryIcon focused={true} />,
-                      path: "/transactions/transactionHistory",
-                    },
-                    {
-                      name: "Transaction Review",
-                      icon: <TransactionReviewIcon />,
-                      iconFocused: <TransactionReviewIcon focused={true} />,
-                      path: "/transactions/transactionReview",
-                    },
-                  ]}
+                  options={transactionOptions}
                 />
                 <Link href="/statements">
                   <MyListItem

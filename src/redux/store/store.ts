@@ -20,7 +20,6 @@ import ApiKeySlice from "../slices/ApiKeySlice";
 import NocSlice from "../slices/noc_slice";
 import ACHProcessingSlice from "../slices/ach_processing_slice";
 import ach_return_slice from "../slices/ach_return_slice";
-import Transaction from "@/core/svgs/Transaction";
 import TransactionSlice from "../slices/TransactionSlice";
 import TransactionReviewSlice from "../slices/transaction_review_slice";
 import AlertsSlice from "../slices/alerts_slice";
@@ -29,6 +28,7 @@ import CasesSlice from "../slices/cases_slice";
 import WireProcessingSlice from "../slices/wire_processing_slice";
 import ClearSightSlice from "../slices/clear_sight_slice";
 import Compliance314aSlice from "../slices/314a_slice";
+import NewTransactionSlice from "../slices/new_transaction_slice";
 
 export const store = configureStore({
   reducer: {
@@ -58,6 +58,7 @@ export const store = configureStore({
     return: ach_return_slice.reducer,
     transaction: TransactionSlice.reducer,
     transactionReview: TransactionReviewSlice.reducer,
+    newTransaction: NewTransactionSlice.reducer,
     wireSettlement: WireSlice.reducer,
     wireProcessing: WireProcessingSlice.reducer,
   },
