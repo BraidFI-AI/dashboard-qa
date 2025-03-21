@@ -9,11 +9,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
 import timestampToDate from "@/core/utils/timestampToDate";
-import {
-  fetchOFACHits,
-  setOFACTablePageNumber,
-  setOFACTablePageSize,
-} from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import ErrorPage from "@/core/components/error_page";
@@ -25,6 +20,11 @@ import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import LabelBox from "@/core/components/label_box";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
+import {
+  fetchOFACHits,
+  setOFACTablePageNumber,
+  setOFACTablePageSize,
+} from "@/redux/slices/OFACSlice";
 
 type OFACHitsTableProps = {
   filters: OFACSearch;

@@ -9,7 +9,6 @@ import { useAppDispatch } from "@/redux/store/store";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import { fetchOFACHit, updateOFACHit } from "@/redux/slices/OFACSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -25,6 +24,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
 import { useSelector } from "react-redux";
+import { fetchOFACHit, updateOFACHit } from "@/redux/slices/OFACSlice";
 
 const OFACHitDetails = () => {
   const router = useRouter();

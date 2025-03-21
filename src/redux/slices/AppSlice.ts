@@ -12,7 +12,6 @@ import { setInitialDeveloperState } from "./DeveloperSlice";
 import { setInitialFeeState } from "./FeeSlice";
 import { setInitialIndividualState } from "./IndividualSlice";
 import { setInitialNOCState } from "./noc_slice";
-import { setInitialOFACState } from "./OFACSlice";
 import { setInitialProductState } from "./ProductSlice";
 import { setInitialProgramState } from "./ProgramSlice";
 import { setInitialLimitsState } from "./RulesAndLimitsSlice";
@@ -21,6 +20,7 @@ import { setInitialUsersState } from "./UsermanagementSlice";
 import TransactionRepo from "@/core/repos/TransactionRepo";
 import ApiClient from "@/core/api/ApiClient";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
+import { setInitialOFACState } from "./OFACSlice";
 
 const apiClient = ApiClient.getInstance();
 const transactionRepo: TransactionRepo = new TransactionRepo(apiClient);

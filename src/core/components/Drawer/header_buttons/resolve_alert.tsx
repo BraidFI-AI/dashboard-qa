@@ -13,12 +13,11 @@ import MyControlledAutocomplete from "../../Autocomplete/MyControlledAutocomplet
 import { useSelector } from "react-redux";
 import { Alert, OFAC } from "@/core/api/ApiTypes";
 import { resolveAlert } from "@/redux/slices/alerts_slice";
-import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
 import { updateWireFileRecord } from "@/redux/slices/wire_processing_slice";
 import { fetchAchReturnCodes } from "@/redux/slices/AppSlice";
-import { wireReturnCodes } from "@/core/constants";
+import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 
 const ResolveAlertButton = () => {
   const params = useParams();

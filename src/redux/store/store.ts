@@ -13,7 +13,6 @@ import AuthSlice from "../slices/AuthSlice";
 import CounterpartySlice from "../slices/CounterpartySlice";
 import DeveloperSlice from "../slices/DeveloperSlice";
 import LimitsSlice from "../slices/RulesAndLimitsSlice";
-import OFACSlice from "../slices/OFACSlice";
 import UsermanagementSlice from "../slices/UsermanagementSlice";
 import FeeSlice from "../slices/FeeSlice";
 import ApiKeySlice from "../slices/ApiKeySlice";
@@ -29,6 +28,8 @@ import WireProcessingSlice from "../slices/wire_processing_slice";
 import ClearSightSlice from "../slices/clear_sight_slice";
 import Compliance314aSlice from "../slices/314a_slice";
 import NewTransactionSlice from "../slices/new_transaction_slice";
+import OFACSlice from "../slices/OFACSlice";
+import ReconExceptionReviewSlice from "../slices/recon_exception_review_slice";
 
 export const store = configureStore({
   reducer: {
@@ -61,6 +62,7 @@ export const store = configureStore({
     newTransaction: NewTransactionSlice.reducer,
     wireSettlement: WireSlice.reducer,
     wireProcessing: WireProcessingSlice.reducer,
+    reconExceptionReview: ReconExceptionReviewSlice.reducer,
   },
 });
 

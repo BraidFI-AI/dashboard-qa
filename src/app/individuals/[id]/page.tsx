@@ -15,11 +15,9 @@ import { setTitle } from "@/redux/slices/AppSlice";
 import MyText from "@/core/components/Text/Text";
 import timestampToDate from "@/core/utils/timestampToDate";
 import ItemRow from "@/core/components/Text/ItemRow";
-import MyTextButton from "@/core/components/Button/MyTextButton";
 import { enqueueSnackbar } from "notistack";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import MyLinkText from "@/core/components/Text/LinkText";
-import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import ErrorPage from "@/core/components/error_page";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useSelector } from "react-redux";
@@ -31,6 +29,7 @@ import { fetchProduct } from "@/redux/slices/ProductSlice";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 import moment from "moment";
+import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
   const userType = useSelector((state: any) => state.app.userType);
