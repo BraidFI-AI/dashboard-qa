@@ -16,6 +16,15 @@ class DeveloperRepo {
     return response;
   }
 
+  public async updateDeveloper(id: string, enableIpRestriction: string) {
+    const response = await this.apiClient.http<Developer>(
+      Method.PATCH,
+      `/developer/${id}`,
+      { enableIpRestriction: enableIpRestriction }
+    );
+    return response;
+  }
+
   public async fetchDeveloper(id: string) {
     const dev = await this.apiClient.http<Developer>(
       Method.GET,

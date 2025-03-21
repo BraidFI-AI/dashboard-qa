@@ -6,6 +6,7 @@ import ItemRow from "../Text/ItemRow";
 import MyText from "../Text/Text";
 import MyControlledAutocomplete from "../Autocomplete/MyControlledAutocomplete";
 import MyEditButton from "../Button/MyEditButton";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type MyEditableTextFieldProps = {
   name: string;
@@ -38,6 +39,7 @@ const MyEditableTextField: React.FC<MyEditableTextFieldProps> = ({
   customEditor,
   editable = true,
   clearable = true,
+  submitting,
 }) => {
   return (
     <>
@@ -96,11 +98,17 @@ const MyEditableTextField: React.FC<MyEditableTextFieldProps> = ({
       {!editing && (
         <Box className="flex flex-row justify-between items-top">
           <ItemRow title={displayName} value={value} />
-          <MyEditButton
-            editing={editing}
-            setEditing={setEditing}
-            editable={editable}
-          />
+          {submitting ? (
+            <div className="flex flex-row items-center">
+              <CircularProgress size="20px" />
+            </div>
+          ) : (
+            <MyEditButton
+              editing={editing}
+              setEditing={setEditing}
+              editable={editable}
+            />
+          )}
         </Box>
       )}
     </>
