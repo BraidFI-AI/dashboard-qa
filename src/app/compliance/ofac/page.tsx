@@ -7,10 +7,10 @@ import RequireRole from "@/core/components/RequireRole";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { OFACSearch } from "@/core/api/ApiTypes";
-import { fetchOFACHits } from "@/redux/slices/OFACSlice";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import OFACFilters from "./ofac_filters";
+import { fetchOFACHits } from "@/redux/slices/OFACSlice";
 
 const OFAC = () => {
   const qParams = useSearchParams();
