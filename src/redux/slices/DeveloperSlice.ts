@@ -81,6 +81,22 @@ export const fetchDevelopers = createAsyncThunk(
   }
 );
 
+export const updateDeveloper = createAsyncThunk(
+  "developer/updateDeveloper",
+  async (data: { id: string; enableIpRestriction: string }) => {
+    try {
+      const developer = await developerRepo.updateDeveloper(
+        data.id,
+        data.enableIpRestriction
+      );
+      console.log("developer", developer);
+      return developer;
+    } catch (e: any) {
+      return `Error updating developer ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchDevelopersNew = createAsyncThunk(
   "developer/fetchDevelopers",
   async () => {
