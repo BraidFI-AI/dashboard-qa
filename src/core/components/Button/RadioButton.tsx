@@ -10,7 +10,7 @@ type RadioButtonProps = {
   value: string | boolean;
   setValue: any;
   options: string[] | boolean[] | { name: string; isDisabled: boolean }[];
-  title: string;
+  title?: string;
   layout?: "horizontal" | "vertical";
   disabled?: boolean;
 };
@@ -25,7 +25,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
 }) => {
   return (
     <FormControl disabled={disabled}>
-      <MyText>{title}</MyText>
+      {title && <MyText>{title}</MyText>}
       <RadioGroup
         sx={{ borderRadius: 0 }}
         value={value}

@@ -61,7 +61,7 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
       //       }
       // }
       defaultValue={val}
-      render={({ field: { onChange } }) => (
+      render={({ field: { onChange, value } }) => (
         <TextField
           size="small"
           inputProps={{
@@ -73,7 +73,7 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
               customOnChange(event.target.value);
             }
           }}
-          defaultValue={val}
+          value={value}
           fullWidth
           error={getErrorByNameString(errors, name) ? true : false}
           helperText={
