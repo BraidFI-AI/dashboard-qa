@@ -15,7 +15,7 @@ class ReconExceptionReviewRepo {
     transactionType: "ACH" | "WIRE"
   ) {
     const response = await this.apiClient.http<any>(
-      Method.GET,
+      Method.POST,
       `/reconciliation/transaction/exceptions?pageSize=${pageSize}&pageNumber=${pageNumber}`,
       transactionType == "ACH"
         ? {
@@ -28,6 +28,24 @@ class ReconExceptionReviewRepo {
             endDate: endDate,
             excludeAch: true,
           }
+    );
+    return response;
+  }
+
+  public async fetchSettlementsPaginated(
+    pageSize: number,
+    pageNumber: number,
+    beginDate: string,
+    endDate: string,
+    transactionType: "ACH" | "WIRE"
+  ) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      `/reconciliation/${transactionType.toLowerCase()}/exceptions?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      {
+        beginDate: beginDate,
+        endDate: endDate,
+      }
     );
     return response;
   }

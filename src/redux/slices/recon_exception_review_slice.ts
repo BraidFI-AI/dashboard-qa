@@ -46,6 +46,12 @@ const ReconExceptionReviewSlice = createSlice({
     setSettlementsPageNumber(state, action) {
       state.settlementsPagination.pageNumber = action.payload;
     },
+    setTransactionsPaginationPageSize(state, action) {
+      state.transactionsPagination.pageSize = action.payload;
+    },
+    setSettlementsPaginationPageSize(state, action) {
+      state.settlementsPagination.pageSize = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTransactionsPaginated.pending, (state, action) => {
@@ -68,6 +74,26 @@ const ReconExceptionReviewSlice = createSlice({
 
       state.transactionsPagination.loadingPage = false;
     });
+    builder.addCase(fetchSettlementsPaginated.pending, (state, action) => {
+      if (
+        state.settlementsPagination.pageNumber == -1 ||
+        action.meta.arg.refresh
+      ) {
+        state.settlementsPaginated = "loading";
+      }
+      state.settlementsPagination.loadingPage = true;
+    });
+    builder.addCase(fetchSettlementsPaginated.fulfilled, (state, action) => {
+      if (typeof action.payload == "string") {
+        state.settlementsPaginated = action.payload;
+      } else {
+        state.settlementsPaginated = action.payload.settlements;
+        state.settlementsPagination.rowCount = action.payload.rowCount;
+        state.settlementsPagination.pageNumber = action.payload.pageNumber;
+      }
+
+      state.settlementsPagination.loadingPage = false;
+    });
   },
 });
 
@@ -82,7 +108,6 @@ export const fetchTransactionsPaginated = createAsyncThunk(
     },
     thunkApi: any
   ) => {
-    console.log("data 2", data);
     try {
       const transactions =
         await reconExceptionReviewRepo.fetchTransactionsPaginated(
@@ -112,9 +137,51 @@ export const fetchTransactionsPaginated = createAsyncThunk(
   }
 );
 
+export const fetchSettlementsPaginated = createAsyncThunk(
+  "reconExceptionReview/fetchSettlementsPaginated",
+  async (
+    data: {
+      refresh: boolean;
+      beginDate: Moment;
+      endDate: Moment;
+      transactionType: "ACH" | "WIRE";
+    },
+    thunkApi: any
+  ) => {
+    try {
+      const transactions =
+        await reconExceptionReviewRepo.fetchSettlementsPaginated(
+          thunkApi.getState().reconExceptionReview.settlementsPagination
+            .pageSize ?? paginationPageSize,
+          data.refresh == true
+            ? 0
+            : thunkApi.getState().reconExceptionReview.settlementsPagination
+                .pageNumber == -1
+            ? 0
+            : thunkApi.getState().reconExceptionReview.settlementsPagination
+                .pageNumber,
+          momentToPSTString(data.beginDate, true),
+          momentToPSTString(data.endDate, false),
+          data.transactionType
+        );
+      console.log("settlements", transactions);
+
+      return {
+        settlements: transactions.content,
+        rowCount: transactions.totalElements,
+        pageNumber: transactions.number,
+      };
+    } catch (e: any) {
+      return `Error fetching settlements ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export default ReconExceptionReviewSlice;
 export const {
   setTransactionsPageNumber,
   setSettlementsPageNumber,
   setInitialReconExceptionReviewState,
+  setTransactionsPaginationPageSize,
+  setSettlementsPaginationPageSize,
 } = ReconExceptionReviewSlice.actions;
