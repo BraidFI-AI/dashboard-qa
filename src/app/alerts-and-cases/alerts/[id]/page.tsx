@@ -18,7 +18,6 @@ import AlertDetailsComponent from "./components/details";
 import AlertTimelineComponent from "./components/timeline";
 import { SCROLLBAR_STYLE } from "@/core/constants";
 import EntityTypeOFACComponent from "./components/entity_detail_components/entity_type_ofac";
-import { fetchOFACHit } from "@/redux/slices/OFACSlice";
 import { fetch314ARecord } from "@/redux/slices/314a_slice";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import { fetchIndividualV2 } from "@/redux/slices/IndividualSlice";
@@ -38,6 +37,7 @@ import { getWireFileProcessingError } from "@/redux/slices/wire_processing_slice
 import EntityTypeFileRecordComponent from "./components/entity_detail_components/file_record";
 import { fetchRawACHTransaction } from "@/redux/slices/ach_processing_slice";
 import ACHReturnProcessingComponent from "./components/entity_detail_components/ach_return_processing";
+import { fetchOFACHit } from "@/redux/slices/OFACSlice";
 
 const AlertsPage = () => {
   const dispatch = useAppDispatch();
@@ -95,7 +95,7 @@ const AlertsPage = () => {
             data.payload.type == "LIST_314A" ||
             data.payload.type == "DUAL_APPROVAL" ||
             data.payload.type == "PROHIBITED_ENTITY" ||
-            data.payload.type == "TRANSACTION_PROCESSING_ERROR" 
+            data.payload.type == "TRANSACTION_PROCESSING_ERROR"
           ) {
             setEntityType(data.payload.contextType);
             entity = data.payload.contextType;
@@ -105,8 +105,7 @@ const AlertsPage = () => {
           } else if (data.payload.type == "TRANSACTION_REVIEW") {
             setEntityType("TRANSACTION_REVIEW");
             entity = "TRANSACTION_REVIEW";
-          }
-          else if (data.payload.type == "ACH_RETURN_PROCESSING") {
+          } else if (data.payload.type == "ACH_RETURN_PROCESSING") {
             setEntityType("ACH_RETURN_PROCESSING");
             entity = "ACH_RETURN_PROCESSING";
           }
@@ -181,9 +180,10 @@ const AlertsPage = () => {
             ).then((e: any) => {
               setContext(e.payload);
             });
-          }
-          else if (entity == 'ACH_RETURN_PROCESSING'){
-            dispatch(fetchRawACHTransaction(data.payload.contextId.toString())).then((e: any) => { 
+          } else if (entity == "ACH_RETURN_PROCESSING") {
+            dispatch(
+              fetchRawACHTransaction(data.payload.contextId.toString())
+            ).then((e: any) => {
               setContext(e.payload);
             });
           }
@@ -376,10 +376,7 @@ const AlertsPage = () => {
                   context={context}
                 />
               ) : entityType == "ACH_RETURN_PROCESSING" ? (
-                <ACHReturnProcessingComponent
-                  alert={alert}
-                  context={context}
-                />
+                <ACHReturnProcessingComponent alert={alert} context={context} />
               ) : (
                 <></>
               )}

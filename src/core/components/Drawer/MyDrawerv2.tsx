@@ -69,6 +69,8 @@ import AnnouncementIcon from "@mui/icons-material/Announcement";
 import ClientLogo from "../client_logo";
 import PoweredByBraid from "../powered_by_braid";
 import InsightsIcon from "@mui/icons-material/Insights";
+import CallMergeIcon from "@mui/icons-material/CallMerge";
+import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 
 const drawerWidth = 310;
@@ -583,6 +585,36 @@ export default function PersistentDrawerLeft(props: any) {
                         <UploadFileOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
                       ),
                       path: "/compliance/314a",
+                    },
+                  ]}
+                />
+                <MyExpandableListItem
+                  name="Recon"
+                  path={"/recon"}
+                  selected={selected}
+                  setSelected={setSelcted}
+                  icon={<CallMergeIcon className="text-[#6A788E] text-md" />}
+                  iconFocused={<CallMergeIcon className="text-white text-md" />}
+                  options={[
+                    {
+                      name: "File Upload",
+                      icon: (
+                        <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                      ),
+                      iconFocused: (
+                        <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                      ),
+                      path: "/recon/fileUpload",
+                    },
+                    {
+                      name: "Exception Review",
+                      icon: (
+                        <SmsFailedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                      ),
+                      iconFocused: (
+                        <SmsFailedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                      ),
+                      path: "/recon/exceptionReview",
                     },
                   ]}
                 />

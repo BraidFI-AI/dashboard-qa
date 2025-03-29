@@ -1,18 +1,6 @@
 import ApiClient, { Method } from "@/core/api/ApiClient";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
-// import { setInitialState as initialApp } from "./AppSlice";
-// import { setInitialState as initialBusiness } from "./BusinessSlice";
-// import { setInitialState as initialCM } from "./CardManagementSlice";
-// import { setInitialState as initialCF } from "./CustomizableFormSlice";
-// import { setInitialState as initialIndividual } from "./IndividualSlice";
-// import { setInitialState as initialProduct } from "./ProductSlice";
-// import { setInitialState as initialProgram } from "./ProgramSlice";
-// import { setInitialState as initialTransaction } from "./TransactionSlice";
-// import { setInitialState as initialCounterparty } from "./CounterpartySlice";
-// import { setInitialState as initialDeveloper } from "./DeveloperSlice";
-// import { setInitialState as initialRulesAndLimits } from "./RulesAndLimitsSlice";
-// import { setInitialState as initialOFAC } from "./OFACSlice";
 
 interface AuthState {
   token: string;

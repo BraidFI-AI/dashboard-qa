@@ -13,8 +13,8 @@ import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import MyLinkText from "../../Text/LinkText";
 import ErrorPage from "../../error_page";
 import { useAppDispatch } from "@/redux/store/store";
-import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
+import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 
 type CounterpartyBraidDetailsViewProps = {
   counterparty: Counterparty;
