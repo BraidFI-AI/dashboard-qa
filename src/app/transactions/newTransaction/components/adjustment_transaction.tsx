@@ -104,7 +104,7 @@ export default function AdjustmentTransaction() {
               setDirection("DEBIT");
               setModalOpen(false);
             } else {
-              enqueueSnackbar("Adjustment failed", { variant: "error" });
+              enqueueSnackbar(res.payload, { variant: "error" });
             }
           });
         }}
@@ -204,7 +204,7 @@ export default function AdjustmentTransaction() {
                 handleSubmit(onSubmit)();
               }}
             >
-              Create Transfer
+              Create Transaction
             </MyBlueButton>
           </div>
         </div>

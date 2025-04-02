@@ -94,7 +94,7 @@ export default function TransferTransaction() {
               });
               setModalOpen(false);
             } else {
-              enqueueSnackbar("Transfer failed", { variant: "error" });
+              enqueueSnackbar(res.payload, { variant: "error" });
             }
           });
         }}
@@ -165,7 +165,7 @@ export default function TransferTransaction() {
                 handleSubmit(onSubmit)();
               }}
             >
-              Create Transfer
+              Create Transaction
             </MyBlueButton>
           </div>
         </div>
