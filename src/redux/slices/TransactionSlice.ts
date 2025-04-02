@@ -147,6 +147,25 @@ export const fetchTransactions = createAsyncThunk(
         };
       }
 
+      if (data.criteria.postDateStart) {
+        data.criteria = {
+          ...data.criteria,
+          postDateStart: momentToPSTString(
+            moment(data.criteria.postDateStart),
+            true
+          ),
+        };
+      }
+      if (data.criteria.postDateEnd) {
+        data.criteria = {
+          ...data.criteria,
+          postDateEnd: momentToPSTString(
+            moment(data.criteria.postDateEnd),
+            false
+          ),
+        };
+      }
+
       if (
         data.criteria.transactionType == null &&
         data.criteria.transactionType != undefined
