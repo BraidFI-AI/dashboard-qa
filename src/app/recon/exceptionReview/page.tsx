@@ -29,9 +29,11 @@ import MyTable from "@/core/components/Table/MyTable";
 import { v4 as uuidv4 } from "uuid";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
-
+import { useRouter } from "next/navigation";
 const ExceptionReview = () => {
   const dispatch = useAppDispatch();
+
+  const router = useRouter();
 
   const [transactionType, setTransactionType] = useState<"ACH" | "WIRE">("ACH");
   const [submittingTransactions, setSubmittingTransactions] =
@@ -196,7 +198,11 @@ const ExceptionReview = () => {
                 sizeOptions={[25, 50, ...pageSizeOptions]}
                 key={`transactions-${tableContainerWidth}`}
                 customId={(row: any) => uuidv4()}
-                handleRowClick={() => {}}
+                handleRowClick={(params: any) => {
+                  router.push(
+                    `/transactions/transactionHistory/${params.row.paymentId}`
+                  );
+                }}
                 columns={[
                   {
                     field: "amount",
@@ -231,19 +237,6 @@ const ExceptionReview = () => {
                         .padStart(2, "0")}`;
                     },
                     valueGetter: (value: any, row: any) => row.createdAt,
-                  },
-                  {
-                    field: "type",
-                    headerName: "Type",
-                    flex: 1,
-                    minWidth: 80,
-                    align: "right",
-                    display: "flex",
-                    renderCell: (params: any) => (
-                      <div>
-                        {params.row.ach ? "ACH" : params.row.ach ? "WIRE" : ""}
-                      </div>
-                    ),
                   },
                   {
                     field: "accountNumber",
@@ -284,7 +277,6 @@ const ExceptionReview = () => {
             )}
           </div>
           <div className="flex flex-col w-full overflow-hidden">
-            <div className="pb-4" />
             <MyText size="sm">Settlements</MyText>
             <div className="pb-2" />
             {settlements.length == 0 ? (
@@ -329,19 +321,6 @@ const ExceptionReview = () => {
                         .padStart(2, "0")}`;
                     },
                     valueGetter: (value: any, row: any) => row.createdAt,
-                  },
-                  {
-                    field: "type",
-                    headerName: "Type",
-                    flex: 1,
-                    minWidth: 80,
-                    align: "right",
-                    display: "flex",
-                    renderCell: (params: any) => (
-                      <div>
-                        {params.row.ach ? "ACH" : params.row.ach ? "WIRE" : ""}
-                      </div>
-                    ),
                   },
                   {
                     field: "accountNumber",
