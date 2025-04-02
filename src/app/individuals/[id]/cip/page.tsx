@@ -1,6 +1,5 @@
 "use client";
 
-import { fetchBusiness, fetchCIPStatus } from "@/redux/slices/BusinessSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -12,6 +11,10 @@ import { AlertDocument } from "@/core/api/ApiTypes";
 import DocumentComponent from "./doc";
 import XMLViewer from "react-xml-viewer";
 import { JSONTree } from "react-json-tree";
+import {
+  fetchIndividual,
+  fetchIndividualCIPStatus,
+} from "@/redux/slices/IndividualSlice";
 
 function tryParse(str: string) {
   try {
@@ -22,7 +25,7 @@ function tryParse(str: string) {
   }
 }
 
-const BusinessDetails = ({ params }: { params: { id: string } }) => {
+const IndividualDetails = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
 
   const [cipStatus, setCipStatus] = useState<"loading" | string | any>(
@@ -30,12 +33,14 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
   );
 
   useEffect(() => {
-    dispatch(fetchBusiness(parseInt(params.id))).then((d: any) => {
-      if (typeof d.payload != "string") dispatch(setTitle(d.payload.name));
+    dispatch(fetchIndividual(parseInt(params.id))).then((d: any) => {
+      if (typeof d.payload != "string") {
+        dispatch(setTitle(d.payload.firstName + " " + d.payload.lastName));
+      }
     });
 
     setCipStatus("loading");
-    dispatch(fetchCIPStatus(params.id)).then((d: any) => {
+    dispatch(fetchIndividualCIPStatus(params.id)).then((d: any) => {
       setCipStatus(d.payload);
     });
   }, [dispatch, params.id]);
@@ -57,19 +62,22 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
       {cipStatus == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
-          <div>Loading Business data...</div>
+          <div>Loading Individual data...</div>
         </div>
       ) : typeof cipStatus == "string" ? (
         <ErrorPage
-          error="Error fetching business"
+          error="Error fetching individual CIP status"
           recoveryButtonOnClick={() => {
-            dispatch(fetchBusiness(parseInt(params.id))).then((d: any) => {
-              if (typeof d.payload != "string")
-                dispatch(setTitle(d.payload.name));
+            dispatch(fetchIndividual(parseInt(params.id))).then((d: any) => {
+              if (typeof d.payload != "string") {
+                dispatch(
+                  setTitle(d.payload.firstName + " " + d.payload.lastName)
+                );
+              }
             });
 
             setCipStatus("loading");
-            dispatch(fetchCIPStatus(params.id)).then((d: any) => {
+            dispatch(fetchIndividualCIPStatus(params.id)).then((d: any) => {
               setCipStatus(d.payload);
             });
           }}
@@ -80,7 +88,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
       ) : (
         <div className="flex flex-col justify-between h-fit">
           <div className="flex flex-row justify-between w-[400px] items-start">
-            <div className="flex flex-row pb-6 items-center">
+            <div className="flex flex-row pb-6 items-center gap-2">
               <MyText>Is Developer Initiated</MyText>
               {cipStatus.isDeveloperInitiated ? (
                 <LabelBox color={"gray"} fill>
@@ -104,11 +112,19 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-row pb-6 items-center">
+          <div className="flex flex-row pb-6 items-start">
             <div className="pr-2">
               <MyText>Provider</MyText>
             </div>
-            <MyText>{cipStatus.provider}</MyText>
+            <div className="flex flex-col">
+              {cipStatus.provider.map((provider: any, index: number) => {
+                return (
+                  <div key={index}>
+                    <MyText>{provider}</MyText>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <div className="pb-6">
             {tryParse(cipStatus.result) ? (
@@ -155,4 +171,4 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
   );
 };
 
-export default BusinessDetails;
+export default IndividualDetails;

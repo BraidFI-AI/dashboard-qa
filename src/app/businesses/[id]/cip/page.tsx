@@ -80,7 +80,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
       ) : (
         <div className="flex flex-col justify-between h-fit">
           <div className="flex flex-row justify-between w-[400px] items-start">
-            <div className="flex flex-row pb-6 items-center">
+            <div className="flex flex-row pb-6 items-center gap-2">
               <div className="pr-2">
                 <MyText>Is Developer Initiated</MyText>
               </div>
@@ -110,7 +110,15 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
             <div className="pr-2">
               <MyText>Provider</MyText>
             </div>
-            <MyText>{cipStatus.provider}</MyText>
+            <div className="flex flex-col">
+              {cipStatus.provider.map((provider: any, index: number) => {
+                return (
+                  <div key={index}>
+                    <MyText>{provider}</MyText>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <div className="pb-6">
             {tryParse(cipStatus.result) ? (
