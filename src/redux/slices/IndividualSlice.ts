@@ -653,7 +653,7 @@ export const updateIndividual = createAsyncThunk(
 
 export const fetchIndividualCIPStatus = createAsyncThunk(
   "individual/fetchIndividualCIPStatus",
-  async (id: number) => {
+  async (id: string) => {
     try {
       return await individualRepo.fetchCIPStatus(id);
     } catch (e: any) {

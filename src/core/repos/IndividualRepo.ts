@@ -226,7 +226,7 @@ class IndividualRepo {
     );
   }
 
-  public async fetchCIPStatus(id: number) {
+  public async fetchCIPStatus(id: string) {
     return await this.apiClient.http<any>(
       Method.GET,
       `/identity-verification/${id}`
