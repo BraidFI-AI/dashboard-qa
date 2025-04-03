@@ -815,6 +815,8 @@ export interface TransactionSearch {
   processingStatus?: string[];
   beginDate?: string;
   endDate?: string;
+  postDateStart?: string;
+  postDateEnd?: string;
   maxAmount?: string;
   minAmount?: string;
   productId?: string;

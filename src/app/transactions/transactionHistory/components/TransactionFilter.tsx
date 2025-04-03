@@ -141,6 +141,14 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       data.endDate = undefined;
     }
 
+    if (data.postDateStart == null || data.postDateStart == "") {
+      data.postDateStart = undefined;
+    }
+
+    if (data.postDateEnd == null || data.postDateEnd == "") {
+      data.postDateEnd = undefined;
+    }
+
     if (data.maxAmount == null || data.maxAmount == "") {
       data.maxAmount = undefined;
     }
@@ -206,6 +214,8 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
       processingStatus: qParams.get("processingStatus")?.split(",") ?? [],
       beginDate: qParams.get("beginDate") ?? undefined,
       endDate: qParams.get("endDate") ?? undefined,
+      postDateStart: qParams.get("postDateStart") ?? undefined,
+      postDateEnd: qParams.get("postDateEnd") ?? undefined,
       maxAmount: qParams.get("maxAmount") ?? "",
       minAmount: qParams.get("minAmount") ?? "",
       productId: qParams.get("productId") ?? "",
@@ -230,7 +240,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
     setExcludeWire(qParams.get("excludeWire") == "true");
     setExcludeAch(qParams.get("excludeAch") == "true");
     setShowAchNoc(qParams.get("showAchNoc") == "true");
-  }, [qParams]);
+  }, [qParams, reset]);
 
   useEffect(() => {
     dispatch(fetchProductIdsList()).then((data: any) => {
@@ -505,11 +515,11 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
           </Box>
           <Box className="flex flex-row">
             <Box className="pb-4 w-full">
-              <MyText>Begin Date</MyText>
+              <MyText>Creation Date Start</MyText>
               <MyControlledDatePicker
                 noDefault={true}
                 name="beginDate"
-                displayName="Begin Date"
+                displayName="Creation Date Start"
                 control={control}
                 errors={errors}
                 rules={{
@@ -530,11 +540,66 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
             </Box>
             <Box className="w-4"></Box>
             <Box className="pb-4 w-full">
-              <MyText>End Date</MyText>
+              <MyText>Creation Date End</MyText>
               <MyControlledDatePicker
                 noDefault={true}
                 name="endDate"
-                displayName="End Date"
+                displayName="Creation Date End"
+                control={control}
+                errors={errors}
+                rules={{
+                  validate: (value: any) => {
+                    console.log("value:", value);
+                    if (value == null) {
+                      return;
+                    }
+                    const dateObject = moment(value.toString());
+                    if (dateObject.toString() === "Invalid Date") {
+                      return "Invalid Date";
+                    } else {
+                    }
+                    if (dateObject.isBefore(getValues("beginDate"))) {
+                      return "End Date cannot be before begin date";
+                    }
+                    return true;
+                  },
+                }}
+                value={getValues("endDate") ?? ""}
+              />
+            </Box>
+          </Box>
+          <Box className="flex flex-row">
+            <Box className="pb-4 w-full">
+              <MyText>Post Date Start</MyText>
+              <MyControlledDatePicker
+                noDefault={true}
+                name="postDateStart"
+                displayName="Post Date Start"
+                control={control}
+                errors={errors}
+                rules={{
+                  validate: (value: any) => {
+                    if (value == null) {
+                      return;
+                    }
+                    const dateObject = moment(value.toString());
+                    if (dateObject.toString() === "Invalid Date") {
+                      return "Invalid Date";
+                    } else {
+                    }
+                    return true;
+                  },
+                }}
+                value={getValues("beginDate") ?? ""}
+              />
+            </Box>
+            <Box className="w-4"></Box>
+            <Box className="pb-4 w-full">
+              <MyText>Post Date End</MyText>
+              <MyControlledDatePicker
+                noDefault={true}
+                name="postDateEnd"
+                displayName="Post Date End"
                 control={control}
                 errors={errors}
                 rules={{
@@ -632,6 +697,8 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                     processingStatus: [],
                     beginDate: undefined,
                     endDate: undefined,
+                    postDateStart: undefined,
+                    postDateEnd: undefined,
                     maxAmount: "",
                     minAmount: "",
                     productId: "",
