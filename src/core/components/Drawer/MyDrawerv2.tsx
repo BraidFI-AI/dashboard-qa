@@ -311,6 +311,43 @@ export default function PersistentDrawerLeft(props: any) {
     });
   }
 
+  let recon = null;
+
+  if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
+    recon = (
+      <MyExpandableListItem
+        name="Recon"
+        path={"/recon"}
+        selected={selected}
+        setSelected={setSelcted}
+        icon={<CallMergeIcon className="text-[#6A788E] text-md" />}
+        iconFocused={<CallMergeIcon className="text-white text-md" />}
+        options={[
+          {
+            name: "File Upload",
+            icon: (
+              <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/recon/fileUpload",
+          },
+          {
+            name: "Exception Review",
+            icon: (
+              <SmsFailedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+            ),
+            iconFocused: (
+              <SmsFailedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+            ),
+            path: "/recon/exceptionReview",
+          },
+        ]}
+      />
+    );
+  }
+
   let wire = null;
 
   if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
@@ -588,36 +625,7 @@ export default function PersistentDrawerLeft(props: any) {
                     },
                   ]}
                 />
-                <MyExpandableListItem
-                  name="Recon"
-                  path={"/recon"}
-                  selected={selected}
-                  setSelected={setSelcted}
-                  icon={<CallMergeIcon className="text-[#6A788E] text-md" />}
-                  iconFocused={<CallMergeIcon className="text-white text-md" />}
-                  options={[
-                    {
-                      name: "File Upload",
-                      icon: (
-                        <UploadFileIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                      ),
-                      iconFocused: (
-                        <UploadFileIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                      ),
-                      path: "/recon/fileUpload",
-                    },
-                    {
-                      name: "Exception Review",
-                      icon: (
-                        <SmsFailedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
-                      ),
-                      iconFocused: (
-                        <SmsFailedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
-                      ),
-                      path: "/recon/exceptionReview",
-                    },
-                  ]}
-                />
+                {recon}
                 <MyExpandableListItem
                   name="ACH"
                   path={"/ach"}
