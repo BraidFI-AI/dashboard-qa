@@ -204,7 +204,8 @@ const ACHReturnFilesTable = () => {
               display: "flex",
               renderCell: (params: any) =>
                 params.row.sftpStatus == "FAIL" ||
-                params.row.sftpStatus == "NOT_START" ? (
+                params.row.sftpStatus == "NOT_START" ||
+                params.row.sftpStatus == null ? (
                   <Tooltip title="Approve Settlement" placement="right">
                     <div className="flex justify-center">
                       <MyBlueButton
