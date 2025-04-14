@@ -590,7 +590,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                     return true;
                   },
                 }}
-                value={getValues("beginDate") ?? ""}
+                value={getValues("postDateStart") ?? ""}
               />
             </Box>
             <Box className="w-4"></Box>
@@ -613,13 +613,13 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
                       return "Invalid Date";
                     } else {
                     }
-                    if (dateObject.isBefore(getValues("beginDate"))) {
+                    if (dateObject.isBefore(getValues("postDateStart"))) {
                       return "End Date cannot be before begin date";
                     }
                     return true;
                   },
                 }}
-                value={getValues("endDate") ?? ""}
+                value={getValues("postDateEnd") ?? ""}
               />
             </Box>
           </Box>
