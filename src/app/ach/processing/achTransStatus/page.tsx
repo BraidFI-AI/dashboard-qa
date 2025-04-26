@@ -81,24 +81,42 @@ const ACHTransactionStatusPage = () => {
             customId={(row: any) => uuidv4()}
             columns={[
               {
-                field: "fileName",
-                headerName: "File Name",
+                field: "originalFileName",
+                headerName: "Original File Name",
                 flex: 1,
-                minWidth: 200,
+                minWidth: 120,
               },
               {
                 field: "processingDate",
                 headerName: "Processing Date",
                 flex: 1,
-                minWidth: 120,
+                minWidth: 160,
                 valueFormatter: (params: any) => {
                   return `${timestampToDate(params, false, true)}`;
                 },
                 valueGetter: (value: any, row: any) => row?.processingDate,
               },
               {
-                field: "totalTransactions",
-                headerName: "Total Transactions",
+                field: "status",
+                headerName: "Status",
+                flex: 1,
+                minWidth: 120,
+              },
+              {
+                field: "originalCount",
+                headerName: "Original Count",
+                flex: 1,
+                minWidth: 120,
+              },
+              {
+                field: "pendingTransactionsCount",
+                headerName: "Pending Count",
+                flex: 1,
+                minWidth: 120,
+              },
+              {
+                field: "postedTransactionsCount",
+                headerName: "Post Count",
                 flex: 1,
                 minWidth: 120,
               },

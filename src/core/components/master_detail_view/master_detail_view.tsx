@@ -99,9 +99,11 @@ export default function MasterDetailView({
       <div className="flex flex-row h-full">
         <div className="w-full">{table}</div>
         {details == null ? (
-          <div className="w-full px-4">No details</div>
+          <div className="w-[400px] px-4 h-full flex items-center justify-center">
+            <MyText>Please select a record to see details</MyText>
+          </div>
         ) : (
-          <div className="w-full px-4">
+          <div className="w-[400px] max-w-[400px] px-4">
             <ItemRowHorizontal title="File Name" value={details.fileName} />
             <ItemRowHorizontal
               title="Original File Name"
@@ -237,45 +239,6 @@ export default function MasterDetailView({
                   <MyText primary>Error Transactions</MyText>
                 </div>
               )}
-            {details.fileErrors != null && details.fileErrors.length > 0 && (
-              <div
-                className="cursor-pointer"
-                onClick={() => {
-                  setModalDataType("typed");
-                  setModalData(
-                    <div>
-                      <MyText size="md">File Errors</MyText>
-                      <div className="pb-4" />
-                      <JSONTree
-                        data={details.fileErrors}
-                        hideRoot
-                        theme={{
-                          base00: "#ffffff",
-                          base01: "#000000",
-                          base02: "#000000",
-                          base03: "#000000",
-                          base04: "#000000",
-                          base05: "#000000",
-                          base06: "#000000",
-                          base07: "#000000",
-                          base08: "#000000",
-                          base09: "#000000",
-                          base0A: "#000000",
-                          base0B: "#000000",
-                          base0C: "#000000",
-                          base0D: "#000000",
-                          base0E: "#000000",
-                          base0F: "#000000",
-                        }}
-                      />
-                    </div>
-                  );
-                  setModalOpen(true);
-                }}
-              >
-                <MyText primary>File Errors</MyText>
-              </div>
-            )}
             {details.rejectedTransactions != null &&
               details.rejectedTransactions.length > 0 && (
                 <div
