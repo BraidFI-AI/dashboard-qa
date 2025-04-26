@@ -99,11 +99,11 @@ export default function MasterDetailView({
       <div className="flex flex-row h-full">
         <div className="w-full">{table}</div>
         {details == null ? (
-          <div className="w-1/5 px-4 h-full flex items-center justify-center">
+          <div className="w-[400px] px-4 h-full flex items-center justify-center">
             <MyText>Please select a record to see details</MyText>
           </div>
         ) : (
-          <div className="w-2/5 px-4">
+          <div className="w-[400px] max-w-[400px] px-4">
             <ItemRowHorizontal title="File Name" value={details.fileName} />
             <ItemRowHorizontal
               title="Original File Name"
