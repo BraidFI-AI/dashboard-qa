@@ -384,6 +384,7 @@ export interface Program {
   customerId: number;
   baseUrl: string;
   achOdfi?: string | null;
+  operatingModel?: string | null;
 }
 
 export interface Product {
@@ -412,6 +413,7 @@ export interface Product {
   duplicatePaymentDays?: number | null;
   createdAt?: number | null;
   updatedAt?: number | null;
+  operatingModel?: string | null;
 }
 
 export interface CreateProduct {
@@ -427,6 +429,7 @@ export interface CreateProduct {
   settlementPhoneNumber: string;
   suffix: string;
   tenantId: string;
+  operatingModel?: string;
 }
 
 export interface ProductTransactionVolume {
@@ -829,6 +832,7 @@ export interface CreateProgram {
   isActive: boolean;
   type: string;
   achOdfi: string;
+  operatingModel?: string | null;
 }
 
 export interface CreateDepositTokenProduct {

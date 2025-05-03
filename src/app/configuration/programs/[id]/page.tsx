@@ -56,6 +56,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
   const [submitting, setSubmitting] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingType, setIsEditingType] = useState(false);
+  const [isEditingOperatingModel, setIsEditingOperatingModel] = useState(false);
   const [isEditingActive, setIsEditingActive] = useState(false);
   const [isEditingBaseUrl, setIsEditingBaseUrl] = useState(false);
 
@@ -70,12 +71,14 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
     isActive: boolean;
     baseUrl: string;
     achOdfi: string;
+    operatingModel?: string | null;
   }>({
     defaultValues: {
       name: program?.name,
       isActive: program?.isActive,
       type: program?.type,
       achOdfi: program?.achOdfi ?? "",
+      operatingModel: program?.operatingModel ?? "",
     },
   });
   const onSubmit: SubmitHandler<{
@@ -84,11 +87,13 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
     isActive: boolean;
     baseUrl: string;
     achOdfi: string;
+    operatingModel?: string | null;
   }> = (data: {
     name: string;
     type: string;
     isActive: boolean;
     baseUrl: string;
+    operatingModel?: string | null;
     achOdfi: string;
   }) => {
     console.log("program type:", program?.type);
@@ -128,7 +133,10 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
 
       if (
         !isEditingBaseUrl &&
-        (isEditingName || isEditingType || isEditingActive)
+        (isEditingName ||
+          isEditingType ||
+          isEditingActive ||
+          isEditingOperatingModel)
       ) {
         dispatch(
           updateProgram({
@@ -138,6 +146,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
               type: data.type,
               isActive: data.isActive,
               achOdfi: data.achOdfi,
+              operatingModel: data.operatingModel,
             },
           })
         ).then((data: any) => {
@@ -149,6 +158,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
           setSubmitting(false);
           setIsEditingName(false);
           setIsEditingType(false);
+          setIsEditingOperatingModel(false);
           setIsEditingActive(false);
           setIsEditingBaseUrl(false);
           setRefresh(true);
@@ -184,6 +194,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
             setSubmitting(false);
             setIsEditingName(false);
             setIsEditingType(false);
+            setIsEditingOperatingModel(false);
             setIsEditingActive(false);
             setIsEditingBaseUrl(false);
             setRefresh(true);
@@ -206,6 +217,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
           setSubmitting(false);
           setIsEditingName(false);
           setIsEditingType(false);
+          setIsEditingOperatingModel(false);
           setIsEditingActive(false);
           setIsEditingBaseUrl(false);
           setRefresh(true);
@@ -288,6 +300,25 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
             value={
               program.type != null ? programTypeMappings(program.type) : ""
             }
+            submitting={false}
+          />
+          <MyEditableTextField
+            clearable={false}
+            editing={isEditingOperatingModel}
+            setEditing={setIsEditingOperatingModel}
+            name="operatingModel"
+            displayName="Operating Model"
+            control={control}
+            errors={errors}
+            options={["LICENSED", "REGULATED_FI", "NON_LICENSED"]}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: true,
+                  }
+            }
+            value={program.operatingModel ?? ""}
             submitting={false}
           />
           <MyEditableTextField
@@ -378,6 +409,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
       <Box className="pb-4"></Box>
       {(isEditingName ||
         isEditingType ||
+        isEditingOperatingModel ||
         isEditingActive ||
         isEditingBaseUrl) && (
         <Box className="w-40">

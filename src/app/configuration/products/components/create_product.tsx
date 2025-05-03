@@ -340,6 +340,23 @@ const CreateProductPage = () => {
               <Box className="pb-8"></Box>
             </Box>
             <Box className="flex flex-col w-[300px]">
+              <MyText>Operating Model</MyText>
+              <MyControlledAutocomplete
+                value={"LICENSED"}
+                displayName="Operating Model"
+                name={"operatingModel"}
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                options={["LICENSED", "REGULATED_FI", "NON_LICENSED"]}
+              />
+              <Box className="pb-4"></Box>
               <MyText>Settlement Emails</MyText>
               {emails?.map((email, index) => (
                 <div

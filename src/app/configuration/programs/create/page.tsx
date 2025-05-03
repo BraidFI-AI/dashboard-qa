@@ -44,8 +44,16 @@ const CreateProgramPage = () => {
 
     setSubmitting(true);
 
-    dispatch(createProgram(data)).then(() => {
-      router.replace("/configuration/programs");
+    dispatch(createProgram(data)).then((data: any) => {
+      setSubmitting(false);
+      if (typeof data.payload == "string") {
+        enqueueSnackbar(data.payload, { variant: "error", persist: true });
+      } else {
+        enqueueSnackbar("Program created successfully", {
+          variant: "success",
+        });
+        router.replace("/configuration/programs");
+      }
     });
   };
 
@@ -94,6 +102,23 @@ const CreateProgramPage = () => {
                 }
           }
           value={"Government"}
+        />
+        <Box className="pb-4"></Box>
+        <MyText>Operating Model</MyText>
+        <MyControlledAutocomplete
+          value={"LICENSED"}
+          displayName="Operating Model"
+          name={"operatingModel"}
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: false,
+                }
+          }
+          options={["LICENSED", "REGULATED_FI", "NON_LICENSED"]}
         />
         <Box className="pb-4"></Box>
         <MyText>ACH ODFI</MyText>
