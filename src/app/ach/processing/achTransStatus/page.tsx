@@ -116,7 +116,7 @@ const ACHTransactionStatusPage = () => {
               },
               {
                 field: "postedTransactionsCount",
-                headerName: "Post Count",
+                headerName: "Posted Count",
                 flex: 1,
                 minWidth: 120,
               },

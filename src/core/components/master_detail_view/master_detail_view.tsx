@@ -130,7 +130,6 @@ export default function MasterDetailView({
               title="Total Error Count"
               value={details.totalErrorCount}
             />
-            <ItemRowHorizontal title="File Error" value={details.fileError} />
             <ItemRowHorizontal
               title="Error Transactions Count"
               value={details.errorTransactionsCount}
