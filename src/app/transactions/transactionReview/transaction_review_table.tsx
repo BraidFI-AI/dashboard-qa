@@ -133,7 +133,11 @@ const TransactionReviewTable: React.FC<TransactionReviewTableProps> = ({}) => {
             event.stopPropagation();
           }
         }}
-        handleRowClick={handleRowClick}
+        handleRowClick={(params: any) => {
+          router.push(
+            `/transactions/transactionHistory/${params.row.paymentId}`
+          );
+        }}
         customId={(params: any) => params.paymentId}
         columns={[
           {
