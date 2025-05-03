@@ -27,6 +27,14 @@ class FeeRepo {
     return response;
   }
 
+  public async fetchFeesByProgramId(id: string) {
+    const response = await this.apiClient.http<Fees[]>(
+      Method.GET,
+      `/fee?programId=${id}`
+    );
+    return response;
+  }
+
   public async fetchFeesByAccountId(id: string) {
     const response = await this.apiClient.http<Fees[]>(
       Method.GET,

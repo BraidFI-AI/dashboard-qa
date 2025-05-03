@@ -1315,6 +1315,7 @@ export interface Fees {
   id: string;
   productId?: string | null;
   accountNumber?: string | null;
+  programId?: string | null;
   feeType: string;
   amount: string;
   settlementAccountId: string;

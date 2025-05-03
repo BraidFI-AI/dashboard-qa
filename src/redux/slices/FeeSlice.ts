@@ -56,6 +56,24 @@ export const fetchFee = createAsyncThunk(
   }
 );
 
+export const fetchFeesByProgramId = createAsyncThunk(
+  "fees/fetchFeesByProgramId",
+  async (id: string) => {
+    try {
+      const fees = await feeRepo.fetchFeesByProgramId(id);
+      console.log("fees", fees);
+      return fees;
+    } catch (e: any) {
+      enqueueSnackbar(`Error fetching fees ${generateErrorMessage(e)}`, {
+        variant: "error",
+        persist: true,
+      });
+    }
+
+    return null;
+  }
+);
+
 export const fetchFeesByProductId = createAsyncThunk(
   "fees/fetchFfetchFeesByProductIdees",
   async (id: string) => {
