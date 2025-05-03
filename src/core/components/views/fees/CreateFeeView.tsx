@@ -2,7 +2,7 @@
 
 import { Fees } from "@/core/api/ApiTypes";
 import { useAppDispatch } from "@/redux/store/store";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
@@ -22,16 +22,13 @@ import {
 import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import ErrorPage from "../../error_page";
-import IconButton from "@mui/material/IconButton";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Tooltip } from "@mui/material";
-import ItemRow from "../../Text/ItemRow";
-import { fetchAccountNumbersList } from "@/redux/slices/AccountSlice";
-import MyControlledAsyncAutocomplete from "../../Autocomplete/MyControlledAsyncAutocomplete";
 import React from "react";
+import { fetchProgramIdsListWithNames } from "@/redux/slices/ProgramSlice";
 
 type CreateFeeViewProps = {
-  level: "Product" | "Account";
+  level: "Product" | "Account" | "Program";
   ids: string[];
   replaceTo: string;
 };
@@ -53,7 +50,14 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
     null
   );
   const [accIds, setAccIds] = useState<string[] | null>(null);
-  const [feeLevel, setFeeLevel] = useState<"Account" | "Product">(level);
+  const [loadingProgIds, setLoadingProgIds] = useState(true);
+  const [prog, setProg] = useState("0");
+  const [progIds, setProgIds] = useState<{ id: string; name: string }[] | null>(
+    null
+  );
+  const [feeLevel, setFeeLevel] = useState<"Account" | "Product" | "Program">(
+    level
+  );
   const [sAccIds, setSAccIds] = useState<string[] | null>(null);
 
   const transactionTypes: TransactionTypesType = useSelector(
@@ -75,11 +79,18 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
   const onSubmit: SubmitHandler<Fees> = (data: Fees) => {
     if (feeLevel == "Account") {
       data.productId = undefined;
+      data.programId = undefined;
     }
     if (feeLevel == "Product") {
       data.productId = ids[0];
+      data.programId = undefined;
 
       data.accountNumber = undefined;
+    }
+    if (feeLevel == "Program") {
+      data.productId = undefined;
+      data.accountNumber = undefined;
+      data.programId = ids[0];
     }
 
     if (feeType == "MONTHLY") {
@@ -115,6 +126,14 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
       }
       setProdIds(pIds.payload);
       setLoadingProdIds(false);
+    });
+
+    dispatch(fetchProgramIdsListWithNames()).then((pIds: any) => {
+      if (pIds.payload) {
+        setProg(pIds.payload[0].id);
+      }
+      setProgIds(pIds.payload);
+      setLoadingProgIds(false);
     });
 
     // dispatch(fetchAccountNumbersList()).then((acc: any) => {
@@ -280,25 +299,25 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
         )}
         <MyText>Settlement Account</MyText>
         <MyControlledTextField
-              value={""}
-              displayName="Account"
-              name={"settlementAccountNumber"}
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: false,
-                    }
-              }
-            />
+          value={""}
+          displayName="Account"
+          name={"settlementAccountNumber"}
+          control={control}
+          errors={errors}
+          rules={
+            submitting
+              ? { required: false }
+              : {
+                  required: false,
+                }
+          }
+        />
         <Box className="pb-4"></Box>
         <RadioButton
           title="Fee Level"
           value={feeLevel}
           setValue={setFeeLevel}
-          options={["Account", "Product"]}
+          options={["Account", "Product", "Program"]}
           layout="horizontal"
           disabled={true}
         />
@@ -334,6 +353,44 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
                   const id = val?.split(" - ")[0];
                   if (id) {
                     setProd(id);
+                  }
+                }}
+              />
+            )}
+          </>
+        )}
+        {feeLevel == "Program" && (
+          <>
+            <Box className="pb-4"></Box>
+            <MyText>Program ID</MyText>
+            {loadingProgIds ? (
+              <CircularProgress size="25px" />
+            ) : progIds == null ? (
+              <MyText>No Program ID found</MyText>
+            ) : (
+              <MyControlledAutocomplete
+                value={`${
+                  progIds?.filter((p: any) => p.id == ids[0])[0].id
+                } - ${progIds?.filter((p: any) => p.id == ids[0])[0].name}`}
+                displayName="Program ID"
+                name={"programId"}
+                control={control}
+                errors={errors}
+                disabled={true}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                options={progIds.map((prg) => {
+                  return `${prg.id} - ${prg.name}`;
+                })}
+                customOnChange={(val: any) => {
+                  const id = val?.split(" - ")[0];
+                  if (id) {
+                    setProg(id);
                   }
                 }}
               />

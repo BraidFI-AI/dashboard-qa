@@ -23,15 +23,21 @@ const TabsProvider = (props: any) => {
       name: "Limits",
       path: `/configuration/programs/${parseInt(params.id.toString())}/limits`,
     },
+    {
+      name: "Fees",
+      path: `/configuration/programs/${parseInt(params.id.toString())}/fees`,
+    },
   ];
 
   useEffect(() => {
     if (pathname.includes("/limits")) {
       setCurrentTab(tabs.findIndex((tab) => tab.path.includes("/limits")));
+    } else if (pathname.includes("/fees")) {
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("/fees")));
     } else {
       setCurrentTab(0);
     }
-  }, [pathname]);
+  }, [pathname, params.id]);
 
   return (
     <div>
