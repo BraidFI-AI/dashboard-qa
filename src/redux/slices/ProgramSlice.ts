@@ -102,13 +102,8 @@ export const createProgram = createAsyncThunk(
     try {
       await programRepo.createProgram(program);
     } catch (e: any) {
-      enqueueSnackbar(`Error creating program ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error creating program ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 

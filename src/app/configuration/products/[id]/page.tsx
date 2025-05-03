@@ -49,6 +49,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   const [emails, setEmails] = useState<{ settlementEmail: string }[]>([]);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isEditingInterestRate, setIsEditingInterestRate] = useState(false);
+  const [isEditingOperatingModel, setIsEditingOperatingModel] = useState(false);
   const [isEditingInterestPayoutDate, setIsEditingInterestPayoutDate] =
     useState(false);
   const [
@@ -117,6 +118,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
           }
           setSubmitting(false);
           setIsEditingName(false);
+          setIsEditingOperatingModel(false);
           setIsEditingId(false);
           setIsEditingActive(false);
           setIsEditingBankName(false);
@@ -395,6 +397,24 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                     submitting={false}
                   />
                   <MyEditableTextField
+                    editing={isEditingOperatingModel}
+                    setEditing={setIsEditingOperatingModel}
+                    name="operatingModel"
+                    displayName="Operating Model"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false, pattern: null }
+                        : {
+                            required: false,
+                          }
+                    }
+                    value={product?.operatingModel ?? ""}
+                    options={["LICENSED", "REGULATED_FI", "NON_LICENSED"]}
+                    submitting={false}
+                  />
+                  <MyEditableTextField
                     editing={isEditingInterestPayoutDate}
                     setEditing={setIsEditingInterestPayoutDate}
                     name="interestPayDayOfMonth"
@@ -490,6 +510,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
             isEditingInterestPayoutDate ||
             isEditingDuplicatePaymentCheckDays ||
             isEditingCipConfig ||
+            isEditingOperatingModel ||
             isEditingEmail) && (
             <Box className="w-fit pt-4">
               <MyBlueButton
