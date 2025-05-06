@@ -25,20 +25,12 @@ const TabsProvider = (props: any) => {
       name: "Processing Status",
       path: `/ach/processing/achTransStatus`,
     },
-    {
-      name: "File Errors",
-      path: `/ach/processing/achFileErrors`,
-    },
   ];
 
   useEffect(() => {
     if (pathname.includes("achTransStatus")) {
       setCurrentTab(
         tabs.findIndex((tab) => tab.path.includes("achTransStatus"))
-      );
-    } else if (pathname.includes("achFileErrors")) {
-      setCurrentTab(
-        tabs.findIndex((tab) => tab.path.includes("achFileErrors"))
       );
     } else {
       setCurrentTab(0);
