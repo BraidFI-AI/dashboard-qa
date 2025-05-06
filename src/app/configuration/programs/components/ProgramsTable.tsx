@@ -60,6 +60,12 @@ const ProgramsTable = () => {
           minWidth: 120,
         },
         {
+          field: "operatingModel",
+          headerName: "Operating Model",
+          flex: 1,
+          minWidth: 120,
+        },
+        {
           field: "isActive",
           headerName: "Status",
           flex: 1,

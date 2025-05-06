@@ -76,12 +76,6 @@ const ProductsTable = () => {
           minWidth: 120,
         },
         {
-          field: "accountingCurrency",
-          headerName: "Accounting Currency",
-          flex: 1,
-          minWidth: 160,
-        },
-        {
           field: "programId",
           headerName: "Program ID",
           flex: 1,
@@ -89,8 +83,8 @@ const ProductsTable = () => {
         },
         { field: "tenantId", headerName: "Tenant ID", flex: 1, minWidth: 120 },
         {
-          field: "type",
-          headerName: "Type",
+          field: "operatingModel",
+          headerName: "Operating Model",
           flex: 1,
           minWidth: 120,
         },
