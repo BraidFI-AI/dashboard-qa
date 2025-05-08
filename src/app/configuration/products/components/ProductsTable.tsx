@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/store/store";
-import { GridEventListener } from "@mui/x-data-grid";
+import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
 import { Product } from "@/core/api/ApiTypes";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
 import ErrorPage from "@/core/components/error_page";
+import MyLinkText from "@/core/components/Text/LinkText";
 
 const ProductsTable = () => {
   const router = useRouter();
@@ -67,6 +68,14 @@ const ProductsTable = () => {
   ) : (
     <MyTable
       handleRowClick={handleRowClick}
+      handleCellClick={(
+        params: GridCellParams,
+        event: MuiEvent<React.MouseEvent>
+      ) => {
+        if (params.field == "programId" && params.field != null) {
+          event.stopPropagation();
+        }
+      }}
       columns={[
         { field: "id", headerName: "ID", minWidth: 80 },
         {
@@ -80,6 +89,14 @@ const ProductsTable = () => {
           headerName: "Program ID",
           flex: 1,
           minWidth: 120,
+          renderCell: (params: any) => (
+            <MyLinkText
+              textProps={{ size: "table" }}
+              link={`/configuration/programs/${params.row.programId}`}
+            >
+              {params.row.programId}
+            </MyLinkText>
+          ),
         },
         { field: "tenantId", headerName: "Tenant ID", flex: 1, minWidth: 120 },
         {
