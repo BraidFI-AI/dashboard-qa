@@ -418,39 +418,6 @@ const CreateProductPage = () => {
                 </MyBlueButton>
               </div>
               <Box className="pb-4"></Box>
-              <MyText>Settlement Phone Number</MyText>
-              <MyControlledTextField
-                name="settlementPhoneNumber"
-                displayName="Settlement Phone Number"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                        pattern: /^[0-9]+$/,
-                      }
-                }
-                value=""
-              />
-              <Box className="pb-4"></Box>
-              <MyText>Bank Name</MyText>
-              <MyControlledTextField
-                name="bankName"
-                displayName="Bank Name"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                value=""
-              />
-              <Box className="pb-4"></Box>
               <MyText>Account Type</MyText>
               <MyControlledAutocomplete
                 value={"CHECKING"}

@@ -84,7 +84,7 @@ const CreateProductPage = () => {
   }, [submitCount, errors, isSubmitted, isValid]);
 
   return (
-    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <div className="flex flex-row w-[650px] justify-between">
         <Box className="flex flex-col w-[300px]">
           <MyText>Product Name</MyText>
@@ -295,39 +295,6 @@ const CreateProductPage = () => {
             value=""
           />
           <Box className="pb-4"></Box>
-          <MyText>Settlement Phone Number</MyText>
-          <MyControlledTextField
-            name="settlementPhoneNumber"
-            displayName="Settlement Phone Number"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: true,
-                    pattern: /^[0-9]+$/,
-                  }
-            }
-            value=""
-          />
-          <Box className="pb-4"></Box>
-          <MyText>Bank Name</MyText>
-          <MyControlledTextField
-            name="bankName"
-            displayName="Bank Name"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: true,
-                  }
-            }
-            value=""
-          />
-          <Box className="pb-4"></Box>
           <MyText>Account Type</MyText>
           <MyControlledAutocomplete
             value={"CHECKING"}
@@ -401,7 +368,7 @@ const CreateProductPage = () => {
           </Box>
         </Box>
       </div>
-    </form>)
+    </form>
   );
 };
 

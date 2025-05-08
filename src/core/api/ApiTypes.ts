@@ -407,8 +407,6 @@ export interface Product {
   defaultCardManagementId?: number | null;
   onboardingConfig?: OnboardingConfig | null;
   tenantId?: string | null;
-  bankName?: string | null;
-  settlementPhoneNumber?: string | null;
   productSettlementEmails?: { settlementEmail: string }[] | null;
   duplicatePaymentDays?: number | null;
   createdAt?: number | null;
@@ -417,7 +415,6 @@ export interface Product {
 }
 
 export interface CreateProduct {
-  bankName: string;
   customerAccountType: string;
   isActive: string;
   length: number;
@@ -426,7 +423,6 @@ export interface CreateProduct {
   productName: string;
   programId: string;
   productSettlementEmails?: { settlementEmail: string }[] | null;
-  settlementPhoneNumber: string;
   suffix: string;
   tenantId: string;
   operatingModel?: string;
@@ -884,7 +880,6 @@ export interface CreateVirtualFiatProduct {
 
 export interface UpdateProduct {
   isActive: boolean;
-  settlementPhoneNumber?: string | null;
   productSettlementEmails?: { settlementEmail: string }[] | null;
   productName: string;
   cipConfig?: string | null;
