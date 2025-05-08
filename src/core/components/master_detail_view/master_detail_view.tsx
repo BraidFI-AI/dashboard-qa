@@ -130,6 +130,7 @@ export default function MasterDetailView({
               title="Total Error Count"
               value={details.totalErrorCount}
             />
+            <ItemRowHorizontal title="File Error" value={details.fileError} />
             <ItemRowHorizontal
               title="Error Transactions Count"
               value={details.errorTransactionsCount}
@@ -278,6 +279,45 @@ export default function MasterDetailView({
                   <MyText primary>Rejected Transactions</MyText>
                 </div>
               )}
+            {details.fileErrors != null && details.fileErrors.length > 0 && (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setModalDataType("typed");
+                  setModalData(
+                    <div>
+                      <MyText size="md">File Errors</MyText>
+                      <div className="pb-4" />
+                      <JSONTree
+                        data={details.fileErrors}
+                        hideRoot
+                        theme={{
+                          base00: "#ffffff",
+                          base01: "#000000",
+                          base02: "#000000",
+                          base03: "#000000",
+                          base04: "#000000",
+                          base05: "#000000",
+                          base06: "#000000",
+                          base07: "#000000",
+                          base08: "#000000",
+                          base09: "#000000",
+                          base0A: "#000000",
+                          base0B: "#000000",
+                          base0C: "#000000",
+                          base0D: "#000000",
+                          base0E: "#000000",
+                          base0F: "#000000",
+                        }}
+                      />
+                    </div>
+                  );
+                  setModalOpen(true);
+                }}
+              >
+                <MyText primary>File Errors</MyText>
+              </div>
+            )}
           </div>
         )}
       </div>
