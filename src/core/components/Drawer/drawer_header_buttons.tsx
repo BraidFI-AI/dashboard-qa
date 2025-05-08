@@ -20,6 +20,8 @@ import WireRunReturnSettlementButton from "./header_buttons/wire_run_return_sett
 import Upload314AFile from "./header_buttons/upload_314a_file";
 import ReturnTransactionButton from "./header_buttons/return_transaction";
 import CancelTransactionButton from "./header_buttons/cancel_transaction";
+import CreateVelocityLimit from "@/app/compliance/limits/components/create_limit/create_velocity_limit";
+import VelocityLimitFilters from "@/app/compliance/limits/components/filters";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -82,7 +84,14 @@ const DrawerHeaderButtons = () => {
     (pathname.includes("/configuration/developers/") && (
       <WhitelistDeveloperID />
     )) ||
-    (pathname == "/compliance/314a" && <Upload314AFile />)
+    (pathname == "/compliance/314a" && <Upload314AFile />) ||
+    (pathname == "/compliance/limits" && (
+      <div className="flex flex-row">
+        <VelocityLimitFilters />
+        <div className="w-4" />
+        <CreateVelocityLimit />
+      </div>
+    ))
   );
 };
 

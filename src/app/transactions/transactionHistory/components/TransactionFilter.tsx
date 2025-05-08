@@ -261,8 +261,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({}) => {
           className: "w-2/5",
         }}
       >
-        <Box className="flex flex-col px-4 pt-10 max-w-full">
-          <div className="h-[50px]" />
+        <Box className="flex flex-col px-4 pt-8 max-w-full">
           <MyText size="lg">Transaction Filters</MyText>
           <Box className="flex flex-row pt-8">
             <Box className="pb-4 w-full">

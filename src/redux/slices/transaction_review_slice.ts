@@ -120,6 +120,19 @@ export const fetchBreachedLimits = createAsyncThunk(
   }
 );
 
+export const fetchBreachedLimitsNew = createAsyncThunk(
+  "program/fetchBreachedLimitsNew",
+  async (id: string) => {
+    try {
+      const trans = await transactionRepo.fetchBreachedLimitsNew(id);
+      console.log("breached limits:", trans);
+      return trans;
+    } catch (e: any) {
+      return `Error fetching breached limits ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const updateTransactionStatus = createAsyncThunk(
   "program/approveTransaction",
   async (

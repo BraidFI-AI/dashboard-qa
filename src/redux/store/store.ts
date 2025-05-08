@@ -30,7 +30,7 @@ import Compliance314aSlice from "../slices/314a_slice";
 import NewTransactionSlice from "../slices/new_transaction_slice";
 import OFACSlice from "../slices/OFACSlice";
 import ReconExceptionReviewSlice from "../slices/recon_exception_review_slice";
-
+import VelocityLimitSlice from "../slices/velocity_limit_slice";
 export const store = configureStore({
   reducer: {
     app: AppSlice.reducer,
@@ -63,6 +63,7 @@ export const store = configureStore({
     wireSettlement: WireSlice.reducer,
     wireProcessing: WireProcessingSlice.reducer,
     reconExceptionReview: ReconExceptionReviewSlice.reducer,
+    velocityLimit: VelocityLimitSlice.reducer,
   },
 });
 
