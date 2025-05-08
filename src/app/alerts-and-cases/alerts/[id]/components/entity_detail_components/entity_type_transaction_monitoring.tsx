@@ -1,6 +1,12 @@
 "use client";
 
-import { Alert, RulesAndLimits, Transaction } from "@/core/api/ApiTypes";
+import LimitDetails from "@/app/compliance/limits/components/limit_details";
+import {
+  Alert,
+  RulesAndLimits,
+  Transaction,
+  VelocityLimit,
+} from "@/core/api/ApiTypes";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import MyTable from "@/core/components/Table/MyTable";
@@ -11,7 +17,7 @@ import TransactionTableView from "@/core/components/views/transactions/transacti
 import { boxStyle } from "@/core/constants";
 import timestampToDate from "@/core/utils/timestampToDate";
 import toDollarFormat from "@/core/utils/toDollarFormat";
-import { fetchBreachedLimits } from "@/redux/slices/transaction_review_slice";
+import { fetchBreachedLimitsNew } from "@/redux/slices/transaction_review_slice";
 import {
   fetchTransactionByPaymentId,
   fetchTransactions,
@@ -40,8 +46,9 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
   );
 
   const [submitting, setSubmitting] = useState(false);
-
-  const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {};
+  const [selectedLimit, setSelectedLimit] = useState<VelocityLimit | null>(
+    null
+  );
 
   const [transaction, setTransaction] = useState<
     "loading" | string | Transaction
@@ -87,7 +94,7 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
     if (!paymentId) {
       setLimits("No payment ID found");
     } else {
-      dispatch(fetchBreachedLimits(paymentId ?? "")).then((result: any) => {
+      dispatch(fetchBreachedLimitsNew(paymentId ?? "")).then((result: any) => {
         setLimits(result.payload);
       });
     }
@@ -246,7 +253,7 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
                       setLimits("No payment ID found");
                     } else {
                       setLimits("loading");
-                      dispatch(fetchBreachedLimits(paymentId ?? "")).then(
+                      dispatch(fetchBreachedLimitsNew(paymentId ?? "")).then(
                         (result: any) => {
                           setLimits(result.payload);
                         }
@@ -257,6 +264,16 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
                 />
               ) : (
                 <div>
+                  {selectedLimit && (
+                    <LimitDetails
+                      limit={selectedLimit}
+                      modalOpen={selectedLimit != null}
+                      handleModalClose={() => {
+                        setSelectedLimit(null);
+                      }}
+                      filters={{}}
+                    />
+                  )}
                   <MyText size="md">Breached Limits</MyText>
                   <div className="h-[270px]">
                     <MyTable
@@ -264,53 +281,42 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
                       hideDensityButton
                       hideFilterButton
                       hideSearch
-                      handleRowClick={handleRowClick}
+                      handleRowClick={(params: any) => {
+                        setSelectedLimit(
+                          params.row?.velocityLimit as VelocityLimit
+                        );
+                      }}
                       columns={[
                         { field: "id", headerName: "ID", width: 80 },
                         {
                           field: "limitName",
                           headerName: "Limit Name",
                           flex: 1,
-                          minWidth: 120,
-                        },
-                        {
-                          field: "transactionType",
-                          headerName: "Transaction Type",
-                          flex: 1,
-                          minWidth: 180,
-                        },
-                        {
-                          field: "limitType",
-                          headerName: "Limit Type",
-                          flex: 1,
-                          minWidth: 180,
-                        },
-                        {
-                          field: "status",
-                          headerName: "Status",
-                          flex: 1,
-                          minWidth: 120,
-                        },
-                        {
-                          field: "amount",
-                          headerName: "Amount",
-                          flex: 1,
-                          minWidth: 120,
-                          display: "flex",
-                          renderCell: (params: any) => (
-                            <div>{toDollarFormat(params.row.amount)}</div>
-                          ),
-                          valueGetter: (value: any, row: any) => row.amount,
-                        },
-                        {
-                          field: "createdAt",
-                          headerName: "Created At",
-                          flex: 1,
-                          minWidth: 120,
-                          valueFormatter: (params: any) => {
-                            return `${timestampToDate(params)}`;
+                          minWidth: 140,
+                          valueFormatter: (params: any, row: any) => {
+                            console.log("va name", params, row);
+                            return (row as any)?.velocityLimit?.limitName;
                           },
-                          valueGetter: (value: any, row: any) => row.createdAt,
+                          valueGetter: (value: any, row: any) =>
+                            (row as any)?.velocityLimit?.limitName,
+                        },
+                        {
+                          field: "result",
+                          headerName: "Result",
+                          flex: 1,
+                          minWidth: 100,
+                        },
+                        {
+                          field: "value",
+                          headerName: "Value",
+                          flex: 1,
+                          minWidth: 80,
+                        },
+                        {
+                          field: "message",
+                          headerName: "Message",
+                          flex: 1,
+                          minWidth: 120,
                         },
                       ]}
                       rows={limits}

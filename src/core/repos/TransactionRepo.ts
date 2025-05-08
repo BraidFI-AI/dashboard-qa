@@ -94,6 +94,24 @@ class TransactionRepo {
     return resp;
   }
 
+  public async fetchBreachedLimitsNew(id: string) {
+    let breachedLimits = await this.apiClient.http<any[]>(
+      Method.GET,
+      `/rule/checks/${id}`
+    );
+
+    breachedLimits = breachedLimits.filter(
+      (limit: any) => limit.result != "PASS"
+    );
+    const limits = [];
+
+    for (const limit of breachedLimits) {
+      limits.push(limit);
+    }
+
+    return limits;
+  }
+
   public async fetchBreachedLimits(id: string) {
     let breachedLimits = await this.apiClient.http<any[]>(
       Method.GET,

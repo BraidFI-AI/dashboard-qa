@@ -72,6 +72,7 @@ import InsightsIcon from "@mui/icons-material/Insights";
 import CallMergeIcon from "@mui/icons-material/CallMerge";
 import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -112,7 +113,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
+  // zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -453,7 +454,8 @@ export default function PersistentDrawerLeft(props: any) {
       <AppBar
         position="fixed"
         open={open}
-        color="inherit"
+        // color="inherit"
+        style={{ backgroundColor: "#FFFFFF" }}
         className="h-[80px] shadow-none flex flex-row items-center"
       >
         <Toolbar className="flex flex-row justify-between items-center w-full">
@@ -622,6 +624,16 @@ export default function PersistentDrawerLeft(props: any) {
                         <UploadFileOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
                       ),
                       path: "/compliance/314a",
+                    },
+                    {
+                      name: "Velocity Limits",
+                      icon: (
+                        <SpeedRoundedIcon className="text-[#6B788E] w-[20px] h-[20px]" />
+                      ),
+                      iconFocused: (
+                        <SpeedRoundedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+                      ),
+                      path: "/compliance/limits",
                     },
                   ]}
                 />

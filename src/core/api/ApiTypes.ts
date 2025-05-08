@@ -1510,3 +1510,37 @@ export interface WireInbound {
   originatorRoutingNumber?: string | null;
   originatorToBeneficiaryInfo?: string | null;
 }
+
+export interface VelocityLimit {
+  id?: string | null;
+  limitName?: string | null;
+  limitType?: string | null;
+  status?: string | null;
+  aggregationDays?: string | null;
+  aggregationLevel?: string | null;
+  frequencyMax?: string | null;
+  volume?: number | null;
+  action?: string | null;
+  transactionTypes?: string[] | null;
+  transactionGroups?: string[] | null;
+  restrictedEntities?: string[] | null;
+  programId?: number | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+}
+
+export interface VelocityLimitFilters {
+  accountNumber?: string;
+  counterpartyId?: string;
+  productId?: string;
+  programId?: string;
+  limitName?: string;
+  limitType?: string;
+  status?: string;
+  aggregationLevel?: string;
+  action?: string;
+  transactionType?: string;
+  transactionGroup?: string;
+}
