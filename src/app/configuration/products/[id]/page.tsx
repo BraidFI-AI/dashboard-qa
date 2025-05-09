@@ -43,11 +43,9 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   const [submitting, setSubmitting] = useState(false);
 
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingBankName, setIsEditingBankName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [emails, setEmails] = useState<{ settlementEmail: string }[]>([]);
-  const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isEditingInterestRate, setIsEditingInterestRate] = useState(false);
   const [isEditingOperatingModel, setIsEditingOperatingModel] = useState(false);
   const [isEditingInterestPayoutDate, setIsEditingInterestPayoutDate] =
@@ -71,7 +69,6 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
     defaultValues: {
       productName: product?.productName ?? "",
       isActive: product?.isActive ?? false,
-      settlementPhoneNumber: product?.settlementPhoneNumber ?? "",
       productSettlementEmails: product?.productSettlementEmails ?? [],
     },
   });
@@ -88,12 +85,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
       if (!isEditingActive) {
         data.isActive = product.isActive != null ? product.isActive : false;
       }
-      if (!isEditingPhone) {
-        data.settlementPhoneNumber =
-          product.settlementPhoneNumber != null
-            ? product.settlementPhoneNumber
-            : "";
-      }
+
       if (!isEditingEmail) {
         data.productSettlementEmails =
           product.productSettlementEmails != null
@@ -121,9 +113,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
           setIsEditingOperatingModel(false);
           setIsEditingId(false);
           setIsEditingActive(false);
-          setIsEditingBankName(false);
           setIsEditingEmail(false);
-          setIsEditingPhone(false);
           setIsEditingCipConfig(false);
           setIsEditingInterestRate(false);
           setIsEditingInterestPayoutDate(false);
@@ -150,7 +140,6 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
           reset({
             productName: data.payload.productName,
             isActive: data.payload.isActive,
-            settlementPhoneNumber: data.payload.settlementPhoneNumber,
             productSettlementEmails: data.payload.productSettlementEmails,
           });
 
@@ -209,23 +198,6 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                       }
                 }
                 value={product.productName != null ? product.productName : ""}
-                submitting={false}
-              />
-              <MyEditableTextField
-                editing={isEditingBankName}
-                setEditing={setIsEditingBankName}
-                name="bankName"
-                displayName="Bank Name"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                value={product.bankName != null ? product.bankName : ""}
                 submitting={false}
               />
               <div className="flex flex-row justify-between">
@@ -324,28 +296,6 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 />
               </div>
               <div className="pb-4" />
-              <MyEditableTextField
-                editing={isEditingPhone}
-                setEditing={setIsEditingPhone}
-                name="settlementPhoneNumber"
-                displayName="Settlement Phone Number"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                        pattern: /^[0-9]+$/,
-                      }
-                }
-                value={
-                  product.settlementPhoneNumber != null
-                    ? product.settlementPhoneNumber
-                    : ""
-                }
-                submitting={false}
-              />
               <ItemRow title="Prefix" value={product.prefix ?? ""}></ItemRow>
               <ItemRow title="Suffix" value={product.suffix ?? ""}></ItemRow>
               <ItemRow
@@ -504,8 +454,6 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
           {(isEditingName ||
             isEditingId ||
             isEditingActive ||
-            isEditingBankName ||
-            isEditingPhone ||
             isEditingInterestRate ||
             isEditingInterestPayoutDate ||
             isEditingDuplicatePaymentCheckDays ||
