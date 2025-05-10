@@ -85,6 +85,7 @@ const ProductsTable = () => {
           field: "programId",
           headerName: "Program ID",
           flex: 1,
+          display: "flex",
           minWidth: 120,
         },
         { field: "tenantId", headerName: "Tenant ID", flex: 1, minWidth: 120 },

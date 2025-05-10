@@ -12,6 +12,7 @@ export type MyControlledTextFieldProps = {
   rules: any | null;
   customOnChange?: any;
   value: string | undefined;
+  disabled?: boolean;
 };
 
 export function getErrorByNameString(errors: any, name: string) {
@@ -36,6 +37,7 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
   rules,
   value: val,
   customOnChange,
+  disabled,
 }) => {
   return (
     <Controller
@@ -63,6 +65,7 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
       defaultValue={val}
       render={({ field: { onChange, value } }) => (
         <TextField
+          disabled={disabled}
           size="small"
           inputProps={{
             className: "font-avenir-regular text-[15px] h-[25px]",

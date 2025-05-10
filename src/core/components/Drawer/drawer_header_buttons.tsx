@@ -91,6 +91,24 @@ const DrawerHeaderButtons = () => {
         <div className="w-4" />
         <CreateVelocityLimit />
       </div>
+    )) ||
+    (pathname.includes("/limits") && pathname.includes("program") && (
+      <CreateVelocityLimit
+        entityType="PROGRAM"
+        entityId={params.id as string}
+      />
+    )) ||
+    (pathname.includes("/limits") && pathname.includes("product") && (
+      <CreateVelocityLimit
+        entityType="PRODUCT"
+        entityId={params.id as string}
+      />
+    )) ||
+    (pathname.includes("/limits") && pathname.includes("account") && (
+      <CreateVelocityLimit
+        entityType="ACCOUNT"
+        entityId={params.id as string}
+      />
     ))
   );
 };

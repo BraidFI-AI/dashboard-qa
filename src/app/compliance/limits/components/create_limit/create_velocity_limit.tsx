@@ -32,7 +32,15 @@ export enum LimitType {
   TRANSACTION = "Transaction",
 }
 
-const CreateVelocityLimit = () => {
+type CreateVelocityLimitProps = {
+  entityId?: string;
+  entityType?: string;
+};
+
+const CreateVelocityLimit = ({
+  entityId,
+  entityType,
+}: CreateVelocityLimitProps) => {
   const qParams = useSearchParams();
   const dispatch = useAppDispatch();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -62,8 +70,9 @@ const CreateVelocityLimit = () => {
   const [types, setTypes] = useState<string[]>([]);
   const [groups, setGroups] = useState<string[]>([]);
 
-  const [associatedEntityType, setAssociatedEntityType] =
-    useState<string>("ACCOUNT");
+  const [associatedEntityType, setAssociatedEntityType] = useState<string>(
+    entityType ?? "ACCOUNT"
+  );
 
   const [countries, setCountries] = useState<
     "loading" | string | { countryName: string; countryCodeISO2: string }[]
@@ -84,7 +93,7 @@ const CreateVelocityLimit = () => {
     });
 
     setFilters(params as VelocityLimitFilters);
-    dispatch(fetchVelocityLimits({ refresh: false, filters: filters }));
+    dispatch(fetchVelocityLimits({ refresh: false, filters: params }));
   };
 
   const {
@@ -314,6 +323,8 @@ const CreateVelocityLimit = () => {
               setCountries={setCountries}
               restrictedEntities={restrictedEntities}
               setRestrictedEntities={setRestrictedEntities}
+              entityId={entityId}
+              entityType={entityType}
             />
           )}
           {limitType == LimitType.TRANSACTION && (
@@ -328,6 +339,8 @@ const CreateVelocityLimit = () => {
               setValue={setValue}
               associatedEntityType={associatedEntityType}
               setAssociatedEntityType={setAssociatedEntityType}
+              entityId={entityId}
+              entityType={entityType}
             />
           )}
           <Box className="pt-4 pb-10">
