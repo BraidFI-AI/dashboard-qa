@@ -42,11 +42,6 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
               value={enumTextToReadableText(context.isActive?.toString() ?? "")}
             />
             <div className="h-3" />
-            <ItemRowHorizontal
-              title="Bank Name"
-              value={context.bankName?.toString() ?? ""}
-            />
-            <div className="h-3" />
             <div className="pr-1">
               <MyText size="sm" color="text-[#677990]">
                 Settlement Emails
@@ -60,11 +55,6 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
                 <MyText size="md">{email.settlementEmail ?? ""}</MyText>
               </div>
             ))}
-            <div className="h-3" />
-            <ItemRowHorizontal
-              title="Settlement Phone Number"
-              value={context.settlementPhoneNumber?.toString() ?? ""}
-            />
             <div className="h-3" />
             <ItemRowHorizontal
               title="Length"
