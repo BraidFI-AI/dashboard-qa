@@ -1,5 +1,5 @@
 import ApiClient, { Method } from "../api/ApiClient";
-
+import { VelocityLimitFilters } from "../api/ApiTypes";
 class VelocityLimitRepo {
   private apiClient: ApiClient;
 
@@ -7,11 +7,15 @@ class VelocityLimitRepo {
     this.apiClient = apiClient;
   }
 
-  public async fetchVelocityLimits(pageSize: number, pageNumber: number) {
+  public async fetchVelocityLimits(
+    pageSize: number,
+    pageNumber: number,
+    filters: VelocityLimitFilters
+  ) {
     const response = await this.apiClient.http<any>(
       Method.POST,
       `/rule/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      {}
+      { ...filters }
     );
     return response;
   }

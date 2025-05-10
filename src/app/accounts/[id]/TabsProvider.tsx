@@ -31,7 +31,7 @@ const TabsProvider = (props: any) => {
     },
     {
       name: "Limits",
-      path: `/accounts/${params.id.toString()}/limits`,
+      path: `/accounts/${params.id.toString()}/limits?accountNumber=${params.id.toString()}`,
     },
     {
       name: "Fees",

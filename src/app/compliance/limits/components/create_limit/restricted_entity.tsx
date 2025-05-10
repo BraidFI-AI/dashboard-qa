@@ -48,6 +48,8 @@ type CreateRestrictedEntityProps = {
       entityCode?: string;
     }[]
   ) => void;
+  entityId?: string;
+  entityType?: string;
 };
 
 const CreateRestrictedEntity = ({
@@ -65,6 +67,8 @@ const CreateRestrictedEntity = ({
   setCountries,
   restrictedEntities,
   setRestrictedEntities,
+  entityId,
+  entityType,
 }: CreateRestrictedEntityProps) => {
   const dispatch = useAppDispatch();
 
@@ -100,6 +104,7 @@ const CreateRestrictedEntity = ({
             value={associatedEntityType}
             displayName="Associated Entity Type"
             clearable={false}
+            disabled={entityType != null ? true : false}
             name={"associatedEntityType"}
             control={control}
             errors={errors}
@@ -245,6 +250,7 @@ const CreateRestrictedEntity = ({
             displayName="Associated Entity ID"
             control={control}
             errors={errors}
+            disabled={entityType != null && entityType != "ACCOUNT"}
             rules={
               submitting
                 ? { required: false }
@@ -252,7 +258,7 @@ const CreateRestrictedEntity = ({
                     required: associatedEntityType != "GLOBAL" ? true : false,
                   }
             }
-            value=""
+            value={entityId ?? ""}
           />
           <Box className="pb-4"></Box>
           <MyText>Volume</MyText>

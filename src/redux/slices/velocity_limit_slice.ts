@@ -71,25 +71,6 @@ export const fetchVelocityLimits = createAsyncThunk(
     thunkApi: any
   ) => {
     try {
-      // if (data.filters.createdAtStart) {
-      //   const sDate = moment(data.filters.createdAtStart);
-      //   data.filters = {
-      //     ...data.filters,
-      //     createdAtStart: `${sDate.year()}-${(sDate.month() + 1)
-      //       .toString()
-      //       .padStart(2, "0")}-${sDate.date().toString().padStart(2, "0")}`,
-      //   };
-      // }
-      // if (data.filters.createdAtEnd) {
-      //   const sDate = moment(data.filters.createdAtEnd);
-      //   data.filters = {
-      //     ...data.filters,
-      //     createdAtEnd: `${sDate.year()}-${(sDate.month() + 1)
-      //       .toString()
-      //       .padStart(2, "0")}-${sDate.date().toString().padStart(2, "0")}`,
-      //   };
-      // }
-
       const limits = await velocityLimitRepo.fetchVelocityLimits(
         thunkApi.getState().velocityLimit.limitsPagination.pageSize ??
           paginationPageSize,
@@ -97,8 +78,8 @@ export const fetchVelocityLimits = createAsyncThunk(
           ? 0
           : thunkApi.getState().velocityLimit.limitsPagination.pageNumber == -1
           ? 0
-          : thunkApi.getState().velocityLimit.limitsPagination.pageNumber
-        // data.filters
+          : thunkApi.getState().velocityLimit.limitsPagination.pageNumber,
+        data.filters
       );
       console.log("velocity limits", limits);
 

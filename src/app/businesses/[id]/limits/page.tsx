@@ -11,6 +11,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { fetchBusiness } from "@/redux/slices/BusinessSlice";
 import { fetchBusinessLimits } from "@/redux/slices/RulesAndLimitsSlice";
 import { setTitle } from "@/redux/slices/AppSlice";
+import LimitsTable from "@/app/compliance/limits/components/limits_table";
 
 const Rules = () => {
   const dispatch = useAppDispatch();
@@ -27,26 +28,10 @@ const Rules = () => {
     );
   });
 
-  const fetchDataMemoized = useMemo(
-    () => fetchBusinessLimits(params.id.toString()),
-    [params.id]
-  );
-
   return (
-    <Box className="flex flex-col h-full">
-      <Box className="w-fit">
-        <Link href={`/businesses/${params.id}/limits/create`}>
-          <MyBlueButton>Add Limit</MyBlueButton>
-        </Link>
-      </Box>
-      <Box className="pb-4"></Box>
-      <div style={{ height: "67vh" }}>
-        <RulesTableView
-          fetchData={fetchDataMemoized}
-          pushTo={`/businesses/${params.id}/limits`}
-        />
-      </div>
-    </Box>
+    <div style={{ height: "77vh" }}>
+      <LimitsTable />
+    </div>
   );
 };
 

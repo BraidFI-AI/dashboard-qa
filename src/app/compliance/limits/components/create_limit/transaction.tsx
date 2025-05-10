@@ -30,6 +30,8 @@ type CreateTransactionProps = {
   setValue: any;
   associatedEntityType: string;
   setAssociatedEntityType: (associatedEntityType: string) => void;
+  entityId?: string;
+  entityType?: string;
 };
 
 const CreateTransaction = ({
@@ -43,6 +45,8 @@ const CreateTransaction = ({
   setValue,
   associatedEntityType,
   setAssociatedEntityType,
+  entityId,
+  entityType,
 }: CreateTransactionProps) => {
   const dispatch = useAppDispatch();
 
@@ -78,6 +82,7 @@ const CreateTransaction = ({
           displayName="Associated Entity Type"
           clearable={false}
           name={"associatedEntityType"}
+          disabled={entityType != null ? true : false}
           control={control}
           errors={errors}
           rules={
@@ -222,6 +227,7 @@ const CreateTransaction = ({
           displayName="Associated Entity ID"
           control={control}
           errors={errors}
+          disabled={entityType != null && entityType != "ACCOUNT"}
           rules={
             submitting
               ? { required: false }
@@ -229,7 +235,7 @@ const CreateTransaction = ({
                   required: associatedEntityType != "GLOBAL" ? true : false,
                 }
           }
-          value=""
+          value={entityId ?? ""}
         />
         <Box className="pb-4"></Box>
         <MyText>Volume</MyText>
