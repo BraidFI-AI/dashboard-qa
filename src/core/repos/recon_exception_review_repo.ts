@@ -22,11 +22,13 @@ class ReconExceptionReviewRepo {
             beginDate: beginDate,
             endDate: endDate,
             excludeWire: true,
+            reconStatuses: ["EXCEPTION"],
           }
         : {
             beginDate: beginDate,
             endDate: endDate,
             excludeAch: true,
+            reconStatuses: ["EXCEPTION"],
           }
     );
     return response;
@@ -41,11 +43,26 @@ class ReconExceptionReviewRepo {
   ) {
     const response = await this.apiClient.http<any>(
       Method.POST,
-      `/reconciliation/${transactionType.toLowerCase()}/exceptions?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      `/reconciliation/${transactionType.toLowerCase()}?pageSize=${pageSize}&pageNumber=${pageNumber}`,
       {
         beginDate: beginDate,
         endDate: endDate,
+        reconStatuses: ["EXCEPTION"],
       }
+    );
+    return response;
+  }
+
+  public async performManualMatch(data: {
+    notes: string;
+    transactionAuditId: string;
+    settlementFileId: string;
+    settlementFileType: "ACH" | "WIRE";
+  }) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      `/reconciliation/manual-match`,
+      data
     );
     return response;
   }
