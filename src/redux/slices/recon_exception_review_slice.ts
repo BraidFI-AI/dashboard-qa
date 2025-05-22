@@ -177,6 +177,27 @@ export const fetchSettlementsPaginated = createAsyncThunk(
   }
 );
 
+export const performManualMatch = createAsyncThunk(
+  "reconExceptionReview/performManualMatch",
+  async (
+    data: {
+      notes: string;
+      transactionAuditId: string;
+      settlementFileId: string;
+      settlementFileType: "ACH" | "WIRE";
+    },
+    thunkApi: any
+  ) => {
+    try {
+      const response = await reconExceptionReviewRepo.performManualMatch(data);
+      console.log("manual match performed successfully", response);
+      return { response: "success" };
+    } catch (e: any) {
+      return `Error performing manual match ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export default ReconExceptionReviewSlice;
 export const {
   setTransactionsPageNumber,
