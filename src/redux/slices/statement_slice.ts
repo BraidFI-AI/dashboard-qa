@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { ACH } from "@/core/api/ApiTypes";
+import { ACH, Statement } from "@/core/api/ApiTypes";
 import { APP_TIMEZONE } from "@/core/constants";
 import StatementRepo from "@/core/repos/statement_repo";
 import { momentToPSTString } from "@/core/utils/dateTimeUtil";
@@ -12,9 +12,13 @@ const statementRepo: StatementRepo = new StatementRepo(apiClient);
 
 export type StatementType = "loading" | string | ACH[];
 
-interface StatementState {}
+interface StatementState {
+  statement: Statement | string;
+}
 
-const initialState: StatementState = {};
+const initialState: StatementState = {
+  statement: "loading",
+};
 
 const StatementSlice = createSlice({
   name: "statement",
@@ -24,7 +28,20 @@ const StatementSlice = createSlice({
       Object.assign(state, initialState);
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchRootStatement.fulfilled, (state, action) => {
+      state.statement = action.payload;
+    });
+    builder.addCase(fetchProgramStatement.fulfilled, (state, action) => {
+      state.statement = action.payload;
+    });
+    builder.addCase(fetchProductStatement.fulfilled, (state, action) => {
+      state.statement = action.payload;
+    });
+    builder.addCase(fetchAccountStatement.fulfilled, (state, action) => {
+      state.statement = action.payload;
+    });
+  },
 });
 
 export const fetchRootStatement = createAsyncThunk(
