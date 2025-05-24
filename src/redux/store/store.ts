@@ -31,6 +31,7 @@ import NewTransactionSlice from "../slices/new_transaction_slice";
 import OFACSlice from "../slices/OFACSlice";
 import ReconExceptionReviewSlice from "../slices/recon_exception_review_slice";
 import VelocityLimitSlice from "../slices/velocity_limit_slice";
+import StatementSlice from "../slices/statement_slice";
 export const store = configureStore({
   reducer: {
     app: AppSlice.reducer,
@@ -64,6 +65,7 @@ export const store = configureStore({
     wireProcessing: WireProcessingSlice.reducer,
     reconExceptionReview: ReconExceptionReviewSlice.reducer,
     velocityLimit: VelocityLimitSlice.reducer,
+    statement: StatementSlice.reducer,
   },
 });
 

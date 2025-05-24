@@ -22,6 +22,9 @@ import ReturnTransactionButton from "./header_buttons/return_transaction";
 import CancelTransactionButton from "./header_buttons/cancel_transaction";
 import CreateVelocityLimit from "@/app/compliance/limits/components/create_limit/create_velocity_limit";
 import VelocityLimitFilters from "@/app/compliance/limits/components/filters";
+import GenerateMonthlyStatement from "@/app/statements/components/generate_monthly_statement";
+import GenerateStatement from "@/app/statements/components/generate_monthly_statement";
+import { useSelector } from "react-redux";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -29,6 +32,8 @@ const DrawerHeaderButtons = () => {
   const dispatch = useAppDispatch();
 
   const [submitting, setSubmitting] = useState(false);
+
+  const statementData = useSelector((state: any) => state.statement.statement);
 
   return (
     (pathname == "/businesses" && <CreateBusinessPage />) ||
@@ -109,6 +114,9 @@ const DrawerHeaderButtons = () => {
         entityType="ACCOUNT"
         entityId={params.id as string}
       />
+    )) ||
+    (pathname == "/statements" && typeof statementData != "string" && (
+      <GenerateStatement />
     ))
   );
 };
