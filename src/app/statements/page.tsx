@@ -139,7 +139,7 @@ const StatementsPage = () => {
           accountId: accountId,
         })
       ).then((statement: any) => {
-        setStatement(statement.payload);
+        setStatement(statement.payload.statement);
       });
     } else {
       enqueueSnackbar("Invalid statement type", { variant: "error" });
