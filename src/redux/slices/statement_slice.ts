@@ -14,10 +14,14 @@ export type StatementType = "loading" | string | ACH[];
 
 interface StatementState {
   statement: Statement | string;
+  statementType: "PRODUCT" | "ACCOUNT" | "PROGRAM" | "ROOT";
+  accountNumber: string | null;
 }
 
 const initialState: StatementState = {
   statement: "loading",
+  statementType: "PRODUCT",
+  accountNumber: null,
 };
 
 const StatementSlice = createSlice({
@@ -31,15 +35,24 @@ const StatementSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchRootStatement.fulfilled, (state, action) => {
       state.statement = action.payload;
+      state.statementType = "ROOT";
     });
     builder.addCase(fetchProgramStatement.fulfilled, (state, action) => {
       state.statement = action.payload;
+      state.statementType = "PROGRAM";
     });
     builder.addCase(fetchProductStatement.fulfilled, (state, action) => {
       state.statement = action.payload;
+      state.statementType = "PRODUCT";
     });
     builder.addCase(fetchAccountStatement.fulfilled, (state, action) => {
-      state.statement = action.payload;
+      if (typeof action.payload == "string") {
+        state.statement = action.payload;
+      } else {
+        state.statement = action.payload.statement;
+        state.statementType = "ACCOUNT";
+        state.accountNumber = action.payload.accountNumber;
+      }
     });
   },
 });
@@ -133,7 +146,10 @@ export const fetchAccountStatement = createAsyncThunk(
           .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
         data.accountId
       );
-      return response;
+      return {
+        statement: response,
+        accountNumber: data.accountId,
+      };
     } catch (e: any) {
       return `Error fetching account statement ${generateErrorMessage(e)}`;
     }

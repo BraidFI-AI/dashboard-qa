@@ -1,4 +1,4 @@
-import { Product, Program, Statement } from "@/core/api/ApiTypes";
+import { Account, Product, Program, Statement } from "@/core/api/ApiTypes";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
@@ -8,6 +8,7 @@ import MyModal from "@/core/components/my_modal";
 import MyText from "@/core/components/Text/Text";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import toDollarFormat from "@/core/utils/toDollarFormat";
+import { fetchAccount } from "@/redux/slices/AccountSlice";
 import { fetchProductNew } from "@/redux/slices/ProductSlice";
 import { fetchProgramV2 } from "@/redux/slices/ProgramSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -21,12 +22,23 @@ export default function GenerateStatement() {
   const statementData: Statement = useSelector(
     (state: any) => state.statement.statement
   );
+  const statementType = useSelector(
+    (state: any) => state.statement.statementType
+  );
+
+  const accountNumber = useSelector(
+    (state: any) => state.statement.accountNumber
+  );
 
   const [product, setProduct] = useState<Product | string | null>("loading");
   const [program, setProgram] = useState<Program | string | null>("loading");
+  const [account, setAccount] = useState<Account | string | null>("loading");
+
+  const [bankName, setBankName] = useState<string>("Braidfi");
+  const [bankPhone, setBankPhone] = useState<string>("123456789");
 
   useEffect(() => {
-    if (statementData.productId) {
+    if (statementType == "PRODUCT" && statementData.productId) {
       dispatch(fetchProductNew(parseInt(statementData.productId ?? 0))).then(
         (p: any) => {
           setProduct(p.payload);
@@ -35,7 +47,8 @@ export default function GenerateStatement() {
     } else {
       setProduct(null);
     }
-    if (statementData.programId) {
+
+    if (statementType == "PROGRAM" && statementData.programId) {
       dispatch(fetchProgramV2(parseInt(statementData.programId ?? 0))).then(
         (p: any) => {
           setProgram(p.payload);
@@ -44,7 +57,15 @@ export default function GenerateStatement() {
     } else {
       setProgram(null);
     }
-  }, [statementData, dispatch]);
+
+    if (statementType == "ACCOUNT" && accountNumber) {
+      dispatch(fetchAccount(accountNumber)).then((a: any) => {
+        setAccount(a.payload);
+      });
+    } else {
+      setAccount(null);
+    }
+  }, [statementData, dispatch, statementType, accountNumber]);
 
   const printContent = () => {
     const element = document.getElementById("printable-content");
@@ -59,14 +80,25 @@ export default function GenerateStatement() {
         <head>
           <meta charset="utf-8">
           <style>
-            @media print {
-              @page {
-                margin: 0;
-                size: auto;
+            @page {
+              margin: 20px;
+              @bottom-left {
+                content: "Page "counter(page) " of " counter(pages);
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                color: #666;
               }
+            }
+            @page :first {
+              margin-top: 20px;
+            }
+            @page :not(:first) {
+              margin-top: 32px;
+            }
+            @media print {
               body { 
                 font-family: Arial, sans-serif; 
-                margin: 20px; 
+                margin: 0;
                 color: black; 
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -101,6 +133,69 @@ export default function GenerateStatement() {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               }
+              .statement-header {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                width: 100% !important;
+                gap: 0.25rem !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+                height: 100% !important;
+              }
+              .statement-title {
+                font-size: 2rem !important;
+                font-weight: 800 !important;
+                text-align: right !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                margin-bottom: -4px !important;
+                font-family: Arial, sans-serif !important;
+              }
+              .statement-date {
+                font-size: 13px !important;
+                color: #666 !important;
+                font-weight: 700 !important;
+                text-align: right !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                margin-top: -4px !important;
+              }
+              .grid { 
+                display: grid !important; 
+                width: 100% !important;
+                max-width: 800px !important;
+                margin: 0 auto !important;
+              }
+              .grid-cols-2 { 
+                grid-template-columns: 250px 1fr !important;
+                gap: 2rem !important;
+              }
+              .header-container {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                max-width: 800px !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                width: 100% !important;
+              }
+              .logo-container {
+                width: 250px !important;
+                flex-shrink: 0 !important;
+              }
+              .title-container {
+                width: 400px !important;
+                flex-shrink: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-end !important;
+                gap: 0 !important;
+              }
             }
             body { 
               font-family: Arial, sans-serif; 
@@ -116,8 +211,11 @@ export default function GenerateStatement() {
             .gap-4 { gap: 1rem; }
             .gap-8 { gap: 2rem; }
             .w-full { width: 100%; }
-            .grid { display: grid; }
-            .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid { display: grid !important; }
+            .grid-cols-2 { 
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 1rem !important;
+            }
             .mb-6 { margin-bottom: 1.5rem; }
             .mb-2 { margin-bottom: 0.5rem; }
             .mt-1 { margin-top: 0.25rem; }
@@ -174,6 +272,10 @@ export default function GenerateStatement() {
             .transaction-item {
               margin-bottom: 0.25rem;
             }
+            /* Remove the old page number styles */
+            .page-number, .page-number-container {
+              display: none;
+            }
           </style>
         </head>
         <body>
@@ -189,7 +291,30 @@ export default function GenerateStatement() {
             )
             .replace(/class="h-10"/g, 'class="spacer"')
             .replace(/class="h-1"/g, 'class="spacer-small"')
-            .replace(/class="pl-1"/g, 'class="transaction-list"')}
+            .replace(/class="pl-1"/g, 'class="transaction-list"')
+            .replace(
+              /class="flex flex-col items-end justify-end"/g,
+              'class="statement-header"'
+            )
+            .replace(
+              /<div class="font-avenir-regular text-\[25px\]">Monthly Account Statement<\/div>/g,
+              '<div class="statement-title" style="font-size: 25px !important; font-weight: 400 !important; text-align: center !important; width: 100% !important; margin: 0 !important; padding: 0 !important; margin-bottom: -4px !important; font-family: Arial, sans-serif !important;">Monthly Account Statement</div>'
+            )
+            .replace(/<MyText>/g, '<div class="statement-date">')
+            .replace(/<\/MyText>/g, "</div>")
+            .replace(/class="flex justify-center"/g, 'class="flex-center"')
+            .replace(
+              /<div style="max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; padding: 0 20px">/g,
+              '<div class="header-container">'
+            )
+            .replace(
+              /<div style="width: 250px; flex-shrink: 0">/g,
+              '<div class="logo-container">'
+            )
+            .replace(
+              /<div style="width: 400px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px">/g,
+              '<div class="title-container">'
+            )}
         </body>
       </html>
     `;
@@ -255,59 +380,101 @@ export default function GenerateStatement() {
           </div>
           <div id="printable-content">
             <div
-              className="flex justify-between mb-6"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              style={{
+                maxWidth: "800px",
+                margin: "0 auto",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0",
+              }}
             >
-              <div style={{ width: "250px" }}>
+              <div style={{ width: "250px", flexShrink: 0 }}>
                 <ClientLogo width={183} />
               </div>
               <div
-                style={{ width: "250px" }}
-                className="flex items-center justify-end"
+                style={{
+                  width: "400px",
+                  flexShrink: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: "0",
+                }}
               >
-                <MyText variant="label" size="lg">
+                <div
+                  style={{
+                    fontSize: "25px",
+                    textAlign: "right",
+                    width: "100%",
+                    fontFamily: "Arial, sans-serif",
+                    lineHeight: "1.2",
+                  }}
+                >
                   Monthly Account Statement
-                </MyText>
+                </div>
+                <div style={{ textAlign: "right", width: "100%" }}>
+                  <MyText>{`${
+                    statementData.starting?.split("T")[0] ?? ""
+                  } through ${
+                    statementData.ending?.split("T")[0] ?? ""
+                  }`}</MyText>
+                </div>
               </div>
             </div>
             <div className="h-10" />
             <div
-              className="flex justify-between mb-6"
+              className="flex justify-between"
               style={{ maxWidth: "600px", margin: "0 auto" }}
             >
               <div style={{ width: "250px" }}>
-                <MyText>{`Product: ${
-                  typeof product == "string" || product == null
-                    ? statementData.productId ?? ""
-                    : product.productName
-                }`}</MyText>
-                <MyText>{`Program: ${
-                  typeof program == "string" || program == null
-                    ? statementData.programId ?? ""
-                    : program.name
-                }`}</MyText>
+                {statementType != "ROOT" && (
+                  <>
+                    <MyText>Customer Information</MyText>
+                  </>
+                )}
+                {statementType == "PRODUCT" && (
+                  <MyText>{`Product: ${
+                    typeof product == "string" || product == null
+                      ? statementData.productId ?? ""
+                      : product.productName
+                  }`}</MyText>
+                )}
+                {statementType == "PROGRAM" && (
+                  <MyText>{`Program: ${
+                    typeof program == "string" || program == null
+                      ? statementData.programId ?? ""
+                      : program.name
+                  }`}</MyText>
+                )}
+                {statementType == "ACCOUNT" &&
+                  account != null &&
+                  typeof account != "string" && (
+                    <MyText>{`Customer Name: ${
+                      (account as any)?.customerName ?? ""
+                    }`}</MyText>
+                  )}
               </div>
               <div style={{ width: "250px" }} className="text-right">
-                <MyText>Account</MyText>
-                <MyText>{statementData.accountName}</MyText>
-                <MyText>Statement Date</MyText>
-                <MyText>{`${
-                  statementData.starting?.split("T")[0] ?? ""
-                } through ${
-                  statementData.ending?.split("T")[0] ?? ""
-                }`}</MyText>
+                {statementType == "ACCOUNT" && accountNumber && (
+                  <>
+                    <MyText>Account Number</MyText>
+                    <MyText>{accountNumber}</MyText>
+                  </>
+                )}
               </div>
             </div>
+            {statementType != "ROOT" && <div className="h-6" />}
             <div className="flex justify-center">
               <MyText size="md">Statement Period Activity Summary</MyText>
             </div>
-            <div className="w-full h-[2px] bg-gray-300 mt-1 mb-2"></div>
+            <div className="w-full h-[1px] bg-gray-300 mt-1 mb-2"></div>
             <div
               className="flex justify-between mb-6"
               style={{ maxWidth: "600px", margin: "0 auto" }}
             >
               <div style={{ width: "250px" }}>
-                <MyText>{`Balance on ${statementData.starting
+                <MyText weight="bold">{`Balance on ${statementData.starting
                   ?.split("T")[0]
                   .split("-")
                   .reverse()
@@ -324,12 +491,16 @@ export default function GenerateStatement() {
                 </div>
               </div>
               <div style={{ width: "250px" }} className="text-right">
-                <MyText>{toDollarFormat(statementData.startingBalance)}</MyText>
+                <MyText weight="bold">
+                  {toDollarFormat(statementData.startingBalance)}
+                </MyText>
                 <div className="h-1" />
                 {statementData.transactionSummary.map(
                   (item: any, index: any) => (
                     <div key={index}>
-                      <MyText>{toDollarFormat(item.amount)}</MyText>
+                      <MyText>{`${
+                        item.polarity == "DEBIT" ? "-" : "+"
+                      }${toDollarFormat(item.amount)}`}</MyText>
                     </div>
                   )
                 )}
@@ -341,14 +512,16 @@ export default function GenerateStatement() {
               style={{ maxWidth: "600px", margin: "0 auto" }}
             >
               <div style={{ width: "250px" }}>
-                <MyText>{`Balance on ${statementData.ending
+                <MyText weight="bold">{`Balance on ${statementData.ending
                   ?.split("T")[0]
                   .split("-")
                   .reverse()
                   .join("/")}`}</MyText>
               </div>
               <div style={{ width: "250px" }} className="text-right">
-                <MyText>{toDollarFormat(statementData.endingBalance)}</MyText>
+                <MyText weight="bold">
+                  {toDollarFormat(statementData.endingBalance)}
+                </MyText>
               </div>
             </div>
           </div>

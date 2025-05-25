@@ -25,6 +25,11 @@ import VelocityLimitFilters from "@/app/compliance/limits/components/filters";
 import GenerateMonthlyStatement from "@/app/statements/components/generate_monthly_statement";
 import GenerateStatement from "@/app/statements/components/generate_monthly_statement";
 import { useSelector } from "react-redux";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_READONLY_ROLE,
+  ADMIN_ROLE,
+} from "@/core/constants";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -32,6 +37,8 @@ const DrawerHeaderButtons = () => {
   const dispatch = useAppDispatch();
 
   const [submitting, setSubmitting] = useState(false);
+
+  const userType = useSelector((state: any) => state.app.userType);
 
   const statementData = useSelector((state: any) => state.statement.statement);
 
@@ -115,9 +122,11 @@ const DrawerHeaderButtons = () => {
         entityId={params.id as string}
       />
     )) ||
-    (pathname == "/statements" && typeof statementData != "string" && (
-      <GenerateStatement />
-    ))
+    (pathname == "/statements" &&
+      typeof statementData != "string" &&
+      (userType == ADMIN_ROLE ||
+        userType == ADMIN_OPS_ROLE ||
+        userType == ADMIN_READONLY_ROLE) && <GenerateStatement />)
   );
 };
 
