@@ -68,22 +68,12 @@ const AddRestrictedEntity = ({
 
     if (data.entityType == "COUNTRY") {
       if (typeof countries != "string") {
-        const country = countries.find(
-          (country: { countryName: string; countryCodeISO2: string }) =>
-            country.countryName == data.entityCode
-        );
-        if (country) {
-          data = {
-            entityType: "COUNTRY",
-            entityName: country?.countryName,
-            entityCode: country?.countryCodeISO2,
-          };
-        } else {
-          enqueueSnackbar("Country not found", {
-            variant: "error",
-          });
-          return;
-        }
+        data = {
+          entityType: "COUNTRY",
+          entityName:
+            data.entityCode?.split("(")[1].split(")")[0]?.trim() ?? "",
+          entityCode: data.entityCode?.split("(")[0]?.trim() ?? "",
+        };
       } else {
         enqueueSnackbar("Country not found", {
           variant: "error",
@@ -119,17 +109,19 @@ const AddRestrictedEntity = ({
             }}
           />
         </div>
-        <div className="pr-4">
-          <MyText>Entity Name</MyText>
-          <MyControlledTextField
-            name="entityName"
-            displayName="Entity Name"
-            control={control}
-            errors={errors}
-            rules={{ required: true }}
-            value=""
-          />
-        </div>
+        {entityTypeState == "KEYWORD" && (
+          <div className="pr-4">
+            <MyText>Entity Name</MyText>
+            <MyControlledTextField
+              name="entityName"
+              displayName="Entity Name"
+              control={control}
+              errors={errors}
+              rules={{ required: true }}
+              value=""
+            />
+          </div>
+        )}
         <div className="pr-4">
           {entityTypeState == "COUNTRY" && (
             <>
@@ -151,7 +143,7 @@ const AddRestrictedEntity = ({
                 <>
                   <MyText>Entity Code</MyText>
                   <MyControlledAutocomplete
-                    value={countries[0].countryName}
+                    value={`${countries[0].countryCodeISO2} (${countries[0].countryName})`}
                     displayName="Entity Code"
                     clearable={false}
                     name={"entityCode"}
@@ -160,7 +152,10 @@ const AddRestrictedEntity = ({
                     rules={{
                       required: entityTypeState == "COUNTRY" ? true : false,
                     }}
-                    options={countries.map((country) => country.countryName)}
+                    options={countries.map(
+                      (country) =>
+                        `${country.countryCodeISO2} (${country.countryName})`
+                    )}
                   />
                 </>
               )}
