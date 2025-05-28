@@ -38,6 +38,7 @@ const CreateIndividualAccount = () => {
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
+    setValue,
     handleSubmit,
   } = useForm<{
     accountName: string;
@@ -70,6 +71,9 @@ const CreateIndividualAccount = () => {
         enqueueSnackbar("Account created successfully", {
           variant: "success",
         });
+        setValue("accountName", "");
+        setValue("accountType", "");
+        setValue("fundingAccountNumber", "");
         dispatch(setRefreshIndividual(true));
         setDrawerOpen(false);
       }
@@ -110,8 +114,6 @@ const CreateIndividualAccount = () => {
             </div>
             <div className="w-[750px] flex flex-row justify-between pt-4">
               <div className="w-[350px]">
-                <MyText size="lg">Create Account</MyText>
-                <div className="pb-6" />
                 <MyText>Account Name</MyText>
                 <MyControlledTextField
                   name={"accountName"}
