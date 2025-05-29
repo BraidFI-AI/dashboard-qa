@@ -41,10 +41,10 @@ const TabsProvider = (props: any) => {
       name: "Documents",
       path: `/individuals/${parseInt(params.id.toString())}/documents`,
     },
-    {
-      name: "Limits",
-      path: `/individuals/${parseInt(params.id.toString())}/limits`,
-    },
+    // {
+    //   name: "Limits",
+    //   path: `/individuals/${parseInt(params.id.toString())}/limits`,
+    // },
     {
       name: "Fees",
       path: `/individuals/${parseInt(params.id.toString())}/fees`,
@@ -72,9 +72,11 @@ const TabsProvider = (props: any) => {
       );
     } else if (pathname.includes("documents")) {
       setCurrentTab(tabs.findIndex((tab) => tab.path.includes("documents")));
-    } else if (pathname.includes("limits")) {
-      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("limits")));
-    } else if (pathname.includes("fees")) {
+    }
+    // else if (pathname.includes("limits")) {
+    //   setCurrentTab(tabs.findIndex((tab) => tab.path.includes("limits")));
+    // }
+    else if (pathname.includes("fees")) {
       setCurrentTab(tabs.findIndex((tab) => tab.path.includes("fees")));
     } else {
       setCurrentTab(0);
