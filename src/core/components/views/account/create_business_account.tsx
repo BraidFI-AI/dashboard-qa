@@ -34,6 +34,7 @@ const CreateBusinessAccount = () => {
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
+    setValue,
     control,
     handleSubmit,
   } = useForm<{
@@ -65,6 +66,8 @@ const CreateBusinessAccount = () => {
           variant: "success",
         });
         dispatch(setRefresh(true));
+        setValue("accountName", "");
+        setValue("fundingAccountNumber", "");
         setDrawerOpen(false);
       }
       setSubmitting(false);
@@ -104,8 +107,6 @@ const CreateBusinessAccount = () => {
             </div>
             <div className="w-[750px] flex flex-row justify-between pt-4">
               <div className="w-[350px]">
-                <MyText size="lg">Create Account</MyText>
-                <div className="pb-6" />
                 <MyText>Account Name</MyText>
                 <MyControlledTextField
                   name={"accountName"}
