@@ -297,8 +297,8 @@ export default function GenerateStatement() {
               'class="statement-header"'
             )
             .replace(
-              /<div class="font-avenir-regular text-\[25px\]">Monthly Account Statement<\/div>/g,
-              '<div class="statement-title" style="font-size: 25px !important; font-weight: 400 !important; text-align: center !important; width: 100% !important; margin: 0 !important; padding: 0 !important; margin-bottom: -4px !important; font-family: Arial, sans-serif !important;">Monthly Account Statement</div>'
+              /<div class="font-avenir-regular text-\[25px\]">Bank Statement<\/div>/g,
+              '<div class="statement-title" style="font-size: 25px !important; font-weight: 400 !important; text-align: center !important; width: 100% !important; margin: 0 !important; padding: 0 !important; margin-bottom: -4px !important; font-family: Arial, sans-serif !important;">Monthly Bank Statement</div>'
             )
             .replace(/<MyText>/g, '<div class="statement-date">')
             .replace(/<\/MyText>/g, "</div>")
@@ -411,7 +411,7 @@ export default function GenerateStatement() {
                     lineHeight: "1.2",
                   }}
                 >
-                  Monthly Account Statement
+                  Bank Statement
                 </div>
                 <div style={{ textAlign: "right", width: "100%" }}>
                   <MyText>{`${
@@ -430,18 +430,18 @@ export default function GenerateStatement() {
               <div style={{ width: "250px" }}>
                 {statementType != "ROOT" && (
                   <>
-                    <MyText>Customer Information</MyText>
+                    <MyText weight="bold">Customer Information</MyText>
                   </>
                 )}
                 {statementType == "PRODUCT" && (
-                  <MyText>{`Product: ${
+                  <MyText>{`${
                     typeof product == "string" || product == null
                       ? statementData.productId ?? ""
                       : product.productName
                   }`}</MyText>
                 )}
                 {statementType == "PROGRAM" && (
-                  <MyText>{`Program: ${
+                  <MyText>{`${
                     typeof program == "string" || program == null
                       ? statementData.programId ?? ""
                       : program.name
@@ -450,15 +450,13 @@ export default function GenerateStatement() {
                 {statementType == "ACCOUNT" &&
                   account != null &&
                   typeof account != "string" && (
-                    <MyText>{`Customer Name: ${
-                      (account as any)?.customerName ?? ""
-                    }`}</MyText>
+                    <MyText>{(account as any)?.customerName ?? ""}</MyText>
                   )}
               </div>
               <div style={{ width: "250px" }} className="text-right">
                 {statementType == "ACCOUNT" && accountNumber && (
                   <>
-                    <MyText>Account Number</MyText>
+                    <MyText weight="bold">Account Number</MyText>
                     <MyText>{accountNumber}</MyText>
                   </>
                 )}
