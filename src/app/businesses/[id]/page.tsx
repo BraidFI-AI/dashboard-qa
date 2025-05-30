@@ -23,6 +23,7 @@ import MyLinkText from "@/core/components/Text/LinkText";
 import { useSelector } from "react-redux";
 import {
   ADMIN_OPS_ROLE,
+  ADMIN_READONLY_ROLE,
   ADMIN_ROLE,
   mapBusinessTypeToString,
   mapStringToBusinessType,
@@ -35,7 +36,10 @@ import moment from "moment";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
+import { decrypt } from "@/redux/slices/encryption_slice";
 // import { generatePdf } from "@/core/utils/pdfUtils";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const BusinessDetails = ({ params }: { params: { id: string } }) => {
   const dispatch = useAppDispatch();
@@ -54,6 +58,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(true);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [showEncryptedIdNumber, setShowEncryptedIdNumber] = useState(false);
 
   const [ofac, setOfac] = useState<"loading" | string | OFAC>("loading");
 
@@ -63,7 +68,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
     getValues,
-    reset,
+    setValue,
     handleSubmit,
   } = useForm<Business>({ defaultValues: { ...business } });
   const onSubmit: SubmitHandler<Business> = (data: Business) => {
@@ -122,6 +127,21 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
           setBusiness(data.payload);
           dispatch(setTitle(data.payload.name));
 
+          if (data.payload.idNumber != null) {
+            dispatch(decrypt(data.payload.idNumber)).then((d: any) => {
+              if (typeof d.payload == "string") {
+                setBusiness(data.payload);
+                setValue("idNumber", data.payload.idNumber);
+              } else {
+                setBusiness({ ...data.payload, idNumber: d.payload.data });
+                setValue("idNumber", d.payload.data);
+              }
+            });
+          } else {
+            setBusiness(data.payload);
+            setValue("idNumber", data.payload.idNumber);
+          }
+
           dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
             setProduct(prd.payload);
           });
@@ -135,7 +155,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
       });
       setRefresh(false);
     }
-  }, [dispatch, params.id, refresh]);
+  }, [dispatch, params.id, refresh, setValue]);
 
   return (
     <>
@@ -247,24 +267,51 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                 value={business.incorporationState ?? ""}
                 submitting={false}
               />
-              <MyEditableTextField
-                editing={editing}
-                setEditing={setEditing}
-                name="idNumber"
-                displayName="ID Number"
-                control={control}
-                errors={errors}
-                editable={false}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                value={business.idNumber ?? ""}
-                submitting={false}
-              />
+              <div className="flex flex-row justify-between">
+                {userType == ADMIN_ROLE ||
+                userType == ADMIN_OPS_ROLE ||
+                userType == ADMIN_READONLY_ROLE ? (
+                  <MyEditableTextField
+                    editing={editing}
+                    setEditing={setEditing}
+                    name="idNumber"
+                    displayName="ID Number"
+                    control={control}
+                    errors={errors}
+                    editable={false}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={
+                      showEncryptedIdNumber
+                        ? business.idNumber ?? ""
+                        : "••••••••"
+                    }
+                    submitting={false}
+                  />
+                ) : (
+                  <ItemRow title="ID Number" value={"••••••••"}></ItemRow>
+                )}
+                {showEncryptedIdNumber ? (
+                  <VisibilityOffIcon
+                    className="text-[#12A7FF]"
+                    onClick={() => {
+                      setShowEncryptedIdNumber(!showEncryptedIdNumber);
+                    }}
+                  />
+                ) : (
+                  <VisibilityIcon
+                    className="text-[#12A7FF]"
+                    onClick={() => {
+                      setShowEncryptedIdNumber(!showEncryptedIdNumber);
+                    }}
+                  />
+                )}
+              </div>
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}

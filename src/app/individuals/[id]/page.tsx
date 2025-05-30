@@ -3,8 +3,7 @@
 import { Individual, OFAC, Product } from "@/core/api/ApiTypes";
 import {
   approveIndividual,
-  fetchIndividual,
-  unblockIndividual,
+  fetchIndividualV2,
   updateIndividual,
 } from "@/redux/slices/IndividualSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -23,13 +22,21 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useSelector } from "react-redux";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ADMIN_OPS_ROLE, ADMIN_ROLE, States } from "@/core/constants";
+import {
+  ADMIN_OPS_ROLE,
+  ADMIN_READONLY_ROLE,
+  ADMIN_ROLE,
+  States,
+} from "@/core/constants";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 import moment from "moment";
 import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { decrypt } from "@/redux/slices/encryption_slice";
 
 export default function IndividualPage({ params }: { params: { id: string } }) {
   const userType = useSelector((state: any) => state.app.userType);
@@ -40,8 +47,9 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   ]);
 
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
-  const [individual, setIndividual] = useState<Individual | null>(null);
+  const [individual, setIndividual] = useState<"loading" | string | Individual>(
+    "loading"
+  );
 
   const [product, setProduct] = useState<Product | null>(null);
 
@@ -54,15 +62,15 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
 
   const [editing, setEditing] = useState(false);
 
+  const [showEncryptedData, setShowEncryptedData] = useState(false);
+
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
     getValues,
-    reset,
+    setValue,
     handleSubmit,
-  } = useForm<Individual>({
-    defaultValues: { ...individual },
-  });
+  } = useForm<Individual>({});
   const onSubmit: SubmitHandler<Individual> = (data: Individual) => {
     console.log("data", data);
 
@@ -116,9 +124,23 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Individual Customer"));
-      dispatch(fetchIndividual(parseInt(params.id))).then((data: any) => {
+      dispatch(fetchIndividualV2(parseInt(params.id))).then((data: any) => {
         if (data.payload) {
-          setIndividual(data.payload);
+          if (data.payload.idNumber != null) {
+            dispatch(decrypt(data.payload.idNumber)).then((d: any) => {
+              if (typeof d.payload == "string") {
+                setIndividual(data.payload);
+                setValue("idNumber", data.payload.idNumber);
+              } else {
+                setIndividual({ ...data.payload, idNumber: d.payload.data });
+                setValue("idNumber", d.payload.data);
+              }
+            });
+          } else {
+            setIndividual(data.payload);
+            setValue("idNumber", data.payload.idNumber);
+          }
+
           dispatch(
             setTitle(data.payload.firstName + " " + data.payload.lastName)
           );
@@ -131,7 +153,6 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
             setOfac(o.payload);
           });
         }
-        setLoading(false);
       });
       setRefresh(false);
     }
@@ -139,7 +160,17 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
 
   return (
     <Box className="h-full">
-      {!loading && individual != null ? (
+      {individual == "loading" ? (
+        <MyCircularProgressIndicator />
+      ) : typeof individual == "string" ? (
+        <ErrorPage
+          error={individual}
+          recoveryButtonOnClick={() => {
+            setRefresh(true);
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : (
         <div className="flex flex-row justify-between h-full">
           <div className="w-full flex flex-row border-solid border-[1px] border-[#E5E5E5] rounded-[10px] h-full px-3 pt-3">
             <div className="flex flex-col w-full min-w-[200px] max-w-[400px] pr-[12px]">
@@ -236,24 +267,54 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
                 value={individual.idType != null ? individual.idType : ""}
                 submitting={false}
               />
-              <MyEditableTextField
-                editing={editing}
-                setEditing={setEditing}
-                name="idNumber"
-                displayName="ID Number"
-                control={control}
-                errors={errors}
-                editable={false}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                value={individual.idNumber != null ? individual.idNumber : ""}
-                submitting={false}
-              />
+              <div className="flex flex-row justify-between">
+                {userType == ADMIN_ROLE ||
+                userType == ADMIN_OPS_ROLE ||
+                userType == ADMIN_READONLY_ROLE ? (
+                  <MyEditableTextField
+                    editing={editing}
+                    setEditing={setEditing}
+                    name="idNumber"
+                    displayName="ID Number"
+                    control={control}
+                    errors={errors}
+                    editable={false}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
+                          }
+                    }
+                    value={
+                      showEncryptedData
+                        ? individual.idNumber != null
+                          ? individual.idNumber
+                          : ""
+                        : "••••••••"
+                    }
+                    submitting={false}
+                  />
+                ) : (
+                  <ItemRow title="ID Number" value={"••••••••"}></ItemRow>
+                )}
+
+                {showEncryptedData ? (
+                  <VisibilityOffIcon
+                    className="text-[#12A7FF]"
+                    onClick={() => {
+                      setShowEncryptedData(!showEncryptedData);
+                    }}
+                  />
+                ) : (
+                  <VisibilityIcon
+                    className="text-[#12A7FF]"
+                    onClick={() => {
+                      setShowEncryptedData(!showEncryptedData);
+                    }}
+                  />
+                )}
+              </div>
               <MyEditableTextField
                 editing={editing}
                 setEditing={setEditing}
@@ -679,39 +740,6 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
               </div>
             )}
           </div>
-        </div>
-      ) : !loading && individual == null ? (
-        <ErrorPage
-          error="Error loading individual"
-          recoveryButtonOnClick={() => {
-            setLoading(true);
-            dispatch(setTitle("Individual Customer"));
-            dispatch(fetchIndividual(parseInt(params.id))).then((data: any) => {
-              if (data.payload) {
-                setIndividual(data.payload);
-                dispatch(setTitle(data.payload.name));
-
-                dispatch(fetchProduct(data.payload.productId)).then(
-                  (prd: any) => {
-                    setProduct(prd.payload);
-                  }
-                );
-
-                dispatch(fetchOFACHitNew(data.payload.ofacId)).then(
-                  (o: any) => {
-                    setOfac(o.payload);
-                  }
-                );
-              }
-              setLoading(false);
-            });
-          }}
-          recoveryButtonTitle="Retry"
-        />
-      ) : (
-        <div className="flex flex-col items-center justify-center">
-          <CircularProgress></CircularProgress>
-          <div>Loading individual...</div>
         </div>
       )}
     </Box>

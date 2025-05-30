@@ -12,6 +12,7 @@ import { AlertDocument } from "@/core/api/ApiTypes";
 import DocumentComponent from "./doc";
 import XMLViewer from "react-xml-viewer";
 import { JSONTree } from "react-json-tree";
+import { decrypt } from "@/redux/slices/encryption_slice";
 
 function tryParse(str: string) {
   try {
@@ -29,14 +30,26 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
     "loading"
   );
 
+  const [showEncryptedResult, setShowEncryptedResult] = useState(false);
+
   useEffect(() => {
     dispatch(fetchBusiness(parseInt(params.id))).then((d: any) => {
       if (typeof d.payload != "string") dispatch(setTitle(d.payload.name));
     });
 
     setCipStatus("loading");
-    dispatch(fetchCIPStatus(params.id)).then((d: any) => {
-      setCipStatus(d.payload);
+    dispatch(fetchCIPStatus(params.id)).then((cipStatus: any) => {
+      if (cipStatus.payload.result != null) {
+        dispatch(decrypt(cipStatus.payload.result)).then((d: any) => {
+          if (typeof d.payload == "string") {
+            setCipStatus({ ...cipStatus.payload, result: d.payload });
+          } else {
+            setCipStatus({ ...cipStatus.payload, result: d.payload.data });
+          }
+        });
+      } else {
+        setCipStatus(cipStatus.payload);
+      }
     });
   }, [dispatch, params.id]);
 
@@ -121,34 +134,55 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
           <div className="pb-6">
-            {tryParse(cipStatus.result) ? (
-              <JSONTree
-                data={JSON.parse(cipStatus.result)}
-                hideRoot
-                theme={{
-                  base00: "#ffffff",
-                  base01: "#000000",
-                  base02: "#000000",
-                  base03: "#000000",
-                  base04: "#000000",
-                  base05: "#000000",
-                  base06: "#000000",
-                  base07: "#000000",
-                  base08: "#000000",
-                  base09: "#000000",
-                  base0A: "#000000",
-                  base0B: "#000000",
-                  base0C: "#000000",
-                  base0D: "#000000",
-                  base0E: "#000000",
-                  base0F: "#000000",
+            {!showEncryptedResult ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowEncryptedResult(!showEncryptedResult);
                 }}
-              />
-            ) : typeof cipStatus.result == "string" ? (
-              <MyText>{cipStatus.result}</MyText>
+              >
+                <MyText primary>Show Results</MyText>
+              </div>
             ) : (
-              <div className="pb-6">
-                <XMLViewer xml={cipStatus.result} />
+              <div className="flex flex-row">
+                {tryParse(cipStatus.result) ? (
+                  <JSONTree
+                    data={JSON.parse(cipStatus.result)}
+                    hideRoot
+                    theme={{
+                      base00: "#ffffff",
+                      base01: "#000000",
+                      base02: "#000000",
+                      base03: "#000000",
+                      base04: "#000000",
+                      base05: "#000000",
+                      base06: "#000000",
+                      base07: "#000000",
+                      base08: "#000000",
+                      base09: "#000000",
+                      base0A: "#000000",
+                      base0B: "#000000",
+                      base0C: "#000000",
+                      base0D: "#000000",
+                      base0E: "#000000",
+                      base0F: "#000000",
+                    }}
+                  />
+                ) : typeof cipStatus.result == "string" ? (
+                  <MyText>{cipStatus.result}</MyText>
+                ) : (
+                  <div className="pb-6">
+                    <XMLViewer xml={cipStatus.result} />
+                  </div>
+                )}
+                <div
+                  className="cursor-pointer pl-10"
+                  onClick={() => {
+                    setShowEncryptedResult(!showEncryptedResult);
+                  }}
+                >
+                  <MyText primary>Hide Results</MyText>
+                </div>
               </div>
             )}
           </div>
