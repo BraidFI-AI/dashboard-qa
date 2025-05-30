@@ -15,6 +15,16 @@ import { useAppDispatch } from "@/redux/store/store";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
+const formatDate = (dateString: string | undefined) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
 export default function GenerateStatement() {
   const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState(false);
@@ -414,11 +424,9 @@ export default function GenerateStatement() {
                   Bank Statement
                 </div>
                 <div style={{ textAlign: "right", width: "100%" }}>
-                  <MyText>{`${
-                    statementData.starting?.split("T")[0] ?? ""
-                  } through ${
-                    statementData.ending?.split("T")[0] ?? ""
-                  }`}</MyText>
+                  <MyText>{`${formatDate(
+                    statementData.starting
+                  )} through ${formatDate(statementData.ending)}`}</MyText>
                 </div>
               </div>
             </div>
@@ -472,11 +480,9 @@ export default function GenerateStatement() {
               style={{ maxWidth: "600px", margin: "0 auto" }}
             >
               <div style={{ width: "250px" }}>
-                <MyText weight="bold">{`Balance on ${statementData.starting
-                  ?.split("T")[0]
-                  .split("-")
-                  .reverse()
-                  .join("/")}`}</MyText>
+                <MyText weight="bold">{`Balance on ${formatDate(
+                  statementData.starting
+                )}`}</MyText>
                 <div className="h-1" />
                 <div className="pl-1">
                   {statementData.transactionSummary.map(
@@ -510,11 +516,9 @@ export default function GenerateStatement() {
               style={{ maxWidth: "600px", margin: "0 auto" }}
             >
               <div style={{ width: "250px" }}>
-                <MyText weight="bold">{`Balance on ${statementData.ending
-                  ?.split("T")[0]
-                  .split("-")
-                  .reverse()
-                  .join("/")}`}</MyText>
+                <MyText weight="bold">{`Balance on ${formatDate(
+                  statementData.ending
+                )}`}</MyText>
               </div>
               <div style={{ width: "250px" }} className="text-right">
                 <MyText weight="bold">
