@@ -57,7 +57,7 @@ const CreateLimitPage = () => {
     handleSubmit,
   } = useForm<CreateLimit>();
   const onSubmit: SubmitHandler<CreateLimit> = (data: CreateLimit) => {
-    data = { ...data, accountNumber: params.id.toString() };
+    data = { ...data, accountNumber: (params.id as string) || "0" };
 
     if (limitType == "ACCOUNT_TO_COUNTERPARTY") {
       if (counterpartyId == null) {
@@ -86,7 +86,7 @@ const CreateLimitPage = () => {
 
   useEffect(() => {
     setAcount("loading");
-    dispatch(fetchAccount(params.id.toString())).then((acc: any) => {
+    dispatch(fetchAccount((params.id as string) || "0")).then((acc: any) => {
       setAcount(acc.payload);
       if (typeof acc.payload != "string") {
         dispatch(fetchAccountCounterpartyIds(acc.payload.id.toString())).then(
@@ -104,7 +104,7 @@ const CreateLimitPage = () => {
   }, [dispatch, params.id]);
 
   return (
-    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-[300px]">
         <MyText>Rule Name</MyText>
         <MyControlledTextField
@@ -123,7 +123,7 @@ const CreateLimitPage = () => {
         />
         <Box className="pb-4"></Box>
         <MyText>Account</MyText>
-        <MyText size="md">{params.id.toString()}</MyText>
+        <MyText size="md">{(params.id as string) || "0"}</MyText>
         <Box className="pb-4"></Box>
         <MyText>Transaction type</MyText>
         {transactionTypes == "loading" ? (
@@ -225,7 +225,7 @@ const CreateLimitPage = () => {
                 }
                 recoveryButtonOnClick={() => {
                   setAcount("loading");
-                  dispatch(fetchAccount(params.id.toString())).then(
+                  dispatch(fetchAccount((params.id as string) || "0")).then(
                     (acc: any) => {
                       setAcount(acc.payload);
                       if (typeof acc.payload != "string") {
@@ -325,7 +325,7 @@ const CreateLimitPage = () => {
           </MyBlueButton>
         </div>
       </Box>
-    </form>)
+    </form>
   );
 };
 

@@ -81,7 +81,7 @@ const AlertsPage = () => {
     if (refresh) {
       setRefresh(false);
       dispatch(setTitle("Alert"));
-      dispatch(fetchAlert(params.id.toString())).then((data: any) => {
+      dispatch(fetchAlert((params.id as string) || "0")).then((data: any) => {
         if (typeof data.payload != "string") {
           dispatch(setTitle(data.payload.type?.replaceAll("_", " ")));
 
@@ -270,7 +270,7 @@ const AlertsPage = () => {
       error={alert}
       recoveryButtonTitle="Retry"
       recoveryButtonOnClick={() => {
-        dispatch(fetchAlert(params.id.toString())).then((data: any) => {
+        dispatch(fetchAlert((params.id as string) || "0")).then((data: any) => {
           if (typeof data.payload != "string") {
             dispatch(setTitle(data.payload.type?.replaceAll("_", "")));
           }

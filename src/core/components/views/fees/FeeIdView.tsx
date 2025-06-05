@@ -85,7 +85,7 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
   useEffect(() => {
     if (refresh) {
       setFee("loading");
-      dispatch(fetchFee(params.feeId.toString())).then((data: any) => {
+      dispatch(fetchFee((params.feeId as string) || "0")).then((data: any) => {
         setFee(data.payload);
         reset({ ...data.payload });
         setLoading(false);
@@ -117,15 +117,17 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
       error="Error fetching fee"
       recoveryButtonOnClick={() => {
         setFee("loading");
-        dispatch(fetchFee(params.feeId.toString())).then((data: any) => {
-          if (data.payload != null) {
-            setFeeType(data.payload.feeType);
+        dispatch(fetchFee((params.feeId as string) || "0")).then(
+          (data: any) => {
+            if (data.payload != null) {
+              setFeeType(data.payload.feeType);
+            }
+            setFee(data.payload);
+            reset({ ...data.payload });
+            setLoading(false);
+            setFeeType(data.payload.feeType ?? "FLAT");
           }
-          setFee(data.payload);
-          reset({ ...data.payload });
-          setLoading(false);
-          setFeeType(data.payload.feeType ?? "FLAT");
-        });
+        );
       }}
       recoveryButtonTitle="Retry"
     />

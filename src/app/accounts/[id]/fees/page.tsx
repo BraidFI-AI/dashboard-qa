@@ -21,18 +21,20 @@ const FeeTable = () => {
 
   useEffect(() => {
     dispatch(setTitle("Account"));
-    dispatch(fetchAccount(params.id.toString())).then((account: any) => {
-      if (
-        typeof account.payload != "string" &&
-        account.payload.accountName != null
-      ) {
-        dispatch(setTitle(account.payload.accountName));
+    dispatch(fetchAccount((params.id as string) || "0")).then(
+      (account: any) => {
+        if (
+          typeof account.payload != "string" &&
+          account.payload.accountName != null
+        ) {
+          dispatch(setTitle(account.payload.accountName));
+        }
       }
-    });
+    );
   }, []);
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByAccountId(params.id.toString()),
+    () => fetchFeesByAccountId((params.id as string) || "0"),
     [params.id]
   );
 
@@ -42,7 +44,7 @@ const FeeTable = () => {
         <OneTimeFeeModal
           isOpen={feeModal}
           setIsOpen={setFeeModal}
-          accountId={params.id.toString()}
+          accountId={(params.id as string) || "0"}
         />
       )}
       <Box className="flex flex-row">

@@ -176,7 +176,7 @@ const CreateCounterpartyPage = () => {
 
     try {
       data.businessId = undefined;
-      data.productId = parseInt(params.id.toString());
+      data.productId = parseInt((params.id as string) || "0");
       data.accountNumber = undefined;
       data.individualId = undefined;
     } catch (e) {
@@ -357,7 +357,7 @@ const CreateCounterpartyPage = () => {
           value=""
         />
         <Box className="pb-4"></Box>
-        <ItemRow title="Product ID" value={params.id.toString()} />
+        <ItemRow title="Product ID" value={(params.id as string) || "0"} />
         {/* <RadioButton
           title="Association"
           value={association}

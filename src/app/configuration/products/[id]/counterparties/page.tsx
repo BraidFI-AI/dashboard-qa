@@ -32,7 +32,10 @@ const CounterpartyPage = () => {
 
   useEffect(() => {
     dispatch(
-      fetchProductCounterparties({ id: params.id.toString(), refresh: true })
+      fetchProductCounterparties({
+        id: (params.id as string) || "0",
+        refresh: true,
+      })
     );
   }, [dispatch, params.id]);
 
@@ -52,7 +55,7 @@ const CounterpartyPage = () => {
           recoveryButtonTitle="Retry"
           recoveryButtonOnClick={() => {
             fetchProductCounterparties({
-              id: params.id.toString(),
+              id: (params.id as string) || "0",
               refresh: true,
             });
           }}
@@ -63,7 +66,7 @@ const CounterpartyPage = () => {
           recoveryButtonTitle="Refresh"
           recoveryButtonOnClick={() => {
             fetchProductCounterparties({
-              id: params.id.toString(),
+              id: (params.id as string) || "0",
               refresh: true,
             });
           }}
@@ -72,7 +75,7 @@ const CounterpartyPage = () => {
         <CounterpartyTableView
           counterparties={counterparties}
           fetchData={fetchProductCounterparties({
-            id: params.id.toString(),
+            id: (params.id as string) || "0",
           })}
           setPageNumber={(page: number) => {
             dispatch(setProductCounterpartyPaginationPageNumber(page));

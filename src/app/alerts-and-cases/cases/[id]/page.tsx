@@ -29,7 +29,7 @@ const CasesPage = () => {
 
   useEffect(() => {
     dispatch(setTitle("Case"));
-    dispatch(fetchCase(params.id.toString())).then((data: any) => {
+    dispatch(fetchCase((params.id as string) || "0")).then((data: any) => {
       if (typeof data.payload != "string") {
         dispatch(setTitle(data.payload.name));
       }
@@ -67,7 +67,7 @@ const CasesPage = () => {
       error={c}
       recoveryButtonTitle="Retry"
       recoveryButtonOnClick={() => {
-        dispatch(fetchCase(params.id.toString())).then((data: any) => {
+        dispatch(fetchCase((params.id as string) || "0")).then((data: any) => {
           if (typeof data.payload != "string") {
             dispatch(setTitle(data.payload.name));
           }

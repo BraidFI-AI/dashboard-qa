@@ -52,11 +52,13 @@ const TabsProvider = (props: any) => {
               onClick={() => {
                 if (version) {
                   router.replace(
-                    `/configuration/forms/${params.id.toString()}?version=${version}`
+                    `/configuration/forms/${
+                      (params.id as string) || "0"
+                    }?version=${version}`
                   );
                 } else {
                   router.replace(
-                    `/configuration/forms/${params.id.toString()}`
+                    `/configuration/forms/${(params.id as string) || "0"}`
                   );
                 }
               }}
@@ -67,11 +69,15 @@ const TabsProvider = (props: any) => {
               onClick={() => {
                 if (version) {
                   router.replace(
-                    `/configuration/forms/${params.id.toString()}/questions?version=${version}`
+                    `/configuration/forms/${
+                      (params.id as string) || "0"
+                    }/questions?version=${version}`
                   );
                 } else {
                   router.replace(
-                    `/configuration/forms/${params.id.toString()}/questions`
+                    `/configuration/forms/${
+                      (params.id as string) || "0"
+                    }/questions`
                   );
                 }
               }}

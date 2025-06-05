@@ -7,7 +7,7 @@ import CounterPartyView from "@/core/components/views/counterparty/counterparty_
 const CounterPartyPage = () => {
   const params = useParams();
 
-  return <CounterPartyView id={params.counterpartyId.toString()} />;
+  return <CounterPartyView id={(params.counterpartyId as string) || "0"} />;
 };
 
 export default CounterPartyPage;

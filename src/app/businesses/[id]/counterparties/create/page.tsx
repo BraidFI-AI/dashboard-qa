@@ -158,7 +158,7 @@ const CreateCounterpartyPage = () => {
     }
 
     try {
-      data.businessId = parseInt(params.id.toString());
+      data.businessId = parseInt((params.id as string) || "0");
       data.productId = undefined;
       data.accountNumber = undefined;
       data.individualId = undefined;
@@ -340,7 +340,7 @@ const CreateCounterpartyPage = () => {
           value=""
         />
         <Box className="pb-4"></Box>
-        <ItemRow title="Business ID" value={params.id.toString()} />
+        <ItemRow title="Business ID" value={(params.id as string) || "0"} />
         <Box className="pb-4"></Box>
         <MyText>Payment Information</MyText>
         {achAdded && (

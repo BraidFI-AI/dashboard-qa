@@ -85,7 +85,7 @@ const AccountPage = () => {
     if (userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE) {
       dispatch(
         updateAccountStatusDev({
-          id: params.id.toString(),
+          id: (params.id as string) || "0",
           status: data.status,
         })
       ).then((acc: any) => {
@@ -110,23 +110,23 @@ const AccountPage = () => {
         data.fundingAccountNumber = "";
       }
 
-      dispatch(updateAccount({ id: params.id.toString(), ...data })).then(
-        (acc: any) => {
-          if (acc.payload) {
-            enqueueSnackbar("Account status updated", { variant: "success" });
-            setAccount(acc.payload);
-            setEditing(false);
-          }
-          setSubmitting(false);
+      dispatch(
+        updateAccount({ id: (params.id as string) || "0", ...data })
+      ).then((acc: any) => {
+        if (acc.payload) {
+          enqueueSnackbar("Account status updated", { variant: "success" });
+          setAccount(acc.payload);
+          setEditing(false);
         }
-      );
+        setSubmitting(false);
+      });
     }
   };
 
   useEffect(() => {
     setAccount("loading");
     dispatch(setTitle("Account"));
-    dispatch(fetchAccount(params.id.toString())).then((acc: any) => {
+    dispatch(fetchAccount((params.id as string) || "0")).then((acc: any) => {
       setAccount(acc.payload);
 
       if (typeof acc.payload != "string") {
@@ -164,31 +164,35 @@ const AccountPage = () => {
       recoveryButtonOnClick={() => {
         setAccount("loading");
         dispatch(setTitle("Account"));
-        dispatch(fetchAccount(params.id.toString())).then((acc: any) => {
-          setAccount(acc.payload);
+        dispatch(fetchAccount((params.id as string) || "0")).then(
+          (acc: any) => {
+            setAccount(acc.payload);
 
-          if (typeof acc.payload != "string") {
-            reset({ status: acc.payload.status });
+            if (typeof acc.payload != "string") {
+              reset({ status: acc.payload.status });
 
-            dispatch(setTitle(acc.payload.accountName));
+              dispatch(setTitle(acc.payload.accountName));
 
-            dispatch(fetchAccountBalance(acc.payload.accountNumber)).then(
-              (bal: any) => {
-                setBalance(bal.payload);
-              }
-            );
+              dispatch(fetchAccountBalance(acc.payload.accountNumber)).then(
+                (bal: any) => {
+                  setBalance(bal.payload);
+                }
+              );
 
-            dispatch(fetchProduct(acc.payload.productId)).then((prod: any) => {
-              setProduct(prod.payload);
-            });
+              dispatch(fetchProduct(acc.payload.productId)).then(
+                (prod: any) => {
+                  setProduct(prod.payload);
+                }
+              );
 
-            dispatch(fetchIndividualOrBusiness(acc.payload.customerId)).then(
-              (cust: any) => {
-                setCustomer(cust.payload);
-              }
-            );
+              dispatch(fetchIndividualOrBusiness(acc.payload.customerId)).then(
+                (cust: any) => {
+                  setCustomer(cust.payload);
+                }
+              );
+            }
           }
-        });
+        );
       }}
       recoveryButtonTitle="Retry"
     />

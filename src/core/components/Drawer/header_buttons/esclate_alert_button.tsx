@@ -49,7 +49,7 @@ const EsclateAlertButton = () => {
     description: string;
   }>({
     defaultValues: {
-      alertIds: [params.id.toString()],
+      alertIds: [(params.id as string) || "0"],
       name: "",
       description: "",
     },

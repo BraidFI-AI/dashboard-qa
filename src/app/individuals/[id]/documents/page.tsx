@@ -18,35 +18,38 @@ import {
   fetchIndividual,
   fetchIndividualDocuments,
 } from "@/redux/slices/IndividualSlice";
+import { useParams } from "next/navigation";
 
-const Documents = ({ params }: { params: { id: string } }) => {
+const Documents = () => {
   const router = useRouter();
-
+  const params = useParams();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [documents, setDocuments] = useState<IndividualDocumentWithLink[]>([]);
 
   useEffect(() => {
     dispatch(setTitle("Individual Customer"));
-    dispatch(fetchIndividual(parseInt(params.id))).then((indv: any) => {
-      if (indv.payload != null) {
-        dispatch(
-          setTitle(indv.payload.firstName + " " + indv.payload.lastName)
-        );
+    dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
+      (indv: any) => {
+        if (indv.payload != null) {
+          dispatch(
+            setTitle(indv.payload.firstName + " " + indv.payload.lastName)
+          );
 
-        dispatch(fetchIndividualDocuments(indv.payload.id)).then(
-          (data: any) => {
-            if (data.payload) {
-              setDocuments(data.payload);
+          dispatch(fetchIndividualDocuments(indv.payload.id)).then(
+            (data: any) => {
+              if (data.payload) {
+                setDocuments(data.payload);
+              }
+              setLoading(false);
             }
-            setLoading(false);
-          }
-        );
-      } else {
-        setLoading(false);
+          );
+        } else {
+          setLoading(false);
+        }
       }
-    });
-  }, [dispatch, params.id]);
+    );
+  }, [dispatch, params.id, setDocuments]);
 
   const handleFullscreen = (id: string) => {
     const container = document.getElementById(id);
@@ -156,7 +159,7 @@ const Documents = ({ params }: { params: { id: string } }) => {
                         <div className=" underline text-[#12A7FF]">
                           <Link
                             href={`/individuals/${parseInt(
-                              params.id.toString()
+                              (params.id as string) || "0"
                             )}/documents/${encodeURIComponent(document.link)}`}
                           >
                             <MyText size="md">View PDF</MyText>

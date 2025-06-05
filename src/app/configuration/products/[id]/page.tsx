@@ -30,15 +30,16 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import MyTextField from "@/core/components/TextField/MyTextField";
 import { IconButton } from "@mui/material";
 import _ from "lodash";
+import { useParams } from "next/navigation";
 
-const ProductDetails = ({ params }: { params: { id: string } }) => {
+const ProductDetails = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<Product | null>(null);
   const [program, setProgram] = useState<Program | null>(null);
   const [developer, setDeveloper] = useState<Developer | null>(null);
   const [cardManagement, setCardManagement] = useState<Card | null>(null);
-
+  const params = useParams();
   const [refresh, setRefresh] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -101,26 +102,29 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
         data.cipConfig = null;
       }
 
-      dispatch(updateProduct({ id: parseInt(params.id), product: data })).then(
-        (data: any) => {
-          if (data.payload) {
-            enqueueSnackbar("Product updated successfully", {
-              variant: "success",
-            });
-          }
-          setSubmitting(false);
-          setIsEditingName(false);
-          setIsEditingOperatingModel(false);
-          setIsEditingId(false);
-          setIsEditingActive(false);
-          setIsEditingEmail(false);
-          setIsEditingCipConfig(false);
-          setIsEditingInterestRate(false);
-          setIsEditingInterestPayoutDate(false);
-          setIsEditingDuplicatePaymentCheckDays(false);
-          setRefresh(true);
+      dispatch(
+        updateProduct({
+          id: parseInt((params.id as string) || "0"),
+          product: data,
+        })
+      ).then((data: any) => {
+        if (data.payload) {
+          enqueueSnackbar("Product updated successfully", {
+            variant: "success",
+          });
         }
-      );
+        setSubmitting(false);
+        setIsEditingName(false);
+        setIsEditingOperatingModel(false);
+        setIsEditingId(false);
+        setIsEditingActive(false);
+        setIsEditingEmail(false);
+        setIsEditingCipConfig(false);
+        setIsEditingInterestRate(false);
+        setIsEditingInterestPayoutDate(false);
+        setIsEditingDuplicatePaymentCheckDays(false);
+        setRefresh(true);
+      });
     }
   };
 
@@ -128,38 +132,44 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
     if (refresh) {
       setLoading(true);
       dispatch(setTitle("Product"));
-      dispatch(fetchProduct(parseInt(params.id))).then((data: any) => {
-        if (data.payload) {
-          setEmails(
-            data.payload.productSettlementEmails != null
-              ? _.cloneDeep(data.payload.productSettlementEmails)
-              : []
-          );
-          setProduct(data.payload);
-          dispatch(setTitle(data.payload.productName));
-          reset({
-            productName: data.payload.productName,
-            isActive: data.payload.isActive,
-            productSettlementEmails: data.payload.productSettlementEmails,
-          });
-
-          if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
-            dispatch(fetchProgram(data.payload.programId)).then((prg: any) => {
-              if (prg.payload) {
-                setProgram(prg.payload);
-              }
+      dispatch(fetchProduct(parseInt((params.id as string) || "0"))).then(
+        (data: any) => {
+          if (data.payload) {
+            setEmails(
+              data.payload.productSettlementEmails != null
+                ? _.cloneDeep(data.payload.productSettlementEmails)
+                : []
+            );
+            setProduct(data.payload);
+            dispatch(setTitle(data.payload.productName));
+            reset({
+              productName: data.payload.productName,
+              isActive: data.payload.isActive,
+              productSettlementEmails: data.payload.productSettlementEmails,
             });
 
-            dispatch(fetchDeveloper(data.payload.tenantId)).then((dev: any) => {
-              if (dev.payload) {
-                setDeveloper(dev.payload);
-              }
-            });
+            if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
+              dispatch(fetchProgram(data.payload.programId)).then(
+                (prg: any) => {
+                  if (prg.payload) {
+                    setProgram(prg.payload);
+                  }
+                }
+              );
+
+              dispatch(fetchDeveloper(data.payload.tenantId)).then(
+                (dev: any) => {
+                  if (dev.payload) {
+                    setDeveloper(dev.payload);
+                  }
+                }
+              );
+            }
           }
+          setLoading(false);
+          setRefresh(false);
         }
-        setLoading(false);
-        setRefresh(false);
-      });
+      );
     }
   }, [dispatch, params.id, refresh, reset, userType]);
 

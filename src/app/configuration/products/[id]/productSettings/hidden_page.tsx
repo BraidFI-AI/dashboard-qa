@@ -33,14 +33,15 @@ import Colorful from "@uiw/react-color-colorful";
 import MyTextField from "@/core/components/TextField/MyTextField";
 import OnbaordingSettings from "./components/OnboardingSettings";
 import React from "react";
+import { useParams } from "next/navigation";
 
-const ProductSettings = ({ params }: { params: { id: string } }) => {
+const ProductSettings = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<Product | null>(null);
   const [fundsAvailability, setFundsAvailability] =
     useState<FundsAvailability | null>(null);
-
+  const params = useParams();
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(true);
   const [expandDetails, toggleExpandDetails] = useState(false);
@@ -110,19 +111,21 @@ const ProductSettings = ({ params }: { params: { id: string } }) => {
     if (refresh) {
       setLoading(true);
       dispatch(setTitle("Product"));
-      dispatch(fetchProduct(parseInt(params.id))).then((product: any) => {
-        if (product.payload) {
-          setProduct(product.payload);
-          dispatch(setTitle(product.payload.productName));
+      dispatch(fetchProduct(parseInt((params.id as string) || "0"))).then(
+        (product: any) => {
+          if (product.payload) {
+            setProduct(product.payload);
+            dispatch(setTitle(product.payload.productName));
 
-          dispatch(fetchFundsAvailability(product.payload.id)).then(
-            (data: any) => {
-              setFundsAvailability(data.payload);
-              setLoading(false);
-            }
-          );
+            dispatch(fetchFundsAvailability(product.payload.id)).then(
+              (data: any) => {
+                setFundsAvailability(data.payload);
+                setLoading(false);
+              }
+            );
+          }
         }
-      });
+      );
       setRefresh(false);
     }
   }, [refresh, dispatch, params.id]);

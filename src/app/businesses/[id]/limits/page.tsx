@@ -19,14 +19,14 @@ const Rules = () => {
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id.toString()))).then(
+    dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (data.payload != null) {
           dispatch(setTitle(data.payload.name));
         }
       }
     );
-  });
+  }, [dispatch, params.id]);
 
   return (
     <div style={{ height: "77vh" }}>

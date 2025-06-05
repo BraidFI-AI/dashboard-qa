@@ -18,32 +18,35 @@ import Link from "next/link";
 import Image from "next/image";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
-const Documents = ({ params }: { params: { id: string } }) => {
+const Documents = () => {
   const router = useRouter();
-
+  const params = useParams();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [documents, setDocuments] = useState<BusinessDocumentWithLink[]>([]);
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id))).then((business: any) => {
-      if (business.payload != null) {
-        dispatch(setTitle(business.payload.name));
+    dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
+      (business: any) => {
+        if (business.payload != null) {
+          dispatch(setTitle(business.payload.name));
 
-        dispatch(fetchBusinessDocuments(business.payload.id)).then(
-          (data: any) => {
-            if (data.payload) {
-              setDocuments(data.payload);
+          dispatch(fetchBusinessDocuments(business.payload.id)).then(
+            (data: any) => {
+              if (data.payload) {
+                setDocuments(data.payload);
+              }
+              setLoading(false);
             }
-            setLoading(false);
-          }
-        );
-      } else {
-        setLoading(false);
+          );
+        } else {
+          setLoading(false);
+        }
       }
-    });
+    );
   }, [dispatch, params.id]);
 
   const handleFullscreen = (id: string) => {
@@ -154,7 +157,7 @@ const Documents = ({ params }: { params: { id: string } }) => {
                         <div className="underline text-[#12A7FF]">
                           <Link
                             href={`/businesses/${parseInt(
-                              params.id.toString()
+                              (params.id as string) || "0"
                             )}/documents/${encodeURIComponent(document.link)}`}
                           >
                             <MyText size="md">View PDF</MyText>

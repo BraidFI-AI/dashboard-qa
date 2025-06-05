@@ -12,14 +12,18 @@ const FeeTable = () => {
   const params = useParams();
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByProductId(params.id.toString()),
+    () => fetchFeesByProductId((params.id as string) || "0"),
     [params.id]
   );
 
   return (
     <Box className="flex flex-col h-full">
       <Box className="w-fit">
-        <Link href={`/configuration/products/${params.id}/fees/create`}>
+        <Link
+          href={`/configuration/products/${
+            (params.id as string) || "0"
+          }/fees/create`}
+        >
           <MyBlueButton>Add Fee</MyBlueButton>
         </Link>
       </Box>

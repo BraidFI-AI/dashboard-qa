@@ -60,20 +60,22 @@ const CreateUBOPage = () => {
         enqueueSnackbar(resp.payload, { variant: "error", persist: true });
       } else {
         enqueueSnackbar("UBO created successfully", { variant: "success" });
-        router.replace(`/businesses/${parseInt(params.id.toString())}/ubo`);
+        router.replace(
+          `/businesses/${parseInt((params.id as string) || "0")}/ubo`
+        );
       }
       setSubmitting(false);
     });
   };
 
   useEffect(() => {
-    dispatch(fetchBusiness(parseInt(params.id.toString()))).then(
+    dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
       (business: any) => {
         setBusiness(business.payload);
       }
     );
 
-    dispatch(fetchUBOs(params.id.toString())).then((ubos: any) => {
+    dispatch(fetchUBOs((params.id as string) || "0")).then((ubos: any) => {
       setUBOs(ubos.payload);
     });
   }, [dispatch, params.id]);
@@ -84,7 +86,7 @@ const CreateUBOPage = () => {
     <ErrorPage
       error={business}
       recoveryButtonOnClick={() => {
-        dispatch(fetchBusiness(parseInt(params.id.toString()))).then(
+        dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
           (business: any) => {
             setBusiness(business.payload);
           }
@@ -96,7 +98,7 @@ const CreateUBOPage = () => {
     <ErrorPage
       error={UBOs}
       recoveryButtonOnClick={() => {
-        dispatch(fetchUBOs(params.id.toString())).then((ubos: any) => {
+        dispatch(fetchUBOs((params.id as string) || "0")).then((ubos: any) => {
           setUBOs(ubos.payload);
         });
       }}

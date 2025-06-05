@@ -19,7 +19,7 @@ const CreateFee = () => {
 
   useEffect(() => {
     setAccIds("loading");
-    dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
+    dispatch(fetchAllIndividualAccounts((params.id as string) || "0")).then(
       (acc: any) => {
         let ids: string[] = [];
         if (typeof acc.payload != "string") {
@@ -46,7 +46,7 @@ const CreateFee = () => {
       recoveryButtonTitle="Retry"
       recoveryButtonOnClick={() => {
         setAccIds("loading");
-        dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
+        dispatch(fetchAllIndividualAccounts((params.id as string) || "0")).then(
           (acc: any) => {
             let ids: string[] = [];
             if (typeof acc.payload != "string") {

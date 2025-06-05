@@ -19,35 +19,41 @@ const TabsProvider = (props: any) => {
   const tabs = [
     {
       name: "Individual Details",
-      path: `/individuals/${parseInt(params.id.toString())}`,
+      path: `/individuals/${parseInt((params.id as string) || "0")}`,
     },
     {
       name: "CIP",
-      path: `/individuals/${parseInt(params.id.toString())}/cip`,
+      path: `/individuals/${parseInt((params.id as string) || "0")}/cip`,
     },
     {
       name: "External Account",
-      path: `/individuals/${parseInt(params.id.toString())}/externalAccount`,
+      path: `/individuals/${parseInt(
+        (params.id as string) || "0"
+      )}/externalAccount`,
     },
     {
       name: "Accounts",
-      path: `/individuals/${parseInt(params.id.toString())}/individualAccounts`,
+      path: `/individuals/${parseInt(
+        (params.id as string) || "0"
+      )}/individualAccounts`,
     },
     {
       name: "Counterparties",
-      path: `/individuals/${parseInt(params.id.toString())}/counterparties`,
+      path: `/individuals/${parseInt(
+        (params.id as string) || "0"
+      )}/counterparties`,
     },
     {
       name: "Documents",
-      path: `/individuals/${parseInt(params.id.toString())}/documents`,
+      path: `/individuals/${parseInt((params.id as string) || "0")}/documents`,
     },
     // {
     //   name: "Limits",
-    //   path: `/individuals/${parseInt(params.id.toString())}/limits`,
+    //   path: `/individuals/${parseInt((params.id as string) || "0")}/limits`,
     // },
     {
       name: "Fees",
-      path: `/individuals/${parseInt(params.id.toString())}/fees`,
+      path: `/individuals/${parseInt((params.id as string) || "0")}/fees`,
     },
   ];
 
@@ -104,69 +110,6 @@ const TabsProvider = (props: any) => {
               }}
             />
           ))}
-          {/* <Tab
-            label="Individual Details"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(`/individuals/${parseInt(params.id.toString())}`);
-            }}
-          />
-          <Tab
-            label="External Account"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/individuals/${parseInt(params.id.toString())}/externalAccount`
-              );
-            }}
-          /> */}
-          {/* <Tab
-            label="Accounts"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/individuals/${parseInt(
-                  params.id.toString()
-                )}/individualAccounts`
-              );
-            }}
-          /> */}
-          {/* <Tab
-            label="Counterparties"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/individuals/${parseInt(params.id.toString())}/counterparties`
-              );
-            }}
-          /> */}
-          {/* <Tab
-            label="Documents"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/individuals/${parseInt(params.id.toString())}/documents`
-              );
-            }}
-          /> */}
-          {/* <Tab
-            label="Limits"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/individuals/${parseInt(params.id.toString())}/limits`
-              );
-            }}
-          />
-          <Tab
-            label="Fees"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/individuals/${parseInt(params.id.toString())}/fees`
-              );
-            }}
-          /> */}
         </Tabs>
       </Box>
       <div className="pb-6"></div>

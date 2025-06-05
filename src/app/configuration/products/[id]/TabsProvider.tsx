@@ -19,34 +19,38 @@ const TabsProvider = (props: any) => {
   const tabs = [
     {
       name: "Product Details",
-      path: `/configuration/products/${parseInt(params.id.toString())}`,
+      path: `/configuration/products/${parseInt((params.id as string) || "0")}`,
     },
-    // {name: "Onboarding Config", path: `/configuration/products/${parseInt(params.id.toString())}/onboardingConfig`},
+    // {name: "Onboarding Config", path: `/configuration/products/${parseInt((params.id as string) || "0")}/onboardingConfig`},
     {
       name: "Funds Availability",
       path: `/configuration/products/${parseInt(
-        params.id.toString()
+        (params.id as string) || "0"
       )}/fundsAvailability`,
     },
     {
       name: "ACH Config",
-      path: `/configuration/products/${parseInt(params.id.toString())}/cfg`,
+      path: `/configuration/products/${parseInt(
+        (params.id as string) || "0"
+      )}/cfg`,
     },
     {
       name: "Counterparties",
       path: `/configuration/products/${parseInt(
-        params.id.toString()
+        (params.id as string) || "0"
       )}/counterparties`,
     },
     {
       name: "Limits",
       path: `/configuration/products/${parseInt(
-        params.id.toString()
-      )}/limits?productId=${parseInt(params.id.toString())}`,
+        (params.id as string) || "0"
+      )}/limits?productId=${parseInt((params.id as string) || "0")}`,
     },
     {
       name: "Fees",
-      path: `/configuration/products/${parseInt(params.id.toString())}/fees`,
+      path: `/configuration/products/${parseInt(
+        (params.id as string) || "0"
+      )}/fees`,
     },
   ];
 
@@ -105,7 +109,7 @@ const TabsProvider = (props: any) => {
             style={{ textTransform: "none" }}
             onClick={() => {
               router.replace(
-                `/configuration/products/${parseInt(params.id.toString())}`
+                `/configuration/products/${parseInt((params.id as string) || "0")}`
               );
             }}
           /> */}
@@ -115,7 +119,7 @@ const TabsProvider = (props: any) => {
             onClick={() => {
               router.replace(
                 `/configuration/products/${parseInt(
-                  params.id.toString()
+                  (params.id as string) || "0"
                 )}/onboardingConfig`
               );
             }}
@@ -126,7 +130,7 @@ const TabsProvider = (props: any) => {
             onClick={() => {
               router.replace(
                 `/configuration/products/${parseInt(
-                  params.id.toString()
+                  (params.id as string) || "0"
                 )}/fundsAvailability`
               );
             }}
@@ -136,7 +140,9 @@ const TabsProvider = (props: any) => {
             style={{ textTransform: "none" }}
             onClick={() => {
               router.replace(
-                `/configuration/products/${parseInt(params.id.toString())}/cfg`
+                `/configuration/products/${parseInt(
+                  (params.id as string) || "0"
+                )}/cfg`
               );
             }}
           />
@@ -146,7 +152,7 @@ const TabsProvider = (props: any) => {
             onClick={() => {
               router.replace(
                 `/configuration/products/${parseInt(
-                  params.id.toString()
+                  (params.id as string) || "0"
                 )}/counterparties`
               );
             }}
@@ -158,7 +164,7 @@ const TabsProvider = (props: any) => {
               onClick={() => {
                 router.replace(
                   `/configuration/products/${parseInt(
-                    params.id.toString()
+                    (params.id as string) || "0"
                   )}/limits`
                 );
               }}
@@ -169,7 +175,9 @@ const TabsProvider = (props: any) => {
             style={{ textTransform: "none" }}
             onClick={() => {
               router.replace(
-                `/configuration/products/${parseInt(params.id.toString())}/fees`
+                `/configuration/products/${parseInt(
+                  (params.id as string) || "0"
+                )}/fees`
               );
             }}
           /> */}

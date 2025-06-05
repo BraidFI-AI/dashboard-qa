@@ -45,12 +45,12 @@ const UploadDocument = () => {
     }
 
     dispatch(
-      createBusinessDocument({ id: params.id.toString(), data: data })
+      createBusinessDocument({ id: (params.id as string) || "0", data: data })
     ).then((d: any) => {
       if (d.payload) {
         dispatch(
           uploadBusinessDocument({
-            businessId: params.id.toString(),
+            businessId: (params.id as string) || "0",
             documentId: d.payload.id,
             file: document,
           })
@@ -76,7 +76,7 @@ const UploadDocument = () => {
       }
     });
 
-    // dispatch(fetchUploadedBusinessDocuments(params.id.toString())).then(
+    // dispatch(fetchUploadedBusinessDocuments((params.id as string) || "0")).then(
     //   (docs: any) => {
     //     if (docs.payload) {
     //       console.log(docs.payload);
@@ -92,7 +92,7 @@ const UploadDocument = () => {
     //         console.log("document already created! uplading only");
     //         dispatch(
     //           uploadBusinessDocument({
-    //             businessId: params.id.toString(),
+    //             businessId: (params.id as string) || "0",
     //             documentId: created.toString(),
     //             file: document,
     //           })
@@ -111,12 +111,12 @@ const UploadDocument = () => {
     //       } else {
     //         console.log("document doesn't exits. Creating and uplaoding");
     //         dispatch(
-    //           createBusinessDocument({ id: params.id.toString(), data: data })
+    //           createBusinessDocument({ id: (params.id as string) || "0", data: data })
     //         ).then((d: any) => {
     //           if (d.payload) {
     //             dispatch(
     //               uploadBusinessDocument({
-    //                 businessId: params.id.toString(),
+    //                 businessId: (params.id as string) || "0",
     //                 documentId: d.payload.id,
     //                 file: document,
     //               })

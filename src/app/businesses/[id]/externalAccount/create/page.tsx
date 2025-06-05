@@ -30,7 +30,7 @@ const CreateExternalAccountPage = () => {
     setSubmitting(true);
     dispatch(
       createPaymentInstrument({
-        id: params.id.toString(),
+        id: (params.id as string) || "0",
         paymentInstrument: data,
       })
     ).then((d: any) => {

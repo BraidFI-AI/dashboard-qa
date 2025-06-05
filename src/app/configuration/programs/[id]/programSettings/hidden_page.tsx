@@ -42,7 +42,7 @@
 //   }
 // };
 
-// const Settings = ({ params }: { params: { id: string } }) => {
+// const Settings = () => {
 //   const dispatch = useAppDispatch();
 //   const [submitting, setSubmitting] = useState(false);
 //   const [loading, setLoading] = useState(true);

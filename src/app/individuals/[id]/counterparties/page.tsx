@@ -33,7 +33,7 @@ const CounterpartyPage = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchIndividual(parseInt(params.id.toString()))).then(
+    dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (data.payload != null) {
           dispatch(
@@ -43,7 +43,10 @@ const CounterpartyPage = () => {
       }
     );
     dispatch(
-      fetchIndividualCounterparties({ id: params.id.toString(), refresh: true })
+      fetchIndividualCounterparties({
+        id: (params.id as string) || "0",
+        refresh: true,
+      })
     );
   }, [dispatch, params.id]);
 
@@ -64,7 +67,7 @@ const CounterpartyPage = () => {
           recoveryButtonOnClick={() => {
             dispatch(
               fetchIndividualCounterparties({
-                id: params.id.toString(),
+                id: (params.id as string) || "0",
                 refresh: true,
               })
             );
@@ -77,7 +80,7 @@ const CounterpartyPage = () => {
           recoveryButtonOnClick={() => {
             dispatch(
               fetchIndividualCounterparties({
-                id: params.id.toString(),
+                id: (params.id as string) || "0",
                 refresh: true,
               })
             );
@@ -87,7 +90,7 @@ const CounterpartyPage = () => {
         <CounterpartyTableView
           counterparties={counterparties}
           fetchData={fetchIndividualCounterparties({
-            id: params.id.toString(),
+            id: (params.id as string) || "0",
           })}
           setPageNumber={(page: number) => {
             dispatch(setIndividualCounterpartyPaginationPageNumber(page));

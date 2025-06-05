@@ -37,10 +37,11 @@ import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { decrypt } from "@/redux/slices/encryption_slice";
+import { useParams } from "next/navigation";
 
-export default function IndividualPage({ params }: { params: { id: string } }) {
+export default function IndividualPage() {
   const userType = useSelector((state: any) => state.app.userType);
-
+  const params = useParams();
   const [statusValues, setStatusValues] = useState<string[]>([
     "INACTIVE",
     "BLOCKED",
@@ -88,7 +89,7 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
 
     dispatch(
       updateIndividual({
-        id: params.id.toString(),
+        id: (params.id as string) || "0",
         individual: data,
       })
     ).then((d: any) => {
@@ -124,39 +125,41 @@ export default function IndividualPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Individual Customer"));
-      dispatch(fetchIndividualV2(parseInt(params.id))).then((data: any) => {
-        if (data.payload) {
-          if (data.payload.idNumber != null) {
-            dispatch(decrypt(data.payload.idNumber)).then((d: any) => {
-              if (typeof d.payload == "string") {
-                setIndividual(data.payload);
-                setValue("idNumber", data.payload.idNumber);
-              } else {
-                setIndividual({ ...data.payload, idNumber: d.payload.data });
-                setValue("idNumber", d.payload.data);
-              }
+      dispatch(fetchIndividualV2(parseInt((params.id as string) || "0"))).then(
+        (data: any) => {
+          if (data.payload) {
+            if (data.payload.idNumber != null) {
+              dispatch(decrypt(data.payload.idNumber)).then((d: any) => {
+                if (typeof d.payload == "string") {
+                  setIndividual(data.payload);
+                  setValue("idNumber", data.payload.idNumber);
+                } else {
+                  setIndividual({ ...data.payload, idNumber: d.payload.data });
+                  setValue("idNumber", d.payload.data);
+                }
+              });
+            } else {
+              setIndividual(data.payload);
+              setValue("idNumber", data.payload.idNumber);
+            }
+
+            dispatch(
+              setTitle(data.payload.firstName + " " + data.payload.lastName)
+            );
+
+            dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
+              setProduct(prd.payload);
             });
-          } else {
-            setIndividual(data.payload);
-            setValue("idNumber", data.payload.idNumber);
+
+            dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
+              setOfac(o.payload);
+            });
           }
-
-          dispatch(
-            setTitle(data.payload.firstName + " " + data.payload.lastName)
-          );
-
-          dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
-            setProduct(prd.payload);
-          });
-
-          dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
-            setOfac(o.payload);
-          });
         }
-      });
+      );
       setRefresh(false);
     }
-  }, [dispatch, params.id, refresh]);
+  }, [dispatch, params.id, refresh, setValue]);
 
   return (
     <Box className="h-full">

@@ -43,7 +43,7 @@ const CreateLimitPage = () => {
     handleSubmit,
   } = useForm<CreateLimit>();
   const onSubmit: SubmitHandler<CreateLimit> = (data: CreateLimit) => {
-    data = { ...data, productId: parseInt(params.id.toString()) };
+    data = { ...data, productId: parseInt((params.id as string) || "0") };
     console.log(data);
 
     setSubmitting(true);
@@ -60,7 +60,7 @@ const CreateLimitPage = () => {
   };
 
   return (
-    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-[300px]">
         <MyText>Rule Name</MyText>
         <MyControlledTextField
@@ -79,7 +79,7 @@ const CreateLimitPage = () => {
         />
         <Box className="pb-4"></Box>
         <MyText>Product ID</MyText>
-        <MyText size="md">{params.id.toString()}</MyText>
+        <MyText size="md">{(params.id as string) || "0"}</MyText>
         <Box className="pb-4"></Box>
         <MyText>Transaction type</MyText>
         {transactionTypes == "loading" ? (
@@ -207,7 +207,7 @@ const CreateLimitPage = () => {
           </MyBlueButton>
         </div>
       </Box>
-    </form>)
+    </form>
   );
 };
 

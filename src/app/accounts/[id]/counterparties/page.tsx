@@ -37,7 +37,7 @@ const CounterpartyPage = () => {
   useEffect(() => {
     setAccount("loading");
     dispatch(setTitle("Account"));
-    dispatch(fetchAccount(params.id.toString())).then((result: any) => {
+    dispatch(fetchAccount((params.id as string) || "0")).then((result: any) => {
       setAccount(result.payload);
       if (typeof result.payload != "string") {
         if (result.payload.accountName != null) {
@@ -49,7 +49,7 @@ const CounterpartyPage = () => {
         );
       }
     });
-  }, [dispatch, params.id]);
+  }, [dispatch, params.id, setAccount]);
 
   return (
     <Box className="flex flex-col h-full">
@@ -68,21 +68,23 @@ const CounterpartyPage = () => {
           recoveryButtonOnClick={() => {
             setAccount("loading");
             dispatch(setTitle("Account"));
-            dispatch(fetchAccount(params.id.toString())).then((result: any) => {
-              setAccount(result.payload);
-              if (typeof result.payload != "string") {
-                if (result.payload.accountName != null) {
-                  dispatch(setTitle(result.payload.accountName));
-                }
+            dispatch(fetchAccount((params.id as string) || "0")).then(
+              (result: any) => {
+                setAccount(result.payload);
+                if (typeof result.payload != "string") {
+                  if (result.payload.accountName != null) {
+                    dispatch(setTitle(result.payload.accountName));
+                  }
 
-                dispatch(
-                  fetchAccountCounterparties({
-                    id: result.payload.id,
-                    refresh: true,
-                  })
-                );
+                  dispatch(
+                    fetchAccountCounterparties({
+                      id: result.payload.id,
+                      refresh: true,
+                    })
+                  );
+                }
               }
-            });
+            );
           }}
         />
       ) : counterparties.length == 0 ? (
@@ -92,28 +94,30 @@ const CounterpartyPage = () => {
           recoveryButtonOnClick={() => {
             setAccount("loading");
             dispatch(setTitle("Account"));
-            dispatch(fetchAccount(params.id.toString())).then((result: any) => {
-              setAccount(result.payload);
-              if (typeof result.payload != "string") {
-                if (result.payload.accountName != null) {
-                  dispatch(setTitle(result.payload.accountName));
-                }
+            dispatch(fetchAccount((params.id as string) || "0")).then(
+              (result: any) => {
+                setAccount(result.payload);
+                if (typeof result.payload != "string") {
+                  if (result.payload.accountName != null) {
+                    dispatch(setTitle(result.payload.accountName));
+                  }
 
-                dispatch(
-                  fetchAccountCounterparties({
-                    id: result.payload.id,
-                    refresh: true,
-                  })
-                );
+                  dispatch(
+                    fetchAccountCounterparties({
+                      id: result.payload.id,
+                      refresh: true,
+                    })
+                  );
+                }
               }
-            });
+            );
           }}
         />
       ) : (
         <CounterpartyTableView
           counterparties={counterparties}
           fetchData={fetchAccountCounterparties({
-            id: params.id.toString(),
+            id: (params.id as string) || "0",
           })}
           setPageNumber={(page: number) => {
             dispatch(setAccountCounterpartyPaginationPageNumber(page));

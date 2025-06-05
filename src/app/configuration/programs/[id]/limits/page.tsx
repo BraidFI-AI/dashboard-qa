@@ -13,7 +13,7 @@ const Rules = () => {
 
   useEffect(() => {
     dispatch(setTitle("Program Limits"));
-    dispatch(fetchProgramV2(parseInt(params.id.toString()))).then(
+    dispatch(fetchProgramV2(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (typeof data.payload != "string") {
           dispatch(setTitle(data.payload.name));

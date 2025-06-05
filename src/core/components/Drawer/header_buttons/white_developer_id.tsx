@@ -42,7 +42,10 @@ const WhitelistDeveloperID = () => {
     console.log("data:", data);
     setSubmitting(true);
     dispatch(
-      whitelistDeveloperIP({ id: params.id?.toString(), ip: data.ipAddress })
+      whitelistDeveloperIP({
+        id: (params.id as string) || "0",
+        ip: data.ipAddress,
+      })
     ).then((ip: any) => {
       if (typeof ip.payload == "string") {
         enqueueSnackbar(ip.payload, { variant: "error", persist: true });
@@ -50,7 +53,7 @@ const WhitelistDeveloperID = () => {
         enqueueSnackbar("IP whitelisted", { variant: "success" });
         dispatch(
           fetchDeveloperWhitelistedIPs({
-            id: params.id.toString(),
+            id: (params.id as string) || "0",
             refresh: true,
           })
         );

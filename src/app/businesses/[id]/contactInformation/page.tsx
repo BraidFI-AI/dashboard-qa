@@ -8,21 +8,24 @@ import { useAppDispatch } from "@/redux/store/store";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { setTitle } from "@/redux/slices/AppSlice";
+import { useParams } from "next/navigation";
 
-const ContactInformation = ({ params }: { params: { id: string } }) => {
+const ContactInformation = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(true);
   const [business, setBusiness] = useState<Business | null>(null);
-
+  const params = useParams();
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id))).then((data: any) => {
-      if (data.payload) {
-        setBusiness(data.payload);
-        dispatch(setTitle(data.payload.name));
+    dispatch(fetchBusiness(parseInt((params.id as string) || ""))).then(
+      (data: any) => {
+        if (data.payload) {
+          setBusiness(data.payload);
+          dispatch(setTitle(data.payload.name));
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    );
   }, [dispatch, params.id]);
 
   return (

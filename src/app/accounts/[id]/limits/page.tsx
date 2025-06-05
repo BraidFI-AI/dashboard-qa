@@ -13,7 +13,7 @@ const Rules = () => {
 
   useEffect(() => {
     dispatch(setTitle("Account"));
-    dispatch(fetchAccount(params.id.toString())).then((d: any) => {
+    dispatch(fetchAccount((params.id as string) || "0")).then((d: any) => {
       if (d.payload.accountName != null) {
         dispatch(setTitle(d.payload.accountName));
       }

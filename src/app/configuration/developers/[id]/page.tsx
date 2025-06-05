@@ -30,15 +30,16 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { enqueueSnackbar } from "notistack";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
 
-const DeveloperPage = ({ params }: { params: { id: string } }) => {
+const DeveloperPage = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [developer, setDeveloper] = useState<Developer | null>(null);
   const ips: "loading" | string | WhitelistedIP[] = useSelector(
     (state: any) => state.developer.whitelistedIPs
   );
-
+  const params = useParams();
   const pagination: PaginationStateType = useSelector(
     (state: any) => state.developer.whitelistedIPsPagination
   );
@@ -56,16 +57,18 @@ const DeveloperPage = ({ params }: { params: { id: string } }) => {
     if (refresh) {
       setRefresh(false);
       dispatch(setTitle("Developer"));
-      dispatch(fetchDeveloper(params.id)).then((data: any) => {
-        if (data.payload) {
-          setDeveloper(data.payload);
-          dispatch(setTitle(data.payload.name));
+      dispatch(fetchDeveloper((params.id as string) || "0")).then(
+        (data: any) => {
+          if (data.payload) {
+            setDeveloper(data.payload);
+            dispatch(setTitle(data.payload.name));
+          }
+          setLoading(false);
         }
-        setLoading(false);
-      });
+      );
       dispatch(
         fetchDeveloperWhitelistedIPs({
-          id: params.id.toString(),
+          id: (params.id as string) || "0",
           refresh: true,
         })
       );
@@ -175,7 +178,7 @@ const DeveloperPage = ({ params }: { params: { id: string } }) => {
                 dispatch(setWhitelistedIPsPageNumber(page));
                 dispatch(
                   fetchDeveloperWhitelistedIPs({
-                    id: params.id.toString(),
+                    id: (params.id as string) || "0",
                     refresh: false,
                   })
                 );
@@ -215,7 +218,7 @@ const DeveloperPage = ({ params }: { params: { id: string } }) => {
                               );
                               dispatch(
                                 fetchDeveloperWhitelistedIPs({
-                                  id: params.id.toString(),
+                                  id: (params.id as string) || "0",
                                   refresh: true,
                                 })
                               );

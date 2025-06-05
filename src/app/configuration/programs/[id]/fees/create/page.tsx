@@ -7,8 +7,8 @@ const CreateFee = () => {
   const params = useParams();
   return (
     <CreateFeeView
-      ids={[params.id.toString()]}
-      replaceTo={`/configuration/programs/${params.id}/fees`}
+      ids={[(params.id as string) || "0"]}
+      replaceTo={`/configuration/programs/${(params.id as string) || "0"}/fees`}
       level="Program"
     />
   );

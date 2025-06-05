@@ -40,10 +40,11 @@ import { decrypt } from "@/redux/slices/encryption_slice";
 // import { generatePdf } from "@/core/utils/pdfUtils";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useParams } from "next/navigation";
 
-const BusinessDetails = ({ params }: { params: { id: string } }) => {
+const BusinessDetails = () => {
   const dispatch = useAppDispatch();
-
+  const params = useParams();
   const userType = useSelector((state: any) => state.app.userType);
 
   const [statusValues, setStatusValues] = useState<string[]>([
@@ -94,7 +95,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
 
     dispatch(
       updateBusiness({
-        id: params.id.toString(),
+        id: (params.id as string) || "0",
         business: data,
       })
     ).then((d: any) => {
@@ -122,37 +123,39 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Business Customer"));
-      dispatch(fetchBusiness(parseInt(params.id))).then((data: any) => {
-        if (data.payload) {
-          setBusiness(data.payload);
-          dispatch(setTitle(data.payload.name));
-
-          if (data.payload.idNumber != null) {
-            dispatch(decrypt(data.payload.idNumber)).then((d: any) => {
-              if (typeof d.payload == "string") {
-                setBusiness(data.payload);
-                setValue("idNumber", data.payload.idNumber);
-              } else {
-                setBusiness({ ...data.payload, idNumber: d.payload.data });
-                setValue("idNumber", d.payload.data);
-              }
-            });
-          } else {
+      dispatch(fetchBusiness(parseInt((params.id as string) || ""))).then(
+        (data: any) => {
+          if (data.payload) {
             setBusiness(data.payload);
-            setValue("idNumber", data.payload.idNumber);
+            dispatch(setTitle(data.payload.name));
+
+            if (data.payload.idNumber != null) {
+              dispatch(decrypt(data.payload.idNumber)).then((d: any) => {
+                if (typeof d.payload == "string") {
+                  setBusiness(data.payload);
+                  setValue("idNumber", data.payload.idNumber);
+                } else {
+                  setBusiness({ ...data.payload, idNumber: d.payload.data });
+                  setValue("idNumber", d.payload.data);
+                }
+              });
+            } else {
+              setBusiness(data.payload);
+              setValue("idNumber", data.payload.idNumber);
+            }
+
+            dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
+              setProduct(prd.payload);
+            });
+
+            dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
+              console.log("fetched");
+              setOfac(o.payload);
+            });
           }
-
-          dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
-            setProduct(prd.payload);
-          });
-
-          dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
-            console.log("fetched");
-            setOfac(o.payload);
-          });
+          setLoading(false);
         }
-        setLoading(false);
-      });
+      );
       setRefresh(false);
     }
   }, [dispatch, params.id, refresh, setValue]);
@@ -170,7 +173,9 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
           recoveryButtonOnClick={() => {
             setLoading(true);
             dispatch(setTitle("Business Customer"));
-            dispatch(fetchBusiness(parseInt(params.id))).then((data: any) => {
+            dispatch(
+              fetchBusiness(parseInt((params.id as string) || "0"))
+            ).then((data: any) => {
               if (data.payload) {
                 setBusiness(data.payload);
                 dispatch(setTitle(data.payload.name));
@@ -499,7 +504,7 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
                   setDownloadingPdf(true);
                   dispatch(
                     downloadBusinessPdf({
-                      id: params.id.toString(),
+                      id: (params.id as string) || "0",
                       filename: business.name,
                     })
                   ).then((url: any) => {

@@ -27,7 +27,7 @@ const FeeTable = () => {
 
   useEffect(() => {
     dispatch(setTitle("Individual Customer"));
-    dispatch(fetchIndividual(parseInt(params.id.toString()))).then(
+    dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (data.payload != null) {
           dispatch(
@@ -40,7 +40,7 @@ const FeeTable = () => {
 
   useEffect(() => {
     setAccIds("loading");
-    dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
+    dispatch(fetchAllIndividualAccounts((params.id as string) || "0")).then(
       (acc: any) => {
         let ids: string[] = [];
         if (typeof acc.payload != "string") {
@@ -80,20 +80,20 @@ const FeeTable = () => {
           error="Error fetching fees"
           recoveryButtonOnClick={() => {
             setAccIds("loading");
-            dispatch(fetchAllIndividualAccounts(params.id.toString())).then(
-              (acc: any) => {
-                let ids: string[] = [];
-                if (typeof acc.payload != "string") {
-                  acc.payload.forEach((acc: any) => {
-                    ids.push(acc.accountNumber);
-                  });
-                  console.log("accids:", ids);
-                  setAccIds(ids);
-                } else {
-                  setAccIds(acc.payload);
-                }
+            dispatch(
+              fetchAllIndividualAccounts((params.id as string) || "0")
+            ).then((acc: any) => {
+              let ids: string[] = [];
+              if (typeof acc.payload != "string") {
+                acc.payload.forEach((acc: any) => {
+                  ids.push(acc.accountNumber);
+                });
+                console.log("accids:", ids);
+                setAccIds(ids);
+              } else {
+                setAccIds(acc.payload);
               }
-            );
+            });
           }}
           recoveryButtonTitle="Retry"
         />

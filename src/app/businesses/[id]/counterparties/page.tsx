@@ -34,7 +34,7 @@ const CounterpartyPage = () => {
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id.toString()))).then(
+    dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (data.payload != null) {
           dispatch(setTitle(data.payload.name));
@@ -42,7 +42,10 @@ const CounterpartyPage = () => {
       }
     );
     dispatch(
-      fetchBusinessCounterparties({ id: params.id.toString(), refresh: true })
+      fetchBusinessCounterparties({
+        id: (params.id as string) || "0",
+        refresh: true,
+      })
     );
   }, [dispatch, params.id]);
 
@@ -63,7 +66,7 @@ const CounterpartyPage = () => {
           recoveryButtonOnClick={() => {
             dispatch(
               fetchBusinessCounterparties({
-                id: params.id.toString(),
+                id: (params.id as string) || "0",
                 refresh: true,
               })
             );
@@ -76,7 +79,7 @@ const CounterpartyPage = () => {
           recoveryButtonOnClick={() => {
             dispatch(
               fetchBusinessCounterparties({
-                id: params.id.toString(),
+                id: (params.id as string) || "0",
                 refresh: true,
               })
             );
@@ -86,7 +89,7 @@ const CounterpartyPage = () => {
         <CounterpartyTableView
           counterparties={counterparties}
           fetchData={fetchBusinessCounterparties({
-            id: params.id.toString(),
+            id: (params.id as string) || "0",
           })}
           setPageNumber={(page: number) => {
             dispatch(setBusinessCounterpartyPaginationPageNumber(page));

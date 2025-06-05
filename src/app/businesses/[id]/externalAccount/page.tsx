@@ -23,8 +23,9 @@ import MyTextButton from "@/core/components/Button/MyTextButton";
 import ErrorPage from "@/core/components/error_page";
 import { useRouter } from "next/navigation";
 import MyRedButton from "@/core/components/Button/MyRedButton";
+import { useParams } from "next/navigation";
 
-const BusinessACHPage = ({ params }: { params: { id: string } }) => {
+const BusinessACHPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [business, setBusiness] = useState<"loading" | string | Business>(
@@ -34,18 +35,20 @@ const BusinessACHPage = ({ params }: { params: { id: string } }) => {
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(true);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
-
+  const params = useParams();
   const [unblocking, setUnblocking] = useState(false);
 
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Business Customer"));
-      dispatch(fetchBusiness(parseInt(params.id))).then((data: any) => {
-        if (data.payload != null) {
-          dispatch(setTitle(data.payload.name));
+      dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
+        (data: any) => {
+          if (data.payload != null) {
+            dispatch(setTitle(data.payload.name));
+          }
+          setBusiness(data.payload);
         }
-        setBusiness(data.payload);
-      });
+      );
       setRefresh(false);
     }
   }, [dispatch, params.id, refresh]);
@@ -62,7 +65,9 @@ const BusinessACHPage = ({ params }: { params: { id: string } }) => {
           error={business}
           recoveryButtonOnClick={() => {
             setBusiness("loading");
-            dispatch(fetchBusiness(parseInt(params.id))).then((data: any) => {
+            dispatch(
+              fetchBusiness(parseInt((params.id as string) || "0"))
+            ).then((data: any) => {
               setBusiness(data.payload);
             });
           }}
@@ -103,23 +108,23 @@ const BusinessACHPage = ({ params }: { params: { id: string } }) => {
                 submitting={submitting}
                 onClick={() => {
                   setSubmitting(true);
-                  dispatch(deletePaymentInstrument(params.id.toString())).then(
-                    (d: any) => {
-                      if (typeof d.payload == "string") {
-                        enqueueSnackbar(d.payload, {
-                          variant: "error",
-                          persist: true,
-                        });
-                      } else {
-                        enqueueSnackbar(
-                          "Payment instrument deleted successfully",
-                          { variant: "success" }
-                        );
-                        setRefresh(true);
-                      }
-                      setSubmitting(false);
+                  dispatch(
+                    deletePaymentInstrument((params.id as string) || "0")
+                  ).then((d: any) => {
+                    if (typeof d.payload == "string") {
+                      enqueueSnackbar(d.payload, {
+                        variant: "error",
+                        persist: true,
+                      });
+                    } else {
+                      enqueueSnackbar(
+                        "Payment instrument deleted successfully",
+                        { variant: "success" }
+                      );
+                      setRefresh(true);
                     }
-                  );
+                    setSubmitting(false);
+                  });
                 }}
               >
                 Delete payment instrument

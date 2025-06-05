@@ -19,23 +19,25 @@ const TabsProvider = (props: any) => {
   const tabs = [
     {
       name: "Account Details",
-      path: `/accounts/${params.id.toString()}`,
+      path: `/accounts/${(params.id as string) || "0"}`,
     },
     {
       name: "Transactions",
-      path: `/accounts/${params.id.toString()}/accountTrans`,
+      path: `/accounts/${(params.id as string) || "0"}/accountTrans`,
     },
     {
       name: "Counterparties",
-      path: `/accounts/${params.id.toString()}/counterparties`,
+      path: `/accounts/${(params.id as string) || "0"}/counterparties`,
     },
     {
       name: "Limits",
-      path: `/accounts/${params.id.toString()}/limits?accountNumber=${params.id.toString()}`,
+      path: `/accounts/${(params.id as string) || "0"}/limits?accountNumber=${
+        (params.id as string) || "0"
+      }`,
     },
     {
       name: "Fees",
-      path: `/accounts/${params.id.toString()}/fees`,
+      path: `/accounts/${(params.id as string) || "0"}/fees`,
     },
   ];
 
@@ -80,43 +82,6 @@ const TabsProvider = (props: any) => {
               }}
             />
           ))}
-          {/* <Tab
-            label="Account Details"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(`/accounts/${params.id.toString()}`);
-            }}
-          /> */}
-          {/* <Tab
-            label="Transactions"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(`/accounts/${params.id.toString()}/accountTrans`);
-            }}
-          /> */}
-          {/* <Tab
-            label="Counterparties"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(
-                `/accounts/${params.id.toString()}/counterparties`
-              );
-            }}
-          /> */}
-          {/* <Tab
-            label="Limits"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(`/accounts/${params.id.toString()}/limits`);
-            }}
-          /> */}
-          {/* <Tab
-            label="Fees"
-            style={{ textTransform: "none" }}
-            onClick={() => {
-              router.replace(`/accounts/${params.id.toString()}/fees`);
-            }}
-          /> */}
         </Tabs>
       </Box>
       <div className="pb-6"></div>

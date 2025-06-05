@@ -12,28 +12,31 @@ import { fetchCard } from "@/redux/slices/CardManagementSlice";
 import Link from "next/link";
 import ItemRow from "@/core/components/Text/ItemRow";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
+import { useParams } from "next/navigation";
 
-export default function CardPage({ params }: { params: { id: string } }) {
+export default function CardPage() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [card, setCard] = useState<Card | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
-
+  const params = useParams();
   useEffect(() => {
     dispatch(setTitle("Card"));
-    dispatch(fetchCard(parseInt(params.id))).then((data: any) => {
-      if (data.payload) {
-        setCard(data.payload);
-        dispatch(setTitle(data.payload.name));
+    dispatch(fetchCard(parseInt((params.id as string) || "0"))).then(
+      (data: any) => {
+        if (data.payload) {
+          setCard(data.payload);
+          dispatch(setTitle(data.payload.name));
 
-        dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
-          if (prd.payload) {
-            setProduct(prd.payload);
-          }
-        });
+          dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
+            if (prd.payload) {
+              setProduct(prd.payload);
+            }
+          });
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    );
   }, [dispatch, params.id]);
 
   return (

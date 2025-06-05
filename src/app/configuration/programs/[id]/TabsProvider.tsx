@@ -17,17 +17,19 @@ const TabsProvider = (props: any) => {
   const tabs = [
     {
       name: "Program Details",
-      path: `/configuration/programs/${parseInt(params.id.toString())}`,
+      path: `/configuration/programs/${parseInt((params.id as string) || "0")}`,
     },
     {
       name: "Limits",
       path: `/configuration/programs/${parseInt(
-        params.id.toString()
-      )}/limits?programId=${parseInt(params.id.toString())}`,
+        (params.id as string) || "0"
+      )}/limits?programId=${parseInt((params.id as string) || "0")}`,
     },
     {
       name: "Fees",
-      path: `/configuration/programs/${parseInt(params.id.toString())}/fees`,
+      path: `/configuration/programs/${parseInt(
+        (params.id as string) || "0"
+      )}/fees`,
     },
   ];
 

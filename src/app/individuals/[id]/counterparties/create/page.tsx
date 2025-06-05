@@ -179,7 +179,7 @@ const CreateCounterpartyPage = () => {
       data.businessId = undefined;
       data.productId = undefined;
       data.accountNumber = undefined;
-      data.individualId = parseInt(params.id.toString());
+      data.individualId = parseInt((params.id as string) || "0");
     } catch (e) {
       enqueueSnackbar("Invalid Individual ID", { variant: "error" });
       return;
@@ -357,7 +357,7 @@ const CreateCounterpartyPage = () => {
           value=""
         />
         <Box className="pb-4"></Box>
-        <ItemRow title="Individual ID" value={params.id.toString()} />
+        <ItemRow title="Individual ID" value={(params.id as string) || "0"} />
         {/* <RadioButton
           title="Association"
           value={association}

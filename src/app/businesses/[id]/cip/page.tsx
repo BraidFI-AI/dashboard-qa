@@ -13,6 +13,7 @@ import DocumentComponent from "./doc";
 import XMLViewer from "react-xml-viewer";
 import { JSONTree } from "react-json-tree";
 import { decrypt } from "@/redux/slices/encryption_slice";
+import { useParams } from "next/navigation";
 
 function tryParse(str: string) {
   try {
@@ -23,34 +24,39 @@ function tryParse(str: string) {
   }
 }
 
-const BusinessDetails = ({ params }: { params: { id: string } }) => {
+const BusinessDetails = () => {
   const dispatch = useAppDispatch();
 
   const [cipStatus, setCipStatus] = useState<"loading" | string | any>(
     "loading"
   );
+  const params = useParams();
 
   const [showEncryptedResult, setShowEncryptedResult] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchBusiness(parseInt(params.id))).then((d: any) => {
-      if (typeof d.payload != "string") dispatch(setTitle(d.payload.name));
-    });
+    dispatch(fetchBusiness(parseInt((params.id as string) || ""))).then(
+      (d: any) => {
+        if (typeof d.payload != "string") dispatch(setTitle(d.payload.name));
+      }
+    );
 
     setCipStatus("loading");
-    dispatch(fetchCIPStatus(params.id)).then((cipStatus: any) => {
-      if (cipStatus.payload.result != null) {
-        dispatch(decrypt(cipStatus.payload.result)).then((d: any) => {
-          if (typeof d.payload == "string") {
-            setCipStatus({ ...cipStatus.payload, result: d.payload });
-          } else {
-            setCipStatus({ ...cipStatus.payload, result: d.payload.data });
-          }
-        });
-      } else {
-        setCipStatus(cipStatus.payload);
+    dispatch(fetchCIPStatus((params.id as string) || "")).then(
+      (cipStatus: any) => {
+        if (cipStatus.payload.result != null) {
+          dispatch(decrypt(cipStatus.payload.result)).then((d: any) => {
+            if (typeof d.payload == "string") {
+              setCipStatus({ ...cipStatus.payload, result: d.payload });
+            } else {
+              setCipStatus({ ...cipStatus.payload, result: d.payload.data });
+            }
+          });
+        } else {
+          setCipStatus(cipStatus.payload);
+        }
       }
-    });
+    );
   }, [dispatch, params.id]);
 
   const handleFullscreen = (id: string) => {
@@ -76,15 +82,19 @@ const BusinessDetails = ({ params }: { params: { id: string } }) => {
         <ErrorPage
           error="Error fetching business"
           recoveryButtonOnClick={() => {
-            dispatch(fetchBusiness(parseInt(params.id))).then((d: any) => {
-              if (typeof d.payload != "string")
-                dispatch(setTitle(d.payload.name));
-            });
+            dispatch(fetchBusiness(parseInt((params.id as string) || ""))).then(
+              (d: any) => {
+                if (typeof d.payload != "string")
+                  dispatch(setTitle(d.payload.name));
+              }
+            );
 
             setCipStatus("loading");
-            dispatch(fetchCIPStatus(params.id)).then((d: any) => {
-              setCipStatus(d.payload);
-            });
+            dispatch(fetchCIPStatus((params.id as string) || "")).then(
+              (d: any) => {
+                setCipStatus(d.payload);
+              }
+            );
           }}
           recoveryButtonTitle="Retry"
         />

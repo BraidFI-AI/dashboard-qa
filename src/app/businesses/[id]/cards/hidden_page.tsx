@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { setTitle } from "@/redux/slices/AppSlice";
 import MyTable from "@/core/components/Table/MyTable";
 import { GridEventListener } from "@mui/x-data-grid";
+import { useParams } from "next/navigation";
 
 const cards2dTo1d = (cards2d: any) => {
   let cards: any = [];
@@ -30,13 +31,13 @@ const cards2dTo1d = (cards2d: any) => {
   return cards;
 };
 
-const CardsPage = ({ params }: { params: { id: string } }) => {
+const CardsPage = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(true);
   const [cards, setCards] = useState<AccountCard[] | null>(null);
   const [selectedCard, setSelectedCard] = useState<AccountCard | null>(null);
   const [cardModalOpen, setCardModalOpen] = useState<boolean>(false);
-
+  const params = useParams();
   const ModalBoxstyle = {
     position: "absolute" as any as "absolute",
     top: "50%",
