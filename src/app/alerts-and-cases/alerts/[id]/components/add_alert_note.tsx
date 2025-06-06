@@ -20,8 +20,6 @@ type AddAlertNoteButtonProps = {
 const AddAlertNoteButton: React.FC<AddAlertNoteButtonProps> = ({ alert }) => {
   const dispatch = useAppDispatch();
 
-  const [isOpen, setIsOpen] = useState(false);
-
   const [modalOpen, setModalOpen] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
@@ -55,23 +53,7 @@ const AddAlertNoteButton: React.FC<AddAlertNoteButtonProps> = ({ alert }) => {
     });
   };
 
-  useEffect(() => {
-    if (typeof alert != "string") {
-      if (
-        alert.status == "UNASSIGNED" ||
-        alert.status == "OPEN" ||
-        alert.status == "ASSIGNED"
-      ) {
-        setIsOpen(true);
-      } else {
-        setIsOpen(false);
-      }
-    }
-  }, [alert]);
-
-  return isOpen == false ? (
-    <></>
-  ) : typeof alert == "string" ? (
+  return typeof alert == "string" ? (
     <></>
   ) : (
     <>
