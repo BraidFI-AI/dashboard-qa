@@ -38,6 +38,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { decrypt } from "@/redux/slices/encryption_slice";
 import { useParams } from "next/navigation";
+import LabelBox from "@/core/components/label_box";
 
 export default function IndividualPage() {
   const userType = useSelector((state: any) => state.app.userType);
@@ -535,6 +536,18 @@ export default function IndividualPage() {
           </div>
           <div className="w-3" />
           <div className="h-full w-[350px] border-solid border-[1px] border-[#E5E5E5] rounded-[10px] px-3 pt-3">
+            <div className="pb-4 w-fit">
+              <MyText>Type</MyText>
+              <div className="pb-1" />
+              <LabelBox
+                color={
+                  individual.subType?.toLowerCase() == "ubo" ? "orange" : "gray"
+                }
+                border
+              >
+                {individual.subType ?? ""}
+              </LabelBox>
+            </div>
             <ItemRow title="Individual ID" value={individual.id}></ItemRow>
             <ItemRow
               title="Product Name"
