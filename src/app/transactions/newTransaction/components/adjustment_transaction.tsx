@@ -176,9 +176,9 @@ export default function AdjustmentTransaction() {
                         "TRANSACTION_ADJUSTMENT",
                       ]
                     : [
-                        "NEGATIVE_BALANCE_CLEARING",
-                        "PROVISIONAL_DEBIT",
                         "COLLECTION",
+                        "TRANSACTION_REVERSAL",
+                        "TRANSACTION_ADJUSTMENT",
                       ]
                 }
               />
