@@ -29,8 +29,6 @@ const UploadAlertDocumentButton: React.FC<UploadAlertDocumentButtonProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [isOpen, setIsOpen] = useState(false);
-
   const documentRef = useRef<HTMLInputElement>(null);
   const [document, setDocument] = useState<any>(null);
 
@@ -140,23 +138,7 @@ const UploadAlertDocumentButton: React.FC<UploadAlertDocumentButtonProps> = ({
     });
   };
 
-  useEffect(() => {
-    if (typeof alert != "string") {
-      if (
-        alert.status == "UNASSIGNED" ||
-        alert.status == "OPEN" ||
-        alert.status == "ASSIGNED"
-      ) {
-        setIsOpen(true);
-      } else {
-        setIsOpen(false);
-      }
-    }
-  }, [alert]);
-
-  return isOpen == false ? (
-    <></>
-  ) : typeof alert == "string" ? (
+  return typeof alert == "string" ? (
     <></>
   ) : (
     <>
