@@ -568,7 +568,13 @@ export default function IndividualPage() {
                           }
                     }
                     value={individual.cipStatus}
-                    options={["NOT_START", "PASS", "FAIL", "IN_REVIEW"]}
+                    options={[
+                      "NOT_START",
+                      "PASS",
+                      "FAIL",
+                      "IN_REVIEW",
+                      "VERIFIED",
+                    ]}
                     submitting={false}
                   />
                 </div>

@@ -741,7 +741,13 @@ const BusinessDetails = () => {
                           }
                     }
                     value={business.cipStatus}
-                    options={["NOT_START", "PASS", "FAIL", "IN_REVIEW"]}
+                    options={[
+                      "NOT_START",
+                      "PASS",
+                      "FAIL",
+                      "IN_REVIEW",
+                      "VERIFIED",
+                    ]}
                     submitting={false}
                   />
                 </div>
