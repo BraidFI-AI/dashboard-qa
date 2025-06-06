@@ -54,9 +54,9 @@ const DocumentComponent: React.FC<DocumentComponentProps> = ({
             ) : (
               <div className=" underline text-[#12A7FF]">
                 <Link
-                  href={`/alerts-and-cases/alerts/${params.id.toString()}/${encodeURIComponent(
-                    (alertDocument as any).documentUrl
-                  )}`}
+                  href={`/alerts-and-cases/alerts/${
+                    (params.id as string) || "0"
+                  }/${encodeURIComponent((alertDocument as any).documentUrl)}`}
                 >
                   <MyText size="md">View PDF</MyText>
                 </Link>

@@ -33,14 +33,16 @@ const AccountTransactionsPage = () => {
 
   useEffect(() => {
     dispatch(setTitle("Account"));
-    dispatch(fetchAccount(params.id.toString())).then((account: any) => {
-      if (
-        typeof account.payload != "string" &&
-        account.payload.accountName != null
-      ) {
-        dispatch(setTitle(account.payload.accountName));
+    dispatch(fetchAccount((params.id as string) || "0")).then(
+      (account: any) => {
+        if (
+          typeof account.payload != "string" &&
+          account.payload.accountName != null
+        ) {
+          dispatch(setTitle(account.payload.accountName));
+        }
       }
-    });
+    );
   }, []);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const AccountTransactionsPage = () => {
     }
     dispatch(
       fetchTransactions({
-        criteria: { accountNumber: params.id.toString() },
+        criteria: { accountNumber: (params.id as string) || "0" },
         refresh: true,
       })
     );
@@ -65,7 +67,7 @@ const AccountTransactionsPage = () => {
         recoveryButtonOnClick={() => {
           dispatch(
             fetchTransactions({
-              criteria: { accountNumber: params.id.toString() },
+              criteria: { accountNumber: (params.id as string) || "0" },
               refresh: true,
             })
           );
@@ -79,7 +81,7 @@ const AccountTransactionsPage = () => {
     <div style={{ height: "76vh" }}>
       <TransactionTableView
         transactions={transactions}
-        filters={{ accountNumber: params.id.toString() }}
+        filters={{ accountNumber: (params.id as string) || "0" }}
       />
     </div>
   );

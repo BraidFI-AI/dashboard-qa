@@ -12,14 +12,18 @@ const FeeTable = () => {
   const params = useParams();
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByProgramId(params.id.toString()),
+    () => fetchFeesByProgramId((params.id as string) || "0"),
     [params.id]
   );
 
   return (
     <Box className="flex flex-col h-full">
       <Box className="w-fit">
-        <Link href={`/configuration/programs/${params.id}/fees/create`}>
+        <Link
+          href={`/configuration/programs/${
+            (params.id as string) || "0"
+          }/fees/create`}
+        >
           <MyBlueButton>Add Fee</MyBlueButton>
         </Link>
       </Box>
@@ -27,7 +31,9 @@ const FeeTable = () => {
       <div style={{ height: "67vh" }}>
         <FeeTableView
           fetchData={fetchDataMemoized}
-          pushTo={`/configuration/programs/${params.id}/fees`}
+          pushTo={`/configuration/programs/${
+            (params.id as string) || "0"
+          }/fees`}
         />
       </div>
     </Box>

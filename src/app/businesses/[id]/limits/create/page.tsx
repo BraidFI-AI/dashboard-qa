@@ -91,13 +91,13 @@ const CreateLimitPage = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
-      (accs: any) => {
-        if (typeof accs.payload != "string") {
-          setAccountId(accs.payload[0].accountNumber);
-        }
+    dispatch(
+      fetchAllBusinessAccounts(parseInt((params.id as string) || "0"))
+    ).then((accs: any) => {
+      if (typeof accs.payload != "string") {
+        setAccountId(accs.payload[0].accountNumber);
       }
-    );
+    });
   }, [dispatch, params.id]);
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const CreateLimitPage = () => {
   }, [dispatch, accountId]);
 
   return (
-    (<form onSubmit={handleSubmit(onSubmit)} className="pb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
       <Box className="flex flex-col w-[300px]">
         <MyText>Rule Name</MyText>
         <MyControlledTextField
@@ -150,7 +150,7 @@ const CreateLimitPage = () => {
             error={accountIds}
             recoveryButtonOnClick={() => {
               dispatch(
-                fetchAllBusinessAccounts(parseInt(params.id.toString()))
+                fetchAllBusinessAccounts(parseInt((params.id as string) || "0"))
               ).then((accs: any) => {
                 if (typeof accs.payload != "string") {
                   setAccountId(accs.payload[0].accountNumber);
@@ -383,7 +383,7 @@ const CreateLimitPage = () => {
           </MyBlueButton>
         </div>
       </Box>
-    </form>)
+    </form>
   );
 };
 

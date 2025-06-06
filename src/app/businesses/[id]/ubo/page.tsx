@@ -14,8 +14,9 @@ import Modal from "@mui/material/Modal";
 import { setTitle } from "@/redux/slices/AppSlice";
 import Link from "next/link";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import { useParams } from "next/navigation";
 
-const UBOs = ({ params }: { params: { id: string } }) => {
+const UBOs = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [uboIndividualDetails, setUboIndividualDetails] = useState<
@@ -25,7 +26,7 @@ const UBOs = ({ params }: { params: { id: string } }) => {
   const [UBOModalOpen, setUBOModalOpen] = useState<boolean>(false);
   const [selectedUBO, setSelectedUBO] = useState<any>(null);
   const apiRef = React.createRef<any>();
-
+  const params = useParams();
   const ModalBoxstyle = {
     position: "absolute" as any as "absolute",
     top: "50%",
@@ -39,20 +40,22 @@ const UBOs = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id))).then((business: any) => {
-      if (business.payload != null) {
-        dispatch(setTitle(business.payload.name));
-        dispatch(fetchUboKycStatus(business.payload)).then((data: any) => {
-          if (data.payload != null) {
-            setUboIndividualDetails(data.payload.details);
-            setUboKYCData(data.payload.kyc);
-          }
+    dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
+      (business: any) => {
+        if (business.payload != null) {
+          dispatch(setTitle(business.payload.name));
+          dispatch(fetchUboKycStatus(business.payload)).then((data: any) => {
+            if (data.payload != null) {
+              setUboIndividualDetails(data.payload.details);
+              setUboKYCData(data.payload.kyc);
+            }
+            setLoading(false);
+          });
+        } else {
           setLoading(false);
-        });
-      } else {
-        setLoading(false);
+        }
       }
-    });
+    );
   }, [dispatch, params.id]);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {

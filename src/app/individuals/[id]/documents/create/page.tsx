@@ -45,12 +45,12 @@ const UploadDocument = () => {
     }
 
     dispatch(
-      createIndividualDocument({ id: params.id.toString(), data: data })
+      createIndividualDocument({ id: (params.id as string) || "0", data: data })
     ).then((d: any) => {
       if (d.payload) {
         dispatch(
           uploadIndividualDocument({
-            individualId: params.id.toString(),
+            individualId: (params.id as string) || "0",
             documentId: d.payload.id,
             file: document,
           })

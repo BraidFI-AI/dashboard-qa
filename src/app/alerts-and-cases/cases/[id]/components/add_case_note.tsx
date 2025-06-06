@@ -44,17 +44,17 @@ const AddCaseNodeButton: React.FC<AddCaseNodeButtonProps> = ({ c }) => {
     console.log("data:", data);
     setSubmitting(true);
 
-    dispatch(addCaseNote({ id: params.id.toString(), note: data.note })).then(
-      (result) => {
-        if (typeof result.payload == "string") {
-          enqueueSnackbar(result.payload, { variant: "error", persist: true });
-        } else {
-          enqueueSnackbar("Note added!", { variant: "success" });
-          handleModalClose();
-        }
-        setSubmitting(false);
+    dispatch(
+      addCaseNote({ id: (params.id as string) || "0", note: data.note })
+    ).then((result) => {
+      if (typeof result.payload == "string") {
+        enqueueSnackbar(result.payload, { variant: "error", persist: true });
+      } else {
+        enqueueSnackbar("Note added!", { variant: "success" });
+        handleModalClose();
       }
-    );
+      setSubmitting(false);
+    });
   };
 
   useEffect(() => {

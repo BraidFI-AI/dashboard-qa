@@ -19,20 +19,20 @@ const CreateFee = () => {
 
   useEffect(() => {
     setAccIds("loading");
-    dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
-      (acc: any) => {
-        let ids: string[] = [];
-        if (typeof acc.payload != "string") {
-          acc.payload.forEach((acc: any) => {
-            ids.push(acc.accountNumber);
-          });
-          console.log("accids:", ids);
-          setAccIds(ids);
-        } else {
-          setAccIds(acc.payload);
-        }
+    dispatch(
+      fetchAllBusinessAccounts(parseInt((params.id as string) || "0"))
+    ).then((acc: any) => {
+      let ids: string[] = [];
+      if (typeof acc.payload != "string") {
+        acc.payload.forEach((acc: any) => {
+          ids.push(acc.accountNumber);
+        });
+        console.log("accids:", ids);
+        setAccIds(ids);
+      } else {
+        setAccIds(acc.payload);
       }
-    );
+    });
   }, [dispatch, params.id]);
 
   return accIds == "loading" ? (
@@ -45,20 +45,20 @@ const CreateFee = () => {
       error="Error fetching fees"
       recoveryButtonOnClick={() => {
         setAccIds("loading");
-        dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
-          (acc: any) => {
-            let ids: string[] = [];
-            if (typeof acc.payload != "string") {
-              acc.payload.forEach((acc: any) => {
-                ids.push(acc.accountNumber);
-              });
-              console.log(ids);
-              setAccIds(ids);
-            } else {
-              setAccIds(acc.payload);
-            }
+        dispatch(
+          fetchAllBusinessAccounts(parseInt((params.id as string) || "0"))
+        ).then((acc: any) => {
+          let ids: string[] = [];
+          if (typeof acc.payload != "string") {
+            acc.payload.forEach((acc: any) => {
+              ids.push(acc.accountNumber);
+            });
+            console.log(ids);
+            setAccIds(ids);
+          } else {
+            setAccIds(acc.payload);
           }
-        );
+        });
       }}
       recoveryButtonTitle="Retry"
     />

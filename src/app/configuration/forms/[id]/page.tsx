@@ -13,18 +13,18 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import MyText from "@/core/components/Text/Text";
 import ItemRow from "@/core/components/Text/ItemRow";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import timestampToDate from "@/core/utils/timestampToDate";
 import { fetchProgram } from "@/redux/slices/ProgramSlice";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 
-const Form = ({ params }: { params: { id: number } }) => {
+const Form = () => {
   const searchParams = useSearchParams();
   const [version, setVersion] = useState<number | null>(null);
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<CustomizableForm | null>(null);
-
+  const params = useParams();
   const [program, setProgram] = useState<Program | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
 
@@ -40,7 +40,12 @@ const Form = ({ params }: { params: { id: number } }) => {
     if (version) {
       ver = version;
     }
-    dispatch(fetchForm({ id: params.id, version: ver })).then((data: any) => {
+    dispatch(
+      fetchForm({
+        id: parseInt((params.id as string) || "0"),
+        version: ver,
+      })
+    ).then((data: any) => {
       setForm(data.payload);
       setLoading(false);
 

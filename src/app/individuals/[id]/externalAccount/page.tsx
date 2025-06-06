@@ -17,10 +17,12 @@ import ErrorPage from "@/core/components/error_page";
 import { useRouter } from "next/navigation";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import { fetchIndividual } from "@/redux/slices/IndividualSlice";
+import { useParams } from "next/navigation";
 
-const IndividualACHPage = ({ params }: { params: { id: string } }) => {
+const IndividualACHPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const params = useParams();
   const [individual, setIndividual] = useState<"loading" | string | Individual>(
     "loading"
   );
@@ -34,19 +36,21 @@ const IndividualACHPage = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Individual Customer"));
-      dispatch(fetchIndividual(parseInt(params.id))).then((data: any) => {
-        if (data.payload == null) {
-          setIndividual("Error loading individual");
-          return;
+      dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
+        (data: any) => {
+          if (data.payload == null) {
+            setIndividual("Error loading individual");
+            return;
+          }
+          setIndividual(data.payload);
+          dispatch(
+            setTitle(data.payload.firstName + " " + data.payload.lastName)
+          );
         }
-        setIndividual(data.payload);
-        dispatch(
-          setTitle(data.payload.firstName + " " + data.payload.lastName)
-        );
-      });
+      );
       setRefresh(false);
     }
-  }, [dispatch, params.id, refresh]);
+  }, [dispatch, params.id, refresh, setIndividual]);
 
   return (
     <>
@@ -60,7 +64,9 @@ const IndividualACHPage = ({ params }: { params: { id: string } }) => {
           error={individual}
           recoveryButtonOnClick={() => {
             setIndividual("loading");
-            dispatch(fetchIndividual(parseInt(params.id))).then((data: any) => {
+            dispatch(
+              fetchIndividual(parseInt((params.id as string) || "0"))
+            ).then((data: any) => {
               setIndividual(data.payload);
               dispatch(
                 setTitle(data.payload.firstName + " " + data.payload.lastName)
@@ -104,7 +110,9 @@ const IndividualACHPage = ({ params }: { params: { id: string } }) => {
                 submitting={submitting}
                 onClick={() => {
                   setSubmitting(true);
-                  dispatch(deletePaymentInstrument(params.id.toString())).then(
+                  dispatch(
+                    deletePaymentInstrument((params.id as string) || "0")
+                  ).then(
                     (d: any) => {
                       if (typeof d.payload == "string") {
                         enqueueSnackbar(d.payload, {

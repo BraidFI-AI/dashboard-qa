@@ -34,7 +34,7 @@ export default function TransactionHistoryPage() {
     dispatch(
       fetchTransactions({
         criteria: {
-          paymentId: params.id.toString() ?? "",
+          paymentId: (params.id as string) || "0",
         },
       })
     );
@@ -52,7 +52,7 @@ export default function TransactionHistoryPage() {
             dispatch(
               fetchTransactions({
                 criteria: {
-                  paymentId: params.id.toString() ?? "",
+                  paymentId: (params.id as string) || "0",
                 },
               })
             );

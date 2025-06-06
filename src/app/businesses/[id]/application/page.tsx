@@ -13,6 +13,7 @@ import Divider from "@mui/material/Divider";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useState } from "react";
 import { setTitle } from "@/redux/slices/AppSlice";
+import { useParams } from "next/navigation";
 
 const questionTypeMapping = (type: string) => {
   if (type === "FREE_TEXT") {
@@ -30,28 +31,32 @@ const questionTypeMapping = (type: string) => {
   }
 };
 
-const Application = ({ params }: { params: { id: string } }) => {
+const ApplicationPage = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(true);
   const [submission, setSubmission] = useState<Submission | null>(null);
 
+  const params = useParams();
+
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id))).then((business: any) => {
-      if (business.payload != null) {
-        dispatch(setTitle(business.payload.name));
+    dispatch(fetchBusiness(parseInt((params.id as string) || ""))).then(
+      (business: any) => {
+        if (business.payload != null) {
+          dispatch(setTitle(business.payload.name));
+        }
+        if (business.payload != null) {
+          dispatch(fetchBusinessSubmission(parseInt(business.payload.id))).then(
+            (data: any) => {
+              setSubmission(data.payload);
+              setLoading(false);
+            }
+          );
+        } else {
+          setLoading(false);
+        }
       }
-      if (business.payload != null) {
-        dispatch(fetchBusinessSubmission(parseInt(business.payload.id))).then(
-          (data: any) => {
-            setSubmission(data.payload);
-            setLoading(false);
-          }
-        );
-      } else {
-        setLoading(false);
-      }
-    });
+    );
   }, [dispatch, params.id]);
 
   return (
@@ -141,4 +146,4 @@ const Application = ({ params }: { params: { id: string } }) => {
   );
 };
 
-export default Application;
+export default ApplicationPage;

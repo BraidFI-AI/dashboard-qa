@@ -51,7 +51,7 @@ const ResolveCaseButton = () => {
     action: string;
   }>({
     defaultValues: {
-      caseId: params.id.toString(),
+      caseId: (params.id as string) || "0",
       action: "DECLINE",
       note: "",
       updateAttachedAlerts: true,

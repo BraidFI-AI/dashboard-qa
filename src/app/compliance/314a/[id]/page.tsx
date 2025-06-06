@@ -52,9 +52,11 @@ const Compliance314aDetailsPage = () => {
 
   useEffect(() => {
     dispatch(setTitle("314A Details"));
-    dispatch(fetch314ARecord(params.id.toString())).then((response: any) => {
-      setData(response.payload);
-    });
+    dispatch(fetch314ARecord((params.id as string) || "0")).then(
+      (response: any) => {
+        setData(response.payload);
+      }
+    );
   }, [params]);
 
   return data == "loading" ? (
@@ -65,7 +67,7 @@ const Compliance314aDetailsPage = () => {
       recoveryButtonTitle="Retry"
       recoveryButtonOnClick={() => {
         setData("loading");
-        dispatch(fetch314ARecord(params.id.toString())).then(
+        dispatch(fetch314ARecord((params.id as string) || "0")).then(
           (response: any) => {
             setData(response.payload);
           }

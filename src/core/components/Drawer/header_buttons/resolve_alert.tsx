@@ -66,7 +66,7 @@ const ResolveAlertButton = () => {
     note2?: string;
   }>({
     defaultValues: {
-      alertId: params.id.toString(),
+      alertId: (params.id as string) || "0",
       action: "",
       note: "",
     },

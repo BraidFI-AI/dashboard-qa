@@ -16,6 +16,7 @@ import {
   fetchIndividualCIPStatus,
 } from "@/redux/slices/IndividualSlice";
 import { decrypt } from "@/redux/slices/encryption_slice";
+import { useParams } from "next/navigation";
 
 function tryParse(str: string) {
   try {
@@ -26,9 +27,9 @@ function tryParse(str: string) {
   }
 }
 
-const IndividualDetails = ({ params }: { params: { id: string } }) => {
+const IndividualDetails = () => {
   const dispatch = useAppDispatch();
-
+  const params = useParams();
   const [cipStatus, setCipStatus] = useState<"loading" | string | any>(
     "loading"
   );
@@ -36,26 +37,30 @@ const IndividualDetails = ({ params }: { params: { id: string } }) => {
   const [showEncryptedResult, setShowEncryptedResult] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchIndividual(parseInt(params.id))).then((d: any) => {
-      if (typeof d.payload != "string") {
-        dispatch(setTitle(d.payload.firstName + " " + d.payload.lastName));
+    dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
+      (d: any) => {
+        if (typeof d.payload != "string") {
+          dispatch(setTitle(d.payload.firstName + " " + d.payload.lastName));
+        }
       }
-    });
+    );
 
     setCipStatus("loading");
-    dispatch(fetchIndividualCIPStatus(params.id)).then((cipStatus: any) => {
-      if (cipStatus.payload.result != null) {
-        dispatch(decrypt(cipStatus.payload.result)).then((d: any) => {
-          if (typeof d.payload == "string") {
-            setCipStatus({ ...cipStatus.payload, result: d.payload });
-          } else {
-            setCipStatus({ ...cipStatus.payload, result: d.payload.data });
-          }
-        });
-      } else {
-        setCipStatus(cipStatus.payload);
+    dispatch(fetchIndividualCIPStatus((params.id as string) || "0")).then(
+      (cipStatus: any) => {
+        if (cipStatus.payload.result != null) {
+          dispatch(decrypt(cipStatus.payload.result)).then((d: any) => {
+            if (typeof d.payload == "string") {
+              setCipStatus({ ...cipStatus.payload, result: d.payload });
+            } else {
+              setCipStatus({ ...cipStatus.payload, result: d.payload.data });
+            }
+          });
+        } else {
+          setCipStatus(cipStatus.payload);
+        }
       }
-    });
+    );
   }, [dispatch, params.id]);
 
   const handleFullscreen = (id: string) => {
@@ -81,7 +86,9 @@ const IndividualDetails = ({ params }: { params: { id: string } }) => {
         <ErrorPage
           error="Error fetching individual CIP status"
           recoveryButtonOnClick={() => {
-            dispatch(fetchIndividual(parseInt(params.id))).then((d: any) => {
+            dispatch(
+              fetchIndividual(parseInt((params.id as string) || "0"))
+            ).then((d: any) => {
               if (typeof d.payload != "string") {
                 dispatch(
                   setTitle(d.payload.firstName + " " + d.payload.lastName)
@@ -90,7 +97,9 @@ const IndividualDetails = ({ params }: { params: { id: string } }) => {
             });
 
             setCipStatus("loading");
-            dispatch(fetchIndividualCIPStatus(params.id)).then((d: any) => {
+            dispatch(
+              fetchIndividualCIPStatus((params.id as string) || "0")
+            ).then((d: any) => {
               setCipStatus(d.payload);
             });
           }}

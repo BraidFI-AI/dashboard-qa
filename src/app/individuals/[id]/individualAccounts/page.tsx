@@ -44,7 +44,7 @@ const Accounts = () => {
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Individual Customer"));
-      dispatch(fetchIndividualV2(parseInt(params.id.toString())));
+      dispatch(fetchIndividualV2(parseInt((params.id as string) || "0")));
       dispatch(setRefreshIndividual(false));
     }
   }, [dispatch, params.id, refresh]);

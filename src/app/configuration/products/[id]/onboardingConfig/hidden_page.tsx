@@ -28,13 +28,14 @@ import Link from "next/link";
 import { enqueueSnackbar } from "notistack";
 import React, { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
 
-const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
+const OnboardingConfigPage = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [onboardingConfig, setOnboardingConfig] =
     useState<OnboardingConfig | null>(null);
-
+  const params = useParams();
   const [refresh, setRefresh] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [creatingOnboardingConfig, setCreatingOnboardingConfig] =
@@ -112,7 +113,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
     if (creatingOnboardingConfig) {
       dispatch(
         createOnboardingConfig({
-          id: parseInt(params.id),
+          id: parseInt((params.id as string) || "0"),
           url: data.onboardingUrl,
           hex: colorPickerHex,
         })
@@ -133,7 +134,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
         } else {
           await dispatch(
             uploadOnboardingConfigPdfTemplate({
-              productId: parseInt(params.id),
+              productId: parseInt((params.id as string) || "0"),
               file: pdfTemplate,
             })
           ).then((doc: any) => {
@@ -157,7 +158,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
         } else {
           await dispatch(
             uploadOnboardingConfigFeeSchedule({
-              productId: parseInt(params.id),
+              productId: parseInt((params.id as string) || "0"),
               file: feeSchedule,
             })
           ).then(async (fs: any) => {
@@ -177,7 +178,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
               } else {
                 await dispatch(
                   uploadOnboardingConfigLogo({
-                    productId: parseInt(params.id),
+                    productId: parseInt((params.id as string) || "0"),
                     file: logo,
                   })
                 ).then(async (lg: any) => {
@@ -200,7 +201,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
                   if (isEditingHex) {
                     await dispatch(
                       updateOnboardingConfigButtonColor({
-                        productId: parseInt(params.id),
+                        productId: parseInt((params.id as string) || "0"),
                         hex: colorPickerHex.toLowerCase(),
                       })
                     ).then((hx: any) => {
@@ -219,7 +220,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
             } else if (isEditingHex) {
               await dispatch(
                 updateOnboardingConfigButtonColor({
-                  productId: parseInt(params.id),
+                  productId: parseInt((params.id as string) || "0"),
                   hex: colorPickerHex.toLowerCase(),
                 })
               ).then(async (hx: any) => {
@@ -244,7 +245,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
         } else {
           await dispatch(
             uploadOnboardingConfigLogo({
-              productId: parseInt(params.id),
+              productId: parseInt((params.id as string) || "0"),
               file: logo,
             })
           ).then(async (lg: any) => {
@@ -265,7 +266,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
             if (isEditingHex) {
               await dispatch(
                 updateOnboardingConfigButtonColor({
-                  productId: parseInt(params.id),
+                  productId: parseInt((params.id as string) || "0"),
                   hex: colorPickerHex.toLowerCase(),
                 })
               ).then((hx: any) => {
@@ -286,7 +287,7 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
       } else if (isEditingHex) {
         await dispatch(
           updateOnboardingConfigButtonColor({
-            productId: parseInt(params.id),
+            productId: parseInt((params.id as string) || "0"),
             hex: colorPickerHex.toLowerCase(),
           })
         ).then((hx: any) => {
@@ -309,35 +310,37 @@ const OnboardingConfigPage = ({ params }: { params: { id: string } }) => {
     if (refresh) {
       setLoading(true);
       dispatch(setTitle("Product"));
-      dispatch(fetchProduct(parseInt(params.id))).then((product: any) => {
-        if (product.payload != null) {
-          dispatch(setTitle(product.payload.productName));
-          dispatch(fetchOnboardingConfig(product.payload.id)).then(
-            (data: any) => {
-              setOnboardingConfig(data.payload);
-              setLoading(false);
-              setSubmitting(false);
-              setCreatingOnboardingConfig(false);
-              setRefresh(false);
-              setIsEditingUrl(false);
-              setIsEditingHex(false);
-              setIsEditingLogo(false);
-              setIsEditingFeeS(false);
-              setIsEditingPdf(false);
-            }
-          );
-        } else {
-          setLoading(false);
-          setSubmitting(false);
-          setCreatingOnboardingConfig(false);
-          setRefresh(false);
-          setIsEditingUrl(false);
-          setIsEditingHex(false);
-          setIsEditingLogo(false);
-          setIsEditingFeeS(false);
-          setIsEditingPdf(false);
+      dispatch(fetchProduct(parseInt((params.id as string) || "0"))).then(
+        (product: any) => {
+          if (product.payload != null) {
+            dispatch(setTitle(product.payload.productName));
+            dispatch(fetchOnboardingConfig(product.payload.id)).then(
+              (data: any) => {
+                setOnboardingConfig(data.payload);
+                setLoading(false);
+                setSubmitting(false);
+                setCreatingOnboardingConfig(false);
+                setRefresh(false);
+                setIsEditingUrl(false);
+                setIsEditingHex(false);
+                setIsEditingLogo(false);
+                setIsEditingFeeS(false);
+                setIsEditingPdf(false);
+              }
+            );
+          } else {
+            setLoading(false);
+            setSubmitting(false);
+            setCreatingOnboardingConfig(false);
+            setRefresh(false);
+            setIsEditingUrl(false);
+            setIsEditingHex(false);
+            setIsEditingLogo(false);
+            setIsEditingFeeS(false);
+            setIsEditingPdf(false);
+          }
         }
-      });
+      );
     }
   }, [dispatch, params.id, refresh]);
 

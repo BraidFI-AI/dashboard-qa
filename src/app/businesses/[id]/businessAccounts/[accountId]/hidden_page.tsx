@@ -17,14 +17,15 @@ import { fetchAccount } from "@/redux/slices/AccountSlice";
 import MyLinkText from "@/core/components/Text/LinkText";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import moment from "moment";
+import { useParams } from "next/navigation";
 
-const Transactions = ({ params }: { params: any }) => {
+const Transactions = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-
+  const params = useParams();
   const ModalBoxstyle = {
     position: "absolute" as any as "absolute",
     top: "50%",
@@ -38,27 +39,31 @@ const Transactions = ({ params }: { params: any }) => {
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchAccount(params.accountId)).then((account: any) => {
-      if (account) {
-        dispatch(
-          fetchTransactions({
-            criteria: { accountNumber: account.payload?.accountNumber },
-          })
-        ).then((data: any) => {
-          setTransactions(data.payload);
-          setLoading(false);
-        });
+    dispatch(fetchAccount((params.accountId as string) || "0")).then(
+      (account: any) => {
+        if (account) {
+          dispatch(
+            fetchTransactions({
+              criteria: { accountNumber: account.payload?.accountNumber },
+            })
+          ).then((data: any) => {
+            setTransactions(data.payload);
+            setLoading(false);
+          });
 
-        dispatch(fetchBusiness(parseInt(params.id))).then((business: any) => {
-          dispatch(setTitle(business.payload.name));
-          if (business.payload != null) {
-            dispatch(setTitle(business.payload.name));
-          }
-        });
-      } else {
-        setLoading(false);
+          dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
+            (business: any) => {
+              dispatch(setTitle(business.payload.name));
+              if (business.payload != null) {
+                dispatch(setTitle(business.payload.name));
+              }
+            }
+          );
+        } else {
+          setLoading(false);
+        }
       }
-    });
+    );
   }, [dispatch, params.id, params.accountId]);
 
   const handleRowClick: GridEventListener<"rowClick"> = (params: any) => {

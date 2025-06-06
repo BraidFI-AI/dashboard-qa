@@ -115,7 +115,7 @@ const OFACHitDetails = () => {
     if (refresh) {
       setEditing(false);
       dispatch(setTitle("OFAC Check"));
-      dispatch(fetchOFACHit(params.id.toString())).then((data: any) => {
+      dispatch(fetchOFACHit((params.id as string) || "0")).then((data: any) => {
         if (data.payload) {
           dispatch(setTitle(data.payload.value));
           setOfacHit(data.payload);

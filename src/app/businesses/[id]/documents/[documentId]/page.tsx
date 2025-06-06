@@ -23,7 +23,7 @@ const ViewDocument = () => {
 
     axios({
       method: "GET",
-      url: decodeURIComponent(params.documentId.toString() ?? ""),
+      url: decodeURIComponent((params.documentId as string) || "0"),
       responseType: "blob",
     })
       .then((response) => {

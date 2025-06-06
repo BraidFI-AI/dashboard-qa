@@ -110,6 +110,7 @@ export interface IndividualExternalAccount {
 }
 
 export interface Individual {
+  subType?: string | null;
   id: number;
   firstName: string;
   lastName: string;
@@ -224,6 +225,7 @@ export interface CreateUBO {
 }
 
 export interface Business {
+  subType?: string | null;
   address: BusinessAddress[];
   cipStatus?: string | null;
   id: number;

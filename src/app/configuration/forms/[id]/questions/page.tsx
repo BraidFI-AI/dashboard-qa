@@ -11,7 +11,7 @@ import {
   updateQuestion,
 } from "@/redux/slices/CustomizableFormSlice";
 import { useAppDispatch } from "@/redux/store/store";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -41,14 +41,14 @@ import _ from "lodash";
 import MyRefTextField from "@/core/components/TextField/MyRefTextField";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
-const FormSettings = ({ params }: { params: { id: number } }) => {
+const FormSettings = () => {
   const searchParams = useSearchParams();
   const [version, setVersion] = useState<number | null>(null);
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(true);
   const [addingQuestion, setAddingQuestion] = useState(false);
-
+  const params = useParams();
   const [form, setForm] = useState<CustomizableForm | null>(null);
   const [originalForm, setOriginalForm] = useState<CustomizableForm | null>(
     null
@@ -138,7 +138,9 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
       }
 
       ver = undefined; // making the version undefined
-      dispatch(fetchForm({ id: params.id, version: ver })).then((data: any) => {
+      dispatch(
+        fetchForm({ id: parseInt((params.id as string) || "0"), version: ver })
+      ).then((data: any) => {
         if (data.payload) {
           reset({ index: -1, form: { ...data.payload } });
           setOriginalForm(_.cloneDeep(data.payload));
@@ -186,7 +188,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
   };
 
   return (
-    (<Suspense>
+    <Suspense>
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -316,7 +318,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
               {form.questions.map(
                 (question: CustomizableFormQuestion, index: number) => {
                   return (
-                    (<div key={index} className="flex flex-col">
+                    <div key={index} className="flex flex-col">
                       <Box className="w-[200px] flex flex-row">
                         <div className="pb-[20px]">
                           <MyText size="md">{`Question ${index + 1}`}</MyText>
@@ -799,7 +801,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
                       <div className="w-[650px] pb-6">
                         <Divider />
                       </div>
-                    </div>)
+                    </div>
                   );
                 }
               )}
@@ -891,7 +893,7 @@ const FormSettings = ({ params }: { params: { id: number } }) => {
           </>
         )
       )}
-    </Suspense>)
+    </Suspense>
   );
 };
 

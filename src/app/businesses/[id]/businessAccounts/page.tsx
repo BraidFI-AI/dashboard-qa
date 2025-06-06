@@ -51,7 +51,7 @@ const Accounts = () => {
   useEffect(() => {
     if (refresh) {
       dispatch(setTitle("Business Customer"));
-      dispatch(fetchBusinessV2(parseInt(params.id.toString())));
+      dispatch(fetchBusinessV2(parseInt((params.id as string) || "0")));
       dispatch(setRefresh(false));
     }
   }, [dispatch, params.id, refresh]);
@@ -223,7 +223,7 @@ const Accounts = () => {
           //             if (cellParams != null) {
           //               router.push(
           //                 `/businesses/${parseInt(
-          //                   params.id.toString()
+          //                   (params.id as string) || "0"
           //                 )}/businessAccounts/${cellParams.id}`
           //               );
           //             }

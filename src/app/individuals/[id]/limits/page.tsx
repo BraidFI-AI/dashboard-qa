@@ -17,7 +17,7 @@ const Rules = () => {
 
   useEffect(() => {
     dispatch(setTitle("Individual Customer"));
-    dispatch(fetchIndividual(parseInt(params.id.toString()))).then(
+    dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (data.payload != null) {
           dispatch(
@@ -29,7 +29,7 @@ const Rules = () => {
   }, [dispatch, params.id]);
 
   const fetchDataMemoized = useMemo(
-    () => fetchIndividualLimits(params.id.toString()),
+    () => fetchIndividualLimits((params.id as string) || "0"),
     [params.id]
   );
 

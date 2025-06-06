@@ -21,6 +21,7 @@ import MyEditableTextField from "@/core/components/TextField/MyEditableTextField
 import ItemRow from "@/core/components/Text/ItemRow";
 import RequireRole from "@/core/components/RequireRole";
 import { ADMIN_ROUTE } from "@/core/constants";
+import { useParams } from "next/navigation";
 
 const programTypeMappings = (type: string) => {
   console.log("hiiii", type);
@@ -47,12 +48,12 @@ const programMappings = (type: string) => {
   }
 };
 
-const ProgramDetails = ({ params }: { params: { id: string } }) => {
+const ProgramDetails = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(true);
   const [program, setProgram] = useState<Program | null>(null);
-
+  const params = useParams();
   const [submitting, setSubmitting] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingType, setIsEditingType] = useState(false);
@@ -140,7 +141,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
       ) {
         dispatch(
           updateProgram({
-            id: parseInt(params.id),
+            id: parseInt((params.id as string) || "0"),
             program: {
               name: data.name,
               type: data.type,
@@ -169,7 +170,7 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
       ) {
         dispatch(
           updateProgram({
-            id: parseInt(params.id),
+            id: parseInt((params.id as string) || "0"),
             program: {
               name: data.name,
               type: data.type,
@@ -184,7 +185,10 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
             });
           }
           dispatch(
-            createProgramBaseUrl({ id: parseInt(params.id), url: data.baseUrl })
+            createProgramBaseUrl({
+              id: parseInt((params.id as string) || "0"),
+              url: data.baseUrl,
+            })
           ).then((data: any) => {
             if (data.payload) {
               enqueueSnackbar("Created Base url successfully!", {
@@ -207,7 +211,10 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
         !isEditingActive
       ) {
         dispatch(
-          createProgramBaseUrl({ id: parseInt(params.id), url: data.baseUrl })
+          createProgramBaseUrl({
+            id: parseInt((params.id as string) || "0"),
+            url: data.baseUrl,
+          })
         ).then((data: any) => {
           if (data.payload) {
             enqueueSnackbar("Created Base url successfully!", {
@@ -230,19 +237,21 @@ const ProgramDetails = ({ params }: { params: { id: string } }) => {
     if (refresh) {
       setLoading(true);
       dispatch(setTitle("Program"));
-      dispatch(fetchProgram(parseInt(params.id))).then((data: any) => {
-        if (data.payload) {
-          setProgram(data.payload);
-          dispatch(setTitle(data.payload.name));
-          reset({
-            name: data.payload.name,
-            isActive: data.payload.isActive,
-            type: data.payload.type,
-          });
+      dispatch(fetchProgram(parseInt((params.id as string) || "0"))).then(
+        (data: any) => {
+          if (data.payload) {
+            setProgram(data.payload);
+            dispatch(setTitle(data.payload.name));
+            reset({
+              name: data.payload.name,
+              isActive: data.payload.isActive,
+              type: data.payload.type,
+            });
+          }
+          setLoading(false);
+          setRefresh(false);
         }
-        setLoading(false);
-        setRefresh(false);
-      });
+      );
     }
   }, [dispatch, params.id, reset, refresh]);
 

@@ -27,7 +27,7 @@ const FeeTable = () => {
 
   useEffect(() => {
     dispatch(setTitle("Business Customer"));
-    dispatch(fetchBusiness(parseInt(params.id.toString()))).then(
+    dispatch(fetchBusiness(parseInt((params.id as string) || "0"))).then(
       (data: any) => {
         if (data.payload != null) {
           dispatch(setTitle(data.payload.name));
@@ -38,20 +38,20 @@ const FeeTable = () => {
 
   useEffect(() => {
     setAccIds("loading");
-    dispatch(fetchAllBusinessAccounts(parseInt(params.id.toString()))).then(
-      (acc: any) => {
-        let ids: string[] = [];
-        if (typeof acc.payload != "string") {
-          acc.payload.forEach((acc: any) => {
-            ids.push(acc.accountNumber);
-          });
-          console.log("accids:", ids);
-          setAccIds(ids);
-        } else {
-          setAccIds(acc.payload);
-        }
+    dispatch(
+      fetchAllBusinessAccounts(parseInt((params.id as string) || "0"))
+    ).then((acc: any) => {
+      let ids: string[] = [];
+      if (typeof acc.payload != "string") {
+        acc.payload.forEach((acc: any) => {
+          ids.push(acc.accountNumber);
+        });
+        console.log("accids:", ids);
+        setAccIds(ids);
+      } else {
+        setAccIds(acc.payload);
       }
-    );
+    });
   }, [dispatch, params.id]);
 
   const fetchDataMemoized = useMemo(
@@ -79,7 +79,7 @@ const FeeTable = () => {
           recoveryButtonOnClick={() => {
             setAccIds("loading");
             dispatch(
-              fetchAllBusinessAccounts(parseInt(params.id.toString()))
+              fetchAllBusinessAccounts(parseInt((params.id as string) || "0"))
             ).then((acc: any) => {
               let ids: string[] = [];
               if (acc.payload) {

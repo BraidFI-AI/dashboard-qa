@@ -15,14 +15,15 @@ import {
   fetchIndividual,
   // fetchIndividualAccountsCards,
 } from "@/redux/slices/IndividualSlice";
+import { useParams } from "next/navigation";
 
-const CardsPage = ({ params }: { params: { id: string } }) => {
+const CardsPage = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(true);
   const [cards, setCards] = useState<AccountCard[] | null>(null);
   const [selectedCard, setSelectedCard] = useState<AccountCard | null>(null);
   const [cardModalOpen, setCardModalOpen] = useState<boolean>(false);
-
+  const params = useParams();
   const ModalBoxstyle = {
     position: "absolute" as any as "absolute",
     top: "50%",
@@ -65,7 +66,7 @@ const CardsPage = ({ params }: { params: { id: string } }) => {
     //     setLoading(false);
     //   }
     // });
-  }, [dispatch, params.id]);
+  }, [dispatch, params.id, setCards]);
 
   return (
     <>

@@ -56,7 +56,7 @@ const UploadCaseDocumentButton: React.FC<UploadCaseDocumentButtonProps> = ({
     name: string;
   }>({
     defaultValues: {
-      caseId: params.id.toString(),
+      caseId: (params.id as string) || "0",
       description: "",
       documentType: "ID_DOCUMENT_FRONT",
       name: "",
@@ -94,7 +94,7 @@ const UploadCaseDocumentButton: React.FC<UploadCaseDocumentButtonProps> = ({
         if (docId != null) {
           dispatch(
             uploadCaseDocument({
-              caseId: params.id.toString(),
+              caseId: (params.id as string) || "0",
               documentId: docId,
               file: document,
             })
@@ -104,7 +104,7 @@ const UploadCaseDocumentButton: React.FC<UploadCaseDocumentButtonProps> = ({
                 variant: "success",
               });
 
-              dispatch(fetchCase(params.id.toString()));
+              dispatch(fetchCase((params.id as string) || "0"));
 
               handleModalClose();
             } else {

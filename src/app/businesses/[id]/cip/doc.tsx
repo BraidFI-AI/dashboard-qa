@@ -54,7 +54,9 @@ const DocumentComponent: React.FC<DocumentComponentProps> = ({
             ) : (
               <div className=" underline text-[#12A7FF]">
                 <Link
-                  href={`/businesses/${params.id.toString()}/cip/${encodeURIComponent(
+                  href={`/businesses/${
+                    (params.id as string) || "0"
+                  }/cip/${encodeURIComponent(
                     (alertDocument as any).documentUrl
                   )}`}
                 >
