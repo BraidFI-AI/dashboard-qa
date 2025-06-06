@@ -229,15 +229,35 @@ const AlertsTable: React.FC<AlertsTableProps> = ({
             valueGetter: (value: any, row: any) => row?.contextType,
           },
           {
-            field: "contextId",
-            headerName: "Context ID",
+            field: "requestForInformationStatus",
+            headerName: "RFI Status",
             flex: 1,
             minWidth: 140,
             display: "flex",
             renderCell: (params: any) => {
-              return <MyText size="table">{params.row.contextId}</MyText>;
+              return params.row?.requestForInformationStatus == null ? (
+                <></>
+              ) : (
+                <LabelBox
+                  color={
+                    params.row?.requestForInformationStatus?.toLowerCase() ==
+                    "requested"
+                      ? "red"
+                      : params.row?.requestForInformationStatus?.toLowerCase() ==
+                        "provided"
+                      ? "green"
+                      : "gray"
+                  }
+                  border
+                >
+                  {enumTextToReadableText(
+                    params.row?.requestForInformationStatus ?? ""
+                  )}
+                </LabelBox>
+              );
             },
-            valueGetter: (value: any, row: any) => row?.contextId,
+            valueGetter: (value: any, row: any) =>
+              row?.requestForInformationStatus,
           },
           {
             field: "description",
