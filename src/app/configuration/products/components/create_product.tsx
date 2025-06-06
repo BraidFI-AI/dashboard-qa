@@ -273,7 +273,7 @@ const CreateProductPage = () => {
                 displayName="CIP Config"
                 control={control}
                 errors={errors}
-                options={["BYPASS", "REQUIRED"]}
+                options={["BYPASS", "TRUST_VERIFY", "BANK_VERIFY"]}
                 rules={
                   submitting
                     ? { required: false }
@@ -281,7 +281,7 @@ const CreateProductPage = () => {
                         required: false,
                       }
                 }
-                value={"REQUIRED"}
+                value={"BYPASS"}
               />
               <Box className="pb-4"></Box>
               <MyText>Is Active</MyText>
