@@ -424,8 +424,8 @@ const ProductDetails = () => {
                         required: true,
                       }
                 }
-                options={["BYPASS", "REQUIRED"]}
-                value={product?.cipConfig ?? "REQUIRED"}
+                options={["BYPASS", "TRUST_VERIFY", "BANK_VERIFY"]}
+                value={product?.cipConfig ?? ""}
                 submitting={false}
               />
               <ItemRow
