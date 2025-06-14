@@ -57,7 +57,6 @@ const TieredFee = ({ tieredFee, setTieredFee }: TieredFeeProps) => {
         </div>
         <div className="w-full">
           <MyText>End Count</MyText>
-
           <MyControlledTextField
             name="endCount"
             displayName="End Count"
@@ -67,7 +66,7 @@ const TieredFee = ({ tieredFee, setTieredFee }: TieredFeeProps) => {
             value=""
           />
         </div>
-        <div className="w-fit pt-4">
+        <div className="w-fit pt-[20px]">
           <MyBlueButton
             onClick={() => {
               handleSubmit(onSubmit)();
