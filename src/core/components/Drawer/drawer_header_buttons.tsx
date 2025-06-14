@@ -30,6 +30,7 @@ import {
   ADMIN_READONLY_ROLE,
   ADMIN_ROLE,
 } from "@/core/constants";
+import CreateFeeView from "../views/fees/CreateFeeView";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -126,7 +127,34 @@ const DrawerHeaderButtons = () => {
       typeof statementData != "string" &&
       (userType == ADMIN_ROLE ||
         userType == ADMIN_OPS_ROLE ||
-        userType == ADMIN_READONLY_ROLE) && <GenerateStatement />)
+        userType == ADMIN_READONLY_ROLE) && <GenerateStatement />) ||
+    (pathname.includes("/fees") && pathname.includes("account") && (
+      <CreateFeeView
+        level="ACCOUNT"
+        ids={[params.id as string]}
+        replaceTo={`/accounts/${params.id}/fees`}
+      />
+    )) ||
+    (pathname.includes("/fees") && pathname.includes("product") && (
+      <CreateFeeView
+        level="PRODUCT"
+        ids={[params.id as string]}
+        disabled={false}
+      />
+    )) ||
+    (pathname.includes("/fees") && pathname.includes("program") && (
+      <CreateFeeView
+        level="PROGRAM"
+        ids={[params.id as string]}
+        disabled={false}
+      />
+    )) ||
+    (pathname.includes("/fees") && pathname.includes("individual") && (
+      <CreateFeeView level="ACCOUNT" ids={[]} disabled={false} />
+    )) ||
+    (pathname.includes("/fees") && pathname.includes("business") && (
+      <CreateFeeView level="ACCOUNT" ids={[]} disabled={false} />
+    ))
   );
 };
 

@@ -1313,20 +1313,40 @@ export interface UserAttribute {
 }
 
 export interface Fees {
-  id: string;
-  productId?: string | null;
-  accountNumber?: string | null;
-  programId?: string | null;
-  feeType: string;
-  amount: string;
-  settlementAccountId: string;
-  settlementAccountNumber: string;
-  feeChargingAccountNumber?: string;
-  createdAt: number | null;
-  updatedAt: number | null;
-  tranType?: string | null;
-  dayOfMonth?: number | null;
+  id?: string | null;
+  amount?: string | null;
+  dayOfMonth?: string | null;
+  type?: "FLAT" | "PERCENT" | "MONTHLY";
+  settlementAccountId?: string | null;
+  feeChargingAccountId?: string | null;
   sameDay?: boolean | null;
+  associatedEntityType?: "ACCOUNT" | "PRODUCT" | "PROGRAM" | "GLOBAL";
+  associatedEntityId?: string;
+  transactionTypes?: string[];
+  transactionGroups?: string[];
+  tieredFeeDetails?: TieredFee[];
+  createdAt?: number | null;
+  updatedAt?: number | null;
+}
+
+export interface CreateFee {
+  amount: string;
+  dayOfMonth?: string | null;
+  type: "FLAT" | "PERCENT" | "MONTHLY";
+  settlementAccountId: string;
+  feeChargingAccountId?: string | null;
+  sameDay?: boolean | null;
+  associatedEntityType: "ACCOUNT" | "PRODUCT" | "PROGRAM" | "GLOBAL";
+  associatedEntityId?: string;
+  transactionTypes?: string[];
+  transactionGroups?: string[];
+  tieredFeeDetails?: TieredFee[];
+}
+
+export interface TieredFee {
+  startCount: number;
+  endCount: number;
+  amount: number;
 }
 
 export interface OneTimeFees {

@@ -1,5 +1,5 @@
 import ApiClient from "@/core/api/ApiClient";
-import { Fees } from "@/core/api/ApiTypes";
+import { CreateFee, Fees } from "@/core/api/ApiTypes";
 import FeeRepo from "@/core/repos/FeeRepo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -8,9 +8,19 @@ import { enqueueSnackbar } from "notistack";
 const apiClient = ApiClient.getInstance();
 const feeRepo: FeeRepo = new FeeRepo(apiClient);
 
-interface FeeState {}
+interface FeeState {
+  fees: "loading" | string | Fees[];
+  level: "ACCOUNT" | "PRODUCT" | "PROGRAM" | "GLOBAL";
+  id: null | string;
+  ids: string[];
+}
 
-const initialState: FeeState = {};
+const initialState: FeeState = {
+  fees: "loading",
+  level: "ACCOUNT",
+  id: null,
+  ids: [],
+};
 
 const FeeSlice = createSlice({
   name: "fees",
@@ -19,9 +29,78 @@ const FeeSlice = createSlice({
     setInitialFeeState(state) {
       Object.assign(state, initialState);
     },
+    setLevel(state, action) {
+      state.level = action.payload;
+    },
+    setId(state, action) {
+      state.id = action.payload;
+    },
+    setIds(state, action) {
+      state.ids = action.payload;
+    },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addCase(refreshFees.pending, (state, action) => {
+      state.fees = "loading";
+    });
+    builder.addCase(fetchFeesByProgramId.pending, (state, action) => {
+      state.level = "PROGRAM";
+      state.id = action.meta.arg;
+      state.fees = "loading";
+    });
+    builder.addCase(fetchFeesByProgramId.fulfilled, (state, action) => {
+      state.fees = action.payload;
+    });
+    builder.addCase(fetchFeesByProductId.pending, (state, action) => {
+      state.level = "PRODUCT";
+      state.id = action.meta.arg;
+      state.fees = "loading";
+    });
+    builder.addCase(fetchFeesByProductId.fulfilled, (state, action) => {
+      state.fees = action.payload;
+    });
+    builder.addCase(fetchFeesByAccountId.pending, (state, action) => {
+      state.level = "ACCOUNT";
+      state.id = action.meta.arg;
+      state.fees = "loading";
+    });
+    builder.addCase(fetchFeesByAccountId.fulfilled, (state, action) => {
+      state.fees = action.payload;
+    });
+    builder.addCase(fetchFeesByMultipleAccountIds.pending, (state, action) => {
+      state.level = "GLOBAL";
+      state.ids = action.meta.arg;
+      state.fees = "loading";
+    });
+    builder.addCase(
+      fetchFeesByMultipleAccountIds.fulfilled,
+      (state, action) => {
+        state.fees = action.payload;
+      }
+    );
+  },
 });
+
+export const refreshFees = createAsyncThunk(
+  "fees/refreshFees",
+  async (_, thunkApi: any) => {
+    try {
+      if (thunkApi.getState().fee.level == "GLOBAL") {
+        thunkApi.dispatch(
+          fetchFeesByMultipleAccountIds(thunkApi.getState().fee.ids)
+        );
+      } else if (thunkApi.getState().fee.level == "PROGRAM") {
+        thunkApi.dispatch(fetchFeesByProgramId(thunkApi.getState().fee.id));
+      } else if (thunkApi.getState().fee.level == "PRODUCT") {
+        thunkApi.dispatch(fetchFeesByProductId(thunkApi.getState().fee.id));
+      } else if (thunkApi.getState().fee.level == "ACCOUNT") {
+        thunkApi.dispatch(fetchFeesByAccountId(thunkApi.getState().fee.id));
+      }
+    } catch (e: any) {
+      return `Error fetching fees ${generateErrorMessage(e)}`;
+    }
+  }
+);
 
 export const fetchFees = createAsyncThunk("fees/fetchFees", async () => {
   try {
@@ -64,13 +143,8 @@ export const fetchFeesByProgramId = createAsyncThunk(
       console.log("fees", fees);
       return fees;
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching fees ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching fees ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
@@ -82,13 +156,8 @@ export const fetchFeesByProductId = createAsyncThunk(
       console.log("fees", fees);
       return fees;
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching fees ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching fees ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
@@ -100,13 +169,8 @@ export const fetchFeesByAccountId = createAsyncThunk(
       console.log("fees", fees);
       return fees;
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching fees ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching fees ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
@@ -129,19 +193,14 @@ export const fetchFeesByMultipleAccountIds = createAsyncThunk(
       console.log("fees", fees);
       return fees;
     } catch (e: any) {
-      enqueueSnackbar(`Error fetching fees ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
+      return `Error fetching fees ${generateErrorMessage(e)}`;
     }
-
-    return null;
   }
 );
 
 export const createFee = createAsyncThunk(
   "fees/createFee",
-  async (fees: any) => {
+  async (fees: CreateFee) => {
     try {
       const fee = await feeRepo.createFee(fees);
       console.log("fees", fee);

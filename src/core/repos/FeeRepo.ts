@@ -1,5 +1,5 @@
 import ApiClient, { Method } from "../api/ApiClient";
-import { Fees } from "../api/ApiTypes";
+import { CreateFee, Fees } from "../api/ApiTypes";
 
 class FeeRepo {
   private apiClient: ApiClient;
@@ -43,8 +43,8 @@ class FeeRepo {
     return response;
   }
 
-  public async createFee(fees: any) {
-    const fee = await this.apiClient.http<Fees>(Method.POST, `/fee`, fees);
+  public async createFee(fees: CreateFee) {
+    const fee = await this.apiClient.http<Fees>(Method.POST, `/v2/fee`, fees);
 
     return fee;
   }

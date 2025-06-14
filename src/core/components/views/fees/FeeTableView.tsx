@@ -11,6 +11,7 @@ import { useAppDispatch } from "@/redux/store/store";
 import { fetchFees } from "@/redux/slices/FeeSlice";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import ErrorPage from "../../error_page";
+import { useSelector } from "react-redux";
 
 type FeeTableViewProps = {
   fetchData: any;
@@ -27,38 +28,30 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
 
   const dispatch = useAppDispatch();
 
-  const [loading, setLoading] = useState(true);
-  const [fee, setFee] = useState<Fees[] | null>(null);
+  const fees = useSelector((state: any) => state.fee.fees);
 
   const handleRowClick: GridEventListener<"rowClick"> = (p: any) => {
     router.push(`${pushTo}/${p.row.id}`);
   };
 
   useEffect(() => {
-    dispatch(fetchData).then((data: any) => {
-      setFee(data.payload);
-      setLoading(false);
-    });
+    dispatch(fetchData);
   }, [dispatch, fetchData]);
 
-  return loading ? (
+  return fees == "loading" ? (
     <div className="flex flex-col items-center justify-center pt-10">
       <CircularProgress></CircularProgress>
       <div>Loading Fees...</div>
     </div>
-  ) : fee == null ? (
+  ) : typeof fees == "string" ? (
     <ErrorPage
-      error="Error loading fees"
+      error={fees}
       recoveryButtonOnClick={() => {
-        setLoading(true);
-        dispatch(fetchData).then((data: any) => {
-          setFee(data.payload);
-          setLoading(false);
-        });
+        dispatch(fetchData);
       }}
       recoveryButtonTitle="Retry"
     />
-  ) : fee.length == 0 ? (
+  ) : fees.length == 0 ? (
     <MyText>No fee configured</MyText>
   ) : (
     <MyTable
@@ -100,7 +93,7 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
           minWidth: 160,
         },
       ]}
-      rows={fee}
+      rows={fees}
     />
   );
 };
