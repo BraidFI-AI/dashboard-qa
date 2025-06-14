@@ -18,15 +18,6 @@ const FeeTable = () => {
 
   return (
     <Box className="flex flex-col h-full">
-      <Box className="w-fit">
-        <Link
-          href={`/configuration/programs/${
-            (params.id as string) || "0"
-          }/fees/create`}
-        >
-          <MyBlueButton>Add Fee</MyBlueButton>
-        </Link>
-      </Box>
       <Box className="pb-4"></Box>
       <div style={{ height: "67vh" }}>
         <FeeTableView

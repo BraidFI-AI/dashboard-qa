@@ -54,8 +54,8 @@ const TabsProvider = (props: any) => {
       );
     } else if (pathname.includes("limits")) {
       setCurrentTab(tabs.findIndex((tab) => tab.path.includes("limits")));
-    } else if (pathname.includes("fees")) {
-      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("fees")));
+    } else if (pathname.includes("fee")) {
+      setCurrentTab(tabs.findIndex((tab) => tab.path.includes("fee")));
     } else {
       setCurrentTab(0);
     }

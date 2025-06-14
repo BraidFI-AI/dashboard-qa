@@ -25,10 +25,11 @@ import {
   fetchTransactionTypes,
 } from "@/redux/slices/AppSlice";
 import { useSelector } from "react-redux";
-import MyCircularProgressIndicator from "../../circular_progress_indicator";
+import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "../../error_page";
 import { set } from "lodash";
 import React from "react";
+import MyRedButton from "../../Button/MyRedButton";
 
 type FeeIdViewProps = {
   replaceTo: string;
@@ -62,24 +63,22 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
     handleSubmit,
   } = useForm<Fees>();
   const onSubmit: SubmitHandler<Fees> = (data: Fees) => {
-    console.log("data", data);
-
-    if (feeType == "MONTHLY") {
-      data.tranType = undefined;
-    }
-
-    setSubmitting(true);
-    dispatch(updateFee(data)).then((d: any) => {
-      if (d.payload) {
-        enqueueSnackbar("Fee updated successfully", { variant: "success" });
-        setRefresh(true);
-        setSubmitting(false);
-        setEditing(false);
-      } else {
-        // enqueueSnackbar("Error updating fee", { variant: "error" });
-        setSubmitting(false);
-      }
-    });
+    // console.log("data", data);
+    // if (feeType == "MONTHLY") {
+    //   data.tranType = undefined;
+    // }
+    // setSubmitting(true);
+    // dispatch(updateFee(data)).then((d: any) => {
+    //   if (d.payload) {
+    //     enqueueSnackbar("Fee updated successfully", { variant: "success" });
+    //     setRefresh(true);
+    //     setSubmitting(false);
+    //     setEditing(false);
+    //   } else {
+    //     // enqueueSnackbar("Error updating fee", { variant: "error" });
+    //     setSubmitting(false);
+    //   }
+    // });
   };
 
   useEffect(() => {
@@ -152,19 +151,21 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
                     return;
                   }
                   setSubmitting(true);
-                  dispatch(deleteFee(fee.id.toString())).then((p: any) => {
-                    if (p.payload) {
-                      router.back();
-                      enqueueSnackbar("Fee deleted successfully", {
-                        variant: "success",
-                      });
-                    } else {
-                      setSubmitting(false);
-                      // enqueueSnackbar("Error deleting fee", {
-                      //   variant: "error",
-                      // });
+                  dispatch(deleteFee(fee.id?.toString() ?? "")).then(
+                    (p: any) => {
+                      if (p.payload) {
+                        router.back();
+                        enqueueSnackbar("Fee deleted successfully", {
+                          variant: "success",
+                        });
+                      } else {
+                        setSubmitting(false);
+                        // enqueueSnackbar("Error deleting fee", {
+                        //   variant: "error",
+                        // });
+                      }
                     }
-                  });
+                  );
                 }}
                 autoFocus
               >
@@ -176,17 +177,23 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
       )}
       <div className="w-[300px]">
         <div className="flex flex-row justify-between">
-          <ItemRow title="ID" value={fee.id}></ItemRow>
-          <MyEditButton
+          <ItemRow title="ID" value={fee.id ?? ""}></ItemRow>
+          {/* <MyEditButton
             editing={editing}
             setEditing={setEditing}
-          ></MyEditButton>
+          ></MyEditButton> */}
         </div>
-        {fee.accountNumber && (
-          <ItemRow title="Account Number" value={fee.accountNumber}></ItemRow>
+        {fee.associatedEntityType == "ACCOUNT" && (
+          <ItemRow
+            title="Account Number"
+            value={fee.associatedEntityId ?? ""}
+          ></ItemRow>
         )}
-        {fee.productId && (
-          <ItemRow title="Product ID" value={fee.productId}></ItemRow>
+        {fee.associatedEntityType == "PRODUCT" && (
+          <ItemRow
+            title="Product ID"
+            value={fee.associatedEntityId ?? ""}
+          ></ItemRow>
         )}
         <ItemRow title="Same day" value={fee.sameDay ?? "false"} />
         {feeType != "MONTHLY" && (
@@ -194,14 +201,14 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
             editing={editing}
             setEditing={setEditing}
             editable={false}
-            name="feeChargingAccountNumber"
+            name="feeChargingAccountId"
             displayName="Charging Account"
             control={control}
             errors={errors}
             rules={{
               required: false,
             }}
-            value={fee.feeChargingAccountNumber ?? ""}
+            value={fee.feeChargingAccountId ?? ""}
             submitting={false}
           />
         )}
@@ -209,14 +216,14 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
           editing={editing}
           setEditing={setEditing}
           editable={false}
-          name="settlementAccountNumber"
+          name="settlementAccountId"
           displayName="Settlement Account Number"
           control={control}
           errors={errors}
           rules={{
             required: true,
           }}
-          value={fee.settlementAccountNumber ?? ""}
+          value={fee.settlementAccountId ?? ""}
           submitting={false}
         />
         <MyEditableTextField
@@ -233,7 +240,7 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
           }}
           value={
             fee.amount
-              ? fee.feeType == "PERCENT"
+              ? fee.type == "PERCENT"
                 ? fee.amount
                 : toDollarFormat(fee.amount)
               : ""
@@ -244,20 +251,20 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
           editing={editing}
           setEditing={setEditing}
           editable={false}
-          name="feeType"
+          name="type"
           displayName="Fee Type"
           control={control}
           errors={errors}
           rules={{
             required: true,
           }}
-          value={fee.feeType ?? ""}
+          value={fee.type ?? ""}
           submitting={false}
           options={["FLAT", "PERCENT", "MONTHLY"]}
           customOnChange={(val: string) => {
             setFeeType(val);
             if (val == "MONTHLY") {
-              setValue("tranType", undefined);
+              setValue("transactionTypes", undefined);
             }
           }}
         />
@@ -295,14 +302,14 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
                 editing={editing}
                 setEditing={setEditing}
                 editable={false}
-                name="tranType"
+                name="transactionTypes"
                 displayName="Transaction Type"
                 control={control}
                 errors={errors}
                 rules={{
                   required: true,
                 }}
-                value={fee.tranType ?? ""}
+                value={fee.transactionTypes ?? ""}
                 submitting={false}
                 options={transactionTypes}
               />
@@ -313,28 +320,28 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
         )}
         <ItemRow
           title="Created at"
-          value={timestampToDate(fee.createdAt)}
+          value={timestampToDate(fee.createdAt ?? 0)}
         ></ItemRow>
         <ItemRow
           title="Updated at"
-          value={timestampToDate(fee.updatedAt)}
+          value={timestampToDate(fee.updatedAt ?? 0)}
         ></ItemRow>
         <div className="flex flex-row">
           <div className="w-fit">
-            <Button
-              className="text-red-500"
-              disabled={submitting}
-              style={{ textTransform: "none" }}
-              variant="text"
+            <MyRedButton
+              // className="text-red-500"
+              // disabled={submitting}
+              // style={{ textTransform: "none" }}
+              // variant="text"
               onClick={() => {
                 handleClickOpen(1);
               }}
             >
               Delete Fee
-            </Button>
+            </MyRedButton>
           </div>
           <div className="pr-2"></div>
-          <div className="w-fit">
+          {/* <div className="w-fit">
             <MyBlueButton
               submitting={submitting}
               onClick={() => {
@@ -345,7 +352,7 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
             >
               Update Fee
             </MyBlueButton>
-          </div>
+          </div> */}
         </div>
         <div className="pb-10"></div>
       </div>

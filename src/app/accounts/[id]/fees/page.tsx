@@ -48,11 +48,6 @@ const FeeTable = () => {
         />
       )}
       <Box className="flex flex-row">
-        <Box className="w-fit pr-4">
-          <Link href={`/accounts/${params.id}/fees/create`}>
-            <MyBlueButton>Add Fee</MyBlueButton>
-          </Link>
-        </Box>
         <Box>
           <MyBlueButton
             onClick={() => {

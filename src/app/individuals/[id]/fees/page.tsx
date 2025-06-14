@@ -64,11 +64,6 @@ const FeeTable = () => {
 
   return (
     <Box className="flex flex-col">
-      <Box className="w-fit">
-        <Link href={`/individuals/${params.id}/fees/create`}>
-          <MyBlueButton>Add Fee</MyBlueButton>
-        </Link>
-      </Box>
       <Box className="pb-4"></Box>
       {accIds == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
