@@ -129,11 +129,7 @@ const DrawerHeaderButtons = () => {
         userType == ADMIN_OPS_ROLE ||
         userType == ADMIN_READONLY_ROLE) && <GenerateStatement />) ||
     (pathname.includes("/fees") && pathname.includes("account") && (
-      <CreateFeeView
-        level="ACCOUNT"
-        ids={[params.id as string]}
-        replaceTo={`/accounts/${params.id}/fees`}
-      />
+      <CreateFeeView level="ACCOUNT" ids={[params.id as string]} />
     )) ||
     (pathname.includes("/fees") && pathname.includes("product") && (
       <CreateFeeView
