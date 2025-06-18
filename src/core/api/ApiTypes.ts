@@ -1312,11 +1312,19 @@ export interface UserAttribute {
   Value?: string | null;
 }
 
+export interface FeeSearch {
+  accountNumber?: string;
+  productId?: string;
+  programId?: string;
+  type?: "ACCOUNT" | "PRODUCT" | "PROGRAM" | "GLOBAL";
+  transactionTypes?: string[];
+  transactionGroups?: string[];
+}
 export interface Fees {
   id?: string | null;
   amount?: string | null;
   dayOfMonth?: string | null;
-  type?: "FLAT" | "PERCENT" | "MONTHLY";
+  feeType?: "FLAT" | "PERCENT" | "MONTHLY";
   settlementAccountId?: string | null;
   feeChargingAccountId?: string | null;
   sameDay?: boolean | null;
@@ -1324,7 +1332,7 @@ export interface Fees {
   associatedEntityId?: string;
   transactionTypes?: string[];
   transactionGroups?: string[];
-  tieredFeeDetails?: TieredFee[];
+  feeTieredDetails?: TieredFee[];
   createdAt?: number | null;
   updatedAt?: number | null;
 }
@@ -1345,7 +1353,7 @@ export interface CreateFee {
 
 export interface TieredFee {
   startCount: number;
-  endCount: number;
+  endCount?: number | null;
   amount: number;
 }
 

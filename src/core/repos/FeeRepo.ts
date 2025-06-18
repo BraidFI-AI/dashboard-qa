@@ -1,5 +1,5 @@
 import ApiClient, { Method } from "../api/ApiClient";
-import { CreateFee, Fees } from "../api/ApiTypes";
+import { CreateFee, Fees, FeeSearch } from "../api/ApiTypes";
 
 class FeeRepo {
   private apiClient: ApiClient;
@@ -8,13 +8,21 @@ class FeeRepo {
     this.apiClient = apiClient;
   }
 
-  public async fetchFees() {
-    const response = await this.apiClient.http<Fees[]>(Method.GET, "/fee");
+  public async feeSearch(
+    body: FeeSearch,
+    pageSize: number,
+    pageNumber: number
+  ) {
+    const response = await this.apiClient.http<any>(
+      Method.POST,
+      `/v2/fee/search?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+      body
+    );
     return response;
   }
 
   public async fetchFee(id: string) {
-    const fee = await this.apiClient.http<Fees>(Method.GET, `/fee/${id}`);
+    const fee = await this.apiClient.http<Fees>(Method.GET, `/v2/fee/${id}`);
 
     return fee;
   }
@@ -27,13 +35,13 @@ class FeeRepo {
     return response;
   }
 
-  public async fetchFeesByProgramId(id: string) {
-    const response = await this.apiClient.http<Fees[]>(
-      Method.GET,
-      `/fee?programId=${id}`
-    );
-    return response;
-  }
+  // public async fetchFeesByProgramId(id: string) {
+  //   const response = await this.apiClient.http<Fees[]>(
+  //     Method.GET,
+  //     `/fee?programId=${id}`
+  //   );
+  //   return response;
+  // }
 
   public async fetchFeesByAccountId(id: string) {
     const response = await this.apiClient.http<Fees[]>(

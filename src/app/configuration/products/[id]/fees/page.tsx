@@ -2,17 +2,23 @@
 
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import FeeTableView from "@/core/components/views/fees/FeeTableView";
-import { fetchFeesByProductId } from "@/redux/slices/FeeSlice";
 import Box from "@mui/material/Box";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
+import { feeSearch } from "@/redux/slices/FeeSlice";
 
 const FeeTable = () => {
   const params = useParams();
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByProductId((params.id as string) || "0"),
+    () =>
+      feeSearch({
+        search: {
+          productId: params.id as string,
+        },
+        refresh: true,
+      }),
     [params.id]
   );
 

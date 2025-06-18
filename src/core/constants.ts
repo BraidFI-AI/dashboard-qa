@@ -6,6 +6,20 @@ export type PaginationStateType = {
   pageSize?: number;
 };
 
+export const TRANSACTION_GROUPS = [
+  "ALL_TRANSACTION",
+  "ALL_CREDIT",
+  "ALL_DEBIT",
+  "ALL_ACH",
+  "ALL_WIRE",
+  "ALL_RETURN",
+  "ACH",
+  "ACH_RETURN",
+  "WIRE_DOMESTIC",
+  "WIRE_INTERNATIONAL",
+  "WIRE_RETURN",
+];
+
 export const months = [
   "Jan",
   "Feb",
