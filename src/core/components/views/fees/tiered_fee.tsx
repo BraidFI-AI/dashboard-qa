@@ -62,7 +62,7 @@ const TieredFee = ({ tieredFee, setTieredFee }: TieredFeeProps) => {
             displayName="End Count"
             control={control}
             errors={errors}
-            rules={{ required: true }}
+            rules={{ required: false }}
             value=""
           />
         </div>

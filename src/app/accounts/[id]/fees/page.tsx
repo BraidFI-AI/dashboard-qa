@@ -2,7 +2,6 @@
 
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import FeeTableView from "@/core/components/views/fees/FeeTableView";
-import { fetchFeesByAccountId } from "@/redux/slices/FeeSlice";
 import Box from "@mui/material/Box";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -11,6 +10,7 @@ import OneTimeFeeModal from "./one_time_fee_modal";
 import { useAppDispatch } from "@/redux/store/store";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { fetchAccount } from "@/redux/slices/AccountSlice";
+import { feeSearch } from "@/redux/slices/FeeSlice";
 
 const FeeTable = () => {
   const params = useParams();
@@ -34,7 +34,13 @@ const FeeTable = () => {
   }, []);
 
   const fetchDataMemoized = useMemo(
-    () => fetchFeesByAccountId((params.id as string) || "0"),
+    () =>
+      feeSearch({
+        search: {
+          accountNumber: params.id as string,
+        },
+        refresh: true,
+      }),
     [params.id]
   );
 

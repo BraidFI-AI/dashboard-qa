@@ -10,7 +10,7 @@ import MyControlledTextField from "@/core/components/TextField/MyControlledTextF
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import RadioButton from "@/core/components/Button/RadioButton";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import { createFee, refreshFees } from "@/redux/slices/FeeSlice";
+import { createFee, feeSearch } from "@/redux/slices/FeeSlice";
 import { enqueueSnackbar } from "notistack";
 import {
   TransactionTypesType,
@@ -25,6 +25,8 @@ import React from "react";
 import MyControlledMultiAutocomplete from "../../Autocomplete/MyControlledMultiAutocomplete";
 import TieredFeeComponent from "./tiered_fee";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import { TRANSACTION_GROUPS } from "@/core/constants";
+import ItemRow from "../../Text/ItemRow";
 
 type CreateFeeViewProps = {
   level: "PRODUCT" | "ACCOUNT" | "PROGRAM" | "GLOBAL";
@@ -84,7 +86,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
         if (typeof d.payload != "string") {
           enqueueSnackbar("Fee added successfully", { variant: "success" });
           closeDrawer();
-          dispatch(refreshFees());
+          dispatch(feeSearch());
           setSubmitting(false);
           return;
         }
@@ -250,22 +252,37 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
                   </div>
                 )}
                 <div className="w-full">
-                  <MyText>Same day</MyText>
-                  <MyControlledAutocomplete
-                    value={"False"}
-                    displayName="Same day"
-                    name={"sameDay"}
-                    control={control}
-                    errors={errors}
-                    rules={
-                      submitting
-                        ? { required: false }
-                        : {
-                            required: true,
-                          }
-                    }
-                    options={["False", "True"]}
-                  />
+                  {tranGroups.some(
+                    (group) =>
+                      group.includes("ACH") && !group.includes("RETURN")
+                  ) ||
+                  tranTypes.some(
+                    (type) => type.includes("ACH") && !type.includes("RETURN")
+                  ) ? (
+                    <>
+                      <MyText>Same day</MyText>
+                      <MyControlledAutocomplete
+                        value={"False"}
+                        displayName="Same day"
+                        name={"sameDay"}
+                        control={control}
+                        errors={errors}
+                        rules={
+                          submitting
+                            ? { required: false }
+                            : {
+                                required: true,
+                              }
+                        }
+                        options={["False", "True"]}
+                      />
+                    </>
+                  ) : (
+                    <div className="flex flex-row gap-4 items-center">
+                      <MyText>Same day</MyText>
+                      <MyText size="md">False</MyText>
+                    </div>
+                  )}
                 </div>
               </div>
               <Box className="pb-4"></Box>
@@ -343,13 +360,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
                       control={control}
                       errors={errors}
                       rules={{}}
-                      options={[
-                        "ALL_TRANSACTION",
-                        "ALL_CREDIT",
-                        "ALL_DEBIT",
-                        "ALL_ACH",
-                        "ALL_WIRE",
-                      ]}
+                      options={TRANSACTION_GROUPS}
                       customOnChange={(val: string[]) => {
                         setTranGroups(val);
                       }}

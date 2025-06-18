@@ -30,6 +30,7 @@ import ErrorPage from "../../error_page";
 import { set } from "lodash";
 import React from "react";
 import MyRedButton from "../../Button/MyRedButton";
+import LabelBox from "../../label_box";
 
 type FeeIdViewProps = {
   replaceTo: string;
@@ -86,6 +87,7 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
       setFee("loading");
       dispatch(fetchFee((params.feeId as string) || "0")).then((data: any) => {
         setFee(data.payload);
+
         reset({ ...data.payload });
         setLoading(false);
         setFeeType(data.payload.feeType ?? "FLAT");
@@ -175,173 +177,150 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
           </Dialog>
         </>
       )}
-      <div className="w-[300px]">
-        <div className="flex flex-row justify-between">
-          <ItemRow title="ID" value={fee.id ?? ""}></ItemRow>
-          {/* <MyEditButton
+      <div className="flex flex-row gap-4">
+        <div className="w-[300px]">
+          <div className="flex flex-row justify-between">
+            <ItemRow title="ID" value={fee.id ?? ""}></ItemRow>
+            {/* <MyEditButton
             editing={editing}
             setEditing={setEditing}
           ></MyEditButton> */}
-        </div>
-        {fee.associatedEntityType == "ACCOUNT" && (
-          <ItemRow
-            title="Account Number"
-            value={fee.associatedEntityId ?? ""}
-          ></ItemRow>
-        )}
-        {fee.associatedEntityType == "PRODUCT" && (
-          <ItemRow
-            title="Product ID"
-            value={fee.associatedEntityId ?? ""}
-          ></ItemRow>
-        )}
-        <ItemRow title="Same day" value={fee.sameDay ?? "false"} />
-        {feeType != "MONTHLY" && (
+          </div>
+          {fee.associatedEntityType == "ACCOUNT" && (
+            <ItemRow
+              title="Account Number"
+              value={fee.associatedEntityId ?? ""}
+            ></ItemRow>
+          )}
+          {fee.associatedEntityType == "PRODUCT" && (
+            <ItemRow
+              title="Product ID"
+              value={fee.associatedEntityId ?? ""}
+            ></ItemRow>
+          )}
+          <ItemRow title="Same day" value={fee.sameDay ?? "false"} />
+          {feeType != "MONTHLY" && (
+            <MyEditableTextField
+              editing={editing}
+              setEditing={setEditing}
+              editable={false}
+              name="feeChargingAccountId"
+              displayName="Charging Account"
+              control={control}
+              errors={errors}
+              rules={{
+                required: false,
+              }}
+              value={fee.feeChargingAccountId ?? ""}
+              submitting={false}
+            />
+          )}
           <MyEditableTextField
             editing={editing}
             setEditing={setEditing}
             editable={false}
-            name="feeChargingAccountId"
-            displayName="Charging Account"
-            control={control}
-            errors={errors}
-            rules={{
-              required: false,
-            }}
-            value={fee.feeChargingAccountId ?? ""}
-            submitting={false}
-          />
-        )}
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          editable={false}
-          name="settlementAccountId"
-          displayName="Settlement Account Number"
-          control={control}
-          errors={errors}
-          rules={{
-            required: true,
-          }}
-          value={fee.settlementAccountId ?? ""}
-          submitting={false}
-        />
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          editable={false}
-          name="amount"
-          displayName="Amount"
-          control={control}
-          errors={errors}
-          rules={{
-            required: true,
-            pattern: /^(0|[1-9]\d*)(\.\d+)?$/,
-          }}
-          value={
-            fee.amount
-              ? fee.type == "PERCENT"
-                ? fee.amount
-                : toDollarFormat(fee.amount)
-              : ""
-          }
-          submitting={false}
-        />
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          editable={false}
-          name="type"
-          displayName="Fee Type"
-          control={control}
-          errors={errors}
-          rules={{
-            required: true,
-          }}
-          value={fee.type ?? ""}
-          submitting={false}
-          options={["FLAT", "PERCENT", "MONTHLY"]}
-          customOnChange={(val: string) => {
-            setFeeType(val);
-            if (val == "MONTHLY") {
-              setValue("transactionTypes", undefined);
-            }
-          }}
-        />
-        {feeType == "MONTHLY" && (
-          <MyEditableTextField
-            editing={editing}
-            setEditing={setEditing}
-            editable={false}
-            name="dayOfMonth"
-            displayName="Day of Month"
+            name="settlementAccountId"
+            displayName="Settlement Account ID"
             control={control}
             errors={errors}
             rules={{
               required: true,
-              pattern: /^[0-9]+$/,
             }}
-            value={fee.dayOfMonth ?? 0}
+            value={fee.settlementAccountId ?? ""}
             submitting={false}
           />
-        )}
-        {feeType != "MONTHLY" ? (
-          <>
-            {transactionTypes == "loading" ? (
-              <MyCircularProgressIndicator />
-            ) : typeof transactionTypes == "string" ? (
-              <ErrorPage
-                error={transactionTypes}
-                recoveryButtonOnClick={() => {
-                  dispatch(fetchTransactionTypes());
-                }}
-                recoveryButtonTitle="Retry"
-              />
-            ) : (
-              <MyEditableTextField
-                editing={editing}
-                setEditing={setEditing}
-                editable={false}
-                name="transactionTypes"
-                displayName="Transaction Type"
-                control={control}
-                errors={errors}
-                rules={{
-                  required: true,
-                }}
-                value={fee.transactionTypes ?? ""}
-                submitting={false}
-                options={transactionTypes}
-              />
+          <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            editable={false}
+            name="amount"
+            displayName="Amount"
+            control={control}
+            errors={errors}
+            rules={{
+              required: true,
+              pattern: /^(0|[1-9]\d*)(\.\d+)?$/,
+            }}
+            value={
+              fee.amount
+                ? fee.feeType == "PERCENT"
+                  ? fee.amount
+                  : toDollarFormat(fee.amount)
+                : ""
+            }
+            submitting={false}
+          />
+          {fee.transactionTypes != null && fee.transactionTypes.length > 0 && (
+            <>
+              <MyText>Transaction Types</MyText>
+              <div className="flex flex-row w-[300px] flex-wrap">
+                {fee.transactionTypes.map((transactionType, index) => (
+                  <div key={index} className="pr-2 pb-[1px]">
+                    <LabelBox border color="gray">
+                      {transactionType}
+                    </LabelBox>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {fee.transactionGroups != null &&
+            fee.transactionGroups.length > 0 && (
+              <>
+                <MyText>Transaction Types</MyText>
+                <div className="flex flex-row w-[300px] flex-wrap">
+                  {fee.transactionGroups.map((group, index) => (
+                    <div key={index} className="pr-2 pb-[1px]">
+                      <LabelBox border color="gray">
+                        {group}
+                      </LabelBox>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
-          </>
-        ) : (
-          <></>
-        )}
-        <ItemRow
-          title="Created at"
-          value={timestampToDate(fee.createdAt ?? 0)}
-        ></ItemRow>
-        <ItemRow
-          title="Updated at"
-          value={timestampToDate(fee.updatedAt ?? 0)}
-        ></ItemRow>
-        <div className="flex flex-row">
-          <div className="w-fit">
-            <MyRedButton
-              // className="text-red-500"
-              // disabled={submitting}
-              // style={{ textTransform: "none" }}
-              // variant="text"
-              onClick={() => {
-                handleClickOpen(1);
+          {feeType == "MONTHLY" && (
+            <MyEditableTextField
+              editing={editing}
+              setEditing={setEditing}
+              editable={false}
+              name="dayOfMonth"
+              displayName="Day of Month"
+              control={control}
+              errors={errors}
+              rules={{
+                required: true,
+                pattern: /^[0-9]+$/,
               }}
-            >
-              Delete Fee
-            </MyRedButton>
-          </div>
-          <div className="pr-2"></div>
-          {/* <div className="w-fit">
+              value={fee.dayOfMonth ?? 0}
+              submitting={false}
+            />
+          )}
+          <div className="h-4" />
+          <ItemRow
+            title="Created at"
+            value={timestampToDate(fee.createdAt ?? 0)}
+          ></ItemRow>
+          <ItemRow
+            title="Updated at"
+            value={timestampToDate(fee.updatedAt ?? 0)}
+          ></ItemRow>
+          <div className="flex flex-row">
+            <div className="w-fit">
+              <MyRedButton
+                // className="text-red-500"
+                // disabled={submitting}
+                // style={{ textTransform: "none" }}
+                // variant="text"
+                onClick={() => {
+                  handleClickOpen(1);
+                }}
+              >
+                Delete Fee
+              </MyRedButton>
+            </div>
+            <div className="pr-2"></div>
+            {/* <div className="w-fit">
             <MyBlueButton
               submitting={submitting}
               onClick={() => {
@@ -353,8 +332,24 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
               Update Fee
             </MyBlueButton>
           </div> */}
+          </div>
+          <div className="pb-10"></div>
         </div>
-        <div className="pb-10"></div>
+        <div className="w-[400px]">
+          <div className="flex flex-col">
+            {fee.feeTieredDetails != null &&
+              fee.feeTieredDetails.length != 0 && (
+                <>
+                  <MyText>Tiered Fee</MyText>
+                  {fee.feeTieredDetails?.map((fee, index) => (
+                    <MyText key={index}>
+                      {`Amount: ${fee.amount} - Start Count: ${fee.startCount} - End Count: ${fee.endCount}`}
+                    </MyText>
+                  ))}
+                </>
+              )}
+          </div>
+        </div>
       </div>
     </>
   );

@@ -2,7 +2,6 @@
 
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import FeeTableView from "@/core/components/views/fees/FeeTableView";
-import { fetchFeesByMultipleAccountIds } from "@/redux/slices/FeeSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import Box from "@mui/material/Box";
 import Link from "next/link";
@@ -56,11 +55,11 @@ const FeeTable = () => {
     );
   }, [dispatch, params.id]);
 
-  const fetchDataMemoized = useMemo(
-    () =>
-      fetchFeesByMultipleAccountIds(typeof accIds != "string" ? accIds : []),
-    [accIds]
-  );
+  // const fetchDataMemoized = useMemo(
+  //   () =>
+  //     fetchFeesByMultipleAccountIds(typeof accIds != "string" ? accIds : []),
+  //   [accIds]
+  // );
 
   return (
     <Box className="flex flex-col">
@@ -95,7 +94,7 @@ const FeeTable = () => {
       ) : (
         <div>
           <FeeTableView
-            fetchData={fetchDataMemoized}
+            fetchData={() => {}}
             pushTo={`/individuals/${params.id}/fees`}
             extraColumn={[
               {

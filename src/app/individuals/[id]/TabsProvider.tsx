@@ -51,10 +51,10 @@ const TabsProvider = (props: any) => {
     //   name: "Limits",
     //   path: `/individuals/${parseInt((params.id as string) || "0")}/limits`,
     // },
-    {
-      name: "Fees",
-      path: `/individuals/${parseInt((params.id as string) || "0")}/fees`,
-    },
+    // {
+    //   name: "Fees",
+    //   path: `/individuals/${parseInt((params.id as string) || "0")}/fees`,
+    // },
   ];
 
   if (userType != ADMIN_ROLE && userType != ADMIN_OPS_ROLE) {

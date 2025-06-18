@@ -1,6 +1,6 @@
 "use client";
 
-import { Fees } from "@/core/api/ApiTypes";
+import { Fees, FeeSearch } from "@/core/api/ApiTypes";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import MyText from "@/core/components/Text/Text";
@@ -8,10 +8,16 @@ import MyTable from "@/core/components/Table/MyTable";
 import { GridEventListener } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/store/store";
-import { fetchFees } from "@/redux/slices/FeeSlice";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import ErrorPage from "../../error_page";
 import { useSelector } from "react-redux";
+import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import {
+  feeSearch,
+  setFeePaginationPageSize,
+  setFeePaginationPageNumber,
+} from "@/redux/slices/FeeSlice";
+import LabelBox from "../../label_box";
 
 type FeeTableViewProps = {
   fetchData: any;
@@ -27,6 +33,12 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
   const router = useRouter();
 
   const dispatch = useAppDispatch();
+
+  const pagination: PaginationStateType = useSelector(
+    (state: any) => state.fee.pagination
+  );
+
+  const criteria: FeeSearch = useSelector((state: any) => state.fee.search);
 
   const fees = useSelector((state: any) => state.fee.fees);
 
@@ -57,6 +69,24 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
     <MyTable
       handleRowClick={handleRowClick}
       customId={(row: Fees) => row.id}
+      pagination={{
+        rowCount: pagination.rowCount,
+        loading: pagination.loadingPage,
+        paginationModel: {
+          page: pagination.pageNumber,
+          pageSize: pagination.pageSize ?? paginationPageSize,
+        },
+        setPaginationModel: (page: number, size: number) => {
+          dispatch(setFeePaginationPageSize(size));
+          dispatch(setFeePaginationPageNumber(page));
+          dispatch(
+            feeSearch({
+              search: criteria,
+              refresh: false,
+            })
+          );
+        },
+      }}
       columns={[
         { field: "id", headerName: "ID", flex: 1, minWidth: 120 },
         ...extraColumn,
@@ -67,10 +97,40 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
           minWidth: 160,
         },
         {
-          field: "tranType",
-          headerName: "Transaction Type",
+          field: "transactionTypes",
+          headerName: "Transaction Types",
           flex: 1,
-          minWidth: 180,
+          display: "flex",
+          minWidth: 220,
+          renderCell: (params: any) => {
+            return (
+              <div className="flex flex-row gap-2 overflow-x-auto max-w-full scrollbar-hide">
+                {params.row.transactionTypes?.map((type: any) => (
+                  <LabelBox key={type} color="gray" fill>
+                    {type}
+                  </LabelBox>
+                ))}
+              </div>
+            );
+          },
+        },
+        {
+          field: "transactionGroups",
+          headerName: "Transaction Groups",
+          flex: 1,
+          display: "flex",
+          minWidth: 220,
+          renderCell: (params: any) => {
+            return (
+              <div className="flex flex-row gap-2 overflow-x-auto max-w-full scrollbar-hide">
+                {params.row.transactionGroups?.map((group: any) => (
+                  <LabelBox key={group} color="gray" fill>
+                    {group}
+                  </LabelBox>
+                ))}
+              </div>
+            );
+          },
         },
         {
           field: "amount",
@@ -78,16 +138,20 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
           flex: 1,
           minWidth: 160,
           valueGetter: (value: any, row: any) =>
-            row.feeType == "PERCENT" ? row.amount : toDollarFormat(row?.amount),
+            row.amount == null
+              ? "Tiered"
+              : row.feeType == "PERCENT"
+              ? row.amount
+              : toDollarFormat(row?.amount),
         },
         {
-          field: "feeChargingAccountNumber",
+          field: "feeChargingAccountId",
           headerName: "Charging Account",
           flex: 1,
           minWidth: 160,
         },
         {
-          field: "settlementAccountNumber",
+          field: "settlementAccountId",
           headerName: "Settlement Account",
           flex: 1,
           minWidth: 160,
