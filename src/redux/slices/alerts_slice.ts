@@ -226,23 +226,13 @@ export const resolveAlert = createAsyncThunk(
   ) => {
     try {
       let action = data.action;
-      if (data.action.toLowerCase().includes("whitelist")) {
-        action = "APPROVE";
-      }
+
       const resolvedAlert = await alertsRepo.resolveAlert({
         alertId: data.alertId,
-        action: action.toUpperCase(),
+        action: action,
         note: data.note,
         returnCode: data.returnCode,
       });
-
-      if (
-        data.action.toLowerCase().includes("whitelist") &&
-        data.whiteList &&
-        data.whiteList.ofacId != null
-      ) {
-        await alertsRepo.whiteListEntity(data.whiteList.ofacId);
-      }
 
       console.log("alert resolve", resolvedAlert);
 

@@ -115,15 +115,6 @@ class AlertsRepo {
     return data;
   }
 
-  public async whiteListEntity(ofacId: string) {
-    const response = await this.apiClient.http<any>(
-      Method.POST,
-      `/OFAC/whitelist`,
-      { ofacId }
-    );
-    return response;
-  }
-
   public async updateAlertRfiStatus(data: {
     alertId: string;
     rfiStatus: string;
