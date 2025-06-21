@@ -145,13 +145,13 @@ const FeeTableView: React.FC<FeeTableViewProps> = ({
               : toDollarFormat(row?.amount),
         },
         {
-          field: "feeChargingAccountId",
+          field: "feeChargingAccountNumber",
           headerName: "Charging Account",
           flex: 1,
           minWidth: 160,
         },
         {
-          field: "settlementAccountId",
+          field: "settlementAccountNumber",
           headerName: "Settlement Account",
           flex: 1,
           minWidth: 160,

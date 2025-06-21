@@ -204,14 +204,14 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
               editing={editing}
               setEditing={setEditing}
               editable={false}
-              name="feeChargingAccountId"
+              name="feeChargingAccountNumber"
               displayName="Charging Account"
               control={control}
               errors={errors}
               rules={{
                 required: false,
               }}
-              value={fee.feeChargingAccountId ?? ""}
+              value={fee.feeChargingAccountNumber ?? ""}
               submitting={false}
             />
           )}
@@ -219,14 +219,14 @@ const FeeIdView: React.FC<FeeIdViewProps> = ({ replaceTo }) => {
             editing={editing}
             setEditing={setEditing}
             editable={false}
-            name="settlementAccountId"
-            displayName="Settlement Account ID"
+            name="settlementAccountNumber"
+            displayName="Settlement Account Number"
             control={control}
             errors={errors}
             rules={{
               required: true,
             }}
-            value={fee.settlementAccountId ?? ""}
+            value={fee.settlementAccountNumber ?? ""}
             submitting={false}
           />
           <MyEditableTextField

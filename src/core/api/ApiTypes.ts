@@ -1325,8 +1325,8 @@ export interface Fees {
   amount?: string | null;
   dayOfMonth?: string | null;
   feeType?: "FLAT" | "PERCENT" | "MONTHLY";
-  settlementAccountId?: string | null;
-  feeChargingAccountId?: string | null;
+  settlementAccountNumber?: string | null;
+  feeChargingAccountNumber?: string | null;
   sameDay?: boolean | null;
   associatedEntityType?: "ACCOUNT" | "PRODUCT" | "PROGRAM" | "GLOBAL";
   associatedEntityId?: string;
@@ -1341,8 +1341,8 @@ export interface CreateFee {
   amount: string;
   dayOfMonth?: string | null;
   type: "FLAT" | "PERCENT" | "MONTHLY";
-  settlementAccountId: string;
-  feeChargingAccountId?: string | null;
+  settlementAccountNumber: string;
+  feeChargingAccountNumber?: string | null;
   sameDay?: boolean | null;
   associatedEntityType: "ACCOUNT" | "PRODUCT" | "PROGRAM" | "GLOBAL";
   associatedEntityId?: string;
