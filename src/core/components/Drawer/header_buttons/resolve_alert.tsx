@@ -45,8 +45,8 @@ const ResolveAlertButton = () => {
   };
 
   const [resolveOptions, setResolveOptions] = useState<String[]>([
-    "Approve",
-    "Decline",
+    "APPROVE",
+    "DECLINE",
   ]);
 
   const achReturnCodes: "loading" | string | string[] = useSelector(
@@ -95,8 +95,6 @@ const ResolveAlertButton = () => {
         ofacId: string;
       };
     } = { ...data };
-
-    data.action = data.action.toUpperCase();
 
     if (
       ofacHit != null &&
@@ -178,14 +176,11 @@ const ResolveAlertButton = () => {
             (data: any) => {
               setOfacHit(data.payload);
               if (typeof data.payload != "string") {
-                if (
-                  data.payload?.individualId != null ||
-                  data.payload?.businessId != null
-                ) {
+                if (alert.additionalParam == "ENTITY") {
                   setResolveOptions([
-                    "Approve",
-                    "Approve & Whitelist",
-                    "Decline",
+                    "APPROVE",
+                    "APPROVE_AND_WHITELIST",
+                    "DECLINE",
                   ]);
                 }
               }
@@ -231,14 +226,11 @@ const ResolveAlertButton = () => {
                 (data: any) => {
                   setOfacHit(data.payload);
                   if (typeof data.payload != "string") {
-                    if (
-                      data.payload?.individualId != null ||
-                      data.payload?.businessId != null
-                    ) {
+                    if (alert.additionalParam == "ENTITY") {
                       setResolveOptions([
-                        "Approve",
-                        "Approve & Whitelist",
-                        "Decline",
+                        "APPROVE",
+                        "APPROVE_AND_WHITELIST",
+                        "DECLINE",
                       ]);
                     }
                   }
@@ -268,7 +260,7 @@ const ResolveAlertButton = () => {
             />
             <div className="h-4" />
             <MyText>
-              {action != "Decline" &&
+              {action != "DECLINE" &&
               alert.contextType == "FILE_RECORD" &&
               (alert.additionalParam ==
                 "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
@@ -287,7 +279,7 @@ const ResolveAlertButton = () => {
               }}
               value={getValues("note")}
             />
-            {action == "Decline" &&
+            {action == "DECLINE" &&
               (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
                 (alert.type == "TRANSACTION_MONITORING" &&
                   (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
@@ -321,7 +313,7 @@ const ResolveAlertButton = () => {
                   )}
                 </>
               )}
-            {action != "Decline" &&
+            {action != "DECLINE" &&
               alert.contextType == "FILE_RECORD" &&
               (alert.additionalParam ==
                 "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
