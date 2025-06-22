@@ -14,10 +14,11 @@ export const TRANSACTION_GROUPS = [
   "ALL_WIRE",
   "ALL_RETURN",
   "ACH",
-  "ACH_RETURN",
+  "ACH_RETURN_OTHER",
   "WIRE_DOMESTIC",
   "WIRE_INTERNATIONAL",
   "WIRE_RETURN",
+  "ACH_RETURN_UNAUTH",
 ];
 
 export const months = [
