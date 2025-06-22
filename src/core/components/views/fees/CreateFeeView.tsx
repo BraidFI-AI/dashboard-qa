@@ -71,11 +71,14 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
   } = useForm<CreateFee>();
   const onSubmit: SubmitHandler<CreateFee> = (data: CreateFee) => {
     if (feeType == "MONTHLY") {
-      data.feeChargingAccountId = undefined;
+      data.feeChargingAccountNumber = undefined;
     }
 
-    if (data.feeChargingAccountId == "" || data.feeChargingAccountId == null) {
-      data.feeChargingAccountId = undefined;
+    if (
+      data.feeChargingAccountNumber == "" ||
+      data.feeChargingAccountNumber == null
+    ) {
+      data.feeChargingAccountNumber = undefined;
     }
 
     console.log("data", data);
@@ -187,7 +190,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
                   <MyControlledTextField
                     value={""}
                     displayName="Account"
-                    name={"settlementAccountId"}
+                    name={"settlementAccountNumber"}
                     control={control}
                     errors={errors}
                     rules={
@@ -213,7 +216,7 @@ const CreateFeeView: React.FC<CreateFeeViewProps> = ({
                       <MyControlledTextField
                         value={""}
                         displayName="Charging Account"
-                        name={"feeChargingAccountId"}
+                        name={"feeChargingAccountNumber"}
                         control={control}
                         errors={errors}
                         // disabled={true}
