@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import AddRestrictedEntity from "./add_restricted_entity";
 import IconButton from "@mui/material/IconButton";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import { TRANSACTION_GROUPS } from "@/core/constants";
 
 type CreateRestrictedEntityProps = {
   control: any;
@@ -177,13 +178,7 @@ const CreateRestrictedEntity = ({
               control={control}
               errors={errors}
               rules={{}}
-              options={[
-                "ALL_TRANSACTION",
-                "ALL_CREDIT",
-                "ALL_DEBIT",
-                "ALL_ACH",
-                "ALL_WIRE",
-              ]}
+              options={TRANSACTION_GROUPS}
               customOnChange={(val: string[]) => {
                 setGroups(val);
               }}

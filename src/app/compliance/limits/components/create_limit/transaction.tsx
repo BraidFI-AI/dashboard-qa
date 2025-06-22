@@ -18,6 +18,7 @@ import {
   TransactionTypesType,
 } from "@/redux/slices/AppSlice";
 import { useSelector } from "react-redux";
+import { TRANSACTION_GROUPS } from "@/core/constants";
 
 type CreateTransactionProps = {
   control: any;
@@ -154,13 +155,7 @@ const CreateTransaction = ({
             control={control}
             errors={errors}
             rules={{}}
-            options={[
-              "ALL_TRANSACTION",
-              "ALL_CREDIT",
-              "ALL_DEBIT",
-              "ALL_ACH",
-              "ALL_WIRE",
-            ]}
+            options={TRANSACTION_GROUPS}
             customOnChange={(val: string[]) => {
               setGroups(val);
             }}
