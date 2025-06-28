@@ -36,63 +36,77 @@ const BarChart: React.FC<BarChartProps> = ({
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const x = d3
-      .scaleBand()
-      .domain(data.map((d) => d.hover))
-      .range([0, width])
-      .padding(0.1);
+    // Only render axes and bars if there is data
+    if (data && data.length > 0) {
+      const x = d3
+        .scaleBand()
+        .domain(data.map((d) => d.hover))
+        .range([0, width])
+        .padding(0.1);
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => +d.value) as number])
-      .range([height, 0]);
+      const y = d3
+        .scaleLinear()
+        .domain([0, d3.max(data, (d) => +d.value) as number])
+        .range([height, 0]);
 
-    svg
-      .append("g")
-      .attr("class", "x-axis")
-      .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x).tickFormat((d, i) => (i % 3 === 0 ? d : "")))
-      .selectAll("text")
-      .attr("transform", "rotate(-40) translate(-7, 0)")
-      .style("text-anchor", "end");
+      // X-axis showing only start of every month
+      svg
+        .append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(
+          d3
+            .axisBottom(x)
+            .tickFormat((d, i) => {
+              // Parse the date string to check if it's the first day of a month
+              const date = new Date(d);
+              return date.getDate() === 1 ? d : "";
+            })
+            .tickSize(0)
+        )
+        .selectAll("text")
+        .attr("transform", "rotate(-40) translate(-7, 0)")
+        .style("text-anchor", "end");
 
-    svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y).ticks(5));
+      // Y-axis
+      svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y).ticks(5));
 
-    const colorScale = d3
-      .scaleOrdinal()
-      .domain(data.map((d) => d.hover))
-      .range(
-        d3
-          .quantize((t) => d3.interpolateSpectral(t * 0.8 + 0.1), data.length)
-          .reverse()
-          .map((color) =>
-            color === "rgb(0, 0, 0)" ? "rgb(174, 173, 164)" : color
-          )
-      );
+      const colorScale = d3
+        .scaleOrdinal()
+        .domain(data.map((d) => d.hover))
+        .range(
+          d3
+            .quantize((t) => d3.interpolateSpectral(t * 0.8 + 0.1), data.length)
+            .reverse()
+            .map((color) =>
+              color === "rgb(0, 0, 0)" ? "rgb(174, 173, 164)" : color
+            )
+        );
 
-    const tooltip = d3.select(tooltipRef.current);
+      const tooltip = d3.select(tooltipRef.current);
 
-    svg
-      .selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", (d) => x(d.hover) as number)
-      .attr("y", (d) => y(+d.value))
-      .attr("width", x.bandwidth())
-      .attr("height", (d) => height - y(+d.value))
-      .attr("fill", (d: any) => "#4288B5")
-      .on("mouseover", (event, d) => {
-        tooltip
-          .style("opacity", 1)
-          .html(`Date: ${d.hover}<br/>Value: ${toDollarFormat(d.value)}`)
-          .style("left", `${event.pageX + 5}px`)
-          .style("top", `${event.pageY - 28}px`);
-      })
-      .on("mouseout", () => {
-        tooltip.style("opacity", 0);
-      });
+      svg
+        .selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", (d) => x(d.hover) as number)
+        .attr("y", (d) => y(+d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", (d) => height - y(+d.value))
+        .attr("fill", (d: any) => "#4288B5")
+        .on("mouseover", (event, d) => {
+          tooltip
+            .style("opacity", 1)
+            .html(`Date: ${d.hover}<br/>Value: ${toDollarFormat(d.value)}`)
+            .style("left", `${event.pageX + 5}px`)
+            .style("top", `${event.pageY - 28}px`);
+        })
+        .on("mouseout", () => {
+          tooltip.style("opacity", 0);
+        });
+    }
   }, [data]);
 
   return (

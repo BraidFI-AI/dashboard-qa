@@ -1,3 +1,5 @@
+export const INACTIVITY_THRESHOLD = 30 * 60 * 1000; // 2 minutes
+
 // TYPES
 export type PaginationStateType = {
   rowCount: number;
@@ -56,8 +58,9 @@ export const DEVELOPER_OPS_ROLE = "developer-ops";
 export const CUSTOMER_ROLE = "customers";
 export const ADMIN_READONLY_ROLE = "admin-readonly";
 export const DEVELOPER_READONLY_ROLE = "developer-readonly";
+export const ADMIN_COMPLIANCE_ROLE = "admin-compliance";
 
-export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE];
+export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE, ADMIN_COMPLIANCE_ROLE];
 export const DEVELOPER_ROUTE = [
   DEVELOPER_ROLE,
   DEVELOPER_OPS_ROLE,
@@ -132,6 +135,7 @@ export const userGroupMapping: any = {
   "Fintech Ops": "developer-ops",
   "Bank readonly": "admin-readonly",
   "Fintech readonly": "developer-readonly",
+  "Admin Compliance": "admin-compliance",
   // "Fintech Admin": "developers",
   // "Fintech Ops": "developers",
   "": "",
@@ -144,6 +148,7 @@ export const userGroupMappingToReadableNames: any = {
   "developer-ops": "Fintech Ops",
   "admin-readonly": "Bank readonly",
   "developer-readonly": "Fintech readonly",
+  "admin-compliance": "Admin Compliance",
   admins: "Bank Admin",
   developers: "Fintech Admin",
   customers: "Customer",
