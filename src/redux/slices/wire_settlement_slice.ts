@@ -1,7 +1,7 @@
 import ApiClient from "@/core/api/ApiClient";
 import { WireReturnFile, WireSettlementHistory } from "@/core/api/ApiTypes";
 import WireRepo from "@/core/repos/wire_settlement_repo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment, { Moment } from "moment";
@@ -31,8 +31,8 @@ const initialState: WireState = {
   productName: null,
   returnFileStartDate: undefined,
   returnFileEndDate: undefined,
-  startDate: momentToPSTString(moment(), true),
-  endDate: momentToPSTString(moment(), false),
+  startDate: momentToTimeZoneString(moment(), true),
+  endDate: momentToTimeZoneString(moment(), false),
 };
 
 const WireSlice = createSlice({
@@ -141,11 +141,11 @@ export const fetchWireReturnFiles = createAsyncThunk(
           thunkApi.getState().wireSettlement.returnFileStartDate != null &&
           thunkApi.getState().wireSettlement.returnFileEndDate != null
         ) {
-          sd = momentToPSTString(
+          sd = momentToTimeZoneString(
             moment(thunkApi.getState().wireSettlement.returnFileStartDate),
             true
           );
-          ed = momentToPSTString(
+          ed = momentToTimeZoneString(
             moment(thunkApi.getState().wireSettlement.returnFileEndDate),
             false
           );
@@ -156,8 +156,8 @@ export const fetchWireReturnFiles = createAsyncThunk(
         data?.date?.startDate != undefined &&
         data?.date?.endDate != undefined
       ) {
-        sd = momentToPSTString(moment(data.date.startDate), true);
-        ed = momentToPSTString(moment(data.date.endDate), false);
+        sd = momentToTimeZoneString(moment(data.date.startDate), true);
+        ed = momentToTimeZoneString(moment(data.date.endDate), false);
       } else {
         return "Please select date range";
       }
@@ -225,8 +225,8 @@ export const fetchWireSettlementHistory = createAsyncThunk(
         if (data.startDate != null && data.endDate != null) {
           const wireSettlementHistory =
             await wireRepo.fetchWireSettlementHistory(
-              momentToPSTString(data.startDate, true),
-              momentToPSTString(data.endDate, false)
+              momentToTimeZoneString(data.startDate, true),
+              momentToTimeZoneString(data.endDate, false)
             );
           console.log("wireSettlementHistory", wireSettlementHistory);
           return wireSettlementHistory;

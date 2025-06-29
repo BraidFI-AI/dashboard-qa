@@ -3,7 +3,7 @@
 import { JSONTree } from "react-json-tree";
 import MyTable from "../Table/MyTable";
 import ItemRowHorizontal from "../Text/ItemRowHorizontal";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import MyText from "../Text/Text";
 import MyModal from "../my_modal";
 import { useState } from "react";

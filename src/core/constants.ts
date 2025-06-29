@@ -45,9 +45,6 @@ export const paginationPageSize = 100;
 export const pageSizeOptionsType = 100 | 200 | 500;
 export const pageSizeOptions = [100, 200, 500];
 
-/// TIMEZONE
-export const APP_TIMEZONE = "America/Los_Angeles";
-
 export const ADMIN_SPECIFIC_FEATURE_MESSAGE =
   "This feature is only available for Bank";
 

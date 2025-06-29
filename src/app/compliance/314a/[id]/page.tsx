@@ -5,7 +5,7 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import ItemRow from "@/core/components/Text/ItemRow";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { fetch314ARecord } from "@/redux/slices/314a_slice";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";

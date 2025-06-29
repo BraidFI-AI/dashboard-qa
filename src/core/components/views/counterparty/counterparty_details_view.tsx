@@ -14,7 +14,7 @@ import { useAppDispatch } from "@/redux/store/store";
 import { unblockBusinessCounterparty } from "@/redux/slices/BusinessSlice";
 import { enqueueSnackbar } from "notistack";
 import MyTextButton from "../../Button/MyTextButton";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
 
 type CounterpartyDetailsViewProps = {

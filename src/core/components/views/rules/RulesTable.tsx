@@ -14,8 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 import { LimitsType } from "@/redux/slices/RulesAndLimitsSlice";
 import { useSelector } from "react-redux";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
-import timestampToDate from "@/core/utils/timestampToDate";
-
+import { timestampToDate } from "@/core/utils/date_time_util";
 type RulesTableViewType = {
   fetchData: any;
   pushTo: string;

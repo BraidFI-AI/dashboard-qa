@@ -4,8 +4,7 @@ import { Alert, Individual } from "@/core/api/ApiTypes";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
-
+import { timestampToDate } from "@/core/utils/date_time_util";
 type EntityTypeIndividualComponentProps = {
   alert: Alert;
   context: Individual;

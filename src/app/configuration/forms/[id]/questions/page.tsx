@@ -26,7 +26,7 @@ import MyControlledTextField from "@/core/components/TextField/MyControlledTextF
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import ItemRow from "@/core/components/Text/ItemRow";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import MyTextButton from "@/core/components/Button/MyTextButton";

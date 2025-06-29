@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { setTitle } from "@/redux/slices/AppSlice";
 import MyText from "@/core/components/Text/Text";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { fetchCard } from "@/redux/slices/CardManagementSlice";
 import Link from "next/link";
 import ItemRow from "@/core/components/Text/ItemRow";

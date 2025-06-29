@@ -14,7 +14,7 @@ import ErrorPage from "@/core/components/error_page";
 import { GridCellParams, GridRowParams } from "@mui/x-data-grid";
 import { MuiEvent } from "@mui/x-data-grid";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { VelocityLimit, VelocityLimitFilters } from "@/core/api/ApiTypes";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useSearchParams } from "next/navigation";

@@ -14,7 +14,7 @@ import MyText from "@/core/components/Text/Text";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import ErrorPage from "@/core/components/error_page";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { setTitle } from "@/redux/slices/AppSlice";
 import { fetchDeveloper } from "@/redux/slices/DeveloperSlice";
 import { fetchProduct, updateProduct } from "@/redux/slices/ProductSlice";

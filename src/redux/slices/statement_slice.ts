@@ -1,8 +1,7 @@
 import ApiClient from "@/core/api/ApiClient";
 import { ACH, Statement } from "@/core/api/ApiTypes";
-import { APP_TIMEZONE } from "@/core/constants";
 import StatementRepo from "@/core/repos/statement_repo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToUTCString } from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
@@ -62,14 +61,8 @@ export const fetchRootStatement = createAsyncThunk(
   async (data: { start: string; end: string }, thunkApi: any) => {
     try {
       const response = await statementRepo.fetchRootStatement(
-        moment
-          .tz(data.start, APP_TIMEZONE)
-          .startOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
-        moment
-          .tz(data.end, APP_TIMEZONE)
-          .endOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00"
+        momentToUTCString(moment(data.start), true),
+        momentToUTCString(moment(data.end), false)
       );
       return response;
     } catch (e: any) {
@@ -86,14 +79,8 @@ export const fetchProgramStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchProgramStatement(
-        moment
-          .tz(data.start, APP_TIMEZONE)
-          .startOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
-        moment
-          .tz(data.end, APP_TIMEZONE)
-          .endOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
+        momentToUTCString(moment(data.start), true),
+        momentToUTCString(moment(data.end), false),
         data.programId
       );
       return response;
@@ -111,14 +98,8 @@ export const fetchProductStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchProductStatement(
-        moment
-          .tz(data.start, APP_TIMEZONE)
-          .startOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
-        moment
-          .tz(data.end, APP_TIMEZONE)
-          .endOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
+        momentToUTCString(moment(data.start), true),
+        momentToUTCString(moment(data.end), false),
         data.productId
       );
       return response;
@@ -136,14 +117,8 @@ export const fetchAccountStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchAccountStatement(
-        moment
-          .tz(data.start, APP_TIMEZONE)
-          .startOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
-        moment
-          .tz(data.end, APP_TIMEZONE)
-          .endOf("day")
-          .format("YYYY-MM-DDTHH:mm:ss.SSSSSS") + "-08:00",
+        moment(data.start).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
+        moment(data.end).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
         data.accountId
       );
       return {

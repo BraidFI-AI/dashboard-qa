@@ -4,7 +4,7 @@ import { ACH, Transaction } from "@/core/api/ApiTypes";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import MyTable from "@/core/components/Table/MyTable";
 import MyLinkText from "@/core/components/Text/LinkText";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
 import moment from "moment";

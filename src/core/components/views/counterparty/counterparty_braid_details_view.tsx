@@ -8,7 +8,7 @@ import MyExpandableButton from "@/core/components/Button/MyExpandableButton";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { useEffect, useState } from "react";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import MyLinkText from "../../Text/LinkText";
 import ErrorPage from "../../error_page";

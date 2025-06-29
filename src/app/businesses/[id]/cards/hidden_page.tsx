@@ -3,7 +3,7 @@
 import { AccountCard, Submission } from "@/core/api/ApiTypes";
 import ItemRow from "@/core/components/Text/ItemRow";
 import MyText from "@/core/components/Text/Text";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import {
   fetchBusiness,
   // fetchBusinessAccountsCards,

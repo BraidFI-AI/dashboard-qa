@@ -16,7 +16,7 @@ import {
 } from "@/redux/slices/BusinessSlice";
 import { useRouter, useSearchParams } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import Link from "next/link";
 import ErrorPage from "@/core/components/error_page";
 import LabelBox from "@/core/components/label_box";

@@ -10,7 +10,7 @@ import {
   paginationPageSize,
   PaginationStateType,
 } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import {
   fetchACHFileErrors,
   fetchACHTransactionStatus,

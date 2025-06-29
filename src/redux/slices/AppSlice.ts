@@ -21,9 +21,11 @@ import TransactionRepo from "@/core/repos/TransactionRepo";
 import ApiClient from "@/core/api/ApiClient";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { setInitialOFACState } from "./OFACSlice";
+import AppRepo from "@/core/repos/app_repo";
 
 const apiClient = ApiClient.getInstance();
 const transactionRepo: TransactionRepo = new TransactionRepo(apiClient);
+const appRepo: AppRepo = new AppRepo(apiClient);
 
 export type TransactionTypesType = "loading" | string | string[];
 
@@ -36,6 +38,7 @@ interface AppState {
   transactionTypes: TransactionTypesType;
   drawerOpen: boolean;
   achReturnCodes: "loading" | string | string[];
+  timezone: "loading" | string | { timezone: string };
 }
 
 const initialState: AppState = {
@@ -47,6 +50,7 @@ const initialState: AppState = {
   achReturnCodes: "loading",
   tenantId: null,
   drawerOpen: true,
+  timezone: "loading",
 };
 
 const AppSlice = createSlice({
@@ -82,6 +86,9 @@ const AppSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchTimezone.fulfilled, (state, action) => {
+      state.timezone = action.payload;
+    });
     builder.addCase(resetAppState.fulfilled, (state, action) => {
       Object.assign(state, initialState);
     });
@@ -122,6 +129,18 @@ export const resetAppState = createAsyncThunk(
     thunkApi.dispatch(setInitialLimitsState());
     thunkApi.dispatch(setInitialTransactionState());
     thunkApi.dispatch(setInitialUsersState());
+  }
+);
+
+export const fetchTimezone = createAsyncThunk(
+  "app/fetchTimezone",
+  async (_, thunkApi: any) => {
+    try {
+      const timezone: any = await appRepo.fetchTimezone();
+      return { timezone: timezone.timeZone };
+    } catch (err: any) {
+      return `Error fetching timezone ${generateErrorMessage(err)}`;
+    }
   }
 );
 

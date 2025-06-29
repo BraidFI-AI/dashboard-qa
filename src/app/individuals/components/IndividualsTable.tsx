@@ -8,7 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter, useSearchParams } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
 import { GridEventListener } from "@mui/x-data-grid";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import ErrorPage from "@/core/components/error_page";
 import MyLinkText from "@/core/components/Text/LinkText";
 import LabelBox from "@/core/components/label_box";

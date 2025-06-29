@@ -9,7 +9,7 @@ import {
 } from "@mui/x-data-grid-pro";
 import { useSearchParams } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import Link from "next/link";
 import ErrorPage from "@/core/components/error_page";
 import LabelBox from "@/core/components/label_box";
@@ -22,7 +22,7 @@ import { Compliance314ALog } from "@/core/api/ApiTypes";
 import { useForm } from "react-hook-form";
 import { Moment } from "moment";
 import { SubmitHandler } from "react-hook-form";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import moment from "moment";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
 import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
@@ -57,8 +57,8 @@ const CheckLogTable = () => {
 
     dispatch(
       fetch314ALog({
-        startDateTime: momentToPSTString(data.startDateTime, true),
-        endDateTime: momentToPSTString(data.endDateTime, false),
+        startDateTime: momentToTimeZoneString(data.startDateTime, true),
+        endDateTime: momentToTimeZoneString(data.endDateTime, false),
       })
     ).then((d: any) => {
       setSubmitting(false);
@@ -140,11 +140,14 @@ const CheckLogTable = () => {
             setLogs("loading");
             dispatch(
               fetch314ALog({
-                startDateTime: momentToPSTString(
+                startDateTime: momentToTimeZoneString(
                   getValues("startDateTime"),
                   true
                 ),
-                endDateTime: momentToPSTString(getValues("endDateTime"), false),
+                endDateTime: momentToTimeZoneString(
+                  getValues("endDateTime"),
+                  false
+                ),
               })
             ).then((res: any) => {
               setLogs(res.payload);

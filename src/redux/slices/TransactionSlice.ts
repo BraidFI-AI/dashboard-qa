@@ -9,7 +9,7 @@ import { isEqual } from "lodash";
 import AccountRepo from "@/core/repos/AccountRepo";
 import IndividualRepo from "@/core/repos/IndividualRepo";
 import BusinessRepo from "@/core/repos/BusinessRepo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 
 const apiClient = ApiClient.getInstance();
 const transactionRepo: TransactionRepo = new TransactionRepo(apiClient);
@@ -134,20 +134,23 @@ export const fetchTransactions = createAsyncThunk(
       if (data.criteria.beginDate) {
         data.criteria = {
           ...data.criteria,
-          beginDate: momentToPSTString(moment(data.criteria.beginDate), true),
+          beginDate: momentToTimeZoneString(
+            moment(data.criteria.beginDate),
+            true
+          ),
         };
       }
       if (data.criteria.endDate) {
         data.criteria = {
           ...data.criteria,
-          endDate: momentToPSTString(moment(data.criteria.endDate), false),
+          endDate: momentToTimeZoneString(moment(data.criteria.endDate), false),
         };
       }
 
       if (data.criteria.postDateStart) {
         data.criteria = {
           ...data.criteria,
-          postDateStart: momentToPSTString(
+          postDateStart: momentToTimeZoneString(
             moment(data.criteria.postDateStart),
             true
           ),
@@ -156,7 +159,7 @@ export const fetchTransactions = createAsyncThunk(
       if (data.criteria.postDateEnd) {
         data.criteria = {
           ...data.criteria,
-          postDateEnd: momentToPSTString(
+          postDateEnd: momentToTimeZoneString(
             moment(data.criteria.postDateEnd),
             false
           ),

@@ -12,7 +12,7 @@ import { setTitle } from "@/redux/slices/AppSlice";
 import { fetchBusiness } from "@/redux/slices/BusinessSlice";
 import { GridEventListener } from "@mui/x-data-grid";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { fetchAccount } from "@/redux/slices/AccountSlice";
 import MyLinkText from "@/core/components/Text/LinkText";
 import toDollarFormat from "@/core/utils/toDollarFormat";

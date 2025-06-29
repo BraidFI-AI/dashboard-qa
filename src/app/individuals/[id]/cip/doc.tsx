@@ -4,7 +4,7 @@ import { AlertDocument } from "@/core/api/ApiTypes";
 import Image from "next/image";
 import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";

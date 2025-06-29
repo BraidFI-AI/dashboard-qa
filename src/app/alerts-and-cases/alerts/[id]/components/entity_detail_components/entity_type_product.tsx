@@ -5,7 +5,7 @@ import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE, boxStyle } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { useSelector } from "react-redux";
 

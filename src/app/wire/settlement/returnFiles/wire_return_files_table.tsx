@@ -15,7 +15,7 @@ import {
   approveWireReturnSettlement,
   downloadWireReturnFile,
 } from "@/redux/slices/wire_settlement_slice";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 
 const WireReturnFilesTable = () => {

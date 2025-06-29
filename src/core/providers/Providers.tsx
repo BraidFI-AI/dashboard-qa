@@ -13,32 +13,18 @@ import { Authenticator, View } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
 import amplifyConfiguration from "../../amplifyconfiguration.json";
-import Image from "next/image";
 import AuthProvider from "./AuthProvider";
 import DataProviders from "./DataProviders";
-import dayjs from "dayjs";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import moment from "moment-timezone";
-import { APP_TIMEZONE } from "../constants";
 import IconButton from "@mui/material/IconButton";
 import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
 import { LicenseInfo } from "@mui/x-license";
 import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
 import { sessionStorage } from "aws-amplify/utils";
 import ClientLogo from "../components/client_logo";
-import MyText from "../components/Text/Text";
-import BraidLogoBlue from "../svgs/braid_logo_blue";
 import PoweredByBraid from "../components/powered_by_braid";
 import { CDNProvider } from "./cdn_provider";
-
-/// setting default timezone to PACIFIC timezone
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault(APP_TIMEZONE);
-
-moment.tz.setDefault(APP_TIMEZONE);
+import TimezoneProvider from "./timezone_provider";
 
 interface ProvidersProps {
   children: any;
@@ -92,31 +78,33 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
             }}
           >
             <Provider store={store}>
-              <DataProviders>
-                <AuthProvider>
-                  <SnackbarProvider
-                    hideIconVariant
-                    maxSnack={7}
-                    autoHideDuration={2000}
-                    action={(snackbarId) => (
-                      <IconButton
-                        className="text-white"
-                        onClick={() => closeSnackbar(snackbarId)}
-                      >
-                        <CloseRoundedIcon />
-                      </IconButton>
-                    )}
-                  >
-                    {/* <AuthProvider> */}
-                    {pathname === "/login" ? (
-                      children
-                    ) : (
-                      <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
-                    )}
-                    {/* </AuthProvider> */}
-                  </SnackbarProvider>
-                </AuthProvider>
-              </DataProviders>
+              <TimezoneProvider>
+                <DataProviders>
+                  <AuthProvider>
+                    <SnackbarProvider
+                      hideIconVariant
+                      maxSnack={7}
+                      autoHideDuration={2000}
+                      action={(snackbarId) => (
+                        <IconButton
+                          className="text-white"
+                          onClick={() => closeSnackbar(snackbarId)}
+                        >
+                          <CloseRoundedIcon />
+                        </IconButton>
+                      )}
+                    >
+                      {/* <AuthProvider> */}
+                      {pathname === "/login" ? (
+                        children
+                      ) : (
+                        <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
+                      )}
+                      {/* </AuthProvider> */}
+                    </SnackbarProvider>
+                  </AuthProvider>
+                </DataProviders>
+              </TimezoneProvider>
             </Provider>
           </Authenticator>
         </div>

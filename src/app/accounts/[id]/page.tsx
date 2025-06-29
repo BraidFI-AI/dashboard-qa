@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import MyText from "@/core/components/Text/Text";
 import ItemRow from "@/core/components/Text/ItemRow";
-import timestampToDate from "@/core/utils/timestampToDate";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -30,6 +29,7 @@ import {
   DEVELOPER_ROLE,
 } from "@/core/constants";
 import ErrorPage from "@/core/components/error_page";
+import { timestampToDate } from "@/core/utils/date_time_util";
 
 const AccountPage = () => {
   const params = useParams();

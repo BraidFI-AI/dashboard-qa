@@ -14,11 +14,14 @@ import {
 import { PaginationStateType, paginationPageSize } from "@/core/constants";
 import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
-import { generateErrorMessage } from "@/core/utils/exception_utils";
-import timestampToDate, {
+import {
   formatUnixTimestamp,
-} from "@/core/utils/timestampToDate";
+  momentToTimeZoneString,
+  momentToUTCString,
+  timestampToDate,
+} from "@/core/utils/date_time_util";
+import { generateErrorMessage } from "@/core/utils/exception_utils";
+
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
@@ -126,8 +129,8 @@ export const fetchProductsTransactionVolume = createAsyncThunk(
       const startDate = endDate.clone().subtract(1, inp.duration);
 
       let data = await productRepo.fetchProductTransactionVolume(
-        momentToPSTString(startDate, true).replace("-08:00", "Z"),
-        momentToPSTString(endDate, false).replace("-08:00", "Z"),
+        momentToUTCString(startDate, true),
+        momentToUTCString(endDate, false),
         inp.product === "All" ? undefined : inp.product
       );
 
@@ -232,8 +235,8 @@ export const fetchDailyProductBalanceData = createAsyncThunk(
         tenant_id?: string | null;
         value?: number | null;
       }[] = await productRepo.fetchRootDailyBalanceFromMetrics(
-        momentToPSTString(moment().subtract(1, "month"), true),
-        momentToPSTString(moment(), false)
+        momentToTimeZoneString(moment().subtract(9, "days"), true),
+        momentToTimeZoneString(moment(), false)
       );
 
       // sort by created_at in ascending order
@@ -253,6 +256,13 @@ export const fetchDailyProductBalanceData = createAsyncThunk(
           hover: timestampToDate(d.created_at ?? 0, true),
           value: d.value ?? 0,
         });
+      });
+
+      // Filter to keep only data from the last 90 days
+      const ninetyDaysAgoTimestamp = moment().subtract(90, "days").unix();
+      chartData = chartData.filter((d) => {
+        const recordTimestamp = moment(d.hover).unix();
+        return recordTimestamp >= ninetyDaysAgoTimestamp;
       });
 
       console.log("root metric data:", chartData);

@@ -14,9 +14,9 @@ import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlle
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { fetchWireReturnFiles } from "@/redux/slices/wire_settlement_slice";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 
 const WireReturnFilesPage = () => {
   const dispatch = useAppDispatch();
@@ -36,8 +36,8 @@ const WireReturnFilesPage = () => {
     endDate?: string;
   }>({
     defaultValues: {
-      startDate: momentToPSTString(moment().subtract(5, "day"), true),
-      endDate: momentToPSTString(moment(), false),
+      startDate: momentToTimeZoneString(moment().subtract(5, "day"), true),
+      endDate: momentToTimeZoneString(moment(), false),
     },
   });
   const onSubmit: SubmitHandler<{

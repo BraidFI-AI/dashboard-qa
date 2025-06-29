@@ -8,7 +8,7 @@ import { useAppDispatch } from "@/redux/store/store";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ItemRow from "@/core/components/Text/ItemRow";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { SubmitHandler, useForm } from "react-hook-form";
 import MyEditButton from "@/core/components/Button/MyEditButton";

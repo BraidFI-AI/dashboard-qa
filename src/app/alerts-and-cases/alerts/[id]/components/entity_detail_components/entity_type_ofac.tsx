@@ -6,7 +6,7 @@ import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { fetchCounterParty } from "@/redux/slices/CounterpartySlice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useRouter } from "next/navigation";

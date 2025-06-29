@@ -10,7 +10,7 @@ import MyText from "@/core/components/Text/Text";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import MyModal from "@/core/components/my_modal";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { fetchTransactionByPaymentId } from "@/redux/slices/TransactionSlice";
 import {
