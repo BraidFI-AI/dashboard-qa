@@ -3,7 +3,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import React from "react";
-import { APP_TIMEZONE } from "@/core/constants";
+import { useSelector } from "react-redux";
 
 type MyControlledDateTimePickerProps = {
   name: string;
@@ -39,7 +39,11 @@ const MyControlledDatePicker: React.FC<MyControlledDateTimePickerProps> = ({
   value,
   noDefault = false,
 }) => {
-  return (
+  const timezone = useSelector((state: any) => state.app.timezone);
+
+  return typeof timezone == "string" ? (
+    <></>
+  ) : (
     <Controller
       key={value}
       name={name}
@@ -57,7 +61,7 @@ const MyControlledDatePicker: React.FC<MyControlledDateTimePickerProps> = ({
                 // fontFamily: "AvenirNext LT Pro Regular",
               },
             }}
-            timezone={APP_TIMEZONE}
+            timezone={timezone.timezone}
             value={typeof value == "string" ? moment(value) : value}
             onChange={(event) => {
               onChange(event ? event : undefined);

@@ -3,8 +3,7 @@
 import { AlertNote } from "@/core/api/ApiTypes";
 import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
-
+import { timestampToDate } from "@/core/utils/date_time_util";
 type AlertNoteProps = {
   note: AlertNote;
 };

@@ -14,7 +14,7 @@ import Divider from "@mui/material/Divider";
 import MyText from "@/core/components/Text/Text";
 import ItemRow from "@/core/components/Text/ItemRow";
 import { useParams, useSearchParams } from "next/navigation";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { fetchProgram } from "@/redux/slices/ProgramSlice";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 

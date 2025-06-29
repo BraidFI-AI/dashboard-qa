@@ -349,9 +349,9 @@ const StatementsPage = () => {
         </div> */}
         <div className="pr-6">
           <div className="invisible">
-            <MyText size="sm">PST</MyText>
+            <MyText size="sm">{moment().format("z")}</MyText>
           </div>
-          <MyText size="sm">PST</MyText>
+          <MyText size="sm">{moment().format("z")}</MyText>
         </div>
         <div className="pr-2">
           <MyText size="sm">End Date</MyText>
@@ -400,9 +400,9 @@ const StatementsPage = () => {
         </div> */}
         <div>
           <div className="invisible">
-            <MyText size="sm">PST</MyText>
+            <MyText size="sm">{moment().format("z")}</MyText>
           </div>
-          <MyText size="sm">PST</MyText>
+          <MyText size="sm">{moment().format("z")}</MyText>
         </div>
       </div>
       <div className="w-fit">
@@ -451,10 +451,13 @@ const StatementsPage = () => {
           <div className="mt-4 flex flex-row w-[500px]">
             <ItemRowHorizontal
               title="Starting"
-              value={statement.starting ?? ""}
+              value={statement.starting?.replace("T", " ") ?? ""}
             />
             <div className="pr-2" />
-            <ItemRowHorizontal title="Ending" value={statement.ending ?? ""} />
+            <ItemRowHorizontal
+              title="Ending"
+              value={statement.ending?.replace("T", " ") ?? ""}
+            />
           </div>
           <div className="mt-4 flex flex-row w-[500px]">
             <ItemRowHorizontal

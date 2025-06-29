@@ -7,7 +7,7 @@ import {
 } from "@/core/constants";
 import ACHRepo from "@/core/repos/ACHRepo";
 import ProductRepo from "@/core/repos/ProductRepo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Moment } from "moment";
@@ -95,8 +95,8 @@ export const fetchReturnRate = createAsyncThunk(
   }) => {
     try {
       const returns = await achRepo.fetchReturnRate(
-        momentToPSTString(data.startDate, true),
-        momentToPSTString(data.endDate, false),
+        momentToTimeZoneString(data.startDate, true),
+        momentToTimeZoneString(data.endDate, false),
         data.method
       );
 

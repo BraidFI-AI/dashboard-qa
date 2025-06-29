@@ -12,7 +12,7 @@ import MyCircularProgressIndicator from "../../circular_progress_indicator";
 import MyText from "../../Text/Text";
 import ItemRow from "../../Text/ItemRow";
 import toDollarFormat from "@/core/utils/toDollarFormat";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { Account, Counterparty, Product, Program } from "@/core/api/ApiTypes";
 import { fetchProduct } from "@/redux/slices/ProductSlice";
 import { fetchAccount } from "@/redux/slices/AccountSlice";

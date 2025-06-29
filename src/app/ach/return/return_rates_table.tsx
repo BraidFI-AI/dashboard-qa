@@ -4,7 +4,7 @@ import { ReturnRate } from "@/core/api/ApiTypes";
 import MyTable from "@/core/components/Table/MyTable";
 import MyLinkText from "@/core/components/Text/LinkText";
 import { toPercentage } from "@/core/utils/formatting_util";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 
 interface ReturnRatesTableProps {

@@ -25,7 +25,7 @@ import MyText from "../../Text/Text";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MyModal from "../../my_modal";
 import ItemRow from "../../Text/ItemRow";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import LabelBox from "../../label_box";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import MyRedButton from "../../Button/MyRedButton";

@@ -5,7 +5,7 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import MyTable from "@/core/components/Table/MyTable";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { setTitle } from "@/redux/slices/AppSlice";
 import {
   fetchWireTransactionStatus,

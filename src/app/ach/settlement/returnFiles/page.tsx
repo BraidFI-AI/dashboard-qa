@@ -15,7 +15,7 @@ import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlle
 import moment from "moment";
 import { enqueueSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 
 const ACH = () => {
@@ -34,8 +34,8 @@ const ACH = () => {
     endDate?: string;
   }>({
     defaultValues: {
-      startDate: momentToPSTString(moment().subtract(1, "day"), true),
-      endDate: momentToPSTString(moment(), false),
+      startDate: momentToTimeZoneString(moment().subtract(1, "day"), true),
+      endDate: momentToTimeZoneString(moment(), false),
     },
   });
   const onSubmit: SubmitHandler<{

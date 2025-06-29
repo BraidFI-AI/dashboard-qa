@@ -1,7 +1,7 @@
 import ApiClient from "@/core/api/ApiClient";
 import { ACHSettlementHistory } from "@/core/api/ApiTypes";
 import ACHRepo from "@/core/repos/ACHRepo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment, { Moment } from "moment";
@@ -217,8 +217,8 @@ export const fetchACHSettlementHistory = createAsyncThunk(
         data?.date?.startDate != undefined &&
         data?.date?.endDate != undefined
       ) {
-        sd = momentToPSTString(moment(data.date.startDate), true);
-        ed = momentToPSTString(moment(data.date.endDate), false);
+        sd = momentToTimeZoneString(moment(data.date.startDate), true);
+        ed = momentToTimeZoneString(moment(data.date.endDate), false);
       }
 
       const achSettlementHistory = await achRepo.fetchACHSettlementHistory(
@@ -250,8 +250,8 @@ export const fetchACHReturnFiles = createAsyncThunk(
         data?.date?.startDate != undefined &&
         data?.date?.endDate != undefined
       ) {
-        sd = momentToPSTString(moment(data.date.startDate), true);
-        ed = momentToPSTString(moment(data.date.endDate), false);
+        sd = momentToTimeZoneString(moment(data.date.startDate), true);
+        ed = momentToTimeZoneString(moment(data.date.endDate), false);
       }
 
       const achSettlementHistory = await achRepo.fetchACHReturnFiles(sd, ed);

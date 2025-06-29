@@ -34,7 +34,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MyTable from "@/core/components/Table/MyTable";
 import { GridCellParams, MuiEvent } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 
 const WireSettlement = () => {
   const dispatch = useAppDispatch();
@@ -101,8 +101,8 @@ const WireSettlement = () => {
     endDate: Moment;
   }>({
     defaultValues: {
-      startDate: momentToPSTString(moment().subtract(5, "day"), true),
-      endDate: momentToPSTString(moment(), false),
+      startDate: momentToTimeZoneString(moment().subtract(5, "day"), true),
+      endDate: momentToTimeZoneString(moment(), false),
     },
   });
   const onSubmit: SubmitHandler<{
@@ -203,7 +203,7 @@ const WireSettlement = () => {
                   },
                 }}
                 customOnChange={(val: any) => {
-                  dispatch(setWireStartDate(momentToPSTString(val, true)));
+                  dispatch(setWireStartDate(momentToTimeZoneString(val, true)));
                 }}
                 value=""
               ></MyControlledDatePicker>
@@ -240,7 +240,7 @@ const WireSettlement = () => {
                   },
                 }}
                 customOnChange={(val: any) => {
-                  dispatch(setWireEndDate(momentToPSTString(val, false)));
+                  dispatch(setWireEndDate(momentToTimeZoneString(val, false)));
                 }}
                 value=""
               ></MyControlledDatePicker>

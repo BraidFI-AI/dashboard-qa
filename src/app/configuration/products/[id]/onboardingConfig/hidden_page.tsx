@@ -8,7 +8,7 @@ import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import MyTextField from "@/core/components/TextField/MyTextField";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { setTitle } from "@/redux/slices/AppSlice";
 import {
   createOnboardingConfig,

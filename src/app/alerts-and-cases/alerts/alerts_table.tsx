@@ -12,7 +12,7 @@ import {
   PaginationStateType,
 } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import {
   fetchAlerts,
   setAlertsPaginationPageNumber,

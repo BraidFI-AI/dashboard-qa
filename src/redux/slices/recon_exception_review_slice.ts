@@ -5,7 +5,7 @@ import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment, { Moment } from "moment";
 import ReconExceptionReviewRepo from "@/core/repos/recon_exception_review_repo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 
 const apiClient = ApiClient.getInstance();
 const reconExceptionReviewRepo = new ReconExceptionReviewRepo(apiClient);
@@ -120,8 +120,8 @@ export const fetchTransactionsPaginated = createAsyncThunk(
             ? 0
             : thunkApi.getState().reconExceptionReview.transactionsPagination
                 .pageNumber,
-          momentToPSTString(data.beginDate, true),
-          momentToPSTString(data.endDate, false),
+          momentToTimeZoneString(data.beginDate, true),
+          momentToTimeZoneString(data.endDate, false),
           data.transactionType
         );
       console.log("transactions", transactions);
@@ -160,8 +160,8 @@ export const fetchSettlementsPaginated = createAsyncThunk(
             ? 0
             : thunkApi.getState().reconExceptionReview.settlementsPagination
                 .pageNumber,
-          momentToPSTString(data.beginDate, true),
-          momentToPSTString(data.endDate, false),
+          momentToTimeZoneString(data.beginDate, true),
+          momentToTimeZoneString(data.endDate, false),
           data.transactionType
         );
       console.log("settlements", transactions);

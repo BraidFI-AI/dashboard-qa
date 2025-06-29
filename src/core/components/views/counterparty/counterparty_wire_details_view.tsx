@@ -8,8 +8,7 @@ import MyExpandableButton from "@/core/components/Button/MyExpandableButton";
 import MyEditButton from "@/core/components/Button/MyEditButton";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { useState } from "react";
-import timestampToDate from "@/core/utils/timestampToDate";
-
+import { timestampToDate } from "@/core/utils/date_time_util";
 type CounterpartyWireDetailsViewProps = {
   counterparty: Counterparty;
   control: any;

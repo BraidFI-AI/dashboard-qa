@@ -7,8 +7,8 @@ import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyLinkText from "@/core/components/Text/LinkText";
 import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
 import toDollarFormat from "@/core/utils/toDollarFormat";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { useState } from "react";
 
 type ACHReturnProcessingComponentProps = {

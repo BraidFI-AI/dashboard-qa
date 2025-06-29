@@ -12,7 +12,6 @@ import {
 } from "@/redux/slices/AccountSlice";
 import { useRouter } from "next/navigation";
 import MyTable from "@/core/components/Table/MyTable";
-import timestampToDate from "@/core/utils/timestampToDate";
 import ErrorPage from "@/core/components/error_page";
 import Link from "next/link";
 import MyText from "@/core/components/Text/Text";
@@ -20,6 +19,7 @@ import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import MyLinkText from "@/core/components/Text/LinkText";
 import LabelBox from "@/core/components/label_box";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
+import { timestampToDate } from "@/core/utils/date_time_util";
 
 const AccountsTable = () => {
   const router = useRouter();

@@ -2,7 +2,7 @@
 
 import { IndividualDocumentWithLink } from "@/core/api/ApiTypes";
 import Box from "@mui/material/Box";
-import timestampToDate from "@/core/utils/timestampToDate";
+import { timestampToDate } from "@/core/utils/date_time_util";
 import { useAppDispatch } from "@/redux/store/store";
 import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";

@@ -5,8 +5,7 @@ import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
-import timestampToDate from "@/core/utils/timestampToDate";
-
+import { timestampToDate } from "@/core/utils/date_time_util";
 export default function AchDetails({
   transaction,
 }: {

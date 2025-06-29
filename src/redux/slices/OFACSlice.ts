@@ -2,7 +2,7 @@ import ApiClient from "@/core/api/ApiClient";
 import { OFAC, OFACSearch } from "@/core/api/ApiTypes";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import OFACRepo from "@/core/repos/OFACRepo";
-import { momentToPSTString } from "@/core/utils/dateTimeUtil";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
@@ -71,13 +71,16 @@ export const fetchOFACHits = createAsyncThunk(
       if (data.filters?.startDate) {
         data.filters = {
           ...data.filters,
-          startDate: momentToPSTString(moment(data.filters.startDate), true),
+          startDate: momentToTimeZoneString(
+            moment(data.filters.startDate),
+            true
+          ),
         };
       }
       if (data.filters?.endDate) {
         data.filters = {
           ...data.filters,
-          endDate: momentToPSTString(moment(data.filters.endDate), false),
+          endDate: momentToTimeZoneString(moment(data.filters.endDate), false),
         };
       }
 

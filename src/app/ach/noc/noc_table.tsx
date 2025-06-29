@@ -7,7 +7,6 @@ import MyCircularProgressIndicator from "@/core/components/circular_progress_ind
 import ErrorPage from "@/core/components/error_page";
 import ACHModelView from "@/core/components/views/ach/ach_modal_view";
 import linkToCounterparty from "@/core/utils/link_to_counterparty";
-import timestampToDate from "@/core/utils/timestampToDate";
 import { NocType, fetchNoc } from "@/redux/slices/noc_slice";
 import { useAppDispatch } from "@/redux/store/store";
 import { GridCellParams, GridEventListener, MuiEvent } from "@mui/x-data-grid";
@@ -20,6 +19,7 @@ import MyText from "@/core/components/Text/Text";
 import { PaginationStateType, paginationPageSize } from "@/core/constants";
 import { setPaginationPageNumber } from "@/redux/slices/TransactionSlice";
 import { v4 as uuidv4 } from "uuid";
+import { timestampToDate } from "@/core/utils/date_time_util";
 
 const NocTable = () => {
   const router = useRouter();

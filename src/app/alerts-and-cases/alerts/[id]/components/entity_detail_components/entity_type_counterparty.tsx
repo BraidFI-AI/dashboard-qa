@@ -5,8 +5,7 @@ import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
 import CounterPartyView from "@/core/components/views/counterparty/counterparty_view";
 import { boxStyle } from "@/core/constants";
-import timestampToDate from "@/core/utils/timestampToDate";
-
+import { timestampToDate } from "@/core/utils/date_time_util";
 type EntityTypeCounterpartyComponentProps = {
   alert: Alert;
   context: Counterparty;
