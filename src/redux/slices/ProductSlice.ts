@@ -232,7 +232,7 @@ export const fetchDailyProductBalanceData = createAsyncThunk(
         tenant_id?: string | null;
         value?: number | null;
       }[] = await productRepo.fetchRootDailyBalanceFromMetrics(
-        momentToPSTString(moment().subtract(1, "month"), true),
+        momentToPSTString(moment().subtract(9, "days"), true),
         momentToPSTString(moment(), false)
       );
 
@@ -253,6 +253,13 @@ export const fetchDailyProductBalanceData = createAsyncThunk(
           hover: timestampToDate(d.created_at ?? 0, true),
           value: d.value ?? 0,
         });
+      });
+
+      // Filter to keep only data from the last 90 days
+      const ninetyDaysAgoTimestamp = moment().subtract(90, "days").unix();
+      chartData = chartData.filter((d) => {
+        const recordTimestamp = moment(d.hover).unix();
+        return recordTimestamp >= ninetyDaysAgoTimestamp;
       });
 
       console.log("root metric data:", chartData);

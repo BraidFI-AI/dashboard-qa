@@ -49,7 +49,7 @@ const BarChart: React.FC<BarChartProps> = ({
         .domain([0, d3.max(data, (d) => +d.value) as number])
         .range([height, 0]);
 
-      // X-axis showing only start of every month
+      // X-axis showing first entry and every 6th entry after
       svg
         .append("g")
         .attr("class", "x-axis")
@@ -58,9 +58,8 @@ const BarChart: React.FC<BarChartProps> = ({
           d3
             .axisBottom(x)
             .tickFormat((d, i) => {
-              // Parse the date string to check if it's the first day of a month
-              const date = new Date(d);
-              return date.getDate() === 1 ? d : "";
+              // Show first entry (index 0) and every 6th entry after
+              return i === 0 || i % 6 === 0 ? d : "";
             })
             .tickSize(0)
         )
