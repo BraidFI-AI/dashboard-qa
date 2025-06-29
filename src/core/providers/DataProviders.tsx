@@ -18,6 +18,7 @@ import {
   ADMIN_OPS_ROLE,
   ADMIN_READONLY_ROLE,
   ADMIN_ROLE,
+  ADMIN_COMPLIANCE_ROLE,
   CUSTOMER_ROLE,
   DEVELOPER_OPS_ROLE,
   DEVELOPER_READONLY_ROLE,
@@ -47,6 +48,7 @@ const DataProviders = (props: any) => {
       console.log(tenantId);
       let userType = null;
 
+      // TODO -- make this generic
       if (groups?.includes("admins") || groups?.includes("admin-admin")) {
         userType = ADMIN_ROLE;
       } else if (groups?.includes("admin-ops")) {
@@ -64,6 +66,8 @@ const DataProviders = (props: any) => {
         userType = ADMIN_READONLY_ROLE;
       } else if (groups?.includes("developer-readonly")) {
         userType = DEVELOPER_READONLY_ROLE;
+      } else if (groups?.includes("admin-compliance")) {
+        userType = ADMIN_COMPLIANCE_ROLE;
       }
 
       dispatch(setUserType(userType));

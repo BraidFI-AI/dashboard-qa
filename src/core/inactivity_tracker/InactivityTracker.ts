@@ -1,3 +1,5 @@
+import { INACTIVITY_THRESHOLD } from "../constants";
+
 export class InactivityTracker {
   static lastRequestTime: number = Date.now();
 
@@ -10,7 +12,7 @@ export class InactivityTracker {
   }
 
   static isInactive() {
-    const threshold = 15 * 60 * 1000; // 15 minutes
+    const threshold = INACTIVITY_THRESHOLD;
     return InactivityTracker.getInactiveTime() >= threshold;
   }
 }

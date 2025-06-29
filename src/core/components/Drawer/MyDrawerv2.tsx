@@ -57,6 +57,7 @@ import {
   ADMIN_OPS_ROLE,
   ADMIN_READONLY_ROLE,
   ADMIN_ROLE,
+  ADMIN_COMPLIANCE_ROLE,
   DEVELOPER_OPS_ROLE,
   DEVELOPER_READONLY_ROLE,
   DEVELOPER_ROLE,
@@ -273,7 +274,8 @@ export default function PersistentDrawerLeft(props: any) {
     );
   } else if (
     userType == ADMIN_READONLY_ROLE ||
-    userType == DEVELOPER_READONLY_ROLE
+    userType == DEVELOPER_READONLY_ROLE ||
+    userType == ADMIN_COMPLIANCE_ROLE
   ) {
     settingsOptions = (
       <MyExpandableListItem
