@@ -117,8 +117,8 @@ export const fetchAccountStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchAccountStatement(
-        moment(data.start).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
-        moment(data.end).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
+        momentToUTCString(moment(data.start), true),
+        momentToUTCString(moment(data.end), false),
         data.accountId
       );
       return {
