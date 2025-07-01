@@ -29,6 +29,7 @@ import CounterpartyACHDetailsView from "./counterparty_ach_details_view";
 import CounterpartyWireDetailsView from "./counterparty_wire_details_view";
 import { enqueueSnackbar } from "notistack";
 import ErrorPage from "../../error_page";
+import IndividualCounterpartyDetails from "./individual_counterparty_details";
 
 interface CounterPartyViewProps {
   id: string;
@@ -350,6 +351,9 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
       const blockedResults = counterparty?.blockedResults;
 
       const updatedCounterparty = {
+        idNumber: counterparty.idNumber,
+        idType: counterparty.idType,
+        dateOfBirth: counterparty.dateOfBirth,
         id: isEditingDetails ? data.id : counterparty.id,
         name: isEditingDetails ? data.name : counterparty.name,
         type: isEditingDetails ? data.type : counterparty.type,
@@ -437,7 +441,15 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <div
             className={`${
-              editable ? "w-[650px]" : "w-[680px]"
+              counterparty.idNumber &&
+              counterparty.idType &&
+              counterparty.dateOfBirth
+                ? editable
+                  ? "w-[950px]"
+                  : "w-[980px]"
+                : editable
+                ? "w-[650px]"
+                : "w-[680px]"
             } flex flex-row justify-between`}
           >
             <div className="flex flex-col w-[300px]">
@@ -452,6 +464,13 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
                 editable={editable}
               />
             </div>
+            {counterparty.idNumber &&
+              counterparty.idType &&
+              counterparty.dateOfBirth && (
+                <div className="flex flex-col w-[300px]">
+                  <IndividualCounterpartyDetails counterparty={counterparty} />
+                </div>
+              )}
             <div className="flex flex-col w-[300px]">
               <CounterpartyBraidDetailsView
                 counterparty={counterparty}
