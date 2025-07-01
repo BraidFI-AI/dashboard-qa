@@ -916,6 +916,9 @@ export interface Counterparty {
   wire: CounterpartyWire;
   braid: CounterpartyBraid;
   ofacId: number | null;
+  idNumber?: string | null;
+  idType?: string | null;
+  dateOfBirth?: number[] | null;
 }
 
 export interface CounterpartyBlockedResults {
