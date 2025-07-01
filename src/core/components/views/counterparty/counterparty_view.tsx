@@ -441,8 +441,8 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <div
             className={`${
-              counterparty.idNumber &&
-              counterparty.idType &&
+              counterparty.idNumber ||
+              counterparty.idType ||
               counterparty.dateOfBirth
                 ? editable
                   ? "w-[950px]"
@@ -464,13 +464,13 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
                 editable={editable}
               />
             </div>
-            {counterparty.idNumber &&
-              counterparty.idType &&
-              counterparty.dateOfBirth && (
+            {counterparty.idNumber ||
+              counterparty.idType ||
+              (counterparty.dateOfBirth && (
                 <div className="flex flex-col w-[300px]">
                   <IndividualCounterpartyDetails counterparty={counterparty} />
                 </div>
-              )}
+              ))}
             <div className="flex flex-col w-[300px]">
               <CounterpartyBraidDetailsView
                 counterparty={counterparty}
