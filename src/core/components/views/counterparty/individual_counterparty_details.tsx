@@ -56,7 +56,11 @@ const IndividualCounterpartyDetails = ({
       <ItemRow title="ID Type" value={counterparty.idType ?? ""} />
       <ItemRow
         title="Date of Birth"
-        value={`${counterparty.dateOfBirth?.[0]}-${counterparty.dateOfBirth?.[1]}-${counterparty.dateOfBirth?.[2]}`}
+        value={`${
+          counterparty.dateOfBirth != null
+            ? `${counterparty.dateOfBirth?.[0]}-${counterparty.dateOfBirth?.[1]}-${counterparty.dateOfBirth?.[2]}`
+            : ""
+        }`}
       />
     </>
   );
