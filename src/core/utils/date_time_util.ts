@@ -43,7 +43,7 @@ const timestampToDate = (
   format: string = "YYYY-MM-DD"
 ): string => {
   // Handle null/undefined/NaN values
-  if (date == null || isNaN(date)) {
+  if ((date as any) == "" || date == null || isNaN(date)) {
     return "-";
   }
 
