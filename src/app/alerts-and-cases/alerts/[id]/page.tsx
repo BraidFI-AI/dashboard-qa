@@ -186,6 +186,8 @@ const AlertsPage = () => {
             ).then((e: any) => {
               setContext(e.payload);
             });
+          } else {
+            setContext("NONE");
           }
 
           if (data.payload.caseId != null) {
@@ -288,8 +290,10 @@ const AlertsPage = () => {
               entity={entityType}
             />
           </div>
-          <div className="h-6" />
-          {context == "loading" ? (
+          {context != "NONE" && <div className="h-6" />}
+          {context == "NONE" ? (
+            <></>
+          ) : context == "loading" ? (
             <MyCircularProgressIndicator />
           ) : typeof context == "string" ? (
             <ErrorPage
@@ -385,8 +389,16 @@ const AlertsPage = () => {
         </div>
         <div
           style={{
-            height: columnHeight ? `${columnHeight + 3}px` : "auto",
-            maxHeight: columnHeight ? `${columnHeight + 3}px` : "none",
+            height: columnHeight
+              ? context == "NONE"
+                ? columnHeight
+                : `${columnHeight + 3}px`
+              : "auto",
+            maxHeight: columnHeight
+              ? context == "NONE"
+                ? columnHeight
+                : `${columnHeight + 3}px`
+              : "none",
           }}
         >
           <AlertTimelineComponent alert={alert} />
