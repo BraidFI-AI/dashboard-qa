@@ -1033,6 +1033,19 @@ export interface CounterpartyWire {
     postalCode?: string | null;
     countryCode?: string | null;
   };
+  originatorAccountNumber?: string | null;
+  originatorFiName?: string | null;
+  originatorFiIdType?: string | null;
+  originatorFiIdNumber?: string | null;
+  originatorFiAddress?: {
+    type?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    countryCode?: string | null;
+  };
   intermediaryFIIdNumber?: string | null;
   intermediaryFIIdType?: string | null;
   intermediaryFIName?: string | null;
