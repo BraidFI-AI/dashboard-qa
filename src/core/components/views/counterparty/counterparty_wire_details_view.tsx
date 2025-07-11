@@ -696,6 +696,378 @@ const CounterpartyWireDetailsView: React.FC<
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
+                name="wire.originatorAccountNumber"
+                displayName="Originator FI Account Number"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorAccountNumber
+                    ? counterparty.wire?.originatorAccountNumber
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator FI Account Number"
+                value={counterparty.wire?.originatorAccountNumber ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiName"
+                displayName="Originator FI Name"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiName
+                    ? counterparty.wire?.originatorFiName
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator FI Name"
+                value={counterparty.wire?.originatorFiName ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiIdType"
+                displayName="Originator FI ID Type"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiIdType
+                    ? counterparty.wire?.originatorFiIdType
+                    : ""
+                }
+                submitting={false}
+                options={["ABA", "BIC"]}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator FI ID Type"
+                value={counterparty.wire?.originatorFiIdType ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiIdNumber"
+                displayName="Originator ID Number"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiIdNumber
+                    ? counterparty.wire?.originatorFiIdNumber
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator ID Number"
+                value={counterparty.wire?.originatorFiIdNumber ?? ""}
+              ></ItemRow>
+            )}
+            {editable && (
+              <>
+                <MyText size="md">Originator FI Address</MyText>
+                <div className="pb-4" />
+              </>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.state"
+                displayName="Originator State"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.state
+                    ? counterparty.wire?.originatorFiAddress?.state
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator State"
+                value={counterparty.wire?.originatorFiAddress?.state ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.city"
+                displayName="Originator City"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.city
+                    ? counterparty.wire?.originatorFiAddress?.city
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator City"
+                value={counterparty.wire?.originatorFiAddress?.city ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.line1"
+                displayName="Originator Street Address"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.line1
+                    ? counterparty.wire?.originatorFiAddress?.line1
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator Street Address"
+                value={counterparty.wire?.originatorFiAddress?.line1 ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.line2"
+                displayName="Originator Apt, Building etc"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.line2
+                    ? counterparty.wire?.originatorFiAddress?.line2
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator Apt, Building etc"
+                value={counterparty.wire?.originatorFiAddress?.line2 ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.postalCode"
+                displayName="Originator Postal Code"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.postalCode
+                    ? counterparty.wire?.originatorFiAddress?.postalCode
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator Postal Code"
+                value={counterparty.wire?.originatorFiAddress?.postalCode ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.countryCode"
+                displayName="Originator Country Code"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                        validate: (value: string, _: any) => {
+                          if (counterparty.wire?.type == "INTERNATIONAL") {
+                            const countryCodeRegex = /^[A-Z]{2}$/;
+                            if (!countryCodeRegex.test(value) || value == "") {
+                              return "Country code must be 2 uppercase letters";
+                            }
+                          }
+                        },
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.countryCode
+                    ? counterparty.wire?.originatorFiAddress?.countryCode
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator Country Code"
+                value={
+                  counterparty.wire?.originatorFiAddress?.countryCode ?? ""
+                }
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="wire.originatorFiAddress.type"
+                displayName="Originator FI Address Type"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required:
+                          counterparty.wire?.type == "INTERNATIONAL"
+                            ? true
+                            : false,
+                      }
+                }
+                value={
+                  counterparty.wire?.originatorFiAddress?.type
+                    ? counterparty.wire?.originatorFiAddress?.type
+                    : ""
+                }
+                options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                horizontal={!editable}
+                title="Originator FI Address Type"
+                value={counterparty.wire?.originatorFiAddress?.type ?? ""}
+              ></ItemRow>
+            )}
+            {editable ? (
+              <MyEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
                 name="wire.intermediaryFIName"
                 displayName="Intermediary FI Name"
                 control={control}
@@ -1013,7 +1385,6 @@ const CounterpartyWireDetailsView: React.FC<
               title="Created at"
               value={timestampToDate(counterparty?.wire?.createdAt)}
             ></ItemRow>
-
             <ItemRow
               horizontal={!editable}
               title="Updated at"

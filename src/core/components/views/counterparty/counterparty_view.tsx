@@ -208,6 +208,44 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
               ? (data?.wire as any).beneficiaryFIAddress?.type
               : counterparty?.wire?.beneficiaryFIAddress?.type,
           },
+
+          originatorFiIdType: isEditingWire
+            ? data?.wire?.originatorFiIdType
+            : counterparty?.wire?.originatorFiIdType,
+          originatorFiIdNumber: isEditingWire
+            ? data?.wire?.originatorFiIdNumber
+            : counterparty?.wire?.originatorFiIdNumber,
+          originatorFiName: isEditingWire
+            ? data?.wire?.originatorFiName
+            : counterparty?.wire?.originatorFiName,
+          originatorAccountNumber: isEditingWire
+            ? data?.wire?.originatorAccountNumber
+            : counterparty?.wire?.originatorAccountNumber,
+
+          originatorFiAddress: {
+            line1: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.line1
+              : counterparty?.wire?.originatorFiAddress?.line1,
+            line2: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.line2
+              : counterparty?.wire?.originatorFiAddress?.line2,
+            city: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.city
+              : counterparty?.wire?.originatorFiAddress?.city,
+            state: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.state
+              : counterparty?.wire?.originatorFiAddress?.state,
+            postalCode: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.postalCode
+              : counterparty?.wire?.originatorFiAddress?.postalCode,
+            countryCode: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.countryCode
+              : counterparty?.wire?.originatorFiAddress?.countryCode,
+            type: isEditingWire
+              ? (data?.wire as any).originatorFiAddress?.type
+              : counterparty?.wire?.originatorFiAddress?.type,
+          },
+
           intermediaryFIAddress: {
             line1: isEditingWire
               ? (data?.wire as any).intermediaryFIAddress?.line1
@@ -308,6 +346,25 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             wire?.beneficiaryFIAddress?.type == "")
         ) {
           wire.beneficiaryFIAddress = undefined;
+        }
+
+        if (
+          (wire?.originatorFiAddress?.city == null ||
+            wire?.originatorFiAddress?.city == "") &&
+          (wire?.originatorFiAddress?.countryCode == null ||
+            wire?.originatorFiAddress?.countryCode == "") &&
+          (wire?.originatorFiAddress?.line1 == null ||
+            wire?.originatorFiAddress?.line1 == "") &&
+          (wire?.originatorFiAddress?.line2 == null ||
+            wire?.originatorFiAddress?.line2 == "") &&
+          (wire?.originatorFiAddress?.postalCode == null ||
+            wire?.originatorFiAddress?.postalCode == "") &&
+          (wire?.originatorFiAddress?.state == null ||
+            wire?.originatorFiAddress?.state == "") &&
+          (wire?.originatorFiAddress?.type == null ||
+            wire?.originatorFiAddress?.type == "")
+        ) {
+          wire.originatorFiAddress = undefined;
         }
 
         for (const key in wire) {
