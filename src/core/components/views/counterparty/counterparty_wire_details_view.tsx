@@ -704,7 +704,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
