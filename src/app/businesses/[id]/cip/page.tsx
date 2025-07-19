@@ -155,9 +155,9 @@ const BusinessDetails = () => {
               </div>
             ) : (
               <div className="flex flex-row">
-                {tryParse(cipStatus.result) ? (
+                {typeof cipStatus.result == "object" ? (
                   <JSONTree
-                    data={JSON.parse(cipStatus.result)}
+                    data={cipStatus.result}
                     hideRoot
                     theme={{
                       base00: "#ffffff",
