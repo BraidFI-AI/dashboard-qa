@@ -19,7 +19,7 @@ const ViewDocument = () => {
   const [documnetUrl, setDocumnetUrl] = useState<string>("");
 
   useEffect(() => {
-    dispatch(setTitle("Invididual Customer"));
+    dispatch(setTitle("Individual Customer"));
 
     axios({
       method: "GET",
