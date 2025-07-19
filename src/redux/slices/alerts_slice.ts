@@ -2,8 +2,13 @@ import ApiClient from "@/core/api/ApiClient";
 import { Alert, AlertSearch } from "@/core/api/ApiTypes";
 import { paginationPageSize, PaginationStateType } from "@/core/constants";
 import AlertsRepo from "@/core/repos/alerts_repo";
+import {
+  momentToDateString,
+  momentToTimeZoneString,
+} from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 import { enqueueSnackbar } from "notistack";
 
 const apiClient = ApiClient.getInstance();
@@ -92,6 +97,19 @@ export const fetchAlerts = createAsyncThunk(
 
       if (data.filters.types != null && typeof data.filters.types == "string") {
         data.filters.types = [data.filters.types];
+      }
+
+      if (data.filters.startDate) {
+        data.filters = {
+          ...data.filters,
+          startDate: momentToDateString(moment(data.filters.startDate)),
+        };
+      }
+      if (data.filters.endDate) {
+        data.filters = {
+          ...data.filters,
+          endDate: momentToDateString(moment(data.filters.endDate)),
+        };
       }
 
       const alerts = await alertsRepo.fetchAlerts(

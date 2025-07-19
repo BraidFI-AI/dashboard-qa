@@ -1,5 +1,9 @@
 import moment, { Moment } from "moment";
 
+const momentToDateString = (date: Moment) => {
+  return date.format("YYYY-MM-DD");
+};
+
 const momentToTimeZoneString = (date: Moment, start: boolean) => {
   if (start) {
     const startOfDay = date
@@ -86,4 +90,5 @@ export {
   formatUnixTimestamp,
   timestampToDate,
   momentToUTCString,
+  momentToDateString,
 };
