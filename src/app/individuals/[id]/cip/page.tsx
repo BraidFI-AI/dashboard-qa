@@ -36,6 +36,8 @@ const IndividualDetails = () => {
 
   const [showEncryptedResult, setShowEncryptedResult] = useState(false);
 
+  console.log("decrypt::status", cipStatus);
+
   useEffect(() => {
     dispatch(fetchIndividual(parseInt((params.id as string) || "0"))).then(
       (d: any) => {
@@ -50,6 +52,7 @@ const IndividualDetails = () => {
       (cipStatus: any) => {
         if (cipStatus.payload.result != null) {
           dispatch(decrypt(cipStatus.payload.result)).then((d: any) => {
+            console.log("decrypt::", d.payload);
             if (typeof d.payload == "string") {
               setCipStatus({ ...cipStatus.payload, result: d.payload });
             } else {
@@ -160,9 +163,9 @@ const IndividualDetails = () => {
               </div>
             ) : (
               <div className="flex flex-row">
-                {tryParse(cipStatus.result) ? (
+                {typeof cipStatus.result == "object" ? (
                   <JSONTree
-                    data={JSON.parse(cipStatus.result)}
+                    data={cipStatus.result}
                     hideRoot
                     theme={{
                       base00: "#ffffff",

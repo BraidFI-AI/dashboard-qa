@@ -744,6 +744,11 @@ export interface AlertSearch {
   contextId?: string;
   types?: string[];
   statuses?: string[];
+  alertId?: string;
+  rfiStatus?: string;
+  assignee?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface OFACSearch {

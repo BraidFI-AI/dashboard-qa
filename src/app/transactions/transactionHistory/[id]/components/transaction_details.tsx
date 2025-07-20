@@ -252,17 +252,19 @@ export default function TransactionDetails({
               Alerts
             </MyText>
             <div>
-              {(transaction as any).alerts != null &&
-              (transaction as any).alerts.length > 0 ? (
-                (transaction as any).alerts.map((alert: any, index: number) => (
-                  <MyLinkText
-                    key={index}
-                    textProps={{ size: "sm" }}
-                    link={`/alerts-and-cases/alerts/${alert.id}`}
-                  >
-                    {alert.id}
-                  </MyLinkText>
-                ))
+              {(transaction as any).alertIds != null &&
+              (transaction as any).alertIds.length > 0 ? (
+                (transaction as any).alertIds.map(
+                  (alertId: any, index: number) => (
+                    <MyLinkText
+                      key={index}
+                      textProps={{ size: "sm" }}
+                      link={`/alerts-and-cases/alerts/${alertId}`}
+                    >
+                      {alertId}
+                    </MyLinkText>
+                  )
+                )
               ) : (
                 <></>
               )}

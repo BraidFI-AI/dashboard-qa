@@ -165,7 +165,7 @@ const CounterpartyBraidDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={

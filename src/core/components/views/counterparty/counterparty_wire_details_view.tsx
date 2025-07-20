@@ -114,7 +114,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
@@ -144,7 +144,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
@@ -204,7 +204,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
@@ -234,7 +234,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                         validate: (value: string, _: any) => {
                           const countryCodeRegex = /^[A-Z]{2}$/;
                           if (!countryCodeRegex.test(value) || value == "") {
@@ -270,7 +270,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
@@ -330,7 +330,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required: true,
+                        required: false,
                       }
                 }
                 value={
@@ -1406,7 +1406,7 @@ const CounterpartyWireDetailsView: React.FC<
                         submitting
                           ? { required: false }
                           : {
-                              required: true,
+                              required: false,
                             }
                       }
                       value={

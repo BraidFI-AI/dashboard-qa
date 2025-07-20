@@ -62,6 +62,26 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
       data.statuses = undefined;
     }
 
+    if (data.alertId == null || data.alertId == "") {
+      data.alertId = undefined;
+    }
+
+    if (data.rfiStatus == null || data.rfiStatus == "") {
+      data.rfiStatus = undefined;
+    }
+
+    if (data.assignee == null || data.assignee == "") {
+      data.assignee = undefined;
+    }
+
+    if (data.startDate == null || data.startDate == "") {
+      data.startDate = undefined;
+    }
+
+    if (data.endDate == null || data.endDate == "") {
+      data.endDate = undefined;
+    }
+
     let params: string = "?";
 
     for (const key in data) {
@@ -95,6 +115,11 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
       statuses: qParams.get("statuses")?.split(",") ?? [],
       contextId: qParams.get("contextId") ?? "",
       contextType: qParams.get("contextType") ?? "",
+      alertId: qParams.get("alertId") ?? "",
+      rfiStatus: qParams.get("rfiStatus") ?? "",
+      assignee: qParams.get("assignee") ?? "",
+      startDate: qParams.get("startDate") ?? undefined,
+      endDate: qParams.get("endDate") ?? undefined,
     });
   }, [qParams]);
 
@@ -111,9 +136,20 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
           className: "w-2/5",
         }}
       >
-        <Box className="flex flex-col px-4 pt-10 max-w-full">
-          <div className="h-[50px]" />
+        <Box className="flex flex-col px-4 pt-8 max-w-full">
+          {/* <div className="h-[50px]" /> */}
           <MyText size="lg">Alert Filters</MyText>
+          <Box className="pb-4 w-full">
+            <MyText>Alert ID</MyText>
+            <MyControlledTextField
+              name="alertId"
+              displayName="Alert ID"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("alertId")}
+            />
+          </Box>
           <Box className="pb-4 w-full">
             <MyText>Context ID</MyText>
             <MyControlledTextField
@@ -161,7 +197,7 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
                 "TRANSACTION_MONITORING",
                 "TRANSACTION_REVIEW",
                 "TRANSACTION_PROCESSING_ERROR",
-                "ACH_RETURN_PROCESSING"
+                "ACH_RETURN_PROCESSING",
               ]}
             />
           </Box>
@@ -177,6 +213,56 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
               options={["ASSIGNED", "UNASSIGNED", "CLOSED", "ESCALATED"]}
             />
           </Box>
+          <Box className="pb-4 w-full">
+            <MyText>Assignee</MyText>
+            <MyControlledTextField
+              name="assignee"
+              displayName="Assignee"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("assignee")}
+            />
+          </Box>
+          <div className="pb-4 w-full">
+            <MyText>RFI Status</MyText>
+            <MyControlledAutocomplete
+              value={getValues("rfiStatus") ?? ""}
+              displayName="RFI Status"
+              name={"rfiStatus"}
+              control={control}
+              errors={errors}
+              rules={{}}
+              options={["COMPLETED", "REQUESTED", "PROVIDED"]}
+            />
+          </div>
+          <Box className="flex flex-row">
+            <Box className="pb-4 w-full">
+              <MyText>Start Date</MyText>
+              <MyControlledDatePicker
+                noDefault={true}
+                name="startDate"
+                displayName="Start Date"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={getValues("startDate") ?? ""}
+              />
+            </Box>
+            <Box className="w-4"></Box>
+            <Box className="pb-4 w-full">
+              <MyText>End Date</MyText>
+              <MyControlledDatePicker
+                noDefault={true}
+                name="endDate"
+                displayName="End Date"
+                control={control}
+                errors={errors}
+                rules={{}}
+                value={getValues("endDate") ?? ""}
+              />
+            </Box>
+          </Box>
           <Box className="flex flex-row justify-between pb-10">
             <Box className="w-32 pt-6">
               <MyTextButton
@@ -186,6 +272,11 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
                     contextType: "",
                     types: [],
                     statuses: [],
+                    alertId: "",
+                    rfiStatus: "",
+                    assignee: "",
+                    startDate: undefined,
+                    endDate: undefined,
                   });
                   setDrawerOpen(false);
 

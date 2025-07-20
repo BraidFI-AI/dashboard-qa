@@ -62,6 +62,7 @@ import {
   DEVELOPER_READONLY_ROLE,
   DEVELOPER_ROLE,
   SCROLLBAR_STYLE,
+  isDeveloper,
 } from "@/core/constants";
 import DrawerHeaderButtons from "./drawer_header_buttons";
 import { fetchOpenAlertsCount } from "@/redux/slices/alerts_slice";
@@ -179,6 +180,29 @@ export default function PersistentDrawerLeft(props: any) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const alertOptions = [
+    {
+      name: "Alerts",
+      icon: <NotificationsNoneIcon className="text-[#6A788E]" />,
+      iconFocused: <NotificationsNoneIcon className="text-[#12A7FF]" />,
+      path: "/alerts-and-cases/alerts",
+      badge: {
+        val: openAlerts,
+        retry: fetchOpenAlertsCount,
+      },
+    },
+    {
+      name: "Cases",
+      icon: <WorkOutlineIcon className="text-[#6A788E]" />,
+      iconFocused: <WorkOutlineIcon className="text-[#12A7FF]" />,
+      path: "/alerts-and-cases/cases",
+    },
+  ];
+
+  if (isDeveloper(userType)) {
+    alertOptions.pop();
+  }
 
   const transactionOptions = [
     {
@@ -521,30 +545,7 @@ export default function PersistentDrawerLeft(props: any) {
                   iconFocused={
                     <AnnouncementIcon className="text-white text-md" />
                   }
-                  options={[
-                    {
-                      name: "Alerts",
-                      icon: (
-                        <NotificationsNoneIcon className="text-[#6A788E]" />
-                      ),
-                      iconFocused: (
-                        <NotificationsNoneIcon className="text-[#12A7FF]" />
-                      ),
-                      path: "/alerts-and-cases/alerts",
-                      badge: {
-                        val: openAlerts,
-                        retry: fetchOpenAlertsCount,
-                      },
-                    },
-                    {
-                      name: "Cases",
-                      icon: <WorkOutlineIcon className="text-[#6A788E]" />,
-                      iconFocused: (
-                        <WorkOutlineIcon className="text-[#12A7FF]" />
-                      ),
-                      path: "/alerts-and-cases/cases",
-                    },
-                  ]}
+                  options={alertOptions}
                 />
                 <MyExpandableListItem
                   name="Transactions"

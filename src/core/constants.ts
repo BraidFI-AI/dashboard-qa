@@ -57,6 +57,14 @@ export const ADMIN_READONLY_ROLE = "admin-readonly";
 export const DEVELOPER_READONLY_ROLE = "developer-readonly";
 export const ADMIN_COMPLIANCE_ROLE = "admin-compliance";
 
+export const isDeveloper = (userType: string) => {
+  return (
+    userType === DEVELOPER_ROLE ||
+    userType === DEVELOPER_OPS_ROLE ||
+    userType === DEVELOPER_READONLY_ROLE
+  );
+};
+
 export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE, ADMIN_COMPLIANCE_ROLE];
 export const DEVELOPER_ROUTE = [
   DEVELOPER_ROLE,

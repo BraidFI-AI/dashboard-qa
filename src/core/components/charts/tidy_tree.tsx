@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import { useRouter } from "next/navigation";
@@ -13,7 +12,7 @@ const TidyTree: React.FC<TidyTreeProps> = ({ data }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const width = 928;
+    const width = 1200; // Increased from 928
     const marginTop = 10;
     const marginRight = 10;
     const marginBottom = 10;
@@ -24,8 +23,8 @@ const TidyTree: React.FC<TidyTreeProps> = ({ data }) => {
     const root: any = d3.hierarchy(data);
     const dx = 10;
     const dy = (width - marginRight - marginLeft) / (1 + root.height);
-
     const tree = d3.tree().nodeSize([dx, dy]);
+
     const diagonal: any = d3
       .linkHorizontal()
       .x((d: any) => d.y)
@@ -46,12 +45,18 @@ const TidyTree: React.FC<TidyTreeProps> = ({ data }) => {
       .attr("fill", "none")
       .attr("stroke", "#555")
       .attr("stroke-opacity", 0.4)
-      .attr("stroke-width", 1.5);
+      .attr("stroke-width", 2); // Increased from 1.5
 
     const gNode = svg
       .append("g")
       .attr("cursor", "pointer")
       .attr("pointer-events", "all");
+
+    // Function to truncate text at 40 characters
+    const truncateText = (text: string, maxLength: number = 40): string => {
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength - 3) + "...";
+    };
 
     function update(event: any, source: any) {
       const duration = event?.altKey ? 2500 : 250;
@@ -110,7 +115,7 @@ const TidyTree: React.FC<TidyTreeProps> = ({ data }) => {
         .attr("dy", "0.31em")
         .attr("x", (d: any) => (d._children ? -6 : 6))
         .attr("text-anchor", (d: any) => (d._children ? "end" : "start"))
-        .text((d: any) => d.data.name)
+        .text((d: any) => truncateText(d.data.name)) // Apply truncation here
         .attr("stroke-linejoin", "round")
         .attr("stroke-width", 3)
         .attr("stroke", "white")
