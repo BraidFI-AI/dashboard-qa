@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch } from "@/redux/store/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 import { fetchTimezone } from "@/redux/slices/AppSlice";
@@ -13,6 +13,7 @@ import TimezoneSplashScreen from "../components/TimezoneSplashScreen";
 
 const TimezoneProvider = (props: any) => {
   const dispatch = useAppDispatch();
+  const [timezoneReady, setTimezoneReady] = useState(false);
 
   const timezoneConfig: "loading" | string | { timezone: string } = useSelector(
     (state: any) => state.app.timezone
@@ -42,21 +43,28 @@ const TimezoneProvider = (props: any) => {
     ) {
       dayjs.tz.setDefault(timezoneConfig.timezone);
       moment.tz.setDefault(timezoneConfig.timezone);
+      setTimezoneReady(true);
+    } else if (timezoneConfig === "loading") {
+      // Still loading, keep timezoneReady false
+      setTimezoneReady(false);
+    } else {
+      // Timezone loaded but invalid, use UTC
+      setTimezoneReady(true);
     }
-    // If not, it will stay at UTC
   }, [timezoneConfig]);
 
-  return (
-    <>
-      {timezoneConfig === "loading" ? (
-        <TimezoneSplashScreen />
-      ) : typeof timezoneConfig === "string" ? (
-        <div>{timezoneConfig}</div>
-      ) : (
-        <>{props.children}</>
-      )}
-    </>
-  );
+  // Show loading screen while timezone is being fetched
+  if (timezoneConfig === "loading" || !timezoneReady) {
+    return <TimezoneSplashScreen />;
+  }
+
+  // Show error if timezone fetch failed
+  if (typeof timezoneConfig === "string") {
+    return <div>{timezoneConfig}</div>;
+  }
+
+  // Timezone is ready, render children
+  return <>{props.children}</>;
 };
 
 export default TimezoneProvider;

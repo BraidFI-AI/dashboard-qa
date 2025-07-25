@@ -93,6 +93,8 @@ const ExceptionReview = () => {
     string | null
   >(null);
 
+  const [selectedTransactionType, setSelectedTransactionType] = useState<"ACH" | "WIRE" | null>(null);
+
   const [manualMatchModalOpen, setManualMatchModalOpen] =
     useState<boolean>(false);
 
@@ -149,6 +151,7 @@ const ExceptionReview = () => {
     });
     setSelectedTransactionId(null);
     setSelectedSettlementId(null);
+    setSelectedTransactionType(null);
     dispatch(
       fetchSettlementsPaginated({
         beginDate: data.beginDate,
@@ -171,7 +174,7 @@ const ExceptionReview = () => {
   const manualMatchOnSubmit: SubmitHandler<{ note: string }> = (data: {
     note: string;
   }) => {
-    if (selectedTransactionId == null || selectedSettlementId == null) {
+    if (selectedTransactionId == null || selectedSettlementId == null || selectedTransactionType == null) {
       return;
     }
 
@@ -182,7 +185,7 @@ const ExceptionReview = () => {
         notes: data.note,
         transactionAuditId: selectedTransactionId,
         settlementFileId: selectedSettlementId,
-        settlementFileType: transactionType,
+        settlementFileType: selectedTransactionType,
       })
     )
       .then((res: any) => {
@@ -500,6 +503,7 @@ const ExceptionReview = () => {
                           checked={params.row.id === selectedSettlementId}
                           onChange={(val: any) => {
                             setSelectedSettlementId(val ? params.row.id : null);
+                            setSelectedTransactionType("ACH");
                           }}
                         />
                       ),
@@ -605,6 +609,7 @@ const ExceptionReview = () => {
                           checked={params.row.id === selectedSettlementId}
                           onChange={(val: any) => {
                             setSelectedSettlementId(val ? params.row.id : null);
+                            setSelectedTransactionType("WIRE");
                           }}
                         />
                       ),

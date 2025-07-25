@@ -168,6 +168,14 @@ class TransactionRepo {
 
     return types;
   }
+
+  public async updateTransactionIMAD(data: { paymentId: string; imad: string }) {
+    const types = await this.apiClient.http<any>(
+      Method.PUT,
+      "/wire/imad",
+      data
+    );
+  }
 }
 
 export default TransactionRepo;
