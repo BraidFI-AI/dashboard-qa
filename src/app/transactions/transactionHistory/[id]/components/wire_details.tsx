@@ -6,11 +6,46 @@ import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import { timestampToDate } from "@/core/utils/date_time_util";
+import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { enqueueSnackbar } from "notistack";
+import { updateTransactionIMAD } from "@/redux/slices/TransactionSlice";
+import { useAppDispatch } from "@/redux/store/store";
+import MyBlueButton from "@/core/components/Button/MyBlueButton";
 export default function WireDetails({
   transaction,
 }: {
   transaction: Transaction;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const dispatch = useAppDispatch();
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    getValues,
+    handleSubmit,
+    reset,
+  } = useForm<{
+    imad?: string;
+  }>();
+  const onSubmit: SubmitHandler<{
+    imad?: string;
+  }> = (data: {
+    imad?: string;
+  }) => {
+    console.log("data:", data);
+    setSubmitting(true);
+    dispatch(updateTransactionIMAD({ paymentId: transaction.paymentId ?? "", imad: data.imad ?? "" })).then((res: any) => {
+      if (typeof res.payload == 'string') {
+        enqueueSnackbar(res.payload, { variant: "error" });
+      }else {
+        enqueueSnackbar("IMAD updated", { variant: "success" });
+      }
+    });
+  };
+
   return transaction.wire == null ? (
     <></>
   ) : (
@@ -77,10 +112,39 @@ export default function WireDetails({
         </div>
         <div className="min-w-[60px]" />
         <div className="flex flex-col justify-start min-w-[340px] w-full">
-          <ItemRowHorizontal
-            title="IMAD"
+          <div className="flex flex-row justify-between">
+            <div>
+        <MyEditableTextField
+            editing={editing}
+            setEditing={setEditing}
+            name="imad"
+            displayName="IMAD"
+            control={control}
+            errors={errors}
+            rules={
+              submitting
+                ? { required: false }
+                : {
+                    required: true,
+                  }
+            }
             value={(transaction as any).wire?.imad ?? ""}
+            submitting={submitting}
           />
+          </div>
+          {
+            editing && (
+              <div className="w-fit">
+              <MyBlueButton onClick={() => {
+                handleSubmit(onSubmit)();
+              }}>
+                Save
+              </MyBlueButton>
+              </div>
+            )
+          }
+         
+          </div>
           <div className="h-3" />
           <ItemRowHorizontal
             title="OMAD"

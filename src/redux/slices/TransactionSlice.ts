@@ -80,8 +80,20 @@ const TransactionSlice = createSlice({
   },
 });
 
+export const updateTransactionIMAD = createAsyncThunk(
+  "transaction/updateTransactionIMAD",
+  async (data: { paymentId: string; imad: string }, thunkAPI: any) => {
+    try {
+      const trans = await transactionRepo.updateTransactionIMAD(data);
+      return trans;
+    } catch (e: any) {
+      return `Error updating transaction ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchTransactionByPaymentId = createAsyncThunk(
-  "UserManagementState/createUser",
+  "transaction/createUser",
   async (paymentId: string, thunkAPI: any) => {
     try {
       const trans = await transactionRepo.fetchTransactionByPaymentId(
