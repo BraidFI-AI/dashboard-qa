@@ -65,6 +65,15 @@ export const isDeveloper = (userType: string) => {
   );
 };
 
+export const isAdmin = (userType: string) => {
+
+  return (
+    userType === ADMIN_ROLE ||
+    userType === ADMIN_OPS_ROLE ||
+    userType === ADMIN_COMPLIANCE_ROLE
+  );
+};
+
 export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE, ADMIN_COMPLIANCE_ROLE];
 export const DEVELOPER_ROUTE = [
   DEVELOPER_ROLE,

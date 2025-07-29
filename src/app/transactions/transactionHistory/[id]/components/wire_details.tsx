@@ -3,7 +3,7 @@
 import { Transaction } from "@/core/api/ApiTypes";
 import ItemRowHorizontal from "@/core/components/Text/ItemRowHorizontal";
 import MyText from "@/core/components/Text/Text";
-import { boxStyle } from "@/core/constants";
+import { boxStyle, isAdmin } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import { timestampToDate } from "@/core/utils/date_time_util";
 import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
@@ -13,11 +13,14 @@ import { enqueueSnackbar } from "notistack";
 import { updateTransactionIMAD } from "@/redux/slices/TransactionSlice";
 import { useAppDispatch } from "@/redux/store/store";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
+import { useSelector } from "react-redux";
 export default function WireDetails({
   transaction,
 }: {
   transaction: Transaction;
 }) {
+  const userType = useSelector((state: any) => state.app.userType);
+
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const dispatch = useAppDispatch();
@@ -32,16 +35,20 @@ export default function WireDetails({
   }>();
   const onSubmit: SubmitHandler<{
     imad?: string;
-  }> = (data: {
-    imad?: string;
-  }) => {
+  }> = (data: { imad?: string }) => {
     console.log("data:", data);
     setSubmitting(true);
-    dispatch(updateTransactionIMAD({ paymentId: transaction.paymentId ?? "", imad: data.imad ?? "" })).then((res: any) => {
-      if (typeof res.payload == 'string') {
+    dispatch(
+      updateTransactionIMAD({
+        paymentId: transaction.paymentId ?? "",
+        imad: data.imad ?? "",
+      })
+    ).then((res: any) => {
+      if (typeof res.payload == "string") {
         enqueueSnackbar(res.payload, { variant: "error" });
-      }else {
+      } else {
         enqueueSnackbar("IMAD updated", { variant: "success" });
+        setEditing(false);
       }
     });
   };
@@ -112,39 +119,47 @@ export default function WireDetails({
         </div>
         <div className="min-w-[60px]" />
         <div className="flex flex-col justify-start min-w-[340px] w-full">
-          <div className="flex flex-row justify-between">
-            <div>
-        <MyEditableTextField
-            editing={editing}
-            setEditing={setEditing}
-            name="imad"
-            displayName="IMAD"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: true,
+          {isAdmin(userType) &&
+          (transaction as any).isInbound != null &&
+          (transaction as any).isInbound == false ? (
+            <div className="flex flex-row justify-between">
+              <div>
+                <MyEditableTextField
+                  editing={editing}
+                  setEditing={setEditing}
+                  name="imad"
+                  displayName="IMAD"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
                   }
-            }
-            value={(transaction as any).wire?.imad ?? ""}
-            submitting={submitting}
-          />
-          </div>
-          {
-            editing && (
-              <div className="w-fit">
-              <MyBlueButton onClick={() => {
-                handleSubmit(onSubmit)();
-              }}>
-                Save
-              </MyBlueButton>
+                  value={(transaction as any).wire?.imad ?? ""}
+                  submitting={submitting}
+                />
               </div>
-            )
-          }
-         
-          </div>
+              {editing && (
+                <div className="w-fit">
+                  <MyBlueButton
+                    onClick={() => {
+                      handleSubmit(onSubmit)();
+                    }}
+                  >
+                    Save
+                  </MyBlueButton>
+                </div>
+              )}
+            </div>
+          ) : (
+            <ItemRowHorizontal
+              title="IMAD"
+              value={(transaction as any).wire?.imad ?? ""}
+            />
+          )}
           <div className="h-3" />
           <ItemRowHorizontal
             title="OMAD"
