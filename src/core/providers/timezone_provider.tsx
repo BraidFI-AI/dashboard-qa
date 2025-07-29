@@ -23,8 +23,8 @@ const TimezoneProvider = (props: any) => {
   useEffect(() => {
     dayjs.extend(utc);
     dayjs.extend(timezone);
-    dayjs.tz.setDefault("UTC");
-    moment.tz.setDefault("UTC");
+    dayjs.tz.setDefault("PST");
+    moment.tz.setDefault("PST");
   }, []);
 
   // Fetch the server's timezone config
@@ -59,9 +59,9 @@ const TimezoneProvider = (props: any) => {
   }
 
   // Show error if timezone fetch failed
-  if (typeof timezoneConfig === "string") {
-    return <div>{timezoneConfig}</div>;
-  }
+  // if (typeof timezoneConfig === "string") {
+  //   return <div>{timezoneConfig}</div>;
+  // }
 
   // Timezone is ready, render children
   return <>{props.children}</>;
