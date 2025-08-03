@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import React from "react";
 import { Controller } from "react-hook-form";
 
-export type MyControlledTextFieldProps = {
+export type MyHorizontalControlledTextFieldProps = {
   name: string;
   displayName?: string;
   control: any;
@@ -29,7 +29,9 @@ export function getErrorByNameString(errors: any, name: string) {
   return value;
 }
 
-const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
+const MyHorizontalControlledTextField: React.FC<
+  MyHorizontalControlledTextFieldProps
+> = ({
   displayName,
   name,
   control,
@@ -66,9 +68,9 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
       render={({ field: { onChange, value } }) => (
         <TextField
           disabled={disabled}
-          size="medium"
+          size="small"
           inputProps={{
-            className: "font-avenir-regular text-[15px] h-[25px]",
+            className: "font-avenir-regular text-[13px] h-[6px]",
           }}
           onChange={(event) => {
             onChange(event.target.value);
@@ -94,4 +96,4 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
   );
 };
 
-export default MyControlledTextField;
+export default MyHorizontalControlledTextField;
