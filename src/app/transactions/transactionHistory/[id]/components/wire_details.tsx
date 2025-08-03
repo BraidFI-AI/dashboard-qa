@@ -44,6 +44,7 @@ export default function WireDetails({
         imad: data.imad ?? "",
       })
     ).then((res: any) => {
+      setSubmitting(false);
       if (typeof res.payload == "string") {
         enqueueSnackbar(res.payload, { variant: "error" });
       } else {
