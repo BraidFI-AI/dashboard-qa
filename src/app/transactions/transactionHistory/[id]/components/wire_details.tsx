@@ -16,8 +16,10 @@ import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useSelector } from "react-redux";
 export default function WireDetails({
   transaction,
+  setRefresh,
 }: {
   transaction: Transaction;
+  setRefresh: any;
 }) {
   const userType = useSelector((state: any) => state.app.userType);
 
@@ -50,6 +52,7 @@ export default function WireDetails({
       } else {
         enqueueSnackbar("IMAD updated", { variant: "success" });
         setEditing(false);
+        setRefresh(true);
       }
     });
   };
@@ -146,6 +149,7 @@ export default function WireDetails({
               {editing && (
                 <div className="w-fit">
                   <MyBlueButton
+                    submitting={submitting}
                     onClick={() => {
                       handleSubmit(onSubmit)();
                     }}
