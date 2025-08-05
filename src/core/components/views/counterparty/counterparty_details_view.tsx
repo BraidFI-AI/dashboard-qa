@@ -133,10 +133,32 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
             )}
             <div className="flex flex-row">
               {editable ? (
-                <ItemRow
-                  title="Status"
-                  value={counterparty.status ?? ""}
-                ></ItemRow>
+                <div>
+                  <MyEditableTextField
+                    editing={isEditing}
+                    setEditing={setIsEditing}
+                    editable={false}
+                    name="status"
+                    displayName="Status"
+                    control={control}
+                    errors={errors}
+                    rules={
+                      submitting
+                        ? { required: false }
+                        : {
+                            required: true,
+                          }
+                    }
+                    options={[
+                      "NEEDS_OFAC",
+                      "BLOCKED",
+                      "ACTIVE",
+                      "PENDING_UNBLOCK",
+                    ]}
+                    value={counterparty.status ?? ""}
+                    submitting={false}
+                  />
+                </div>
               ) : (
                 <>
                   <ItemRowHorizontal
