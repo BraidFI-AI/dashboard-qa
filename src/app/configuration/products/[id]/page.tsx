@@ -174,7 +174,7 @@ const ProductDetails = () => {
   }, [dispatch, params.id, refresh, reset, userType]);
 
   return (
-    <div className="pb-10">
+    <div className="pb-10 pt-6">
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>

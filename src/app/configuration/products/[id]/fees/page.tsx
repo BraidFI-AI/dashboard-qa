@@ -25,7 +25,7 @@ const FeeTable = () => {
   return (
     <Box className="flex flex-col h-full">
       <Box className="pb-4"></Box>
-      <div style={{ height: "67vh" }}>
+      <div style={{ height: "80vh" }}>
         <FeeTableView
           fetchData={fetchDataMemoized}
           pushTo={`/configuration/products/${params.id}/fees`}

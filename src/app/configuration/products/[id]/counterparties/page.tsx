@@ -40,7 +40,7 @@ const CounterpartyPage = () => {
   }, [dispatch, params.id]);
 
   return (
-    <Box className="flex flex-col h-full">
+    <Box className="flex flex-col h-full pt-6">
       <Box className="w-fit">
         <Link href={"counterparties/create"}>
           <MyBlueButton>Create Counterparty</MyBlueButton>
