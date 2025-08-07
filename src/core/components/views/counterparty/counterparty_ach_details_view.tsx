@@ -14,6 +14,7 @@ import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
 import MyTextButton from "../../Button/MyTextButton";
 import WrapItem from "../../divs/wrap_item";
 import WrapContainer from "../../divs/wrap_container";
+import { cleanObject } from "@/core/utils/form_util";
 
 type CounterpartyACHDetailsViewProps = {
   setRefresh: any;
@@ -47,6 +48,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
     setSubmitting(true);
 
     if (counterparty) {
+      data = cleanObject(data);
+
       dispatch(
         updateCounterparty({
           id: parseInt(counterpartyId),

@@ -32,6 +32,8 @@ import Tabs from "@mui/material/Tabs";
 import { Tab } from "@mui/material";
 import { boxStyle } from "@/core/constants";
 import MyCircularProgressIndicator from "../../circular_progress_indicator";
+import MyLinkText from "../../Text/LinkText";
+import linkToCounterparty from "@/core/utils/link_to_counterparty";
 
 interface CounterPartyViewProps {
   id: string;
@@ -45,36 +47,9 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [counterparty, setCounterparty] = useState<Counterparty | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(true);
-  const [isEditingAch, setIsEditingAch] = useState(false);
-  const [isEditingWire, setIsEditingWire] = useState(false);
-  const [isEditingBraid, setIsEditingBraid] = useState(false);
 
   const [tabIndex, setTabIndex] = useState(0);
-  const {
-    formState: { errors, submitCount, isSubmitted, isValid },
-    control,
-    handleSubmit,
-    reset,
-    setValue,
-  } = useForm<Counterparty>({
-    defaultValues: {
-      ...counterparty,
-    },
-  });
-
-  useEffect(() => {
-    if (!isEditingBraid) {
-      setValue("braid", counterparty?.braid);
-    }
-  }, [isEditingBraid, counterparty?.braid, setValue]);
-
-  useEffect(() => {
-    if (!isEditingWire) {
-      setValue("wire", counterparty?.wire);
-    }
-  }, [isEditingWire, counterparty?.wire, setValue]);
 
   useEffect(() => {
     if (refresh) {
@@ -82,7 +57,6 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
       dispatch(setTitle("Counterparty"));
       dispatch(fetchCounterParty(parseInt(id))).then((data: any) => {
         if (data.payload) {
-          reset({ ...data.payload });
           setCounterparty(data.payload);
           dispatch(setTitle(data.payload.name));
         }
@@ -90,38 +64,21 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
         setRefresh(false);
       });
     }
-  }, [dispatch, id, refresh, reset]);
-
-  const onSubmit: SubmitHandler<Counterparty> = (data: Counterparty) => {
-    setSubmitting(true);
-
-    if (counterparty) {
-      // TODO -- make null or empty strings undefined for all fields. Make this a generic utility function
-
-      dispatch(
-        updateCounterparty({
-          id: parseInt(id),
-          counterparty: data as any,
-        })
-      ).then((p: any) => {
-        if (typeof p.payload === "string") {
-          enqueueSnackbar(p.payload, { variant: "error", persist: true });
-        } else {
-          setIsEditingAch(false);
-          setIsEditingBraid(false);
-          setIsEditingWire(false);
-        }
-        setRefresh(true);
-        setSubmitting(false);
-      });
-    }
-  };
+  }, [dispatch, id, refresh]);
 
   return (
-    <div>
+    <div className="w-full">
       {loading ? (
-        <div className="flex flex-col items-center justify-center pt-10 w-full h-full">
-          <MyCircularProgressIndicator />
+        <div
+          className={`flex flex-col items-center justify-center ${
+            editable ? "pt-10 h-full" : "h-[80px]"
+          } w-full`}
+        >
+          {editable ? (
+            <MyCircularProgressIndicator />
+          ) : (
+            <CircularProgress size={40} />
+          )}
         </div>
       ) : counterparty == null ? (
         <ErrorPage
@@ -131,7 +88,6 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             dispatch(setTitle("Counterparty"));
             dispatch(fetchCounterParty(parseInt(id))).then((data: any) => {
               if (data.payload) {
-                reset({ ...data.payload });
                 setTitle(data.payload.firstName + " " + data.payload.lastName);
                 setCounterparty(data.payload);
                 dispatch(
@@ -147,11 +103,10 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
         <div className="flex flex-row w-full justify-between">
           <div className="w-full">
             {!editable && (
-              // TODO -- make this clickable and go to the counterparty details page
-              <div className="pt-6">
-                <MyText variant="label" size="lg" weight="semibold">
+              <div className="pt-6 w-fit">
+                <MyLinkText link={linkToCounterparty(counterparty) ?? ""}>
                   {counterparty.name}
-                </MyText>
+                </MyLinkText>
               </div>
             )}
             <div className="pt-6 pb-6 pr-6 w-full" hidden={tabIndex !== 0}>
@@ -209,6 +164,7 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
             }`}
           >
             <Tabs
+              className={`${!editable ? "rounded-tr-[9px]" : ""}`}
               orientation="vertical"
               variant="scrollable"
               value={tabIndex}

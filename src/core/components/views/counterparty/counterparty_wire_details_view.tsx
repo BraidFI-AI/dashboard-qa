@@ -15,6 +15,7 @@ import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
 import { SubmitHandler, useForm } from "react-hook-form";
 import WrapItem from "../../divs/wrap_item";
 import WrapContainer from "../../divs/wrap_container";
+import { cleanObject } from "@/core/utils/form_util";
 
 type CounterpartyWireDetailsViewProps = {
   counterparty: Counterparty;
@@ -46,6 +47,8 @@ const CounterpartyWireDetailsView: React.FC<
     setSubmitting(true);
 
     if (counterparty) {
+      data = cleanObject(data);
+
       dispatch(
         updateCounterparty({
           id: parseInt(counterpartyId),

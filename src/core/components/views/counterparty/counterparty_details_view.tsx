@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  Counterparty,
-  CounterpartyBlockedResults,
-  OFAC,
-} from "@/core/api/ApiTypes";
+import { Counterparty, OFAC } from "@/core/api/ApiTypes";
 import { useEffect, useState } from "react";
 import MyText from "@/core/components/Text/Text";
-import CounterpartyBlockedResultsPage from "./counterparty_blocked_results_view";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import { useAppDispatch } from "@/redux/store/store";
 import { unblockBusinessCounterparty } from "@/redux/slices/BusinessSlice";
@@ -28,6 +23,7 @@ import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
 import ErrorPage from "../../error_page";
 import MyLinkText from "../../Text/LinkText";
 import CircularProgress from "@mui/material/CircularProgress";
+import { cleanObject } from "@/core/utils/form_util";
 
 type CounterpartyDetailsViewProps = {
   counterparty: Counterparty;
@@ -90,7 +86,7 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
     setSubmitting(true);
 
     if (counterparty) {
-      // TODO -- make null or empty strings undefined for all fields
+      data = cleanObject(data);
 
       dispatch(
         updateCounterparty({
@@ -138,7 +134,7 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
                 submitting
                   ? { required: false }
                   : {
-                      required: true,
+                      required: false,
                     }
               }
               value={counterparty.name ?? ""}
@@ -171,7 +167,7 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
                 submitting
                   ? { required: false }
                   : {
-                      required: true,
+                      required: false,
                     }
               }
               clearable={false}

@@ -53,7 +53,7 @@ const IndividualACHPage = () => {
   }, [dispatch, params.id, refresh, setIndividual]);
 
   return (
-    <>
+    <div className="pt-6">
       {individual == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -138,7 +138,7 @@ const IndividualACHPage = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

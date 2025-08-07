@@ -124,7 +124,6 @@ const TabsProvider = (props: any) => {
           ))}
         </Tabs>
       </Box>
-      <div className="pb-6"></div>
       {props.children}
     </div>
   );

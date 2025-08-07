@@ -18,7 +18,7 @@ const EntityTypeCounterpartyComponent: React.FC<
     <div
       className={`flex flex-col min-w-[700px] min-h-fit rounded-[10px] justify-start items-start ${boxStyle}`}
     >
-      <div className="flex justify-start pl-6">
+      <div className="flex justify-start pl-6 w-full">
         <CounterPartyView id={context.id?.toString() ?? "0"} editable={false} />
       </div>
     </div>

@@ -54,7 +54,7 @@ const BusinessACHPage = () => {
   }, [dispatch, params.id, refresh]);
 
   return (
-    <>
+    <div className="pt-6">
       {business == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -134,7 +134,7 @@ const BusinessACHPage = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

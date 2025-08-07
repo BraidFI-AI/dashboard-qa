@@ -31,6 +31,7 @@ import {
   ADMIN_ROLE,
 } from "@/core/constants";
 import CreateFeeView from "../views/fees/CreateFeeView";
+import CreateCounterparty from "./header_buttons/create_counterparty";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -150,7 +151,8 @@ const DrawerHeaderButtons = () => {
     )) ||
     (pathname.includes("/fees") && pathname.includes("business") && (
       <CreateFeeView level="ACCOUNT" ids={[]} disabled={false} />
-    ))
+    )) ||
+    (pathname.endsWith("/counterparties") && <CreateCounterparty />)
   );
 };
 

@@ -34,7 +34,7 @@ const Rules = () => {
   );
 
   return (
-    <Box className="flex flex-col h-full">
+    <Box className="flex flex-col h-full pt-6">
       <Box className="w-fit">
         <Link href={`/individuals/${params.id}/limits/create`}>
           <MyBlueButton>Add Limit</MyBlueButton>

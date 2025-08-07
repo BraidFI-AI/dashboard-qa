@@ -163,7 +163,7 @@ export default function IndividualPage() {
   }, [dispatch, params.id, refresh, setValue]);
 
   return (
-    <Box className="h-full">
+    <Box className="h-full pt-6">
       {individual == "loading" ? (
         <MyCircularProgressIndicator />
       ) : typeof individual == "string" ? (

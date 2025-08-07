@@ -71,121 +71,125 @@ const Accounts = () => {
     router.push(`/accounts/${params.row.accountNumber}/`);
   };
 
-  return individual == "loading" ||
-    accounts == null ||
-    accounts == "loading" ? (
-    <MyCircularProgressIndicator />
-  ) : typeof individual == "string" ? (
-    <ErrorPage
-      error={individual}
-      recoveryButtonOnClick={() => {
-        dispatch(setRefreshIndividual(true));
-      }}
-      recoveryButtonTitle="Retry"
-    />
-  ) : typeof accounts == "string" ? (
-    <ErrorPage
-      error={accounts}
-      recoveryButtonOnClick={() => {
-        dispatch(setRefreshIndividual(true));
-      }}
-      recoveryButtonTitle="Retry"
-    />
-  ) : status != "ACTIVE" ? (
-    <MyText>Individual is Not Approved</MyText>
-  ) : accounts.length == 0 ? (
-    <MyText>No Accounts Found</MyText>
-  ) : (
-    <MyTable
-      handleRowClick={handleRowClick}
-      columns={[
-        {
-          field: "id",
-          headerName: "Account ID",
-          flex: 1,
-          minWidth: 120,
-        },
-        {
-          field: "accountNumber",
-          headerName: "Account Number",
-          flex: 1,
-          minWidth: 200,
-        },
-        {
-          field: "accountName",
-          headerName: "Account Name",
-          flex: 1,
-          minWidth: 180,
-        },
-        {
-          field: "balance.accountBalance",
-          headerName: "Account Balance",
-          flex: 1,
-          minWidth: 160,
-          valueGetter(value: any, row: any) {
-            if (!value) {
-              return row.balance?.accountBalance;
-            }
-            return row.balance?.accountBalance;
-          },
-          display: "flex",
-          renderCell: (params: any) => (
-            <MyText>
-              {toDollarFormat(params.row.balance?.accountBalance)}
-            </MyText>
-          ),
-        },
-        {
-          field: "balance.availableBalance",
-          headerName: "Available Balance",
-          flex: 1,
-          minWidth: 160,
-          valueGetter(value: any, row: any) {
-            if (!value) {
-              return row.balance?.availableBalance;
-            }
-            return row.balance?.availableBalance;
-          },
-          display: "flex",
-          renderCell: (params: any) => (
-            <MyText>
-              {toDollarFormat(params.row.balance?.availableBalance)}
-            </MyText>
-          ),
-        },
-        {
-          field: "active",
-          headerName: "Active",
-          flex: 1,
-          minWidth: 120,
-          valueFormatter: (params: any) => {
-            if (params == null) {
-              return "";
-            }
-            return (
-              params?.toString()[0].toUpperCase()[0] +
-              params?.toString().slice(1)
-            );
-          },
-        },
-        {
-          field: "frozen",
-          headerName: "Frozen",
-          flex: 1,
-          minWidth: 120,
-          valueFormatter: (params: any) => {
-            if (params == null) {
-              return "";
-            }
-            return (
-              params?.toString()[0].toUpperCase()[0] +
-              params?.toString().slice(1)
-            );
-          },
-        },
-      ]}
-      rows={accounts}
-    />
+  return (
+    <div className="pt-6">
+      {individual == "loading" || accounts == null || accounts == "loading" ? (
+        <MyCircularProgressIndicator />
+      ) : typeof individual == "string" ? (
+        <ErrorPage
+          error={individual}
+          recoveryButtonOnClick={() => {
+            dispatch(setRefreshIndividual(true));
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : typeof accounts == "string" ? (
+        <ErrorPage
+          error={accounts}
+          recoveryButtonOnClick={() => {
+            dispatch(setRefreshIndividual(true));
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : status != "ACTIVE" ? (
+        <MyText>Individual is Not Approved</MyText>
+      ) : accounts.length == 0 ? (
+        <MyText>No Accounts Found</MyText>
+      ) : (
+        <div style={{ height: "78vh" }}>
+          <MyTable
+            handleRowClick={handleRowClick}
+            columns={[
+              {
+                field: "id",
+                headerName: "Account ID",
+                flex: 1,
+                minWidth: 120,
+              },
+              {
+                field: "accountNumber",
+                headerName: "Account Number",
+                flex: 1,
+                minWidth: 200,
+              },
+              {
+                field: "accountName",
+                headerName: "Account Name",
+                flex: 1,
+                minWidth: 180,
+              },
+              {
+                field: "balance.accountBalance",
+                headerName: "Account Balance",
+                flex: 1,
+                minWidth: 160,
+                valueGetter(value: any, row: any) {
+                  if (!value) {
+                    return row.balance?.accountBalance;
+                  }
+                  return row.balance?.accountBalance;
+                },
+                display: "flex",
+                renderCell: (params: any) => (
+                  <MyText>
+                    {toDollarFormat(params.row.balance?.accountBalance)}
+                  </MyText>
+                ),
+              },
+              {
+                field: "balance.availableBalance",
+                headerName: "Available Balance",
+                flex: 1,
+                minWidth: 160,
+                valueGetter(value: any, row: any) {
+                  if (!value) {
+                    return row.balance?.availableBalance;
+                  }
+                  return row.balance?.availableBalance;
+                },
+                display: "flex",
+                renderCell: (params: any) => (
+                  <MyText>
+                    {toDollarFormat(params.row.balance?.availableBalance)}
+                  </MyText>
+                ),
+              },
+              {
+                field: "active",
+                headerName: "Active",
+                flex: 1,
+                minWidth: 120,
+                valueFormatter: (params: any) => {
+                  if (params == null) {
+                    return "";
+                  }
+                  return (
+                    params?.toString()[0].toUpperCase()[0] +
+                    params?.toString().slice(1)
+                  );
+                },
+              },
+              {
+                field: "frozen",
+                headerName: "Frozen",
+                flex: 1,
+                minWidth: 120,
+                valueFormatter: (params: any) => {
+                  if (params == null) {
+                    return "";
+                  }
+                  return (
+                    params?.toString()[0].toUpperCase()[0] +
+                    params?.toString().slice(1)
+                  );
+                },
+              },
+            ]}
+            rows={accounts}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

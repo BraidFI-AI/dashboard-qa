@@ -21,7 +21,7 @@ const Rules = () => {
   }, [dispatch, params.id]);
 
   return (
-    <div style={{ height: "77vh" }}>
+    <div className="pt-6" style={{ height: "81vh" }}>
       <LimitsTable />
     </div>
   );

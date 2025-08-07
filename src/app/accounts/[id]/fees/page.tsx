@@ -45,7 +45,7 @@ const FeeTable = () => {
   );
 
   return (
-    <Box className="flex flex-col h-full">
+    <Box className="flex flex-col h-full pt-6">
       {feeModal == true && (
         <OneTimeFeeModal
           isOpen={feeModal}

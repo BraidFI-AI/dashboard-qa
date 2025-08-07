@@ -60,7 +60,7 @@ const ApplicationPage = () => {
   }, [dispatch, params.id]);
 
   return (
-    <>
+    <div className="pt-6">
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -142,7 +142,7 @@ const ApplicationPage = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 

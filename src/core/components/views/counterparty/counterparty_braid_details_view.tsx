@@ -13,6 +13,7 @@ import MyTextButton from "../../Button/MyTextButton";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
 import { enqueueSnackbar } from "notistack";
+import { cleanObject } from "@/core/utils/form_util";
 
 type CounterpartyBraidDetailsViewProps = {
   counterparty: Counterparty;
@@ -44,6 +45,8 @@ const CounterpartyBraidDetailsView: React.FC<
     setSubmitting(true);
 
     if (counterparty) {
+      data = cleanObject(data);
+
       dispatch(
         updateCounterparty({
           id: parseInt(counterpartyId),

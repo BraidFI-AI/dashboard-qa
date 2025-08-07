@@ -58,31 +58,35 @@ const AccountTransactionsPage = () => {
     );
   }, [dispatch, params.id, init]);
 
-  return transactions == "loading" || init == true ? (
-    <MyCircularProgressIndicator />
-  ) : typeof transactions == "string" ? (
-    <>
-      <ErrorPage
-        error={transactions}
-        recoveryButtonOnClick={() => {
-          dispatch(
-            fetchTransactions({
-              criteria: { accountNumber: (params.id as string) || "0" },
-              refresh: true,
-            })
-          );
-        }}
-        recoveryButtonTitle="Retry"
-      />
-    </>
-  ) : transactions.length == 0 ? (
-    <MyText size="md">No trasactions found</MyText>
-  ) : (
-    <div style={{ height: "76vh" }}>
-      <TransactionTableView
-        transactions={transactions}
-        filters={{ accountNumber: (params.id as string) || "0" }}
-      />
+  return (
+    <div className="pt-6">
+      {transactions == "loading" || init == true ? (
+        <MyCircularProgressIndicator />
+      ) : typeof transactions == "string" ? (
+        <>
+          <ErrorPage
+            error={transactions}
+            recoveryButtonOnClick={() => {
+              dispatch(
+                fetchTransactions({
+                  criteria: { accountNumber: (params.id as string) || "0" },
+                  refresh: true,
+                })
+              );
+            }}
+            recoveryButtonTitle="Retry"
+          />
+        </>
+      ) : transactions.length == 0 ? (
+        <MyText size="md">No trasactions found</MyText>
+      ) : (
+        <div style={{ height: "78vh" }}>
+          <TransactionTableView
+            transactions={transactions}
+            filters={{ accountNumber: (params.id as string) || "0" }}
+          />
+        </div>
+      )}
     </div>
   );
 };
