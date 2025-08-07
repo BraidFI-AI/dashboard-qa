@@ -72,6 +72,13 @@ const MyHorizontalControlledTextField: React.FC<
           inputProps={{
             className: "font-avenir-regular text-[13px] h-[6px]",
           }}
+          sx={{
+            "& fieldset": {
+              borderRadius: "5px",
+              borderColor: "#E8E8E8",
+              borderWidth: "1px",
+            },
+          }}
           onChange={(event) => {
             onChange(event.target.value);
             if (customOnChange) {

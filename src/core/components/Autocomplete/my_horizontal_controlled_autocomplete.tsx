@@ -72,7 +72,12 @@ const MyHorizontalControlledAutocomplete: React.FC<
             onScroll: onScroll,
           }}
           /// async changes ^^^
-          sx={{ "& fieldset": { borderRadius: "5px" } }}
+          sx={{
+            "& fieldset": {
+              borderRadius: "5px",
+              borderColor: "#E8E8E8",
+            },
+          }}
           onChange={(event: any, item) => {
             onChange(item || null);
             if (customOnChange) {

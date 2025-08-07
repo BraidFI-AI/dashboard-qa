@@ -1,6 +1,10 @@
 "use client";
 
-import { Counterparty, CounterpartyBlockedResults } from "@/core/api/ApiTypes";
+import {
+  Counterparty,
+  CounterpartyBlockedResults,
+  OFAC,
+} from "@/core/api/ApiTypes";
 import { useEffect, useState } from "react";
 import MyText from "@/core/components/Text/Text";
 import CounterpartyBlockedResultsPage from "./counterparty_blocked_results_view";
@@ -15,10 +19,15 @@ import MyHorizontalEditableTextField from "../../TextField/horizontal_editable_t
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { decrypt } from "@/redux/slices/encryption_slice";
-import MyEditButton from "../../Button/MyEditButton";
 import MyRedButton from "../../Button/MyRedButton";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
+import WrapContainer from "../../divs/wrap_container";
+import WrapItem from "../../divs/wrap_item";
+import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
+import ErrorPage from "../../error_page";
+import MyLinkText from "../../Text/LinkText";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type CounterpartyDetailsViewProps = {
   counterparty: Counterparty;
@@ -40,27 +49,9 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
   const [showEncryptedData, setShowEncryptedData] = useState(false);
   const [idNumber, setIdNumber] = useState("••••••••");
 
+  const [ofac, setOfac] = useState<"loading" | string | OFAC>("loading");
+
   const [unblocking, setUnblocking] = useState(false);
-
-  const [modalOpen, setModalOpen] = useState<boolean[]>(
-    Array.from(
-      { length: counterparty.blockedResults?.length ?? 0 },
-      (_) => false
-    )
-  );
-
-  const handleModalClose = (index: number) => {
-    let temp = [...modalOpen];
-    temp[index] = false;
-
-    setModalOpen(temp);
-  };
-  const handleModalOpen = (index: number) => {
-    let temp = [...modalOpen];
-    temp[index] = true;
-
-    setModalOpen(temp);
-  };
 
   useEffect(() => {
     if (counterparty.idNumber != null) {
@@ -72,7 +63,16 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
         }
       });
     }
-  }, [counterparty.idNumber, dispatch]);
+
+    if (counterparty.ofacId) {
+      setOfac("loading");
+      dispatch(fetchOFACHitNew(counterparty.ofacId.toString())).then(
+        (o: any) => {
+          setOfac(o.payload);
+        }
+      );
+    }
+  }, [counterparty.idNumber, counterparty.ofacId, dispatch]);
 
   const {
     formState: { errors, submitCount, isSubmitted, isValid },
@@ -112,18 +112,19 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
   useEffect(() => {
     if (!isEditing) {
       setValue("name", counterparty?.name);
+      setValue("status", counterparty?.status);
     }
-  }, [isEditing, counterparty?.name, setValue]);
+  }, [isEditing, counterparty?.name, counterparty?.status, setValue]);
   return (
-    <div className="pt-2">
-      <div className="flex flex-wrap w-full gap-x-10 gap-y-4">
-        <div className="w-[250px] h-[25px]">
+    <div className="flex flex-col gap-y-8 pt-2 w-full">
+      <WrapContainer>
+        <WrapItem>
           <ItemRowHorizontal
             title="ID"
             value={counterparty.id?.toString() ?? ""}
           />
-        </div>
-        <div className="w-[250px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -149,21 +150,47 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
               <div className="h-3" />
             </>
           )}
-        </div>
-        <div className="w-[250px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Counterparty Type"
             value={counterparty.type ?? ""}
           />
-        </div>
-        <div className="w-[250px] h-[25px]">
-          <ItemRowHorizontal title="Status" value={counterparty.status ?? ""} />
-        </div>
+        </WrapItem>
+        <WrapItem>
+          {editable ? (
+            <MyHorizontalEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="status"
+              displayName="Status"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              clearable={false}
+              value={counterparty.status ?? ""}
+              submitting={false}
+              options={["NEEDS_OFAC", "BLOCKED", "ACTIVE", "PENDING_UNBLOCK"]}
+            />
+          ) : (
+            <ItemRowHorizontal
+              title="Status"
+              value={counterparty.status ?? ""}
+            />
+          )}
+        </WrapItem>
         {(counterparty.idNumber != null ||
           counterparty.idType != null ||
           counterparty.dateOfBirth != null) && (
-          <>
-            <div className="flex flex-row items-center gap-2 justify-between w-[250px] h-[25px]">
+          <WrapItem>
+            <div className="flex flex-row justify-between">
               <div className="flex flex-row gap-1 items-center">
                 <MyText size="sm" color="text-[#677990]">
                   ID Number
@@ -188,50 +215,113 @@ const CounterpartyDetailsView: React.FC<CounterpartyDetailsViewProps> = ({
                 {showEncryptedData ? idNumber : "••••••••"}
               </MyText>
             </div>
-            <div className="w-[250px] h-[25px]">
-              <ItemRowHorizontal
-                title="ID Type"
-                value={counterparty.idType ?? ""}
-              />
-            </div>
-            <div className="w-[250px] h-[25px]">
-              <ItemRowHorizontal
-                title="Date of Birth"
-                value={`${
-                  counterparty.dateOfBirth != null
-                    ? `${counterparty.dateOfBirth?.[0]}-${counterparty.dateOfBirth?.[1]}-${counterparty.dateOfBirth?.[2]}`
-                    : ""
-                }`}
-              />
-            </div>
-          </>
+          </WrapItem>
         )}
-        <div className="w-[250px] h-[25px]">
+        {(counterparty.idNumber != null ||
+          counterparty.idType != null ||
+          counterparty.dateOfBirth != null) && (
+          <WrapItem>
+            <ItemRowHorizontal
+              title="ID Type"
+              value={counterparty.idType ?? ""}
+            />
+          </WrapItem>
+        )}
+        {(counterparty.idNumber != null ||
+          counterparty.idType != null ||
+          counterparty.dateOfBirth != null) && (
+          <WrapItem>
+            <ItemRowHorizontal
+              title="Date of Birth"
+              value={`${
+                counterparty.dateOfBirth != null
+                  ? `${counterparty.dateOfBirth?.[0]}-${counterparty.dateOfBirth?.[1]}-${counterparty.dateOfBirth?.[2]}`
+                  : ""
+              }`}
+            />
+          </WrapItem>
+        )}
+
+        <WrapItem>
           <ItemRowHorizontal
             title="Created By"
             value={counterparty.createdBy ?? ""}
           />
-        </div>
-        <div className="w-[250px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Created At"
             value={timestampToDate(counterparty.createdAt)}
           />
-        </div>
-        <div className="w-[250px] h-[20px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Updated By"
             value={counterparty.updatedBy ?? ""}
           />
-        </div>
-        <div className="w-[250px] h-[20px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Updated At"
             value={timestampToDate(counterparty.updatedAt)}
           />
-        </div>
+        </WrapItem>
+      </WrapContainer>
+      <div>
+        <MyText size="sm">OFAC Details</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
+            {counterparty.ofacId == null ? (
+              <>
+                <MyText size="sm" color="text-[#677990]">
+                  No OFAC check
+                </MyText>
+              </>
+            ) : ofac === "loading" ? (
+              <CircularProgress size={16} />
+            ) : typeof ofac == "string" ? (
+              <ErrorPage
+                error={ofac}
+                recoveryButtonOnClick={() => {
+                  if (counterparty.ofacId) {
+                    setOfac("loading");
+                    dispatch(
+                      fetchOFACHitNew(counterparty.ofacId.toString())
+                    ).then((o: any) => {
+                      setOfac(o.payload);
+                    });
+                  }
+                }}
+                recoveryButtonTitle="Retry"
+              />
+            ) : (
+              <ItemRowHorizontal
+                title="Last OFAC date"
+                value={timestampToDate(ofac.createdAt ?? 0)}
+              />
+            )}
+          </WrapItem>
+          <WrapItem>
+            {counterparty.ofacId != null && ofac === "loading" ? (
+              <CircularProgress size={16} />
+            ) : typeof ofac == "string" ? (
+              <></>
+            ) : (
+              <MyLinkText
+                textProps={{
+                  size: "sm",
+                  color: "text-[#677990]",
+                }}
+                link={`/compliance/ofac/${counterparty.ofacId}`}
+              >
+                Last OFAC status
+              </MyLinkText>
+            )}
+          </WrapItem>
+        </WrapContainer>
       </div>
-      <div className={`flex flex-row ${editable ? "pt-10 pb-4" : ""}`}>
+      <div className={`flex flex-row ${editable ? "pt-2" : ""}`}>
         {editable &&
           counterparty.status &&
           counterparty.status == "BLOCKED" && (

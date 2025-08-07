@@ -190,10 +190,22 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
                 </div>
               }
             </div>
+            <div className="pt-6 pb-6 pr-6 w-full" hidden={tabIndex !== 3}>
+              {
+                <div className={`w-full ${boxStyle} p-4 rounded-[10px]`}>
+                  <CounterpartyBraidDetailsView
+                    counterparty={counterparty}
+                    setRefresh={setRefresh}
+                    editable={editable}
+                    counterpartyId={id}
+                  />
+                </div>
+              }
+            </div>
           </div>
           <div
             className={`w-[220px] bg-[#f4f5f7] ${
-              editable ? `h-[calc(100vh-137px)]` : "h-dvh rounded-r-[9px]"
+              editable ? `min-h-[calc(100vh-137px)]` : "h-dvh rounded-r-[9px]"
             }`}
           >
             <Tabs
@@ -247,15 +259,15 @@ const CounterPartyView: React.FC<CounterPartyViewProps> = ({
         //   </div>
         // )}
         //             <div className="flex flex-col w-[300px]">
-        //               <CounterpartyBraidDetailsView
-        //                 counterparty={counterparty}
-        //                 control={control}
-        //                 errors={errors}
-        //                 submitting={submitting}
-        //                 isEditing={isEditingBraid}
-        //                 setIsEditing={setIsEditingBraid}
-        //                 editable={editable}
-        //               />
+        // <CounterpartyBraidDetailsView
+        //   counterparty={counterparty}
+        //   control={control}
+        //   errors={errors}
+        //   submitting={submitting}
+        //   isEditing={isEditingBraid}
+        //   setIsEditing={setIsEditingBraid}
+        //   editable={editable}
+        // />
         //               <CounterpartyACHDetailsView
         //                 counterparty={counterparty}
         //                 control={control}

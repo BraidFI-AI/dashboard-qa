@@ -1,12 +1,7 @@
 "use client";
 
 import { Counterparty } from "@/core/api/ApiTypes";
-import Divider from "@mui/material/Divider";
-import ItemRow from "@/core/components/Text/ItemRow";
 import MyText from "@/core/components/Text/Text";
-import MyEditButton from "@/core/components/Button/MyEditButton";
-import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
-import MyExpandableButton from "@/core/components/Button/MyExpandableButton";
 import { useEffect, useState } from "react";
 import { timestampToDate } from "@/core/utils/date_time_util";
 import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
@@ -17,6 +12,8 @@ import { useAppDispatch } from "@/redux/store/store";
 import { enqueueSnackbar } from "notistack";
 import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
 import MyTextButton from "../../Button/MyTextButton";
+import WrapItem from "../../divs/wrap_item";
+import WrapContainer from "../../divs/wrap_container";
 
 type CounterpartyACHDetailsViewProps = {
   setRefresh: any;
@@ -36,10 +33,9 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const {
-    formState: { errors, submitCount, isSubmitted, isValid },
+    formState: { errors },
     control,
     handleSubmit,
-    reset,
     setValue,
   } = useForm<Counterparty>({
     defaultValues: {
@@ -75,15 +71,15 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
   }, [isEditing, counterparty?.ach, setValue]);
 
   return (
-    <div className="pt-2">
-      <div className="flex flex-wrap w-full gap-x-10 gap-y-4">
-        <div className="w-[300px] h-[25px]">
+    <div className="flex flex-col gap-y-8 pt-2 w-full">
+      <WrapContainer>
+        <WrapItem>
           <ItemRowHorizontal
             title="ID"
             value={counterparty?.ach?.id?.toString() ?? ""}
           />
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -111,8 +107,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.bankName ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -142,8 +138,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.gatewayRoutingNumber ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -174,8 +170,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.rdfiNumberQualifier ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -205,8 +201,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.bankAccountType ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -236,8 +232,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.routingNumber ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -267,8 +263,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.accountNumber ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           {editable ? (
             <MyHorizontalEditableTextField
               editing={isEditing}
@@ -298,157 +294,158 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               value={counterparty.ach?.countryCode ?? ""}
             />
           )}
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Status"
             value={counterparty?.ach?.status ?? ""}
           />
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Created at"
             value={timestampToDate(counterparty?.ach?.createdAt)}
           />
-        </div>
-        <div className="w-[300px] h-[25px]">
+        </WrapItem>
+        <WrapItem>
           <ItemRowHorizontal
             title="Updated at"
             value={timestampToDate(counterparty?.ach?.updatedAt)}
           />
-        </div>
+        </WrapItem>
+      </WrapContainer>
+      <div>
+        <MyText size="sm">Bank Address</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
+            {editable ? (
+              <MyHorizontalEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="ach.receiverStreetAddress"
+                displayName="Street Address"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  counterparty.ach?.receiverStreetAddress
+                    ? counterparty.ach?.receiverStreetAddress
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRowHorizontal
+                title="Street Address"
+                value={counterparty.ach?.receiverStreetAddress ?? ""}
+              />
+            )}
+          </WrapItem>
+          <WrapItem>
+            {editable ? (
+              <MyHorizontalEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="ach.receiverCity"
+                displayName="City"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  counterparty.ach?.receiverCity
+                    ? counterparty.ach?.receiverCity
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRowHorizontal
+                title="City"
+                value={counterparty.ach?.receiverCity ?? ""}
+              />
+            )}
+          </WrapItem>
+          <WrapItem>
+            {editable ? (
+              <MyHorizontalEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="ach.receiverState"
+                displayName="State"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  counterparty.ach?.receiverState
+                    ? counterparty.ach?.receiverState
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRowHorizontal
+                title="State"
+                value={counterparty.ach?.receiverState ?? ""}
+              />
+            )}
+          </WrapItem>
+          <WrapItem>
+            {editable ? (
+              <MyHorizontalEditableTextField
+                editing={isEditing}
+                setEditing={setIsEditing}
+                editable={false}
+                name="ach.receiverPostalCode"
+                displayName="Postal Code"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={
+                  counterparty.ach?.receiverPostalCode
+                    ? counterparty.ach?.receiverPostalCode
+                    : ""
+                }
+                submitting={false}
+              />
+            ) : (
+              <ItemRowHorizontal
+                title="Postal Code"
+                value={counterparty.ach?.receiverPostalCode ?? ""}
+              />
+            )}
+          </WrapItem>
+        </WrapContainer>
       </div>
-      <div className="h-8" />
-      <MyText size="sm">Bank Address</MyText>
-      <div className="pb-1" />
-      <div className="flex flex-wrap w-full gap-x-10 gap-y-4">
-        <div className="w-[300px] h-[25px]">
-          {editable ? (
-            <MyHorizontalEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="ach.receiverStreetAddress"
-              displayName="Street Address"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: false,
-                    }
-              }
-              value={
-                counterparty.ach?.receiverStreetAddress
-                  ? counterparty.ach?.receiverStreetAddress
-                  : ""
-              }
-              submitting={false}
-            />
-          ) : (
-            <ItemRowHorizontal
-              title="Street Address"
-              value={counterparty.ach?.receiverStreetAddress ?? ""}
-            />
-          )}
-        </div>
-        <div className="w-[300px] h-[25px]">
-          {editable ? (
-            <MyHorizontalEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="ach.receiverCity"
-              displayName="City"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: false,
-                    }
-              }
-              value={
-                counterparty.ach?.receiverCity
-                  ? counterparty.ach?.receiverCity
-                  : ""
-              }
-              submitting={false}
-            />
-          ) : (
-            <ItemRowHorizontal
-              title="City"
-              value={counterparty.ach?.receiverCity ?? ""}
-            />
-          )}
-        </div>
-        <div className="w-[300px] h-[25px]">
-          {editable ? (
-            <MyHorizontalEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="ach.receiverState"
-              displayName="State"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: false,
-                    }
-              }
-              value={
-                counterparty.ach?.receiverState
-                  ? counterparty.ach?.receiverState
-                  : ""
-              }
-              submitting={false}
-            />
-          ) : (
-            <ItemRowHorizontal
-              title="State"
-              value={counterparty.ach?.receiverState ?? ""}
-            />
-          )}
-        </div>
-        <div className="w-[300px] h-[25px]">
-          {editable ? (
-            <MyHorizontalEditableTextField
-              editing={isEditing}
-              setEditing={setIsEditing}
-              editable={false}
-              name="ach.receiverPostalCode"
-              displayName="Postal Code"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: false,
-                    }
-              }
-              value={
-                counterparty.ach?.receiverPostalCode
-                  ? counterparty.ach?.receiverPostalCode
-                  : ""
-              }
-              submitting={false}
-            />
-          ) : (
-            <ItemRowHorizontal
-              title="Postal Code"
-              value={counterparty.ach?.receiverPostalCode ?? ""}
-            />
-          )}
-        </div>
-      </div>
-      <div className={`flex flex-row ${editable ? "pt-10 pb-4" : ""}`}>
-        {editable && (
+      {editable && counterparty.status && counterparty.status == "ACTIVE" && (
+        <div className={`flex flex-row ${editable ? "pt-2" : ""}`}>
           <>
             {isEditing ? (
               <div className="flex flex-row gap-4">
@@ -486,8 +483,8 @@ const CounterpartyACHDetailsView: React.FC<CounterpartyACHDetailsViewProps> = ({
               </div>
             )}
           </>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 

@@ -1,216 +1,203 @@
 "use client";
 
 import { Counterparty, OFAC } from "@/core/api/ApiTypes";
-import Divider from "@mui/material/Divider";
-import ItemRow from "@/core/components/Text/ItemRow";
-import MyText from "@/core/components/Text/Text";
-import MyExpandableButton from "@/core/components/Button/MyExpandableButton";
-import MyEditButton from "@/core/components/Button/MyEditButton";
-import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
 import { useEffect, useState } from "react";
 import { timestampToDate } from "@/core/utils/date_time_util";
-import MyCircularProgressIndicator from "../../circular_progress_indicator";
-import MyLinkText from "../../Text/LinkText";
-import ErrorPage from "../../error_page";
 import { useAppDispatch } from "@/redux/store/store";
 import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
-import { fetchOFACHitNew } from "@/redux/slices/OFACSlice";
+import WrapContainer from "../../divs/wrap_container";
+import WrapItem from "../../divs/wrap_item";
+import MyHorizontalEditableTextField from "../../TextField/horizontal_editable_textfield";
+import MyBlueButton from "../../Button/MyBlueButton";
+import MyTextButton from "../../Button/MyTextButton";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
+import { enqueueSnackbar } from "notistack";
 
 type CounterpartyBraidDetailsViewProps = {
   counterparty: Counterparty;
-  control: any;
-  errors: any;
-  submitting: any;
-  setIsEditing: any;
-  isEditing: any;
   editable?: boolean;
+  counterpartyId: any;
+  setRefresh: any;
 };
 
 const CounterpartyBraidDetailsView: React.FC<
   CounterpartyBraidDetailsViewProps
-> = ({
-  counterparty,
-  control,
-  errors,
-  submitting,
-  isEditing,
-  setIsEditing,
-  editable = true,
-}) => {
+> = ({ counterparty, setRefresh, editable = true, counterpartyId }) => {
   const dispatch = useAppDispatch();
 
-  const [expandDetails, toggleExpandDetails] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [ofac, setOfac] = useState<"loading" | string | OFAC>("loading");
+  const {
+    formState: { errors },
+    control,
+    handleSubmit,
+    setValue,
+  } = useForm<Counterparty>({
+    defaultValues: {
+      ...counterparty,
+    },
+  });
+
+  const onSubmit: SubmitHandler<Counterparty> = (data: Counterparty) => {
+    setSubmitting(true);
+
+    if (counterparty) {
+      dispatch(
+        updateCounterparty({
+          id: parseInt(counterpartyId),
+          counterparty: data as any,
+        })
+      ).then((p: any) => {
+        if (typeof p.payload === "string") {
+          enqueueSnackbar(p.payload, { variant: "error", persist: true });
+        } else {
+          setIsEditing(false);
+        }
+        setRefresh(true);
+        setSubmitting(false);
+      });
+    }
+  };
 
   useEffect(() => {
-    if (counterparty.ofacId) {
-      setOfac("loading");
-      dispatch(fetchOFACHitNew(counterparty.ofacId.toString())).then(
-        (o: any) => {
-          setOfac(o.payload);
-        }
-      );
+    if (!isEditing) {
+      setValue("braid", counterparty?.braid);
     }
-  }, [dispatch, counterparty.ofacId]);
+  }, [isEditing, counterparty?.braid, setValue]);
 
   return (
-    <div className="flex flex-col">
-      {counterparty.ofacId == null ? (
-        <>
+    <div className="flex flex-col gap-y-8 pt-2 w-full">
+      <WrapContainer>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="ID"
+            value={counterparty?.braid?.id?.toString() ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Contact ID"
+            value={counterparty?.braid?.contactId?.toString() ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Customer ID"
+            value={counterparty?.braid?.custId?.toString() ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Type"
+            value={counterparty?.braid?.instrumentType ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
           {editable ? (
-            <MyText size="md">No OFAC check</MyText>
-          ) : (
-            <MyText size="sm" color="text-[#677990]">
-              No OFAC check
-            </MyText>
-          )}
-        </>
-      ) : ofac === "loading" ? (
-        <MyCircularProgressIndicator />
-      ) : typeof ofac == "string" ? (
-        <ErrorPage
-          error={ofac}
-          recoveryButtonOnClick={() => {
-            if (counterparty.ofacId) {
-              setOfac("loading");
-              dispatch(fetchOFACHitNew(counterparty.ofacId.toString())).then(
-                (o: any) => {
-                  setOfac(o.payload);
-                }
-              );
-            }
-          }}
-          recoveryButtonTitle="Retry"
-        />
-      ) : (
-        <>
-          {editable ? (
-            <ItemRow
-              title="Last OFAC date"
-              value={timestampToDate(ofac.createdAt ?? 0)}
+            <MyHorizontalEditableTextField
+              editing={isEditing}
+              setEditing={setIsEditing}
+              editable={false}
+              name="braid.accountNumber"
+              displayName="Account Number"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: false,
+                    }
+              }
+              value={
+                counterparty.braid?.accountNumber
+                  ? counterparty.braid?.accountNumber
+                  : ""
+              }
+              submitting={false}
             />
           ) : (
-            <>
-              <ItemRowHorizontal
-                title="Last OFAC date"
-                value={timestampToDate(ofac.createdAt ?? 0)}
-              />
-              <div className="h-3" />
-            </>
+            <ItemRowHorizontal
+              title="Account Number"
+              value={counterparty.braid?.accountNumber ?? ""}
+            />
           )}
-        </>
-      )}
-      {counterparty.ofacId != null && ofac === "loading" ? (
-        <MyCircularProgressIndicator />
-      ) : typeof ofac == "string" ? (
-        <></>
-      ) : (
-        <MyLinkText
-          textProps={{
-            size: editable ? "md" : "sm",
-            color: editable ? undefined : "text-[#677990]",
-          }}
-          link={`/compliance/ofac/${counterparty.ofacId}`}
-        >
-          Last OFAC status
-        </MyLinkText>
-      )}
-      <div className="pb-4"></div>
-      <MyExpandableButton
-        title="Braid Payment Instrument"
-        expand={expandDetails}
-        toggleExpand={toggleExpandDetails}
-      />
-      <Divider />
-      <div className="pb-4"></div>
-      {expandDetails && (
-        <div className="flex flex-row-reverse justify-between">
-          {editable && (
-            <div>
-              <MyEditButton editing={isEditing} setEditing={setIsEditing} />
-            </div>
-          )}
-          <div className="w-full">
-            <ItemRow
-              horizontal={!editable}
-              title="ID"
-              value={counterparty?.braid?.id ?? ""}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Contact ID"
-              value={counterparty?.braid?.contactId ?? ""}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Customer ID"
-              value={counterparty?.braid?.custId ?? ""}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Type"
-              value={counterparty?.braid?.instrumentType ?? ""}
-            ></ItemRow>
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="braid.accountNumber"
-                displayName="Account Number"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: false,
-                      }
-                }
-                value={
-                  counterparty.braid?.accountNumber
-                    ? counterparty.braid?.accountNumber
-                    : ""
-                }
-                submitting={false}
-              />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Status"
+            value={counterparty?.braid?.status ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Created at"
+            value={timestampToDate(counterparty?.braid?.createdAt)}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Updated at"
+            value={timestampToDate(counterparty?.braid?.updatedAt)}
+          />
+        </WrapItem>
+      </WrapContainer>
+      {editable && counterparty.status && counterparty.status == "ACTIVE" && (
+        <div className={`flex flex-row ${editable ? "pt-2" : ""}`}>
+          <>
+            {isEditing ? (
+              <div className="flex flex-row gap-4">
+                <div className="w-fit">
+                  <MyTextButton
+                    submitting={submitting}
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                  >
+                    Cancel
+                  </MyTextButton>
+                </div>
+                <div className="w-fit">
+                  <MyBlueButton
+                    submitting={submitting}
+                    onClick={() => {
+                      handleSubmit(onSubmit)();
+                    }}
+                  >
+                    Update Braid Details
+                  </MyBlueButton>
+                </div>
+              </div>
             ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Account Number"
-                value={counterparty.braid?.accountNumber ?? ""}
-              ></ItemRow>
+              <div className="w-fit">
+                <MyBlueButton
+                  submitting={submitting}
+                  onClick={() => {
+                    setIsEditing(true);
+                  }}
+                >
+                  Edit Braid Details
+                </MyBlueButton>
+              </div>
             )}
-            <ItemRow
-              horizontal={!editable}
-              title="Status"
-              value={counterparty?.braid?.status ?? ""}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Created at"
-              value={timestampToDate(counterparty?.braid?.createdAt)}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Updated at"
-              value={timestampToDate(counterparty?.braid?.updatedAt)}
-            ></ItemRow>
-            {counterparty.braid?.status &&
-              counterparty.braid?.status == "BLOCKED" && (
-                <ItemRow
-                  horizontal={!editable}
-                  horizontalNoSpace
-                  title="Blocked results"
-                  value={counterparty.braid?.blockedResults ?? ""}
-                ></ItemRow>
-              )}
-          </div>
+          </>
         </div>
       )}
     </div>
   );
+
+  // {
+  //   counterparty.braid?.status && counterparty.braid?.status == "BLOCKED" && (
+  //     <ItemRow
+  //       horizontal={!editable}
+  //       horizontalNoSpace
+  //       title="Blocked results"
+  //       value={counterparty.braid?.blockedResults ?? ""}
+  //     ></ItemRow>
+  //   );
+  // }
 };
 
 export default CounterpartyBraidDetailsView;
