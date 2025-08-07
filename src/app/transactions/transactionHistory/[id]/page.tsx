@@ -24,21 +24,26 @@ export default function TransactionHistoryPage() {
   const columnRef = useRef<HTMLDivElement>(null);
   const [columnHeight, setColumnHeight] = useState<number | null>(null);
 
+  const [refresh, setRefresh] = useState(true);
+
   const transactions: "loading" | string | Transaction[] = useSelector(
     (state: any) => state.transaction.transactions
   );
 
   useEffect(() => {
-    dispatch(setTitle("Transaction Details"));
+    if (refresh) {
+      dispatch(setTitle("Transaction Details"));
 
-    dispatch(
-      fetchTransactions({
-        criteria: {
-          paymentId: (params.id as string) || "0",
-        },
-      })
-    );
-  }, [dispatch, params]);
+      dispatch(
+        fetchTransactions({
+          criteria: {
+            paymentId: (params.id as string) || "0",
+          },
+        })
+      );
+      setRefresh(false);
+    }
+  }, [dispatch, params, refresh]);
 
   return (
     <div>
@@ -82,7 +87,10 @@ export default function TransactionHistoryPage() {
               {transactions?.[0]?.wire != null && (
                 <>
                   <div className="h-[10px]" />
-                  <WireDetails transaction={transactions?.[0]} />
+                  <WireDetails
+                    transaction={transactions?.[0]}
+                    setRefresh={setRefresh}
+                  />
                 </>
               )}
             </div>

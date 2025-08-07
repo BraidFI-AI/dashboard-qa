@@ -92,7 +92,7 @@ class ReconExceptionReviewRepo {
 
   public async performManualMatch(data: {
     notes: string;
-    transactionAuditId: string;
+    paymentId: string;
     settlementFileId: string;
     settlementFileType: "ACH" | "WIRE";
   }) {

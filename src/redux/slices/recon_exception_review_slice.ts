@@ -182,7 +182,7 @@ export const performManualMatch = createAsyncThunk(
   async (
     data: {
       notes: string;
-      transactionAuditId: string;
+      paymentId: string;
       settlementFileId: string;
       settlementFileType: "ACH" | "WIRE";
     },

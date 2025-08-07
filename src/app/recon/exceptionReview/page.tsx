@@ -93,7 +93,9 @@ const ExceptionReview = () => {
     string | null
   >(null);
 
-  const [selectedTransactionType, setSelectedTransactionType] = useState<"ACH" | "WIRE" | null>(null);
+  const [selectedTransactionType, setSelectedTransactionType] = useState<
+    "ACH" | "WIRE" | null
+  >(null);
 
   const [manualMatchModalOpen, setManualMatchModalOpen] =
     useState<boolean>(false);
@@ -174,7 +176,11 @@ const ExceptionReview = () => {
   const manualMatchOnSubmit: SubmitHandler<{ note: string }> = (data: {
     note: string;
   }) => {
-    if (selectedTransactionId == null || selectedSettlementId == null || selectedTransactionType == null) {
+    if (
+      selectedTransactionId == null ||
+      selectedSettlementId == null ||
+      selectedTransactionType == null
+    ) {
       return;
     }
 
@@ -183,7 +189,7 @@ const ExceptionReview = () => {
     dispatch(
       performManualMatch({
         notes: data.note,
-        transactionAuditId: selectedTransactionId,
+        paymentId: selectedTransactionId,
         settlementFileId: selectedSettlementId,
         settlementFileType: selectedTransactionType,
       })

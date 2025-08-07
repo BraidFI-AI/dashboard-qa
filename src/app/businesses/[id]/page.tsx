@@ -273,34 +273,26 @@ const BusinessDetails = () => {
                 submitting={false}
               />
               <div className="flex flex-row justify-between">
-                {userType == ADMIN_ROLE ||
-                userType == ADMIN_OPS_ROLE ||
-                userType == ADMIN_READONLY_ROLE ? (
-                  <MyEditableTextField
-                    editing={editing}
-                    setEditing={setEditing}
-                    name="idNumber"
-                    displayName="ID Number"
-                    control={control}
-                    errors={errors}
-                    editable={false}
-                    rules={
-                      submitting
-                        ? { required: false }
-                        : {
-                            required: true,
-                          }
-                    }
-                    value={
-                      showEncryptedIdNumber
-                        ? business.idNumber ?? ""
-                        : "••••••••"
-                    }
-                    submitting={false}
-                  />
-                ) : (
-                  <ItemRow title="ID Number" value={"••••••••"}></ItemRow>
-                )}
+                <MyEditableTextField
+                  editing={editing}
+                  setEditing={setEditing}
+                  name="idNumber"
+                  displayName="ID Number"
+                  control={control}
+                  errors={errors}
+                  editable={false}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: true,
+                        }
+                  }
+                  value={
+                    showEncryptedIdNumber ? business.idNumber ?? "" : "••••••••"
+                  }
+                  submitting={false}
+                />
                 {showEncryptedIdNumber ? (
                   <VisibilityOffIcon
                     className="text-[#12A7FF]"
