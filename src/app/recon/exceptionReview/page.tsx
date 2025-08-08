@@ -30,7 +30,7 @@ import MyTable from "@/core/components/Table/MyTable";
 import { v4 as uuidv4 } from "uuid";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { GridEventListener } from "@mui/x-data-grid";
 import MyModal from "@/core/components/my_modal";
 import { JSONTree } from "react-json-tree";
@@ -38,7 +38,12 @@ import MyCheckbox from "@/core/components/Button/MyCheckbox ";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
 import { enqueueSnackbar } from "notistack";
+
 function extractReceiverAccountNumber(content: any) {
+  if (content == null) {
+    return null;
+  }
+
   // Using regex to find the pattern receiverAccountNumber=NUMBER
   const regex = /receiverAccountNumber=(\d+)/;
   const match = content.match(regex);
@@ -54,10 +59,10 @@ function extractReceiverAccountNumber(content: any) {
 
 const ExceptionReview = () => {
   const dispatch = useAppDispatch();
+  const qParams = useSearchParams();
 
   const router = useRouter();
 
-  const [transactionType, setTransactionType] = useState<"ACH" | "WIRE">("ACH");
   const [submittingTransactions, setSubmittingTransactions] =
     useState<boolean>(false);
   const [submittingSettlements, setSubmittingSettlements] =
@@ -97,6 +102,10 @@ const ExceptionReview = () => {
     "ACH" | "WIRE" | null
   >(null);
 
+  const [tempTransactionType, setTempTransactionType] = useState<
+    "ACH" | "WIRE"
+  >("ACH");
+
   const [manualMatchModalOpen, setManualMatchModalOpen] =
     useState<boolean>(false);
 
@@ -113,9 +122,12 @@ const ExceptionReview = () => {
     control,
     handleSubmit,
     getValues,
+    reset,
+    setValue,
   } = useForm<{
-    beginDate: Moment;
-    endDate: Moment;
+    beginDate: string;
+    endDate: string;
+    transactionType: "ACH" | "WIRE" | null;
   }>();
 
   const [tableContainerWidth, setTableContainerWidth] = useState<number>(0);
@@ -134,36 +146,84 @@ const ExceptionReview = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const params: { [anyProp: string]: string | string[] } = {};
+
+    qParams.forEach((value, key) => {
+      if (value.includes(",")) {
+        params[key] = value.split(",");
+      } else {
+        params[key] = value;
+      }
+    });
+
+    if (
+      params.beginDate == null ||
+      params.endDate == null ||
+      params.transactionType == null
+    ) {
+      // TODO -- clear the slice state
+      return;
+    }
+
+    reset({
+      beginDate: params.beginDate?.toString() ?? "",
+      endDate: params.endDate?.toString() ?? "",
+      transactionType: params.transactionType?.toString() as
+        | "ACH"
+        | "WIRE"
+        | null,
+    });
+
+    setTempTransactionType(getValues("transactionType") as "ACH" | "WIRE");
+
+    setSelectedTransactionType(getValues("transactionType") as "ACH" | "WIRE");
+
+    const fetchDataHelper = () => {
+      setSubmittingTransactions(true);
+      setSubmittingSettlements(true);
+      dispatch(
+        fetchTransactionsPaginated({
+          beginDate: params.beginDate?.toString() ?? "",
+          endDate: params.endDate?.toString() ?? "",
+          transactionType: getValues("transactionType") as "ACH" | "WIRE",
+          refresh: true,
+        })
+      ).then((res: any) => {
+        setSubmittingTransactions(false);
+      });
+      setSelectedTransactionId(null);
+      setSelectedSettlementId(null);
+      dispatch(
+        fetchSettlementsPaginated({
+          beginDate: params.beginDate?.toString() ?? "",
+          endDate: params.endDate?.toString() ?? "",
+          transactionType: getValues("transactionType") as "ACH" | "WIRE",
+          refresh: true,
+        })
+      ).then((res: any) => {
+        setSubmittingSettlements(false);
+      });
+    };
+
+    fetchDataHelper();
+  }, [dispatch, qParams, reset, getValues]);
+
   const onSubmit: SubmitHandler<{
-    beginDate: Moment;
-    endDate: Moment;
-  }> = (data: { beginDate: Moment; endDate: Moment }) => {
+    beginDate: string;
+    endDate: string;
+  }> = (data: { beginDate: string; endDate: string }) => {
     console.log("data:", data);
-    setSubmittingTransactions(true);
-    setSubmittingSettlements(true);
-    dispatch(
-      fetchTransactionsPaginated({
-        beginDate: data.beginDate,
-        endDate: data.endDate,
-        transactionType: transactionType,
-        refresh: true,
-      })
-    ).then((res: any) => {
-      setSubmittingTransactions(false);
-    });
-    setSelectedTransactionId(null);
-    setSelectedSettlementId(null);
-    setSelectedTransactionType(null);
-    dispatch(
-      fetchSettlementsPaginated({
-        beginDate: data.beginDate,
-        endDate: data.endDate,
-        transactionType: transactionType,
-        refresh: true,
-      })
-    ).then((res: any) => {
-      setSubmittingSettlements(false);
-    });
+    let params: string = "?";
+
+    for (const key in data) {
+      if ((data as any)[key] !== undefined) {
+        params += `${key}=${(data as any)[key]}&`;
+      }
+    }
+
+    params = params.slice(0, -1);
+    router.replace(`/recon/exceptionReview${params}`);
   };
 
   const {
@@ -176,6 +236,13 @@ const ExceptionReview = () => {
   const manualMatchOnSubmit: SubmitHandler<{ note: string }> = (data: {
     note: string;
   }) => {
+    console.log(
+      "manualMatchOnSubmit",
+      data,
+      selectedTransactionId,
+      selectedSettlementId,
+      selectedTransactionType
+    );
     if (
       selectedTransactionId == null ||
       selectedSettlementId == null ||
@@ -289,7 +356,7 @@ const ExceptionReview = () => {
                   }
                 },
               }}
-              value=""
+              value={getValues("beginDate") ?? ""}
             />
           </div>
           <div className="w-[300px]">
@@ -310,7 +377,7 @@ const ExceptionReview = () => {
                   }
                 },
               }}
-              value=""
+              value={getValues("endDate") ?? ""}
             />
           </div>
           <div className="w-[300px]">
@@ -318,8 +385,11 @@ const ExceptionReview = () => {
             <div className="pb-[7px]"></div>
             <RadioButton
               title=""
-              value={transactionType}
-              setValue={setTransactionType}
+              value={tempTransactionType}
+              setValue={(val: any) => {
+                setTempTransactionType(val);
+                setValue("transactionType", val);
+              }}
               options={["ACH", "WIRE"]}
               layout="horizontal"
             />
@@ -468,7 +538,9 @@ const ExceptionReview = () => {
                         fetchTransactionsPaginated({
                           beginDate: getValues("beginDate"),
                           endDate: getValues("endDate"),
-                          transactionType: transactionType,
+                          transactionType: getValues("transactionType") as
+                            | "ACH"
+                            | "WIRE",
                           refresh: false,
                         })
                       );
@@ -482,7 +554,7 @@ const ExceptionReview = () => {
               <div className="pb-2" />
               {settlements.length == 0 ? (
                 <MyText size="sm">No settlements found</MyText>
-              ) : transactionType == "ACH" ? (
+              ) : getValues("transactionType") == "ACH" ? (
                 <MyTable
                   sizeOptions={[25, 50, ...pageSizeOptions]}
                   key={`settlements-${tableContainerWidth}`}
@@ -509,7 +581,6 @@ const ExceptionReview = () => {
                           checked={params.row.id === selectedSettlementId}
                           onChange={(val: any) => {
                             setSelectedSettlementId(val ? params.row.id : null);
-                            setSelectedTransactionType("ACH");
                           }}
                         />
                       ),
@@ -581,7 +652,9 @@ const ExceptionReview = () => {
                         fetchSettlementsPaginated({
                           beginDate: getValues("beginDate"),
                           endDate: getValues("endDate"),
-                          transactionType: transactionType,
+                          transactionType: getValues("transactionType") as
+                            | "ACH"
+                            | "WIRE",
                           refresh: false,
                         })
                       );
@@ -615,7 +688,6 @@ const ExceptionReview = () => {
                           checked={params.row.id === selectedSettlementId}
                           onChange={(val: any) => {
                             setSelectedSettlementId(val ? params.row.id : null);
-                            setSelectedTransactionType("WIRE");
                           }}
                         />
                       ),
@@ -688,7 +760,9 @@ const ExceptionReview = () => {
                         fetchSettlementsPaginated({
                           beginDate: getValues("beginDate"),
                           endDate: getValues("endDate"),
-                          transactionType: transactionType,
+                          transactionType: getValues("transactionType") as
+                            | "ACH"
+                            | "WIRE",
                           refresh: false,
                         })
                       );
