@@ -129,27 +129,29 @@ const NOCChangeModal: React.FC<NOCChangeModalParams> = ({
 
                     const updatedCounterparty = structuredClone(counterparty);
 
-                    if (noc.ach?.changeCode == "C01") {
-                      updatedCounterparty.ach.accountNumber = accountNumber;
-                    }
-                    if (noc.ach?.changeCode == "C02") {
-                      updatedCounterparty.ach.routingNumber = rtn;
-                    }
-                    if (noc.ach?.changeCode == "C03") {
-                      updatedCounterparty.ach.routingNumber = rtn;
-                      updatedCounterparty.ach.accountNumber = accountNumber;
-                    }
-                    if (noc.ach?.changeCode == "C05") {
-                      updatedCounterparty.ach.bankAccountType = transCode;
-                    }
-                    if (noc.ach?.changeCode == "C06") {
-                      updatedCounterparty.ach.accountNumber = accountNumber;
-                      updatedCounterparty.ach.bankAccountType = transCode;
-                    }
-                    if (noc.ach?.changeCode == "C07") {
-                      updatedCounterparty.ach.routingNumber = rtn;
-                      updatedCounterparty.ach.accountNumber = accountNumber;
-                      updatedCounterparty.ach.bankAccountType = transCode;
+                    if (updatedCounterparty.ach) {
+                      if (noc.ach?.changeCode == "C01") {
+                        updatedCounterparty.ach.accountNumber = accountNumber;
+                      }
+                      if (noc.ach?.changeCode == "C02") {
+                        updatedCounterparty.ach.routingNumber = rtn;
+                      }
+                      if (noc.ach?.changeCode == "C03") {
+                        updatedCounterparty.ach.routingNumber = rtn;
+                        updatedCounterparty.ach.accountNumber = accountNumber;
+                      }
+                      if (noc.ach?.changeCode == "C05") {
+                        updatedCounterparty.ach.bankAccountType = transCode;
+                      }
+                      if (noc.ach?.changeCode == "C06") {
+                        updatedCounterparty.ach.accountNumber = accountNumber;
+                        updatedCounterparty.ach.bankAccountType = transCode;
+                      }
+                      if (noc.ach?.changeCode == "C07") {
+                        updatedCounterparty.ach.routingNumber = rtn;
+                        updatedCounterparty.ach.accountNumber = accountNumber;
+                        updatedCounterparty.ach.bankAccountType = transCode;
+                      }
                     }
 
                     dispatch(

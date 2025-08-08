@@ -917,9 +917,9 @@ export interface Counterparty {
   accountNumber?: string | null;
   status?: string | null;
   blockedResults: CounterpartyBlockedResults[];
-  ach: CounterpartyACH | undefined;
-  wire: CounterpartyWire | undefined;
-  braid: CounterpartyBraid | undefined;
+  ach: CounterpartyACH | null;
+  wire: CounterpartyWire | null;
+  braid: CounterpartyBraid | null;
   ofacId?: number | null;
   idNumber?: string | null;
   idType?: string | null;
