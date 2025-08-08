@@ -1,74 +1,118 @@
 "use client";
 
 import { Counterparty } from "@/core/api/ApiTypes";
-import Divider from "@mui/material/Divider";
 import ItemRow from "@/core/components/Text/ItemRow";
 import MyText from "@/core/components/Text/Text";
-import MyExpandableButton from "@/core/components/Button/MyExpandableButton";
-import MyEditButton from "@/core/components/Button/MyEditButton";
-import MyEditableTextField from "@/core/components/TextField/MyEditableTextField";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { timestampToDate } from "@/core/utils/date_time_util";
+import ItemRowHorizontal from "../../Text/ItemRowHorizontal";
+import MyHorizontalEditableTextField from "../../TextField/horizontal_editable_textfield";
+import MyBlueButton from "../../Button/MyBlueButton";
+import MyTextButton from "../../Button/MyTextButton";
+import { useAppDispatch } from "@/redux/store/store";
+import { enqueueSnackbar } from "notistack";
+import { updateCounterparty } from "@/redux/slices/CounterpartySlice";
+import { SubmitHandler, useForm } from "react-hook-form";
+import WrapItem from "../../divs/wrap_item";
+import WrapContainer from "../../divs/wrap_container";
+import { cleanObject } from "@/core/utils/form_util";
+
 type CounterpartyWireDetailsViewProps = {
   counterparty: Counterparty;
-  control: any;
-  errors: any;
-  submitting: any;
-  setIsEditing: any;
-  isEditing: any;
   editable?: boolean;
+  counterpartyId: any;
+  setRefresh: any;
 };
 
 const CounterpartyWireDetailsView: React.FC<
   CounterpartyWireDetailsViewProps
-> = ({
-  counterparty,
-  control,
-  errors,
-  submitting,
-  isEditing,
-  setIsEditing,
-  editable = true,
-}) => {
-  const [expandDetails, toggleExpandDetails] = useState(false);
+> = ({ counterparty, editable = true, counterpartyId, setRefresh }) => {
+  const dispatch = useAppDispatch();
+  const [isEditing, setIsEditing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  console.log("CPPPPT:", counterparty);
+  const {
+    formState: { errors, submitCount, isSubmitted, isValid },
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+  } = useForm<Counterparty>({
+    defaultValues: {
+      ...counterparty,
+    },
+  });
+
+  const onSubmit: SubmitHandler<Counterparty> = (data: Counterparty) => {
+    setSubmitting(true);
+
+    if (counterparty) {
+      data = cleanObject(data);
+
+      dispatch(
+        updateCounterparty({
+          id: parseInt(counterpartyId),
+          counterparty: data as any,
+        })
+      ).then((p: any) => {
+        if (typeof p.payload === "string") {
+          enqueueSnackbar(p.payload, { variant: "error", persist: true });
+        } else {
+          setIsEditing(false);
+        }
+        setRefresh(true);
+        setSubmitting(false);
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!isEditing) {
+      setValue("wire", counterparty?.wire);
+    }
+  }, [isEditing, counterparty?.wire, setValue]);
 
   return (
-    <div className="flex flex-col">
-      <MyExpandableButton
-        title="Wire Payment Instrument"
-        expand={expandDetails}
-        toggleExpand={toggleExpandDetails}
-      />
-      <Divider />
-      <div className="pb-4"></div>
-      {expandDetails && (
-        <div className="flex flex-row-reverse justify-between">
-          {editable && (
-            <div>
-              <MyEditButton editing={isEditing} setEditing={setIsEditing} />
-            </div>
-          )}
-          <div className="w-full">
-            <ItemRow
-              horizontal={!editable}
-              title="ID"
-              value={counterparty?.wire?.id ?? ""}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Wire Type"
-              value={counterparty?.wire?.type ?? ""}
-            ></ItemRow>
-            {editable && (
-              <>
-                <MyText size="md">Beneficiary Address details</MyText>
-                <div className="pb-4" />
-              </>
-            )}
+    <div className="flex flex-col gap-y-8 pt-2 w-full">
+      <WrapContainer>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="ID"
+            value={counterparty?.id?.toString() ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Wire Type"
+            value={counterparty?.wire?.type ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Status"
+            value={counterparty?.wire?.status ?? ""}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Created at"
+            value={timestampToDate(counterparty?.wire?.createdAt)}
+          />
+        </WrapItem>
+        <WrapItem>
+          <ItemRowHorizontal
+            title="Updated at"
+            value={timestampToDate(counterparty?.wire?.updatedAt)}
+          />
+        </WrapItem>
+      </WrapContainer>
+      <div>
+        <MyText size="sm">Beneficiary Address details</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -91,18 +135,19 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="State"
                 value={
                   counterparty.wire?.address?.state
                     ? counterparty.wire?.address?.state
                     : ""
                 }
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -125,14 +170,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="City"
                 value={counterparty.wire?.address?.city ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -155,14 +201,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Street Address"
                 value={counterparty.wire?.address?.line1 ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -185,14 +232,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Apt, Building etc"
                 value={counterparty.wire?.address?.line2 ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -215,14 +263,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Postal Code"
                 value={counterparty.wire?.address?.postalCode ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -251,14 +300,21 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Country Code"
                 value={counterparty.wire?.address?.countryCode ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      <div>
+        <MyText size="sm">Receiver details</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -281,14 +337,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Receiver Routing Number"
                 value={counterparty.wire?.receiverRoutingNumber ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -311,14 +368,21 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Receiver Bank Short Name"
                 value={counterparty.wire?.receiverShortName ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      <div>
+        <MyText size="sm">Beneficiary FI details</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -341,14 +405,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Beneficiary FI Account Number"
                 value={counterparty.wire?.beneficiaryAccountNumber ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -360,10 +425,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -374,14 +436,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Beneficiary FI Name"
                 value={counterparty.wire?.beneficiaryFIName ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -393,10 +456,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -408,14 +468,15 @@ const CounterpartyWireDetailsView: React.FC<
                 options={["ABA", "BIC"]}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Beneficiary FI ID Type"
                 value={counterparty.wire?.beneficiaryFIIdType ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -427,10 +488,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -441,258 +499,262 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Beneficiary ID Number"
                 value={counterparty.wire?.beneficiaryIdNumber ?? ""}
-              ></ItemRow>
-            )}
-            {editable && (
-              <>
-                <MyText size="md">Beneficiary FI Address</MyText>
-                <div className="pb-4" />
-              </>
-            )}
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.state"
-                displayName="Beneficiary State"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: false,
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.state
-                    ? counterparty.wire?.beneficiaryFIAddress?.state
-                    : ""
-                }
-                submitting={false}
               />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary State"
-                value={counterparty.wire?.beneficiaryFIAddress?.state ?? ""}
-              ></ItemRow>
             )}
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.city"
-                displayName="Beneficiary City"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.city
-                    ? counterparty.wire?.beneficiaryFIAddress?.city
-                    : ""
-                }
-                submitting={false}
-              />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary City"
-                value={counterparty.wire?.beneficiaryFIAddress?.city ?? ""}
-              ></ItemRow>
-            )}
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.line1"
-                displayName="Beneficiary Street Address"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.line1
-                    ? counterparty.wire?.beneficiaryFIAddress?.line1
-                    : ""
-                }
-                submitting={false}
-              />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary Street Address"
-                value={counterparty.wire?.beneficiaryFIAddress?.line1 ?? ""}
-              ></ItemRow>
-            )}
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.line2"
-                displayName="Beneficiary Apt, Building etc"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: false,
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.line2
-                    ? counterparty.wire?.beneficiaryFIAddress?.line2
-                    : ""
-                }
-                submitting={false}
-              />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary Apt, Building etc"
-                value={counterparty.wire?.beneficiaryFIAddress?.line2 ?? ""}
-              ></ItemRow>
-            )}
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.postalCode"
-                displayName="Beneficiary Postal Code"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.postalCode
-                    ? counterparty.wire?.beneficiaryFIAddress?.postalCode
-                    : ""
-                }
-                submitting={false}
-              />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary Postal Code"
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.postalCode ?? ""
-                }
-              ></ItemRow>
-            )}
-            {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.countryCode"
-                displayName="Beneficiary Country Code"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
-                        validate: (value: string, _: any) => {
-                          if (counterparty.wire?.type == "INTERNATIONAL") {
-                            const countryCodeRegex = /^[A-Z]{2}$/;
-                            if (!countryCodeRegex.test(value) || value == "") {
-                              return "Country code must be 2 uppercase letters";
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      <div>
+        <div>
+          <MyText size="sm">Beneficiary FI Address</MyText>
+          <div className="pb-1" />
+          <WrapContainer>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.state"
+                  displayName="Beneficiary State"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.state
+                      ? counterparty.wire?.beneficiaryFIAddress?.state
+                      : ""
+                  }
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary State"
+                  value={counterparty.wire?.beneficiaryFIAddress?.state ?? ""}
+                />
+              )}
+            </WrapItem>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.city"
+                  displayName="Beneficiary City"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.city
+                      ? counterparty.wire?.beneficiaryFIAddress?.city
+                      : ""
+                  }
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary City"
+                  value={counterparty.wire?.beneficiaryFIAddress?.city ?? ""}
+                />
+              )}
+            </WrapItem>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.line1"
+                  displayName="Beneficiary Street Address"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.line1
+                      ? counterparty.wire?.beneficiaryFIAddress?.line1
+                      : ""
+                  }
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary Street Address"
+                  value={counterparty.wire?.beneficiaryFIAddress?.line1 ?? ""}
+                />
+              )}
+            </WrapItem>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.line2"
+                  displayName="Beneficiary Apt, Building etc"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.line2
+                      ? counterparty.wire?.beneficiaryFIAddress?.line2
+                      : ""
+                  }
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary Apt, Building etc"
+                  value={counterparty.wire?.beneficiaryFIAddress?.line2 ?? ""}
+                />
+              )}
+            </WrapItem>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.postalCode"
+                  displayName="Beneficiary Postal Code"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.postalCode
+                      ? counterparty.wire?.beneficiaryFIAddress?.postalCode
+                      : ""
+                  }
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary Postal Code"
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.postalCode ?? ""
+                  }
+                />
+              )}
+            </WrapItem>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.countryCode"
+                  displayName="Beneficiary Country Code"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                          validate: (value: string, _: any) => {
+                            if (counterparty.wire?.type == "INTERNATIONAL") {
+                              const countryCodeRegex = /^[A-Z]{2}$/;
+                              if (
+                                !countryCodeRegex.test(value) ||
+                                value == ""
+                              ) {
+                                return "Country code must be 2 uppercase letters";
+                              }
                             }
-                          }
-                        },
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.countryCode
-                    ? counterparty.wire?.beneficiaryFIAddress?.countryCode
-                    : ""
-                }
-                submitting={false}
-              />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary Country Code"
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.countryCode ?? ""
-                }
-              ></ItemRow>
-            )}
+                          },
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.countryCode
+                      ? counterparty.wire?.beneficiaryFIAddress?.countryCode
+                      : ""
+                  }
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary Country Code"
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.countryCode ?? ""
+                  }
+                />
+              )}
+            </WrapItem>
+            <WrapItem>
+              {editable ? (
+                <MyHorizontalEditableTextField
+                  editing={isEditing}
+                  setEditing={setIsEditing}
+                  editable={false}
+                  name="wire.beneficiaryFIAddress.type"
+                  displayName="Beneficiary FI Address Type"
+                  control={control}
+                  errors={errors}
+                  rules={
+                    submitting
+                      ? { required: false }
+                      : {
+                          required: false,
+                        }
+                  }
+                  value={
+                    counterparty.wire?.beneficiaryFIAddress?.type
+                      ? counterparty.wire?.beneficiaryFIAddress?.type
+                      : ""
+                  }
+                  options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
+                  submitting={false}
+                />
+              ) : (
+                <ItemRowHorizontal
+                  title="Beneficiary FI Address Type"
+                  value={counterparty.wire?.beneficiaryFIAddress?.type ?? ""}
+                />
+              )}
+            </WrapItem>
+          </WrapContainer>
+        </div>
+      </div>
+      <div>
+        <MyText size="sm">Originator FI details</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
-                editing={isEditing}
-                setEditing={setIsEditing}
-                editable={false}
-                name="wire.beneficiaryFIAddress.type"
-                displayName="Beneficiary FI Address Type"
-                control={control}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
-                      }
-                }
-                value={
-                  counterparty.wire?.beneficiaryFIAddress?.type
-                    ? counterparty.wire?.beneficiaryFIAddress?.type
-                    : ""
-                }
-                options={["BUSINESS", "RESIDENCE", "MAILING", "OTHER"]}
-                submitting={false}
-              />
-            ) : (
-              <ItemRow
-                horizontal={!editable}
-                title="Beneficiary FI Address Type"
-                value={counterparty.wire?.beneficiaryFIAddress?.type ?? ""}
-              ></ItemRow>
-            )}
-            {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -715,14 +777,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator FI Account Number"
                 value={counterparty.wire?.originatorAccountNumber ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -734,10 +797,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -748,14 +808,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator FI Name"
                 value={counterparty.wire?.originatorFiName ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -767,10 +828,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -782,14 +840,15 @@ const CounterpartyWireDetailsView: React.FC<
                 options={["ABA", "BIC"]}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator FI ID Type"
                 value={counterparty.wire?.originatorFiIdType ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -801,10 +860,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -815,20 +871,21 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator ID Number"
                 value={counterparty.wire?.originatorFiIdNumber ?? ""}
-              ></ItemRow>
+              />
             )}
-            {editable && (
-              <>
-                <MyText size="md">Originator FI Address</MyText>
-                <div className="pb-4" />
-              </>
-            )}
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      <div>
+        <MyText size="sm">Originator FI Address</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -851,14 +908,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator State"
                 value={counterparty.wire?.originatorFiAddress?.state ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -870,10 +928,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -884,14 +939,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator City"
                 value={counterparty.wire?.originatorFiAddress?.city ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -903,10 +959,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -917,14 +970,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator Street Address"
                 value={counterparty.wire?.originatorFiAddress?.line1 ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -947,14 +1001,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator Apt, Building etc"
                 value={counterparty.wire?.originatorFiAddress?.line2 ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -966,10 +1021,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -980,14 +1032,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator Postal Code"
                 value={counterparty.wire?.originatorFiAddress?.postalCode ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -999,10 +1052,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                         validate: (value: string, _: any) => {
                           if (counterparty.wire?.type == "INTERNATIONAL") {
                             const countryCodeRegex = /^[A-Z]{2}$/;
@@ -1021,16 +1071,17 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator Country Code"
                 value={
                   counterparty.wire?.originatorFiAddress?.countryCode ?? ""
                 }
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1042,10 +1093,7 @@ const CounterpartyWireDetailsView: React.FC<
                   submitting
                     ? { required: false }
                     : {
-                        required:
-                          counterparty.wire?.type == "INTERNATIONAL"
-                            ? true
-                            : false,
+                        required: false,
                       }
                 }
                 value={
@@ -1057,14 +1105,21 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Originator FI Address Type"
                 value={counterparty.wire?.originatorFiAddress?.type ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      <div>
+        <MyText size="sm">Intermediary FI details</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1087,14 +1142,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI Name"
                 value={counterparty.wire?.intermediaryFIName ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1118,14 +1174,15 @@ const CounterpartyWireDetailsView: React.FC<
                 options={["ABA", "BIC"]}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI ID Type"
                 value={counterparty.wire?.intermediaryFIIdType ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1148,20 +1205,21 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI ID Number"
                 value={counterparty.wire?.intermediaryFIIdNumber ?? ""}
-              ></ItemRow>
+              />
             )}
-            {editable && (
-              <>
-                <MyText size="md">Intermediary FI Address</MyText>
-                <div className="pb-4" />
-              </>
-            )}
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      <div>
+        <MyText size="sm">Intermediary FI Address</MyText>
+        <div className="pb-1" />
+        <WrapContainer>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1185,13 +1243,14 @@ const CounterpartyWireDetailsView: React.FC<
               />
             ) : (
               <ItemRow
-                horizontal={!editable}
                 title="Intermediary FI State"
                 value={counterparty.wire?.intermediaryFIAddress?.state ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1214,14 +1273,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI City"
                 value={counterparty.wire?.intermediaryFIAddress?.city ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1244,14 +1304,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI Street Address"
                 value={counterparty.wire?.intermediaryFIAddress?.line1 ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1274,14 +1335,15 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI Apt, Building etc"
                 value={counterparty.wire?.intermediaryFIAddress?.line2 ?? ""}
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1304,16 +1366,17 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI Postal Code"
                 value={
                   counterparty.wire?.intermediaryFIAddress?.postalCode ?? ""
                 }
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1336,16 +1399,17 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI Country Code"
                 value={
                   counterparty.wire?.intermediaryFIAddress?.countryCode ?? ""
                 }
-              ></ItemRow>
+              />
             )}
+          </WrapItem>
+          <WrapItem>
             {editable ? (
-              <MyEditableTextField
+              <MyHorizontalEditableTextField
                 editing={isEditing}
                 setEditing={setIsEditing}
                 editable={false}
@@ -1369,67 +1433,93 @@ const CounterpartyWireDetailsView: React.FC<
                 submitting={false}
               />
             ) : (
-              <ItemRow
-                horizontal={!editable}
+              <ItemRowHorizontal
                 title="Intermediary FI Address Type"
                 value={counterparty.wire?.intermediaryFIAddress?.type ?? ""}
-              ></ItemRow>
+              />
             )}
-            <ItemRow
-              horizontal={!editable}
-              title="Status"
-              value={counterparty?.wire?.status ?? ""}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Created at"
-              value={timestampToDate(counterparty?.wire?.createdAt)}
-            ></ItemRow>
-            <ItemRow
-              horizontal={!editable}
-              title="Updated at"
-              value={timestampToDate(counterparty?.wire?.updatedAt)}
-            ></ItemRow>
-            {counterparty.wire?.status &&
-              counterparty.wire?.status == "BLOCKED" && (
-                <>
-                  {editable ? (
-                    <MyEditableTextField
-                      editing={isEditing}
-                      setEditing={setIsEditing}
-                      editable={false}
-                      name="wire.blockedResults"
-                      displayName="Blocked results"
-                      control={control}
-                      errors={errors}
-                      rules={
-                        submitting
-                          ? { required: false }
-                          : {
-                              required: false,
-                            }
-                      }
-                      value={
-                        counterparty.wire?.blockedResults
-                          ? counterparty.wire?.blockedResults
-                          : ""
-                      }
-                      submitting={false}
-                    />
-                  ) : (
-                    <ItemRow
-                      horizontal={!editable}
-                      title="Blocked results"
-                      value={counterparty.wire?.blockedResults ?? ""}
-                    ></ItemRow>
-                  )}
-                </>
-              )}
-          </div>
+          </WrapItem>
+        </WrapContainer>
+      </div>
+      {editable && counterparty.status && counterparty.status == "ACTIVE" && (
+        <div className={`flex flex-row ${editable ? "pt-2" : ""}`}>
+          <>
+            {isEditing ? (
+              <div className="flex flex-row gap-4">
+                <div className="w-fit">
+                  <MyTextButton
+                    submitting={submitting}
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                  >
+                    Cancel
+                  </MyTextButton>
+                </div>
+                <div className="w-fit">
+                  <MyBlueButton
+                    submitting={submitting}
+                    onClick={() => {
+                      handleSubmit(onSubmit)();
+                    }}
+                  >
+                    Update Wire Details
+                  </MyBlueButton>
+                </div>
+              </div>
+            ) : (
+              <div className="w-fit">
+                <MyBlueButton
+                  submitting={submitting}
+                  onClick={() => {
+                    setIsEditing(true);
+                  }}
+                >
+                  Edit Wire Details
+                </MyBlueButton>
+              </div>
+            )}
+          </>
         </div>
       )}
     </div>
   );
+
+  // {counterparty.wire?.status &&
+  //   counterparty.wire?.status == "BLOCKED" && (
+  //     <>
+  //       {editable ? (
+  //         <MyEditableTextField
+  //           editing={isEditing}
+  //           setEditing={setIsEditing}
+  //           editable={false}
+  //           name="wire.blockedResults"
+  //           displayName="Blocked results"
+  //           control={control}
+  //           errors={errors}
+  //           rules={
+  //             submitting
+  //               ? { required: false }
+  //               : {
+  //                   required: false,
+  //                 }
+  //           }
+  //           value={
+  //             counterparty.wire?.blockedResults
+  //               ? counterparty.wire?.blockedResults
+  //               : ""
+  //           }
+  //           submitting={false}
+  //         />
+  //       ) : (
+  //         <ItemRow
+  //           horizontal={!editable}
+  //           title="Blocked results"
+  //           value={counterparty.wire?.blockedResults ?? ""}
+  //         ></ItemRow>
+  //       )}
+  //     </>
+  //   )}
 };
 
 export default CounterpartyWireDetailsView;

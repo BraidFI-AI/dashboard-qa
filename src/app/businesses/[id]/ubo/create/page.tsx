@@ -105,7 +105,7 @@ const CreateUBOPage = () => {
       recoveryButtonTitle="Retry"
     />
   ) : (
-    <div className="w-[400px]">
+    <div className="pt-6 w-[400px]">
       <div className="flex flex-row">
         <div className="w-full">
           <MyText>Legal first name</MyText>

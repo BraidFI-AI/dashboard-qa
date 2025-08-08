@@ -64,7 +64,7 @@ const Documents = () => {
   };
 
   return (
-    <>
+    <div className="pt-6">
       <div className="pb-10 w-[180px]">
         <MyBlueButton
           onClick={() => {
@@ -175,7 +175,7 @@ const Documents = () => {
           );
         })
       )}
-    </>
+    </div>
   );
 };
 

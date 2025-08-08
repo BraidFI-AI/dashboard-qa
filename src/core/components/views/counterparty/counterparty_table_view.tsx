@@ -33,52 +33,50 @@ const CounterpartyTableView: React.FC<CounterpartyTableViewProps> = ({
   };
 
   return (
-    <div style={{ height: "67vh" }}>
-      <MyTable
-        pagination={{
-          rowCount: pagination.rowCount,
-          loading: pagination.loadingPage,
-          paginationModel: {
-            page: pagination.pageNumber,
-            pageSize: paginationPageSize,
-          },
-          setPaginationModel: (page: number) => {
-            setPageNumber(page);
-            dispatch(fetchData);
-          },
-        }}
-        handleRowClick={handleRowClick}
-        columns={[
-          { field: "id", headerName: "ID", flex: 1, minWidth: 120 },
-          {
-            field: "name",
-            headerName: "Name",
-            flex: 1,
-            minWidth: 180,
-          },
-          {
-            field: "email",
-            headerName: "Email",
-            flex: 1,
-            minWidth: 200,
-          },
-          {
-            field: "phone",
-            headerName: "Phone number",
-            flex: 1,
-            minWidth: 200,
-          },
-          {
-            field: "type",
-            headerName: "Type",
-            flex: 1,
-            minWidth: 200,
-          },
-          { field: "status", headerName: "Status", flex: 1, minWidth: 120 },
-        ]}
-        rows={counterparties}
-      />
-    </div>
+    <MyTable
+      pagination={{
+        rowCount: pagination.rowCount,
+        loading: pagination.loadingPage,
+        paginationModel: {
+          page: pagination.pageNumber,
+          pageSize: paginationPageSize,
+        },
+        setPaginationModel: (page: number) => {
+          setPageNumber(page);
+          dispatch(fetchData);
+        },
+      }}
+      handleRowClick={handleRowClick}
+      columns={[
+        { field: "id", headerName: "ID", flex: 1, minWidth: 120 },
+        {
+          field: "name",
+          headerName: "Name",
+          flex: 1,
+          minWidth: 180,
+        },
+        {
+          field: "email",
+          headerName: "Email",
+          flex: 1,
+          minWidth: 200,
+        },
+        {
+          field: "phone",
+          headerName: "Phone number",
+          flex: 1,
+          minWidth: 200,
+        },
+        {
+          field: "type",
+          headerName: "Type",
+          flex: 1,
+          minWidth: 200,
+        },
+        { field: "status", headerName: "Status", flex: 1, minWidth: 120 },
+      ]}
+      rows={counterparties}
+    />
   );
 };
 

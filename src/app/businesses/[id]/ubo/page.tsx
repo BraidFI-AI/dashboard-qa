@@ -82,7 +82,7 @@ const UBOs = () => {
   const handleUBOModalClose = () => setUBOModalOpen(false);
 
   return (
-    <>
+    <div className="pt-6">
       <Box className="w-40 pb-4">
         <Link href={`/businesses/${params.id}/ubo/create`}>
           <MyBlueButton>Create UBO</MyBlueButton>
@@ -250,7 +250,7 @@ const UBOs = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 

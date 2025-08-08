@@ -153,252 +153,262 @@ const AccountPage = () => {
     });
   }, [dispatch, params.id, reset]);
 
-  return account == "loading" ? (
-    <div className="flex flex-col items-center justify-center pt-10">
-      <CircularProgress></CircularProgress>
-      <div>Loading account...</div>
-    </div>
-  ) : typeof account == "string" ? (
-    <ErrorPage
-      error={account}
-      recoveryButtonOnClick={() => {
-        setAccount("loading");
-        dispatch(setTitle("Account"));
-        dispatch(fetchAccount((params.id as string) || "0")).then(
-          (acc: any) => {
-            setAccount(acc.payload);
+  return (
+    <div className="pt-6">
+      {" "}
+      {account == "loading" ? (
+        <div className="flex flex-col items-center justify-center pt-10">
+          <CircularProgress></CircularProgress>
+          <div>Loading account...</div>
+        </div>
+      ) : typeof account == "string" ? (
+        <ErrorPage
+          error={account}
+          recoveryButtonOnClick={() => {
+            setAccount("loading");
+            dispatch(setTitle("Account"));
+            dispatch(fetchAccount((params.id as string) || "0")).then(
+              (acc: any) => {
+                setAccount(acc.payload);
 
-            if (typeof acc.payload != "string") {
-              reset({ status: acc.payload.status });
+                if (typeof acc.payload != "string") {
+                  reset({ status: acc.payload.status });
 
-              dispatch(setTitle(acc.payload.accountName));
+                  dispatch(setTitle(acc.payload.accountName));
 
-              dispatch(fetchAccountBalance(acc.payload.accountNumber)).then(
-                (bal: any) => {
-                  setBalance(bal.payload);
+                  dispatch(fetchAccountBalance(acc.payload.accountNumber)).then(
+                    (bal: any) => {
+                      setBalance(bal.payload);
+                    }
+                  );
+
+                  dispatch(fetchProduct(acc.payload.productId)).then(
+                    (prod: any) => {
+                      setProduct(prod.payload);
+                    }
+                  );
+
+                  dispatch(
+                    fetchIndividualOrBusiness(acc.payload.customerId)
+                  ).then((cust: any) => {
+                    setCustomer(cust.payload);
+                  });
                 }
-              );
-
-              dispatch(fetchProduct(acc.payload.productId)).then(
-                (prod: any) => {
-                  setProduct(prod.payload);
+              }
+            );
+          }}
+          recoveryButtonTitle="Retry"
+        />
+      ) : (
+        <div className="flex flex-row w-[650px] justify-between">
+          <div className="w-[300px]">
+            <ItemRow title="ID" value={account.id ?? ""}></ItemRow>
+            <ItemRow
+              title="Account number"
+              value={account.accountNumber ?? ""}
+            ></ItemRow>
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="accountName"
+                displayName="Account Name"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
                 }
-              );
-
-              dispatch(fetchIndividualOrBusiness(acc.payload.customerId)).then(
-                (cust: any) => {
-                  setCustomer(cust.payload);
+                value={account.accountName ?? ""}
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                title="Account Name"
+                value={account.accountName ?? ""}
+              ></ItemRow>
+            )}
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="canAcceptSweep"
+                displayName="Can Accept Sweep"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
                 }
-              );
-            }
-          }
-        );
-      }}
-      recoveryButtonTitle="Retry"
-    />
-  ) : (
-    <div className="flex flex-row w-[650px] justify-between">
-      <div className="w-[300px]">
-        <ItemRow title="ID" value={account.id ?? ""}></ItemRow>
-        <ItemRow
-          title="Account number"
-          value={account.accountNumber ?? ""}
-        ></ItemRow>
-        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
-          <MyEditableTextField
-            editing={editing}
-            setEditing={setEditing}
-            name="accountName"
-            displayName="Account Name"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: true,
-                  }
-            }
-            value={account.accountName ?? ""}
-            submitting={false}
-          />
-        ) : (
-          <ItemRow
-            title="Account Name"
-            value={account.accountName ?? ""}
-          ></ItemRow>
-        )}
-        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
-          <MyEditableTextField
-            editing={editing}
-            setEditing={setEditing}
-            name="canAcceptSweep"
-            displayName="Can Accept Sweep"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: false,
-                  }
-            }
-            value={account.canAcceptSweep ?? ""}
-            submitting={false}
-            options={["true", "false"]}
-          />
-        ) : (
-          <ItemRow
-            title="Can Accept Sweep"
-            value={account.canAcceptSweep ?? ""}
-          ></ItemRow>
-        )}
-        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
-          <MyEditableTextField
-            editing={editing}
-            setEditing={setEditing}
-            name="fundingAccountNumber"
-            displayName="Funding Account Number"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: false,
-                  }
-            }
-            value={account.fundingAccountNumber ?? ""}
-            submitting={false}
-          />
-        ) : (
-          <ItemRow
-            title="Funding Account Number"
-            value={account.fundingAccountNumber ?? ""}
-          ></ItemRow>
-        )}
-        {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
-          <MyEditableTextField
-            editing={editing}
-            setEditing={setEditing}
-            name="sweepAccountNumber"
-            displayName="Sweep Account Number"
-            control={control}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: false,
-                  }
-            }
-            value={account.sweepAccountNumber ?? ""}
-            submitting={false}
-          />
-        ) : (
-          <ItemRow
-            title="Sweep Account Number"
-            value={account.sweepAccountNumber ?? ""}
-          ></ItemRow>
-        )}
+                value={account.canAcceptSweep ?? ""}
+                submitting={false}
+                options={["true", "false"]}
+              />
+            ) : (
+              <ItemRow
+                title="Can Accept Sweep"
+                value={account.canAcceptSweep ?? ""}
+              ></ItemRow>
+            )}
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="fundingAccountNumber"
+                displayName="Funding Account Number"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={account.fundingAccountNumber ?? ""}
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                title="Funding Account Number"
+                value={account.fundingAccountNumber ?? ""}
+              ></ItemRow>
+            )}
+            {userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE ? (
+              <MyEditableTextField
+                editing={editing}
+                setEditing={setEditing}
+                name="sweepAccountNumber"
+                displayName="Sweep Account Number"
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: false,
+                      }
+                }
+                value={account.sweepAccountNumber ?? ""}
+                submitting={false}
+              />
+            ) : (
+              <ItemRow
+                title="Sweep Account Number"
+                value={account.sweepAccountNumber ?? ""}
+              ></ItemRow>
+            )}
 
-        {/* <ItemRow
+            {/* <ItemRow
           title="Account Name"
           value={account.accountName ?? ""}
         ></ItemRow> */}
-        <MyEditableTextField
-          editing={editing}
-          setEditing={setEditing}
-          name="status"
-          displayName="Status"
-          control={control}
-          errors={errors}
-          rules={
-            submitting
-              ? { required: false }
-              : {
-                  required: true,
-                }
-          }
-          value={
-            editing &&
-            (userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE) &&
-            account.status == "INACTIVE"
-              ? "ACTIVE"
-              : account.status ?? ""
-          }
-          submitting={false}
-          options={
-            userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE
-              ? ["INACTIVE", "BLOCKED"]
-              : ["INACTIVE", "BLOCKED", "ACTIVE"]
-          }
-        />
-        <div className="w-fit">
-          <MyBlueButton
-            onClick={() => {
-              handleSubmit(onSubmit)();
-            }}
-            submitting={submitting}
-          >
-            Update Status
-          </MyBlueButton>
+            <MyEditableTextField
+              editing={editing}
+              setEditing={setEditing}
+              name="status"
+              displayName="Status"
+              control={control}
+              errors={errors}
+              rules={
+                submitting
+                  ? { required: false }
+                  : {
+                      required: true,
+                    }
+              }
+              value={
+                editing &&
+                (userType == DEVELOPER_ROLE ||
+                  userType == DEVELOPER_OPS_ROLE) &&
+                account.status == "INACTIVE"
+                  ? "ACTIVE"
+                  : account.status ?? ""
+              }
+              submitting={false}
+              options={
+                userType == DEVELOPER_ROLE || userType == DEVELOPER_OPS_ROLE
+                  ? ["INACTIVE", "BLOCKED"]
+                  : ["INACTIVE", "BLOCKED", "ACTIVE"]
+              }
+            />
+            <div className="w-fit">
+              <MyBlueButton
+                onClick={() => {
+                  handleSubmit(onSubmit)();
+                }}
+                submitting={submitting}
+              >
+                Update Status
+              </MyBlueButton>
+            </div>
+            <div className="h-10"></div>
+          </div>
+          <div className="w-[300px]">
+            <ItemRow
+              title="Customer ID"
+              value={
+                customer
+                  ? {
+                      value:
+                        customer.type == "BUSINESS"
+                          ? (customer as Business).name
+                          : (customer as Individual).firstName +
+                            " " +
+                            (customer as Individual).middleName +
+                            " " +
+                            (customer as Individual).lastName,
+                      link: `${
+                        customer
+                          ? customer.type == "BUSINESS"
+                            ? "/businesses/"
+                            : "/individuals/"
+                          : ""
+                      }/${account.customerId}`,
+                    }
+                  : account.customerId?.toString() ?? ""
+              }
+            ></ItemRow>
+            <ItemRow
+              title="Product ID"
+              value={
+                product
+                  ? {
+                      value: product.productName ?? "",
+                      link: `/configuration/products/${account.productId}`,
+                    }
+                  : account.productId?.toString() ?? ""
+              }
+            ></ItemRow>
+            <ItemRow
+              title="Account Balance"
+              value={toDollarFormat(balance?.accountBalance ?? "")}
+            ></ItemRow>
+            <ItemRow
+              title="Available Balance"
+              value={toDollarFormat(balance?.availableBalance ?? "")}
+            ></ItemRow>
+            <ItemRow
+              title="Created Date"
+              value={
+                account.createdAt ? timestampToDate(account.createdAt) : ""
+              }
+            ></ItemRow>
+            <ItemRow
+              title="Updated Date"
+              value={
+                account.updatedAt ? timestampToDate(account.updatedAt) : ""
+              }
+            ></ItemRow>
+          </div>
         </div>
-        <div className="h-10"></div>
-      </div>
-      <div className="w-[300px]">
-        <ItemRow
-          title="Customer ID"
-          value={
-            customer
-              ? {
-                  value:
-                    customer.type == "BUSINESS"
-                      ? (customer as Business).name
-                      : (customer as Individual).firstName +
-                        " " +
-                        (customer as Individual).middleName +
-                        " " +
-                        (customer as Individual).lastName,
-                  link: `${
-                    customer
-                      ? customer.type == "BUSINESS"
-                        ? "/businesses/"
-                        : "/individuals/"
-                      : ""
-                  }/${account.customerId}`,
-                }
-              : account.customerId?.toString() ?? ""
-          }
-        ></ItemRow>
-        <ItemRow
-          title="Product ID"
-          value={
-            product
-              ? {
-                  value: product.productName ?? "",
-                  link: `/configuration/products/${account.productId}`,
-                }
-              : account.productId?.toString() ?? ""
-          }
-        ></ItemRow>
-        <ItemRow
-          title="Account Balance"
-          value={toDollarFormat(balance?.accountBalance ?? "")}
-        ></ItemRow>
-        <ItemRow
-          title="Available Balance"
-          value={toDollarFormat(balance?.availableBalance ?? "")}
-        ></ItemRow>
-        <ItemRow
-          title="Created Date"
-          value={account.createdAt ? timestampToDate(account.createdAt) : ""}
-        ></ItemRow>
-        <ItemRow
-          title="Updated Date"
-          value={account.updatedAt ? timestampToDate(account.updatedAt) : ""}
-        ></ItemRow>
-      </div>
+      )}
     </div>
   );
 };

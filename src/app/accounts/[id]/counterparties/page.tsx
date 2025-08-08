@@ -52,13 +52,7 @@ const CounterpartyPage = () => {
   }, [dispatch, params.id, setAccount]);
 
   return (
-    <Box className="flex flex-col h-full">
-      <Box className="w-fit">
-        <Link href={"counterparties/create"}>
-          <MyBlueButton>Create Counterparty</MyBlueButton>
-        </Link>
-      </Box>
-      <Box className="pb-4"></Box>
+    <Box className="flex flex-col h-full pt-6">
       {counterparties == "loading" || account == "loading" ? (
         <MyCircularProgressIndicator />
       ) : typeof counterparties == "string" || typeof account == "string" ? (
@@ -114,16 +108,18 @@ const CounterpartyPage = () => {
           }}
         />
       ) : (
-        <CounterpartyTableView
-          counterparties={counterparties}
-          fetchData={fetchAccountCounterparties({
-            id: (params.id as string) || "0",
-          })}
-          setPageNumber={(page: number) => {
-            dispatch(setAccountCounterpartyPaginationPageNumber(page));
-          }}
-          pagination={pagination}
-        ></CounterpartyTableView>
+        <div style={{ height: "78vh" }}>
+          <CounterpartyTableView
+            counterparties={counterparties}
+            fetchData={fetchAccountCounterparties({
+              id: (params.id as string) || "0",
+            })}
+            setPageNumber={(page: number) => {
+              dispatch(setAccountCounterpartyPaginationPageNumber(page));
+            }}
+            pagination={pagination}
+          />
+        </div>
       )}
     </Box>
   );

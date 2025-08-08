@@ -97,9 +97,11 @@ const Accounts = () => {
       recoveryButtonTitle="Retry"
     />
   ) : accounts.length == 0 ? (
-    <MyText>No Accounts Found</MyText>
+    <div className="pt-6">
+      <MyText>No Accounts Found</MyText>
+    </div>
   ) : (
-    <div style={{ height: "75vh" }}>
+    <div className="pt-6" style={{ height: "81vh" }}>
       <MyTable
         // handleCellClick={(
         //   params: GridCellParams,

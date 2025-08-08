@@ -73,7 +73,7 @@ const ViewDocument = () => {
   }, [handleEscapeKey]);
 
   return (
-    <div className="h-[75vh]">
+    <div className="pt-6 h-[75vh]">
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>

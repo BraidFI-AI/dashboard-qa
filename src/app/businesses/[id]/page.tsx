@@ -161,7 +161,7 @@ const BusinessDetails = () => {
   }, [dispatch, params.id, refresh, setValue]);
 
   return (
-    <>
+    <div className="pt-6">
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -863,7 +863,7 @@ const BusinessDetails = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

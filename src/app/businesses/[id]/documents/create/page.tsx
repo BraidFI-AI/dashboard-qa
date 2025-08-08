@@ -154,7 +154,7 @@ const UploadDocument = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-[300px]">
+    <div className="pt-6 w-[300px]">
       <MyText>Document name</MyText>
       <MyControlledTextField
         name="name"

@@ -52,7 +52,7 @@ class CounterpartyRepo {
     let idsList: IdsListType[] = [];
 
     response.content.forEach((cpt: Counterparty) => {
-      idsList.push({ id: cpt.id, name: cpt.name });
+      idsList.push({ id: cpt.id ?? null, name: cpt.name ?? null });
     });
 
     return { next: response.nextPage, ids: idsList };
