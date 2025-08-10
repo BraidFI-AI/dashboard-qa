@@ -75,6 +75,8 @@ import CallMergeIcon from "@mui/icons-material/CallMerge";
 import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
+import moment from "moment";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -334,7 +336,10 @@ export default function PersistentDrawerLeft(props: any) {
       iconFocused: (
         <AccountBalanceOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
       ),
-      path: "/ach/settlement",
+      path: `/ach/settlement?startDate=${momentToTimeZoneString(
+        moment().subtract(1, "day"),
+        true
+      )}&endDate=${momentToTimeZoneString(moment(), false)}`,
     });
   }
 

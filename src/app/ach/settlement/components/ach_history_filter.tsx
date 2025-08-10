@@ -4,34 +4,30 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
 import MyText from "@/core/components/Text/Text";
-import { TransactionSearch } from "@/core/api/ApiTypes";
 import { SubmitHandler, useForm } from "react-hook-form";
 import MyControlledAutocomplete from "@/core/components/Autocomplete/MyControlledAutocomplete";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
-import moment, { Moment } from "moment";
-import {
-  TransactionTypesType,
-  fetchTransactionTypes,
-} from "@/redux/slices/AppSlice";
+import moment from "moment";
 import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
-import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import { useAppDispatch } from "@/redux/store/store";
-import MyControlledMultiAutocomplete from "@/core/components/Autocomplete/MyControlledMultiAutocomplete";
 import { fetchProductIdsList } from "@/redux/slices/ach_return_slice";
 import MyTextButton from "@/core/components/Button/MyTextButton";
 import { enqueueSnackbar } from "notistack";
 import { fetchACHSettlementHistory } from "@/redux/slices/ACHSlice";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const AchHistoryFilters = () => {
+  const router = useRouter();
+  const qParams = useSearchParams();
+
   const dispatch = useAppDispatch();
   const [productIdsList, setProductIdsList] = useState<
     "loading" | string | { id: string; name: string }[]
   >("loading");
-  const [productId, setProductId] = useState<string | null>(null);
+  const [productId, setProductId] = useState<string | undefined>(undefined);
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
@@ -61,16 +57,23 @@ const AchHistoryFilters = () => {
     startDate?: string;
     endDate?: string;
   }> = (data: { productId?: string; startDate?: string; endDate?: string }) => {
-    if (productId == null) {
+    if (productId == null || productId == "") {
       data.productId = undefined;
     } else {
       data.productId = productId;
     }
-
-    if (data.startDate == null && data.endDate == null) {
+    if (
+      (data.startDate == null || data.startDate == "") &&
+      (data.endDate == null || data.endDate == "")
+    ) {
       data.startDate = undefined;
       data.endDate = undefined;
-    } else if (data.startDate == null || data.endDate == null) {
+    } else if (
+      data.startDate == null ||
+      data.startDate == "" ||
+      data.endDate == null ||
+      data.endDate == ""
+    ) {
       enqueueSnackbar("Please select both start and end date", {
         variant: "error",
       });
@@ -79,24 +82,33 @@ const AchHistoryFilters = () => {
 
     console.log("data:", data);
 
-    dispatch(
-      fetchACHSettlementHistory({
-        productId: data.productId,
-        date:
-          data.startDate != undefined && data.endDate != undefined
-            ? { startDate: data.startDate, endDate: data.endDate }
-            : undefined,
-      })
-    );
+    let params: string = "?";
+
+    for (const key in data) {
+      if ((data as any)[key] !== undefined) {
+        params += `${key}=${(data as any)[key]}&`;
+      }
+    }
+
+    // remove the last &
+    params = params.slice(0, -1);
     setDrawerOpen(false);
+
+    router.replace(`/ach/settlement${params}`);
   };
+
+  useEffect(() => {
+    reset({
+      productId: qParams.get("accountNumber") ?? "",
+      startDate: qParams.get("startDate") ?? undefined,
+      endDate: qParams.get("endDate") ?? undefined,
+    });
+    setProductId(qParams.get("productId") ?? undefined);
+  }, [qParams, reset]);
 
   useEffect(() => {
     dispatch(fetchProductIdsList()).then((data: any) => {
       setProductIdsList(data.payload);
-      //   if (data.payload?.length > 0) {
-      //     setProductId(data.payload[0]?.id);
-      //   }
     });
   }, [dispatch]);
 
@@ -250,14 +262,14 @@ const AchHistoryFilters = () => {
                 <MyTextButton
                   onClick={() => {
                     reset({
+                      productId: "",
                       startDate: undefined,
                       endDate: undefined,
-                      productId: "",
                     });
-                    setProductId(null);
-
-                    dispatch(fetchACHSettlementHistory({}));
+                    setProductId(undefined);
                     setDrawerOpen(false);
+
+                    router.replace(`/ach/settlement`);
                   }}
                 >
                   Reset Filters

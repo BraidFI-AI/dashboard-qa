@@ -7,6 +7,8 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
+import moment from "moment";
 
 const TabsProvider = (props: any) => {
   const router = useRouter();
@@ -19,7 +21,10 @@ const TabsProvider = (props: any) => {
   const tabs = [
     {
       name: "Settlement",
-      path: `/ach/settlement`,
+      path: `/ach/settlement?startDate=${momentToTimeZoneString(
+        moment().subtract(1, "day"),
+        true
+      )}&endDate=${momentToTimeZoneString(moment(), false)}`,
     },
     {
       name: "Return Files",
