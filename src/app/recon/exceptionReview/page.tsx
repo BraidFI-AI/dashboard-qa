@@ -127,8 +127,12 @@ const ExceptionReview = () => {
   } = useForm<{
     beginDate: string;
     endDate: string;
-    transactionType: "ACH" | "WIRE" | null;
-  }>();
+    transactionType: "ACH" | "WIRE";
+  }>({
+    defaultValues: {
+      transactionType: "ACH",
+    },
+  });
 
   const [tableContainerWidth, setTableContainerWidth] = useState<number>(0);
 
@@ -169,10 +173,7 @@ const ExceptionReview = () => {
     reset({
       beginDate: params.beginDate?.toString() ?? "",
       endDate: params.endDate?.toString() ?? "",
-      transactionType: params.transactionType?.toString() as
-        | "ACH"
-        | "WIRE"
-        | null,
+      transactionType: params.transactionType?.toString() as "ACH" | "WIRE",
     });
 
     setTempTransactionType(getValues("transactionType") as "ACH" | "WIRE");
@@ -212,7 +213,12 @@ const ExceptionReview = () => {
   const onSubmit: SubmitHandler<{
     beginDate: string;
     endDate: string;
-  }> = (data: { beginDate: string; endDate: string }) => {
+    transactionType: "ACH" | "WIRE";
+  }> = (data: {
+    beginDate: string;
+    endDate: string;
+    transactionType: "ACH" | "WIRE";
+  }) => {
     console.log("data:", data);
     let params: string = "?";
 
@@ -243,6 +249,7 @@ const ExceptionReview = () => {
       selectedSettlementId,
       selectedTransactionType
     );
+
     if (
       selectedTransactionId == null ||
       selectedSettlementId == null ||
@@ -597,8 +604,8 @@ const ExceptionReview = () => {
                       ),
                     },
                     {
-                      field: "createdAt",
-                      headerName: "Created",
+                      field: "settlementDate",
+                      headerName: "Settlement Date",
                       flex: 1,
                       minWidth: 140,
                       valueFormatter: (params: any) => {
@@ -617,7 +624,7 @@ const ExceptionReview = () => {
                           .toString()
                           .padStart(2, "0")}`;
                       },
-                      valueGetter: (value: any, row: any) => row.createdAt,
+                      valueGetter: (value: any, row: any) => row.settlementDate,
                     },
                     {
                       field: "receiverAccountNumber",
@@ -704,8 +711,8 @@ const ExceptionReview = () => {
                       ),
                     },
                     {
-                      field: "createdAt",
-                      headerName: "Created",
+                      field: "settlementDate",
+                      headerName: "Settlement Date",
                       flex: 1,
                       minWidth: 140,
                       valueFormatter: (params: any) => {
@@ -724,7 +731,7 @@ const ExceptionReview = () => {
                           .toString()
                           .padStart(2, "0")}`;
                       },
-                      valueGetter: (value: any, row: any) => row.createdAt,
+                      valueGetter: (value: any, row: any) => row.settlementDate,
                     },
                     {
                       field: "originatorAccountNumber",
