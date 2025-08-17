@@ -2,7 +2,6 @@
 
 import RadioButton from "@/core/components/Button/RadioButton";
 import MyControlledDatePicker from "@/core/components/DateTimePicker/MyControlledDateTimePicker";
-import { Moment } from "moment";
 import { useForm } from "react-hook-form";
 import React, { useState, useEffect } from "react";
 import { SubmitHandler } from "react-hook-form";
@@ -38,6 +37,7 @@ import MyCheckbox from "@/core/components/Button/MyCheckbox ";
 import MyRedButton from "@/core/components/Button/MyRedButton";
 import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
 import { enqueueSnackbar } from "notistack";
+import { timestampToDate } from "@/core/utils/date_time_util";
 
 function extractReceiverAccountNumber(content: any) {
   if (content == null) {
@@ -62,6 +62,8 @@ const ExceptionReview = () => {
   const qParams = useSearchParams();
 
   const router = useRouter();
+
+  const [refresh, setRefresh] = useState<boolean>(true);
 
   const [submittingTransactions, setSubmittingTransactions] =
     useState<boolean>(false);
@@ -127,12 +129,7 @@ const ExceptionReview = () => {
   } = useForm<{
     beginDate: string;
     endDate: string;
-    transactionType: "ACH" | "WIRE";
-  }>({
-    defaultValues: {
-      transactionType: "ACH",
-    },
-  });
+  }>();
 
   const [tableContainerWidth, setTableContainerWidth] = useState<number>(0);
 
@@ -151,6 +148,8 @@ const ExceptionReview = () => {
   }, []);
 
   useEffect(() => {
+    setRefresh(false);
+
     const params: { [anyProp: string]: string | string[] } = {};
 
     qParams.forEach((value, key) => {
@@ -173,21 +172,21 @@ const ExceptionReview = () => {
     reset({
       beginDate: params.beginDate?.toString() ?? "",
       endDate: params.endDate?.toString() ?? "",
-      transactionType: params.transactionType?.toString() as "ACH" | "WIRE",
     });
 
-    setTempTransactionType(getValues("transactionType") as "ACH" | "WIRE");
+    setTempTransactionType(params.transactionType as "ACH" | "WIRE");
 
-    setSelectedTransactionType(getValues("transactionType") as "ACH" | "WIRE");
+    setSelectedTransactionType(params.transactionType as "ACH" | "WIRE");
 
     const fetchDataHelper = () => {
+      console.log("fetching data", params);
       setSubmittingTransactions(true);
       setSubmittingSettlements(true);
       dispatch(
         fetchTransactionsPaginated({
           beginDate: params.beginDate?.toString() ?? "",
           endDate: params.endDate?.toString() ?? "",
-          transactionType: getValues("transactionType") as "ACH" | "WIRE",
+          transactionType: params.transactionType as "ACH" | "WIRE",
           refresh: true,
         })
       ).then((res: any) => {
@@ -199,7 +198,7 @@ const ExceptionReview = () => {
         fetchSettlementsPaginated({
           beginDate: params.beginDate?.toString() ?? "",
           endDate: params.endDate?.toString() ?? "",
-          transactionType: getValues("transactionType") as "ACH" | "WIRE",
+          transactionType: params.transactionType as "ACH" | "WIRE",
           refresh: true,
         })
       ).then((res: any) => {
@@ -208,17 +207,12 @@ const ExceptionReview = () => {
     };
 
     fetchDataHelper();
-  }, [dispatch, qParams, reset, getValues]);
+  }, [dispatch, qParams, reset, getValues, refresh]);
 
   const onSubmit: SubmitHandler<{
     beginDate: string;
     endDate: string;
-    transactionType: "ACH" | "WIRE";
-  }> = (data: {
-    beginDate: string;
-    endDate: string;
-    transactionType: "ACH" | "WIRE";
-  }) => {
+  }> = (data: { beginDate: string; endDate: string }) => {
     console.log("data:", data);
     let params: string = "?";
 
@@ -228,7 +222,11 @@ const ExceptionReview = () => {
       }
     }
 
-    params = params.slice(0, -1);
+    // add temp transaction type to params
+    params += `transactionType=${tempTransactionType}`;
+
+    setRefresh(true);
+
     router.replace(`/recon/exceptionReview${params}`);
   };
 
@@ -279,6 +277,7 @@ const ExceptionReview = () => {
             variant: "success",
           });
           setManualMatchModalOpen(false);
+          setRefresh(true);
         }
       })
       .finally(() => {
@@ -395,7 +394,6 @@ const ExceptionReview = () => {
               value={tempTransactionType}
               setValue={(val: any) => {
                 setTempTransactionType(val);
-                setValue("transactionType", val);
               }}
               options={["ACH", "WIRE"]}
               layout="horizontal"
@@ -438,6 +436,8 @@ const ExceptionReview = () => {
               <div className="pb-2" />
               {transactions.length == 0 ? (
                 <MyText size="sm">No transactions found</MyText>
+              ) : selectedTransactionType == null ? (
+                <MyText size="sm">Please select transaction type</MyText>
               ) : (
                 <MyTable
                   sizeOptions={[25, 50, ...pageSizeOptions]}
@@ -489,8 +489,8 @@ const ExceptionReview = () => {
                       ),
                     },
                     {
-                      field: "createdAt",
-                      headerName: "Created",
+                      field: "postDate",
+                      headerName: "Post Date",
                       flex: 1,
                       minWidth: 140,
                       valueFormatter: (params: any) => {
@@ -509,7 +509,7 @@ const ExceptionReview = () => {
                           .toString()
                           .padStart(2, "0")}`;
                       },
-                      valueGetter: (value: any, row: any) => row.createdAt,
+                      valueGetter: (value: any, row: any) => row.postDate,
                     },
                     {
                       field: "senderAccountNumber",
@@ -529,7 +529,7 @@ const ExceptionReview = () => {
                     },
                   ]}
                   rows={transactions}
-                  sortModel={[{ field: "createdAt", sort: "desc" }]}
+                  sortModel={[{ field: "postDate", sort: "desc" }]}
                   pagination={{
                     rowCount: transactionsPagination.rowCount,
                     loading: transactionsPagination.loadingPage,
@@ -545,9 +545,7 @@ const ExceptionReview = () => {
                         fetchTransactionsPaginated({
                           beginDate: getValues("beginDate"),
                           endDate: getValues("endDate"),
-                          transactionType: getValues("transactionType") as
-                            | "ACH"
-                            | "WIRE",
+                          transactionType: selectedTransactionType,
                           refresh: false,
                         })
                       );
@@ -561,7 +559,9 @@ const ExceptionReview = () => {
               <div className="pb-2" />
               {settlements.length == 0 ? (
                 <MyText size="sm">No settlements found</MyText>
-              ) : getValues("transactionType") == "ACH" ? (
+              ) : selectedTransactionType == null ? (
+                <MyText size="sm">Please select transaction type</MyText>
+              ) : selectedTransactionType == "ACH" ? (
                 <MyTable
                   sizeOptions={[25, 50, ...pageSizeOptions]}
                   key={`settlements-${tableContainerWidth}`}
@@ -609,20 +609,7 @@ const ExceptionReview = () => {
                       flex: 1,
                       minWidth: 140,
                       valueFormatter: (params: any) => {
-                        return `${moment(params * 1000).year()}-${(
-                          moment(params * 1000).month() + 1
-                        )
-                          .toString()
-                          .padStart(2, "0")}-${moment(params * 1000)
-                          .date()
-                          .toString()
-                          .padStart(2, "0")} ${moment(params * 1000)
-                          .hour()
-                          .toString()
-                          .padStart(2, "0")}:${moment(params * 1000)
-                          .minute()
-                          .toString()
-                          .padStart(2, "0")}`;
+                        return timestampToDate(params, true, true);
                       },
                       valueGetter: (value: any, row: any) => row.settlementDate,
                     },
@@ -659,9 +646,7 @@ const ExceptionReview = () => {
                         fetchSettlementsPaginated({
                           beginDate: getValues("beginDate"),
                           endDate: getValues("endDate"),
-                          transactionType: getValues("transactionType") as
-                            | "ACH"
-                            | "WIRE",
+                          transactionType: selectedTransactionType,
                           refresh: false,
                         })
                       );
@@ -716,20 +701,7 @@ const ExceptionReview = () => {
                       flex: 1,
                       minWidth: 140,
                       valueFormatter: (params: any) => {
-                        return `${moment(params * 1000).year()}-${(
-                          moment(params * 1000).month() + 1
-                        )
-                          .toString()
-                          .padStart(2, "0")}-${moment(params * 1000)
-                          .date()
-                          .toString()
-                          .padStart(2, "0")} ${moment(params * 1000)
-                          .hour()
-                          .toString()
-                          .padStart(2, "0")}:${moment(params * 1000)
-                          .minute()
-                          .toString()
-                          .padStart(2, "0")}`;
+                        return timestampToDate(params, true, true);
                       },
                       valueGetter: (value: any, row: any) => row.settlementDate,
                     },
@@ -767,9 +739,7 @@ const ExceptionReview = () => {
                         fetchSettlementsPaginated({
                           beginDate: getValues("beginDate"),
                           endDate: getValues("endDate"),
-                          transactionType: getValues("transactionType") as
-                            | "ACH"
-                            | "WIRE",
+                          transactionType: selectedTransactionType,
                           refresh: false,
                         })
                       );

@@ -265,7 +265,9 @@ const ResolveAlertButton = () => {
               (alert.additionalParam ==
                 "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
                 alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE")
                 ? "Correct Account Number"
                 : "Note"}
             </MyText>
