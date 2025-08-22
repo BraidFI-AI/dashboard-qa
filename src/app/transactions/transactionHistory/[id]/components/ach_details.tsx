@@ -6,11 +6,20 @@ import MyText from "@/core/components/Text/Text";
 import { boxStyle } from "@/core/constants";
 import { enumTextToReadableText } from "@/core/utils/formatting_util";
 import { timestampToDate } from "@/core/utils/date_time_util";
+import MyModal from "@/core/components/my_modal";
+import { useState } from "react";
+import { JSONTree } from "react-json-tree";
 export default function AchDetails({
   transaction,
 }: {
   transaction: Transaction;
 }) {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
   return transaction.ach == null ? (
     <></>
   ) : (
@@ -140,10 +149,59 @@ export default function AchDetails({
             value={(transaction as any).ach?.correctedData ?? ""}
           />
           <div className="h-3" />
-          <ItemRowHorizontal
-            title="IAT Addenda"
-            value={(transaction as any).ach?.iatAddenda ?? ""}
-          />
+          {
+            <>
+              <div
+                onClick={() =>
+                  (transaction as any).ach?.iatAddenda != null
+                    ? setModalOpen(true)
+                    : null
+                }
+                className={
+                  (transaction as any).ach?.iatAddenda != null
+                    ? `cursor-pointer`
+                    : ""
+                }
+              >
+                <MyText
+                  size="sm"
+                  color="text-[#677990]"
+                  primary={(transaction as any).ach?.iatAddenda != null}
+                >
+                  IAT Addenda
+                </MyText>
+              </div>
+              <MyModal
+                modalOpen={modalOpen}
+                handleModalClose={handleModalClose}
+                height="500px"
+              >
+                <MyText size="lg">IAT Addenda</MyText>
+                <JSONTree
+                  data={(transaction as any).ach?.iatAddenda ?? {}}
+                  hideRoot
+                  theme={{
+                    base00: "#ffffff",
+                    base01: "#000000",
+                    base02: "#000000",
+                    base03: "#000000",
+                    base04: "#000000",
+                    base05: "#000000",
+                    base06: "#000000",
+                    base07: "#000000",
+                    base08: "#000000",
+                    base09: "#000000",
+                    base0A: "#000000",
+                    base0B: "#000000",
+                    base0C: "#000000",
+                    base0D: "#000000",
+                    base0E: "#000000",
+                    base0F: "#000000",
+                  }}
+                />
+              </MyModal>
+            </>
+          }
           <div className="h-3" />
           <ItemRowHorizontal
             title="NOC Received At"
