@@ -281,7 +281,7 @@ const CreateCounterpartyPage = () => {
             submitting
               ? { required: false }
               : {
-                  required: true,
+                  required: false,
                 }
           }
           value=""
@@ -868,7 +868,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -884,7 +884,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -900,7 +900,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1050,7 +1050,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1070,7 +1070,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   customOnChange={(value: string) => {
@@ -1107,7 +1107,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1123,7 +1123,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1155,7 +1155,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1171,13 +1171,13 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
-                          validate: (value: string, _: any) => {
-                            const countryCodeRegex = /^[A-Z]{2}$/;
-                            if (!countryCodeRegex.test(value) || value == "") {
-                              return "Country code must be 2 uppercase letters";
-                            }
-                          },
+                          required: false,
+                          // validate: (value: string, _: any) => {
+                          //   const countryCodeRegex = /^[A-Z]{2}$/;
+                          //   if (!countryCodeRegex.test(value) || value == "") {
+                          //     return "Country code must be 2 uppercase letters";
+                          //   }
+                          // },
                         }
                   }
                   value=""
@@ -1193,7 +1193,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1225,7 +1225,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: true,
+                          required: false,
                         }
                   }
                   value=""
@@ -1241,7 +1241,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   value=""
@@ -1257,7 +1257,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   options={["ABA", "BIC"]}
@@ -1274,7 +1274,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   value=""
@@ -1308,7 +1308,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   value=""
@@ -1324,7 +1324,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   value=""
@@ -1356,7 +1356,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   value=""
@@ -1372,18 +1372,18 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
-                          validate: (value: string, _: any) => {
-                            if (wireType == "INTERNATIONAL") {
-                              const countryCodeRegex = /^[A-Z]{2}$/;
-                              if (
-                                !countryCodeRegex.test(value) ||
-                                value == ""
-                              ) {
-                                return "Country code must be 2 uppercase letters";
-                              }
-                            }
-                          },
+                          required: false,
+                          // validate: (value: string, _: any) => {
+                          //   if (wireType == "INTERNATIONAL") {
+                          //     const countryCodeRegex = /^[A-Z]{2}$/;
+                          //     if (
+                          //       !countryCodeRegex.test(value) ||
+                          //       value == ""
+                          //     ) {
+                          //       return "Country code must be 2 uppercase letters";
+                          //     }
+                          //   }
+                          // },
                         }
                   }
                   value=""
@@ -1399,7 +1399,7 @@ const CreateCounterpartyPage = () => {
                     submitting
                       ? { required: false, pattern: null }
                       : {
-                          required: wireType == "INTERNATIONAL" ? true : false,
+                          required: false,
                         }
                   }
                   value=""
