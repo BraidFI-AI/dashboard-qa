@@ -73,6 +73,7 @@ const AlertsPage = () => {
     | "COUNTERPARTY" // prohibited entity
     | "FILE_RECORD" // transaction processing error
     | "ACH_RETURN_PROCESSING" // ach inbound transaction processing error
+    | "ACH_INBOUND_TRANSACTION" // ach inbound transaction processing error
   >("");
 
   const [refresh, setRefresh] = useState<boolean>(true);
@@ -108,6 +109,9 @@ const AlertsPage = () => {
           } else if (data.payload.type == "ACH_RETURN_PROCESSING") {
             setEntityType("ACH_RETURN_PROCESSING");
             entity = "ACH_RETURN_PROCESSING";
+          } else if (data.payload.contextType == "ACH_INBOUND_TRANSACTION") {
+            setEntityType("ACH_INBOUND_TRANSACTION");
+            entity = "ACH_INBOUND_TRANSACTION";
           }
 
           if (entity == "OFAC") {
@@ -180,7 +184,10 @@ const AlertsPage = () => {
             ).then((e: any) => {
               setContext(e.payload);
             });
-          } else if (entity == "ACH_RETURN_PROCESSING") {
+          } else if (
+            entity == "ACH_RETURN_PROCESSING" ||
+            entity == "ACH_INBOUND_TRANSACTION"
+          ) {
             dispatch(
               fetchRawACHTransaction(data.payload.contextId.toString())
             ).then((e: any) => {
@@ -379,7 +386,8 @@ const AlertsPage = () => {
                   alert={alert}
                   context={context}
                 />
-              ) : entityType == "ACH_RETURN_PROCESSING" ? (
+              ) : entityType == "ACH_RETURN_PROCESSING" ||
+                entityType == "ACH_INBOUND_TRANSACTION" ? (
                 <ACHReturnProcessingComponent alert={alert} context={context} />
               ) : (
                 <></>

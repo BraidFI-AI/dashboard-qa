@@ -123,7 +123,9 @@ const ResolveAlertButton = () => {
         data.action == "APPROVE" &&
         alert.contextType == "FILE_RECORD" &&
         (alert.additionalParam == "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
-          alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+          alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
+          alert.additionalParam ==
+            "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE")
       ) {
         dispatch(
           updateWireFileRecord({
@@ -320,7 +322,9 @@ const ResolveAlertButton = () => {
               (alert.additionalParam ==
                 "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
                 alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE") && (
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE") && (
                 <>
                   <div className="h-4" />
                   <MyText>Correct Beneficiary Code</MyText>
