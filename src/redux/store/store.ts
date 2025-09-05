@@ -32,6 +32,7 @@ import OFACSlice from "../slices/OFACSlice";
 import ReconExceptionReviewSlice from "../slices/recon_exception_review_slice";
 import VelocityLimitSlice from "../slices/velocity_limit_slice";
 import StatementSlice from "../slices/statement_slice";
+import ReconFileUploadSlice from "../slices/recon_file_upload_slice";
 export const store = configureStore({
   reducer: {
     app: AppSlice.reducer,
@@ -66,6 +67,7 @@ export const store = configureStore({
     reconExceptionReview: ReconExceptionReviewSlice.reducer,
     velocityLimit: VelocityLimitSlice.reducer,
     statement: StatementSlice.reducer,
+    reconFileUpload: ReconFileUploadSlice.reducer,
   },
 });
 

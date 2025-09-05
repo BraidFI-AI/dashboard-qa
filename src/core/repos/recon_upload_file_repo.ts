@@ -24,6 +24,16 @@ class ReconUploadFileRepo {
 
     return data;
   }
+
+  public async getUploadStatus(pageSize: number, pageNumber: number) {
+    const data = await this.apiClient.http(
+      Method.POST,
+      `/reconciliation/audits/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+      {}
+    );
+
+    return data;
+  }
 }
 
 export default ReconUploadFileRepo;
