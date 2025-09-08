@@ -1590,3 +1590,16 @@ export interface VelocityLimitFilters {
   transactionType?: string;
   transactionGroup?: string;
 }
+
+export interface ReconAudit {
+  filename: "csv7201524062450840527.csv";
+  type: "FED_WIRE_CONFIRMATION_CSV";
+  status: "PROCESSED";
+  requesterUsername: "testadminadmin";
+  totalRecords: 0;
+  matchedRecords: 0;
+  exceptionRecords: 0;
+  skippedRecords: 0;
+  invalidRecords: 0;
+  uploadedAt: 1746326250.181582;
+}
