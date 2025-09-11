@@ -52,7 +52,8 @@ class AlertsRepo {
   public async addAlertNote(id: string, note: string) {
     const response = await this.apiClient.http<any>(
       Method.PUT,
-      `/alerts/${id}/add-note?note=${note}`
+      `/alerts/${id}/add-note`,
+      { note: note }
     );
     return response;
   }
