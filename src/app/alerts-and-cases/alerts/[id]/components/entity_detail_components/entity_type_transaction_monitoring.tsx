@@ -25,6 +25,7 @@ import {
 import { useAppDispatch } from "@/redux/store/store";
 import { GridEventListener } from "@mui/x-data-grid";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -40,7 +41,7 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
   EntityTypeTransactionMonitoringComponentProps
 > = ({ alert, paymentId, alertId, customActionOnCompletion, ofacId }) => {
   const dispatch = useAppDispatch();
-
+  const router = useRouter();
   const [limits, setLimits] = useState<"loading" | string | RulesAndLimits[]>(
     "loading"
   );
@@ -105,8 +106,17 @@ const EntityTypeTransactionMonitoringComponent: React.FC<
       className={`flex flex-col min-w-[700px] h-full rounded-[10px] justify-center items-start ${boxStyle}`}
     >
       <div className="pb-6 w-full px-6">
-        <div className="pt-6 pb-3">
-          <MyText variant="label" size="lg" weight="semibold">
+        <div
+          className="pt-6 pb-3 cursor-pointer"
+          onClick={() => {
+            if (transaction != null) {
+              router.push(
+                `/transactions/transactionHistory/${alert.contextId}`
+              );
+            }
+          }}
+        >
+          <MyText variant="label" size="lg" weight="semibold" primary>
             {alert.contextId}
           </MyText>
         </div>

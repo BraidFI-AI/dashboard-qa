@@ -125,7 +125,14 @@ const ResolveAlertButton = () => {
         (alert.additionalParam == "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
           alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
           alert.additionalParam ==
-            "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE")
+            "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE" ||
+          alert.additionalParam == "INBOUND_ACH_INCORRECT_ACCOUNT_NUMBER" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_ACCOUNT" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_CUSTOMER" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_PRODUCT" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_PROGRAM" ||
+          alert.additionalParam == "INBOUND_ACH_INSUFFICIENT_FUNDS" ||
+          alert.additionalParam == "INBOUND_ACH_GENERIC_ERROR")
       ) {
         dispatch(
           updateWireFileRecord({
@@ -215,7 +222,7 @@ const ResolveAlertButton = () => {
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
-        height="430px"
+        height="380px"
       >
         {ofacHit == "loading" ? (
           <MyCircularProgressIndicator />
@@ -269,7 +276,15 @@ const ResolveAlertButton = () => {
                 alert.additionalParam ==
                   "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
                 alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE")
+                  "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE" ||
+                alert.additionalParam ==
+                  "INBOUND_ACH_INCORRECT_ACCOUNT_NUMBER" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_ACCOUNT" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_CUSTOMER" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_PRODUCT" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_PROGRAM" ||
+                alert.additionalParam == "INBOUND_ACH_INSUFFICIENT_FUNDS" ||
+                alert.additionalParam == "INBOUND_ACH_GENERIC_ERROR")
                 ? "Correct Account Number"
                 : "Note"}
             </MyText>
@@ -317,29 +332,7 @@ const ResolveAlertButton = () => {
                   )}
                 </>
               )}
-            {action != "DECLINE" &&
-              alert.contextType == "FILE_RECORD" &&
-              (alert.additionalParam ==
-                "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
-                alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
-                alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE") && (
-                <>
-                  <div className="h-4" />
-                  <MyText>Correct Beneficiary Code</MyText>
-                  <MyControlledTextField
-                    name={"note2"}
-                    displayName={"Note"}
-                    control={control}
-                    errors={errors}
-                    rules={{
-                      required: true,
-                    }}
-                    value={getValues("note2")}
-                  />
-                </>
-              )}
+
             <div className="pb-8" />
             <div className="w-fit">
               <MyBlueButton

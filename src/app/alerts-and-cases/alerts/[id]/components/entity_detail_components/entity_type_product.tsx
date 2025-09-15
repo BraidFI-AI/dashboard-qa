@@ -20,7 +20,9 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
 }) => {
   const userType = useSelector((state: any) => state.app.userType);
 
-  return (
+  return context == null ? (
+    <></>
+  ) : (
     <div
       className={`flex flex-col min-w-[700px] min-h-fit rounded-[10px] justify-center items-start ${boxStyle}`}
     >
