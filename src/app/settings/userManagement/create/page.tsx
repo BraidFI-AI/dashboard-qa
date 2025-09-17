@@ -71,7 +71,7 @@ const CreateUserPage = () => {
 
   useEffect(() => {
     if (userType == DEVELOPER_ROLE) {
-      setUserGroups(["Fintech Ops"]);
+      setUserGroups(["Fintech Ops", "Fintech readonly"]);
     }
   }, [userType]);
 
