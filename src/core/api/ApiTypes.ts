@@ -1152,6 +1152,7 @@ export interface SearchCounterparty {
   businessId?: string | null;
   individualId?: string | null;
   productId?: string | null;
+  name?: string | null;
 }
 
 export interface Developer {

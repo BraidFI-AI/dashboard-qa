@@ -7,6 +7,7 @@ import MyText from "@/core/components/Text/Text";
 import TransferTransaction from "./components/transfer_transaction";
 import AdjustmentTransaction from "./components/adjustment_transaction";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE } from "@/core/constants";
+import WireTransaction from "./components/wire_transaction";
 
 enum TransactionTypes {
   ADJUSTMENT = "Adjustment",
@@ -58,9 +59,9 @@ export default function NewTransaction() {
             className={`cursor-default p-2 border rounded-md ${
               transactionType === TransactionTypes.WIRE
                 ? "border-[#12A7FF] bg-blue-50"
-                : "border-gray-400 bg-gray-300"
+                : "border-gray-400"
             }`}
-            // onClick={() => setTransactionType(TransactionTypes.WIRE)}
+            onClick={() => setTransactionType(TransactionTypes.WIRE)}
           >
             <MyText>Wire</MyText>
           </div>
@@ -80,6 +81,7 @@ export default function NewTransaction() {
         <AdjustmentTransaction />
       )}
       {transactionType === TransactionTypes.TRANSFER && <TransferTransaction />}
+      {transactionType === TransactionTypes.WIRE && <WireTransaction />}
     </div>
   );
 }
