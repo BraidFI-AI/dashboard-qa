@@ -18,9 +18,7 @@ enum TransactionTypes {
 
 export default function NewTransaction() {
   const dispatch = useDispatch();
-  const [transactionType, setTransactionType] = useState(
-    TransactionTypes.TRANSFER
-  );
+  const [transactionType, setTransactionType] = useState(TransactionTypes.WIRE);
 
   const userType = useSelector((state: any) => state.app.userType);
 

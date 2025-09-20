@@ -49,6 +49,27 @@ export const fetchCounterparties = createAsyncThunk(
   }
 );
 
+export const fetchCounterpartiesPaginated = createAsyncThunk(
+  "Counterparty/fetchCounterpartiesPaginated",
+  async (params: {
+    searchCriteria: SearchCounterparty;
+    pageSize: number;
+    pageNumber: number;
+  }) => {
+    try {
+      const counterparty = await counterpartyRepo.fetchCounterparties(
+        params.searchCriteria,
+        params.pageSize,
+        params.pageNumber
+      );
+      console.log(`counterparty page ${params.pageNumber}:`, counterparty);
+      return counterparty;
+    } catch (e: any) {
+      return `Error fetching counterparty: ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchCounterPartyV2 = createAsyncThunk(
   "Counterparty/fetchCounterParty",
   async (id: number) => {

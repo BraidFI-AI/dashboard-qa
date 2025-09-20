@@ -122,7 +122,8 @@ const PaginatedSearchField: React.FC<PaginatedSearchFieldProps> = ({
 
   // Handle result selection
   const handleResultSelect = (result: SearchResult) => {
-    setInputValue(result[resultDisplayKey] || result.name);
+    // Update input value with just the name (not the displayText with ID)
+    setInputValue(result.name);
     setShowDropdown(false);
     if (onResultSelect) {
       onResultSelect(result);
@@ -133,7 +134,7 @@ const PaginatedSearchField: React.FC<PaginatedSearchFieldProps> = ({
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const element = event.currentTarget;
     if (
-      element.scrollTop + element.clientHeight >= element.scrollHeight - 20 &&
+      element.scrollTop + element.clientHeight >= element.scrollHeight - 80 &&
       !loading &&
       hasMore &&
       inputValue.trim().length > 0
@@ -187,6 +188,7 @@ const PaginatedSearchField: React.FC<PaginatedSearchFieldProps> = ({
         <Box
           className="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
+          onScroll={handleScroll}
         >
           {loading && results.length === 0 ? (
             <Box className="p-4 text-center">
@@ -206,7 +208,9 @@ const PaginatedSearchField: React.FC<PaginatedSearchFieldProps> = ({
                   >
                     <ListItemText
                       primary={result[resultDisplayKey] || result.name}
-                      secondary={result.description || result.email || ""}
+                      secondary={
+                        result.description || result.type || result.email || ""
+                      }
                     />
                   </ListItem>
                   {index < results.length - 1 && <Divider />}
