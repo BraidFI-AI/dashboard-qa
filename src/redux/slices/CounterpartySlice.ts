@@ -1,5 +1,10 @@
 import ApiClient from "@/core/api/ApiClient";
-import { Counterparty, CreateCounterparty } from "@/core/api/ApiTypes";
+import {
+  Counterparty,
+  CreateCounterparty,
+  SearchCounterparty,
+} from "@/core/api/ApiTypes";
+import { paginationPageSize } from "@/core/constants";
 import CounterpartyRepo from "@/core/repos/CounterpartyRepo";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -26,6 +31,44 @@ const CounterpartySlice = createSlice({
   },
   extraReducers: (builder) => {},
 });
+
+export const fetchCounterparties = createAsyncThunk(
+  "Counterparty/fetchCounterparties",
+  async (search: SearchCounterparty) => {
+    try {
+      const counterparty = await counterpartyRepo.fetchCounterparties(
+        search,
+        paginationPageSize,
+        0
+      );
+      console.log("counterparty:", counterparty);
+      return counterparty;
+    } catch (e: any) {
+      return `Error fetching counterparty: ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
+export const fetchCounterpartiesPaginated = createAsyncThunk(
+  "Counterparty/fetchCounterpartiesPaginated",
+  async (params: {
+    searchCriteria: SearchCounterparty;
+    pageSize: number;
+    pageNumber: number;
+  }) => {
+    try {
+      const counterparty = await counterpartyRepo.fetchCounterparties(
+        params.searchCriteria,
+        params.pageSize,
+        params.pageNumber
+      );
+      console.log(`counterparty page ${params.pageNumber}:`, counterparty);
+      return counterparty;
+    } catch (e: any) {
+      return `Error fetching counterparty: ${generateErrorMessage(e)}`;
+    }
+  }
+);
 
 export const fetchCounterPartyV2 = createAsyncThunk(
   "Counterparty/fetchCounterParty",

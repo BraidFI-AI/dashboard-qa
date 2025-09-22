@@ -51,6 +51,30 @@ export const adjustmentTransaction = createAsyncThunk(
   }
 );
 
+export const createWireTransaction = createAsyncThunk(
+  "newTransaction/wireTransaction",
+  async (
+    data: {
+      amount: number;
+      description: string;
+      accountNumber: string;
+      counterpartyId: string;
+      counterpartyType: string;
+    },
+    thunkApi: any
+  ) => {
+    try {
+      const wire = await newTransactionRepo.createWireTransaction(data);
+
+      console.log("wire:", wire);
+      return wire;
+    } catch (e: any) {
+      console.log("Error creating wire transaction:", e);
+      return `Error creating wire transaction ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const transferTransaction = createAsyncThunk(
   "newTransaction/transferTransaction",
   async (

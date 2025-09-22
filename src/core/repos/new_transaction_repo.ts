@@ -40,6 +40,27 @@ class NewTransactionRepo {
       }
     );
   }
+
+  public async createWireTransaction(data: {
+    amount: number;
+    description: string;
+    accountNumber: string;
+    counterpartyId: string;
+    counterpartyType: string;
+  }) {
+    return await this.apiClient.http<any>(
+      Method.POST,
+      data.counterpartyType == "INTERNATIONAL"
+        ? `/transaction/wire/international`
+        : `/transaction/wire/outbound`,
+      {
+        amount: data.amount,
+        description: data.description,
+        accountNumber: data.accountNumber,
+        counterpartyId: data.counterpartyId,
+      }
+    );
+  }
 }
 
 export default NewTransactionRepo;
