@@ -38,6 +38,7 @@ import MyRedButton from "@/core/components/Button/MyRedButton";
 import MyControlledTextField from "@/core/components/TextField/MyControlledTextField";
 import { enqueueSnackbar } from "notistack";
 import { timestampToDate } from "@/core/utils/date_time_util";
+import { isEqual } from "lodash";
 
 function extractReceiverAccountNumber(content: any) {
   if (content == null) {
@@ -63,7 +64,7 @@ const ExceptionReview = () => {
 
   const router = useRouter();
 
-  const [refresh, setRefresh] = useState<boolean>(true);
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   const [submittingTransactions, setSubmittingTransactions] =
     useState<boolean>(false);
@@ -108,6 +109,10 @@ const ExceptionReview = () => {
     "ACH" | "WIRE"
   >("ACH");
 
+  const [previousParams, setPreviousParams] = useState<{
+    [anyProp: string]: string | string[];
+  }>({});
+
   const [manualMatchModalOpen, setManualMatchModalOpen] =
     useState<boolean>(false);
 
@@ -148,11 +153,12 @@ const ExceptionReview = () => {
   }, []);
 
   useEffect(() => {
-    setRefresh(false);
+    console.log("calllinngggg", qParams);
 
     const params: { [anyProp: string]: string | string[] } = {};
 
     qParams.forEach((value, key) => {
+      console.log("calllinngggg params", value, key);
       if (value.includes(",")) {
         params[key] = value.split(",");
       } else {
@@ -169,51 +175,60 @@ const ExceptionReview = () => {
       return;
     }
 
-    reset({
-      beginDate: params.beginDate?.toString() ?? "",
-      endDate: params.endDate?.toString() ?? "",
-    });
+    if (
+      !isEqual(previousParams, params) ||
+      (isEqual(params, previousParams) && refresh)
+    ) {
+      setPreviousParams(params);
 
-    setTempTransactionType(params.transactionType as "ACH" | "WIRE");
+      setRefresh(false);
 
-    setSelectedTransactionType(params.transactionType as "ACH" | "WIRE");
-
-    const fetchDataHelper = () => {
-      console.log("fetching data", params);
-      setSubmittingTransactions(true);
-      setSubmittingSettlements(true);
-      dispatch(
-        fetchTransactionsPaginated({
-          beginDate: params.beginDate?.toString() ?? "",
-          endDate: params.endDate?.toString() ?? "",
-          transactionType: params.transactionType as "ACH" | "WIRE",
-          refresh: true,
-        })
-      ).then((res: any) => {
-        setSubmittingTransactions(false);
+      reset({
+        beginDate: params.beginDate?.toString() ?? "",
+        endDate: params.endDate?.toString() ?? "",
       });
-      setSelectedTransactionId(null);
-      setSelectedSettlementId(null);
-      dispatch(
-        fetchSettlementsPaginated({
-          beginDate: params.beginDate?.toString() ?? "",
-          endDate: params.endDate?.toString() ?? "",
-          transactionType: params.transactionType as "ACH" | "WIRE",
-          refresh: true,
-        })
-      ).then((res: any) => {
-        setSubmittingSettlements(false);
-      });
-    };
 
-    fetchDataHelper();
+      setTempTransactionType(params.transactionType as "ACH" | "WIRE");
+
+      setSelectedTransactionType(params.transactionType as "ACH" | "WIRE");
+
+      const fetchDataHelper = () => {
+        console.log("fetching data", params);
+        setSubmittingTransactions(true);
+        setSubmittingSettlements(true);
+        dispatch(
+          fetchTransactionsPaginated({
+            beginDate: params.beginDate?.toString() ?? "",
+            endDate: params.endDate?.toString() ?? "",
+            transactionType: params.transactionType as "ACH" | "WIRE",
+            refresh: true,
+          })
+        ).then((res: any) => {
+          setSubmittingTransactions(false);
+        });
+        setSelectedTransactionId(null);
+        setSelectedSettlementId(null);
+        dispatch(
+          fetchSettlementsPaginated({
+            beginDate: params.beginDate?.toString() ?? "",
+            endDate: params.endDate?.toString() ?? "",
+            transactionType: params.transactionType as "ACH" | "WIRE",
+            refresh: true,
+          })
+        ).then((res: any) => {
+          setSubmittingSettlements(false);
+        });
+      };
+
+      fetchDataHelper();
+    }
   }, [dispatch, qParams, reset, getValues, refresh]);
 
   const onSubmit: SubmitHandler<{
     beginDate: string;
     endDate: string;
   }> = (data: { beginDate: string; endDate: string }) => {
-    console.log("data:", data);
+    console.log("data:", data, "transaction type", tempTransactionType);
     let params: string = "?";
 
     for (const key in data) {
@@ -225,9 +240,33 @@ const ExceptionReview = () => {
     // add temp transaction type to params
     params += `transactionType=${tempTransactionType}`;
 
-    setRefresh(true);
+    const paramsObject: { [anyProp: string]: string | string[] } = {};
 
-    router.replace(`/recon/exceptionReview${params}`);
+    new URLSearchParams(params).forEach((value, key) => {
+      if (value.includes(",")) {
+        paramsObject[key] = value.split(",");
+      } else {
+        paramsObject[key] = value;
+      }
+    });
+
+    console.log(
+      "aparams",
+      params,
+      "aparamsObject",
+      paramsObject,
+      "apreviousParams",
+      previousParams
+    );
+
+    // check if the params are the same as the previous ones
+    if (isEqual(previousParams, {})) {
+      router.replace(`/recon/exceptionReview${params}`);
+    } else if (isEqual(paramsObject, previousParams)) {
+      setRefresh(true);
+    } else {
+      router.replace(`/recon/exceptionReview${params}`);
+    }
   };
 
   const {
