@@ -3,6 +3,7 @@
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import MyText from "@/core/components/Text/Text";
 import TransferTransaction from "./components/transfer_transaction";
 import AdjustmentTransaction from "./components/adjustment_transaction";
@@ -19,6 +20,7 @@ enum TransactionTypes {
 export default function NewTransaction() {
   const dispatch = useDispatch();
   const [transactionType, setTransactionType] = useState(TransactionTypes.WIRE);
+  const searchParams = useSearchParams();
 
   const userType = useSelector((state: any) => state.app.userType);
 
@@ -79,7 +81,9 @@ export default function NewTransaction() {
         <AdjustmentTransaction />
       )}
       {transactionType === TransactionTypes.TRANSFER && <TransferTransaction />}
-      {transactionType === TransactionTypes.WIRE && <WireTransaction />}
+      {transactionType === TransactionTypes.WIRE && (
+        <WireTransaction accountNumber={searchParams.get("accountNumber")} />
+      )}
     </div>
   );
 }

@@ -432,8 +432,8 @@ export default function GenerateStatement() {
             </div>
             <div className="h-10" />
             <div
-              className="flex justify-between"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              className="flex"
+              style={{ maxWidth: "650px", margin: "0 auto", gap: "20px" }}
             >
               <div style={{ width: "250px" }}>
                 {statementType != "ROOT" && (
@@ -461,13 +461,16 @@ export default function GenerateStatement() {
                     <MyText>{(account as any)?.customerName ?? ""}</MyText>
                   )}
               </div>
-              <div style={{ width: "250px" }} className="text-right">
+              <div style={{ width: "200px" }} className="text-right">
                 {statementType == "ACCOUNT" && accountNumber && (
                   <>
                     <MyText weight="bold">Account Number</MyText>
                     <MyText>{accountNumber}</MyText>
                   </>
                 )}
+              </div>
+              <div style={{ width: "160px" }} className="text-center">
+                {/* Empty column for alignment */}
               </div>
             </div>
             {statementType != "ROOT" && <div className="h-6" />}
@@ -476,8 +479,8 @@ export default function GenerateStatement() {
             </div>
             <div className="w-full h-[1px] bg-gray-300 mt-1 mb-2"></div>
             <div
-              className="flex justify-between mb-6"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              className="flex mb-6"
+              style={{ maxWidth: "650px", margin: "0 auto", gap: "20px" }}
             >
               <div style={{ width: "250px" }}>
                 <MyText weight="bold">{`Balance on ${formatDate(
@@ -494,7 +497,7 @@ export default function GenerateStatement() {
                   )}
                 </div>
               </div>
-              <div style={{ width: "250px" }} className="text-right">
+              <div style={{ width: "200px" }} className="text-right">
                 <MyText weight="bold">
                   {toDollarFormat(statementData.startingBalance)}
                 </MyText>
@@ -509,20 +512,39 @@ export default function GenerateStatement() {
                   )
                 )}
               </div>
+              <div style={{ width: "160px" }} className="text-center">
+                <MyText weight="bold">Transaction Count</MyText>
+                <div className="h-1" />
+                {statementData.transactionSummary.map(
+                  (item: any, index: any) => (
+                    <div key={index}>
+                      <MyText>{item.count || 0}</MyText>
+                    </div>
+                  )
+                )}
+              </div>
             </div>
             <div className="w-full h-[1px] bg-gray-300 mt-1 mb-2"></div>
             <div
-              className="flex justify-between mb-6"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              className="flex mb-6"
+              style={{ maxWidth: "650px", margin: "0 auto", gap: "20px" }}
             >
               <div style={{ width: "250px" }}>
                 <MyText weight="bold">{`Balance on ${formatDate(
                   statementData.ending
                 )}`}</MyText>
               </div>
-              <div style={{ width: "250px" }} className="text-right">
+              <div style={{ width: "200px" }} className="text-right">
                 <MyText weight="bold">
                   {toDollarFormat(statementData.endingBalance)}
+                </MyText>
+              </div>
+              <div style={{ width: "160px" }} className="text-center">
+                <MyText weight="bold">
+                  {statementData.transactionSummary.reduce(
+                    (total: number, item: any) => total + (item.count || 0),
+                    0
+                  )}
                 </MyText>
               </div>
             </div>
