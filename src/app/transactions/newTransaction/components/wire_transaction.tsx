@@ -325,6 +325,7 @@ const WireTransaction = ({ accountNumber }: WireTransactionProps) => {
               });
               // Reset form after successful submission
               goBackToAccountStep();
+              setModalOpen(false);
             } else {
               enqueueSnackbar(result.payload, {
                 variant: "error",

@@ -11,6 +11,7 @@ export interface Alert {
   alertDocuments: AlertDocument[] | null;
   assignedUsername?: string | null;
   additionalParam?: string | null;
+  monitoring?: boolean | null;
 }
 
 export interface Case {

@@ -172,6 +172,12 @@ const ResolveAlertButton = () => {
   };
 
   useEffect(() => {
+    if (typeof alert != "string" && alert.monitoring) {
+      setResolveOptions([...resolveOptions, "CLOSE"]);
+    }
+  }, [alert]);
+
+  useEffect(() => {
     if (typeof alert != "string") {
       if (
         alert.status == "UNASSIGNED" ||
