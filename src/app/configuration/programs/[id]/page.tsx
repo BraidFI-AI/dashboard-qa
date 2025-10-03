@@ -284,7 +284,6 @@ const ProgramDetails = () => {
             value={program.name != null ? program.name : ""}
             submitting={false}
           />
-          <ItemRow title="Customer ID" value={program.customerId}></ItemRow>
           <MyEditableTextField
             clearable={false}
             editing={isEditingType}
