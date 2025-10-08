@@ -49,6 +49,18 @@ const ResolveAlertButton = () => {
     "DECLINE",
   ]);
 
+  // Update resolve options based on monitoring status
+  useEffect(() => {
+    if (typeof alert != "string") {
+      const baseOptions = ["APPROVE", "DECLINE"];
+      if (alert.monitoring) {
+        setResolveOptions([...baseOptions, "CLOSE"]);
+      } else {
+        setResolveOptions(baseOptions);
+      }
+    }
+  }, [alert]);
+
   const achReturnCodes: "loading" | string | string[] = useSelector(
     (state: any) => state.app.achReturnCodes
   );
@@ -172,12 +184,6 @@ const ResolveAlertButton = () => {
   };
 
   useEffect(() => {
-    if (typeof alert != "string" && alert.monitoring) {
-      setResolveOptions([...resolveOptions, "CLOSE"]);
-    }
-  }, [alert]);
-
-  useEffect(() => {
     if (typeof alert != "string") {
       if (
         alert.status == "UNASSIGNED" ||
@@ -192,23 +198,35 @@ const ResolveAlertButton = () => {
               setOfacHit(data.payload);
               if (typeof data.payload != "string") {
                 if (alert.additionalParam == "ENTITY") {
-                  setResolveOptions([
+                  const baseOptions = [
                     "APPROVE",
                     "APPROVE_AND_WHITELIST",
                     "DECLINE",
-                  ]);
+                  ];
+                  if (alert.monitoring) {
+                    setResolveOptions([...baseOptions, "CLOSE"]);
+                  } else {
+                    setResolveOptions(baseOptions);
+                  }
                 }
               }
             }
           );
         } else {
           setOfacHit(null);
+          // For non-OFAC alerts, ensure resolve options are set based on monitoring status
+          const baseOptions = ["APPROVE", "DECLINE"];
+          if (alert.monitoring) {
+            setResolveOptions([...baseOptions, "CLOSE"]);
+          } else {
+            setResolveOptions(baseOptions);
+          }
         }
       } else {
         setIsOpen(false);
       }
     }
-  }, [alert]);
+  }, [alert, dispatch]);
 
   return isOpen == false ? (
     <></>
@@ -242,11 +260,16 @@ const ResolveAlertButton = () => {
                   setOfacHit(data.payload);
                   if (typeof data.payload != "string") {
                     if (alert.additionalParam == "ENTITY") {
-                      setResolveOptions([
+                      const baseOptions = [
                         "APPROVE",
                         "APPROVE_AND_WHITELIST",
                         "DECLINE",
-                      ]);
+                      ];
+                      if (alert.monitoring) {
+                        setResolveOptions([...baseOptions, "CLOSE"]);
+                      } else {
+                        setResolveOptions(baseOptions);
+                      }
                     }
                   }
                 }
