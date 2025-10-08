@@ -13,7 +13,6 @@ export type MyControlledTextFieldProps = {
   customOnChange?: any;
   value: string | undefined;
   disabled?: boolean;
-  multiline?: boolean;
 };
 
 export function getErrorByNameString(errors: any, name: string) {
@@ -39,7 +38,6 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
   value: val,
   customOnChange,
   disabled,
-  multiline,
 }) => {
   return (
     <Controller
@@ -68,12 +66,9 @@ const MyControlledTextField: React.FC<MyControlledTextFieldProps> = ({
       render={({ field: { onChange, value } }) => (
         <TextField
           disabled={disabled}
-          multiline={multiline}
           size="medium"
           inputProps={{
-            className: `font-avenir-regular text-[15px] ${
-              multiline ? "" : "h-[25px]"
-            }`,
+            className: "font-avenir-regular text-[15px] h-[25px]",
           }}
           onChange={(event) => {
             onChange(event.target.value);
