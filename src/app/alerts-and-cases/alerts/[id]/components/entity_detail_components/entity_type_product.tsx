@@ -90,8 +90,8 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
                 <ItemRowHorizontal
                   title="Interest Rate"
                   value={`${
-                    ((context as any)?.interestRate as number)?.toFixed(4) ??
-                    "0.0000"
+                    ((context as any)?.interestRate as number)?.toFixed(6) ??
+                    "0.000000"
                   }%`}
                 />
                 <div className="h-3" />
