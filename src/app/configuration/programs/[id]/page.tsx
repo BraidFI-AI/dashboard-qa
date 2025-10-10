@@ -347,10 +347,6 @@ const ProgramDetails = () => {
             value={program.achOdfi ?? ""}
             submitting={false}
           />
-          <ItemRow
-            title="Nacha Issuer ID"
-            value={program.nachaIssuerId}
-          ></ItemRow>
           <MyEditableTextField
             editing={isEditingActive}
             setEditing={setIsEditingActive}
