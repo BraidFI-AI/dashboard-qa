@@ -67,12 +67,13 @@ const AddAlertNoteButton: React.FC<AddAlertNoteButtonProps> = ({ alert }) => {
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
-        height="270px"
+        height="350px"
       >
         <MyText size="lg">Add Note</MyText>
         <div className="pb-6" />
         <MyText>Note</MyText>
         <MyControlledTextField
+          multiline
           name={"note"}
           displayName={"Note"}
           control={control}
