@@ -353,7 +353,7 @@ const ProductDetails = () => {
                             required: true,
                           }
                     }
-                    value={product?.interestRate?.toFixed(4) ?? "0.0000"}
+                    value={product?.interestRate?.toFixed(6) ?? "0.000000"}
                     submitting={false}
                   />
                   <MyEditableTextField
