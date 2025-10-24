@@ -195,9 +195,9 @@ export const fetchOpenAlertsCount = createAsyncThunk(
 
 export const addAlertNote = createAsyncThunk(
   "alerts/addNote",
-  async (data: { id: string; note: string }, thunkApi: any) => {
+  async (data: { id: string; note: string; type: string }, thunkApi: any) => {
     try {
-      const note = await alertsRepo.addAlertNote(data.id, data.note);
+      const note = await alertsRepo.addAlertNote(data.id, data.note, data.type);
       console.log("note added", note);
 
       thunkApi.dispatch(fetchAlert(data.id));
