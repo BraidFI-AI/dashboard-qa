@@ -18,6 +18,9 @@ const AlertNoteComponent: React.FC<AlertNoteProps> = ({ note }) => {
           <MyText size="sm" weight="semibold">
             {note.username}
           </MyText>
+          <MyText size="sm" weight="semibold">
+            {(note as any).type}
+          </MyText>
           <MyText weight="semibold" size="sm">
             {timestampToDate(note.noteDateTime ?? 0)}
           </MyText>

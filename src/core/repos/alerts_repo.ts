@@ -49,11 +49,11 @@ class AlertsRepo {
     return response;
   }
 
-  public async addAlertNote(id: string, note: string) {
+  public async addAlertNote(id: string, note: string, type: string) {
     const response = await this.apiClient.http<any>(
       Method.PUT,
-      `/alerts/${id}/add-note`,
-      { note: note }
+      `/alerts/${id}/add-note?type=${type}`,
+      { note: note, type: type }
     );
     return response;
   }
