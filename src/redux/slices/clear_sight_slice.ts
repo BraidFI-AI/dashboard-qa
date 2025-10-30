@@ -76,7 +76,27 @@ export const fetchClearSightData = createAsyncThunk(
         });
       });
 
-      const businesses: Business[] = await businessRepo.fetchBusinesses();
+      // Fetch all businesses using pagination
+      const businesses: Business[] = [];
+      let pageNumber = 0;
+      let hasNextPage = true;
+
+      while (hasNextPage) {
+        const response = await businessRepo.fetchBusinessesPaginated(
+          500,
+          pageNumber,
+          {
+            createdAtStart: undefined,
+            createdAtEnd: undefined,
+            name: undefined,
+            productName: undefined,
+            status: undefined,
+          }
+        );
+        businesses.push(...response.content);
+        hasNextPage = !response.last;
+        pageNumber++;
+      }
 
       // put each business in the clearSight object in children array of the product
       businesses.forEach((business) => {

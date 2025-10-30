@@ -587,7 +587,13 @@ export const fetchBusinesses = createAsyncThunk(
   "business/fetchBusinesses",
   async () => {
     try {
-      const businesses = await businessRepo.fetchBusinesses();
+      const businesses = await businessRepo.fetchBusinessesPaginated(100, 0, {
+        createdAtStart: undefined,
+        createdAtEnd: undefined,
+        name: undefined,
+        productName: undefined,
+        status: undefined,
+      });
       console.log("businesses", businesses);
       return businesses;
     } catch (e: any) {
@@ -825,22 +831,22 @@ export const fetchBusinessDocumentUrl = createAsyncThunk(
   }
 );
 
-export const fetchBusinessIdsList = createAsyncThunk(
-  "business/fetchBusinessIdsList",
-  async () => {
-    try {
-      const businessIds = await businessRepo.fetchBusinessIdsList();
-      return businessIds;
-    } catch (e: any) {
-      enqueueSnackbar(`Error fetching businesses ${generateErrorMessage(e)}`, {
-        variant: "error",
-        persist: true,
-      });
-    }
+// export const fetchBusinessIdsList = createAsyncThunk(
+//   "business/fetchBusinessIdsList",
+//   async () => {
+//     try {
+//       const businessIds = await businessRepo.fetchBusinessIdsList();
+//       return businessIds;
+//     } catch (e: any) {
+//       enqueueSnackbar(`Error fetching businesses ${generateErrorMessage(e)}`, {
+//         variant: "error",
+//         persist: true,
+//       });
+//     }
 
-    return null;
-  }
-);
+//     return null;
+//   }
+// );
 
 export const creatBusinessAccount = createAsyncThunk(
   "account/business",

@@ -134,12 +134,6 @@ class BusinessRepo {
     );
   }
 
-  public async fetchBusinesses() {
-    const response = await this.apiClient.http<any[]>(Method.GET, "/business");
-
-    return response;
-  }
-
   public async fetchBusiness(id: number) {
     const business = await this.apiClient.http<Business>(
       Method.GET,
@@ -342,20 +336,6 @@ class BusinessRepo {
       `/business/${id}`,
       { status: "ACTIVE" }
     );
-  }
-
-  public async fetchBusinessIdsList() {
-    const businesses = await this.apiClient.http<Business[]>(
-      Method.GET,
-      `/business`
-    );
-
-    const businessIds: string[] = [];
-    businesses.map((business: Business) => {
-      businessIds.push(business.id?.toString() ?? "");
-    });
-
-    return businessIds;
   }
 
   public async creatBusinessAccount(data: {
