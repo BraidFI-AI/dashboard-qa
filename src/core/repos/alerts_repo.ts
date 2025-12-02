@@ -16,7 +16,7 @@ class AlertsRepo {
     const response = await this.apiClient.http<any>(
       Method.POST,
       `/alerts/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      filters
+      { ...filters, includeDetails: false }
     );
     return response;
   }
