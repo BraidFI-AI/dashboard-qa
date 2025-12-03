@@ -169,6 +169,7 @@ class BusinessRepo {
 
     return accounts;
   }
+
   public async fetchBusinessAccounts(
     id: number,
     pageSize: number,

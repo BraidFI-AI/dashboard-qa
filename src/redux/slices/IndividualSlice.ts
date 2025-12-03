@@ -480,6 +480,31 @@ export const fetchAllIndividualAccounts = createAsyncThunk(
   }
 );
 
+export const fetchIndividualAccountBalance = createAsyncThunk(
+  "individual/fetchIndividualAccountBalance",
+  async (
+    data: { individualId: number; accountNumber: string },
+    thunkApi: any
+  ) => {
+    try {
+      const accounts = await individualRepo.fetchIndividualAccountsBalance(
+        data.individualId
+      );
+
+      const balance = accounts.find(
+        (acc) => acc.accountNumber == data.accountNumber
+      );
+      return balance?.balance?.availableBalance != undefined
+        ? {
+            balance: balance.balance.availableBalance,
+          }
+        : "-";
+    } catch (e: any) {
+      return `Error fetching account balance ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const createIndividualAccount = createAsyncThunk(
   "account/business",
   async (data: {

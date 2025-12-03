@@ -267,6 +267,31 @@ export const createUBO = createAsyncThunk(
 
 // ========================== accounts
 
+export const fetchBusinessAccountBalance = createAsyncThunk(
+  "business/fetchBusinessAccountBalance",
+  async (
+    data: { businessId: number; accountNumber: string },
+    thunkApi: any
+  ) => {
+    try {
+      const accounts = await businessRepo.fetchBusinessAccountsBalance(
+        data.businessId
+      );
+
+      const balance = accounts.find(
+        (acc) => acc.accountNumber == data.accountNumber
+      );
+      return balance?.balance?.availableBalance != undefined
+        ? {
+            balance: balance.balance.availableBalance,
+          }
+        : "-";
+    } catch (e: any) {
+      return `Error fetching account balance ${generateErrorMessage(e)}`;
+    }
+  }
+);
+
 export const fetchBusinessAccounts = createAsyncThunk(
   "business/fetchBusinessAccounts",
   async (data: { id: number; refresh: boolean }, thunkApi: any) => {

@@ -18,7 +18,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            // Force light mode - prevent dark class from ever being added
+            if (document.documentElement.classList.contains('dark')) {
+              document.documentElement.classList.remove('dark');
+            }
+          `,
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <div className="h-screen">
           <MuiThemeProvider>
