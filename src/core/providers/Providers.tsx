@@ -32,7 +32,7 @@ interface ProvidersProps {
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   LicenseInfo.setLicenseKey(
-    "79c6ff80a9eed9ffc5824ac6cfbd7f5eTz05NTY4NyxFPTE3NTQ1NzY1MTEwMDAsUz1wcm8sTE09c3Vic2NyaXB0aW9uLFBWPWluaXRpYWwsS1Y9Mg=="
+    "916c78b7a12abd957ef38151ef35a926Tz0xMjI3MTYsRT0xNzk2NDI4Nzk5MDAwLFM9cHJvLExNPXN1YnNjcmlwdGlvbixQVj1pbml0aWFsLEtWPTI="
   );
 
   const pathname = usePathname();
