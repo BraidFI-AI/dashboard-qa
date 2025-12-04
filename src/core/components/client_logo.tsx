@@ -3,7 +3,7 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import url from "../../url.json";
+// import url from "../../url.json";
 import { useSelector } from "react-redux";
 import { useCDN } from "../providers/cdn_provider";
 
