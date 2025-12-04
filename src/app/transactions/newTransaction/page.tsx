@@ -22,7 +22,10 @@ import { searchAccount } from "@/redux/slices/AccountSlice";
 import { fetchBusinessAccountBalance } from "@/redux/slices/BusinessSlice";
 import { debounce } from "lodash";
 import { fetchIndividualAccountBalance } from "@/redux/slices/IndividualSlice";
-import { transferTransaction } from "@/redux/slices/new_transaction_slice";
+import {
+  adjustmentTransaction,
+  transferTransaction,
+} from "@/redux/slices/new_transaction_slice";
 
 enum TransactionTypes {
   ADJUSTMENT = "Adjustment",
@@ -30,6 +33,16 @@ enum TransactionTypes {
   WIRE = "Wire",
   ACH = "ACH",
 }
+
+const mapSubTypeStringToEnum = (value: string) => {
+  if (value.toLowerCase() == "collection") return "COLLECTION";
+  if (value.toLowerCase() == "transaction reversal")
+    return "TRANSACTION_REVERSAL";
+  if (value.toLowerCase() == "transaction adjustment")
+    return "TRANSACTION_ADJUSTMENT";
+
+  return value;
+};
 
 export default function NewTransaction() {
   const dispatch = useAppDispatch();
@@ -274,6 +287,29 @@ export default function NewTransaction() {
         }
       });
     }
+
+    if (data.transactionType.toLowerCase() == "adjustment") {
+      setIsSubmitting(true);
+      dispatch(
+        adjustmentTransaction({
+          accountNumber: data.accountNumber,
+          amount: parseFloat(data.amount),
+          direction: data.adjustmentDirection ?? "",
+          subType: mapSubTypeStringToEnum(data.adjustmentType ?? ""),
+          description: data.description ?? "",
+        })
+      ).then((res: any) => {
+        console.log("res:", res);
+        setIsSubmitting(false);
+        if (typeof res.payload != "string") {
+          enqueueSnackbar("Adjustment successful", { variant: "success" });
+          setSubmissionStatus("success");
+        } else {
+          enqueueSnackbar(res.payload, { variant: "error" });
+          setSubmissionStatus("error");
+        }
+      });
+    }
   };
 
   const handleConfirmationClose = () => {
@@ -434,6 +470,67 @@ export default function NewTransaction() {
     }
   };
 
+  const isReviewReady = useMemo(() => {
+    const data = form.watch();
+    const requiresCounterparty = ["ach", "wire"].includes(data.transactionType);
+
+    if (!data.transactionType || !data.accountNumber || !data.amount)
+      return false;
+    if (
+      requiresCounterparty &&
+      (!data.counterpartyName || !counterpartyLookedUp)
+    )
+      return false;
+    if (!accountLookedUp) return false;
+
+    // Adjustment validation
+    if (data.transactionType === "adjustment") {
+      if (!data.adjustmentDirection || !data.adjustmentType) return false;
+    }
+
+    // Transfer validation
+    if (data.transactionType === "transfer") {
+      if (!data.receiverAccountNumber || !receiverAccountLookedUp) return false;
+    }
+
+    return true;
+  }, [
+    form.watch(),
+    accountLookedUp,
+    counterpartyLookedUp,
+    receiverAccountLookedUp,
+  ]);
+
+  const resetForm = () => {
+    form.reset({
+      transactionType: "",
+      accountNumber: "",
+      counterpartyName: "",
+      amount: "",
+      description: "",
+      certifyInformation: false,
+      adjustmentDirection: "",
+      adjustmentType: "",
+      receiverAccountNumber: "",
+    });
+    setAccountLookedUp(false);
+    setAccountData(null);
+    setCounterpartyLookedUp(false);
+    setCounterpartyData(null);
+    setCounterpartySearchResults([]);
+    setShowCounterpartyDropdown(false);
+    setReceiverAccountLookedUp(false);
+    setReceiverAccountData(null);
+    setSubmissionStatus(null);
+    setErrorMessage("");
+    setTransactionId("");
+  };
+
+  const handleNewTransaction = () => {
+    setConfirmationOpen(false);
+    resetForm();
+  };
+
   return (
     <div className="-mx-6">
       <NewTransactionView
@@ -463,12 +560,14 @@ export default function NewTransaction() {
         onCancel={handleCancel}
         onConfirmationClose={handleConfirmationClose}
         onConfirmationOpenChange={setConfirmationOpen}
+        onNewTransaction={handleNewTransaction}
         // Transfer-specific props
         receiverAccountLookedUp={receiverAccountLookedUp}
         receiverAccountData={receiverAccountData}
         isReceiverAccountLoading={isReceiverAccountLoading}
         onReceiverAccountLookup={handleReceiverAccountLookup}
         onEditReceiverAccount={handleEditReceiverAccount}
+        isReviewReady={isReviewReady}
       />
     </div>
   );
