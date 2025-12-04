@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import url from "../../url.json";
+// import url from "../../url.json";
 
 // https://api.prod.braid.zone
 // https://api.dev.braid.zone
@@ -7,7 +7,7 @@ import url from "../../url.json";
 class AxiosConfig {
   static getConfig(): AxiosRequestConfig {
     const config: AxiosRequestConfig = {
-      baseURL: url.url,
+      baseURL: "https://api.development.braid.zone",
     };
 
     return config;
