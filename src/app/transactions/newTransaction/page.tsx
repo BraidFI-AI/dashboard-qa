@@ -24,10 +24,12 @@ import { debounce } from "lodash";
 import { fetchIndividualAccountBalance } from "@/redux/slices/IndividualSlice";
 import {
   adjustmentTransaction,
+  createWireTransaction,
   transferTransaction,
 } from "@/redux/slices/new_transaction_slice";
 import { fetchCounterpartiesPaginated } from "@/redux/slices/CounterpartySlice";
 import { SearchCounterparty } from "@/core/api/ApiTypes";
+import { ArrowLeftRight, Settings, Building2, Zap } from "lucide-react";
 
 enum TransactionTypes {
   ADJUSTMENT = "Adjustment",
@@ -85,6 +87,14 @@ export default function NewTransaction() {
   const [showCounterpartyDropdown, setShowCounterpartyDropdown] =
     useState(false);
 
+  // Pagination state for counterparty search
+  const [counterpartySearchPage, setCounterpartySearchPage] = useState(0);
+  const [counterpartyHasMore, setCounterpartyHasMore] = useState(false);
+  const [counterpartyTotalResults, setCounterpartyTotalResults] = useState(0);
+  const [isLoadingMoreCounterparties, setIsLoadingMoreCounterparties] =
+    useState(false);
+  const [currentSearchQuery, setCurrentSearchQuery] = useState("");
+
   const form = useForm<NewTransactionFormValues>({
     // resolver: zodResolver(newTransactionSchema),
     defaultValues: {
@@ -110,56 +120,74 @@ export default function NewTransaction() {
     return false;
   };
 
+  const PAGE_SIZE = 100;
+
+  // Filter results based on transaction type
+  const filterByTransactionType = (results: any, txType: string) => {
+    if (txType === "ach") {
+      return results.filter((cp: any) => cp.ach != null);
+    } else if (txType === "wire") {
+      return results.filter((cp: any) => cp.wire != null && cp.wire.id != null);
+    }
+    return results;
+  };
+
+  // Debounced search function with pagination
   const debouncedSearch = useMemo(
     () =>
-      debounce(async (query: string, txType: string) => {
+      debounce(async (query: string, txType: string, page: number = 0) => {
         if (query.length < 2) {
           setCounterpartySearchResults([]);
           setShowCounterpartyDropdown(false);
+          setCounterpartyHasMore(false);
+          setCounterpartyTotalResults(0);
           return;
         }
 
-        setIsCounterpartySearching(true);
+        if (page === 0) {
+          setIsCounterpartySearching(true);
+        }
 
-        const searchCriteria: SearchCounterparty = {
-          name: query,
-        };
-        const pageSize = 100;
         const result = await dispatch(
           fetchCounterpartiesPaginated({
-            searchCriteria,
-            pageSize,
-            pageNumber: 0,
+            searchCriteria: {
+              name: query,
+            },
+            pageSize: PAGE_SIZE,
+            pageNumber: page,
           })
         );
 
+        setIsCounterpartySearching(false);
+
         if (typeof result.payload === "string") {
           enqueueSnackbar(result.payload, { variant: "error" });
+          setCounterpartySearchResults([]);
+          setShowCounterpartyDropdown(false);
+          setCounterpartyHasMore(false);
+          setCounterpartyTotalResults(0);
           return;
         }
 
-        let results = (result.payload as any)?.content || [];
+        const counterparties = (result.payload as any)?.content || [];
         const totalElements = (result.payload as any)?.totalElements || 0;
-        const totalPages = Math.ceil(totalElements / pageSize);
+        const hasMore = (result.payload as any).nextPage;
+        const totalResults = (result.payload as any).totalElements;
 
-        // // Filter by instrument type for ACH/Wire
-        // if (txType === "ach") {
-        //   results = results.filter(
-        //     (cp: any) =>
-        //       cp.paymentInstrumentType === "ach" ||
-        //       cp.paymentInstrumentType === "both"
-        //   );
-        // } else if (txType === "wire") {
-        //   results = results.filter(
-        //     (cp: any) =>
-        //       cp.paymentInstrumentType === "wire" ||
-        //       cp.paymentInstrumentType === "both"
-        //   );
-        // }
+        // Filter by compatibility with current transaction type
+        let filteredResults = counterparties;
+        filteredResults = filterByTransactionType(filteredResults, txType);
 
-        setCounterpartySearchResults(results);
+        if (page === 0) {
+          setCounterpartySearchResults(filteredResults);
+        } else {
+          setCounterpartySearchResults((prev) => [...prev, ...filteredResults]);
+        }
+
+        setCounterpartyTotalResults(totalResults);
+        setCounterpartyHasMore(hasMore);
+        setCounterpartySearchPage(page);
         setShowCounterpartyDropdown(true);
-        setIsCounterpartySearching(false);
       }, 350),
     [dispatch]
   );
@@ -326,6 +354,30 @@ export default function NewTransaction() {
         setConfirmationOpen(true);
       });
     }
+
+    if (data.transactionType.toLowerCase() == "wire") {
+      setIsSubmitting(true);
+      dispatch(
+        createWireTransaction({
+          amount: parseFloat(data.amount),
+          description: data.description ?? "",
+          accountNumber: data.accountNumber,
+          counterpartyId: counterpartyData?.counterpartyId ?? "",
+          counterpartyType: counterpartyData.paymentInstrumentType ?? "",
+        })
+      ).then((res: any) => {
+        console.log("res:", res);
+        setIsSubmitting(false);
+        if (typeof res.payload != "string") {
+          setSubmissionStatus("success");
+          setTransactionId(res.payload.paymentId);
+        } else {
+          setSubmissionStatus("error");
+          setErrorMessage(res.payload);
+        }
+        setConfirmationOpen(true);
+      });
+    }
   };
 
   const handleConfirmationClose = () => {
@@ -387,11 +439,24 @@ export default function NewTransaction() {
 
   const handleCounterpartySearchChange = (value: string) => {
     form.setValue("counterpartyName", value);
+    setCurrentSearchQuery(value);
+    setCounterpartySearchPage(0);
     if (counterpartyLookedUp) {
       setCounterpartyLookedUp(false);
       setCounterpartyData(null);
     }
-    debouncedSearch(value, form.getValues("transactionType"));
+    debouncedSearch(value, form.getValues("transactionType"), 0);
+  };
+
+  const handleLoadMoreCounterparties = async () => {
+    setIsLoadingMoreCounterparties(true);
+    const txType = form.getValues("transactionType");
+    await debouncedSearch(
+      currentSearchQuery,
+      txType,
+      counterpartySearchPage + 1
+    );
+    setIsLoadingMoreCounterparties(false);
   };
 
   const handleCounterpartySelect = (result: {
@@ -411,13 +476,7 @@ export default function NewTransaction() {
         counterpartyName: result.name,
         counterpartyId: result.id,
         counterpartyType: result.type,
-        status: "Active",
-        taxId: "XX-XXXXXXX",
-        primaryContact: "Contact Name",
-        contactEmail: "contact@example.com",
-        contactPhone: "+1 (555) 123-4567",
-        address: "123 Business Ave, City, ST 12345",
-        paymentInstrumentType: result.paymentInstrumentType,
+        paymentInstrumentType: (result as any).wire.type,
       });
       setCounterpartyLookedUp(true);
       setIsCounterpartyLoading(false);
@@ -545,9 +604,30 @@ export default function NewTransaction() {
     form.setValue("adjustmentType", "");
   }, [adjustmentDirection, form]);
 
+  const transactionTypeOptions = useMemo<any>(
+    () => [
+      {
+        value: "transfer",
+        label: "Transfer",
+        icon: ArrowLeftRight,
+        disabled: false,
+      },
+      {
+        value: "adjustment",
+        label: "Adjustment",
+        icon: Settings,
+        disabled: false,
+      },
+      { value: "ach", label: "ACH", icon: Building2, disabled: true },
+      { value: "wire", label: "Wire", icon: Zap, disabled: false },
+    ],
+    []
+  );
+
   return (
     <div className="-mx-6">
       <NewTransactionView
+        transactionTypeOptions={transactionTypeOptions}
         adjustmentTypeOptions={adjustmentTypeOptions}
         form={form}
         accountLookedUp={accountLookedUp}
@@ -583,6 +663,10 @@ export default function NewTransaction() {
         onReceiverAccountLookup={handleReceiverAccountLookup}
         onEditReceiverAccount={handleEditReceiverAccount}
         isReviewReady={isReviewReady}
+        counterpartyHasMore={counterpartyHasMore}
+        counterpartyTotalResults={counterpartyTotalResults}
+        isLoadingMoreCounterparties={isLoadingMoreCounterparties}
+        onLoadMoreCounterparties={handleLoadMoreCounterparties}
       />
     </div>
   );
