@@ -354,7 +354,7 @@ export default function NewTransaction() {
         adjustmentTransaction({
           accountNumber: data.accountNumber,
           amount: parseFloat(data.amount),
-          direction: data.adjustmentDirection ?? "abc",
+          direction: data.adjustmentDirection ?? "",
           subType: mapSubTypeStringToEnum(data.adjustmentType ?? ""),
           description: data.description ?? "",
         })
