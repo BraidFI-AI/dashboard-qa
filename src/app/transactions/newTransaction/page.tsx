@@ -174,7 +174,7 @@ export default function NewTransaction() {
         const hasMore = (result.payload as any).nextPage;
 
         // Filter by compatibility with current transaction type
-        let filteredResults = [];
+        let filteredResults: any = [];
         console.log("Account data for filtering:", accountData);
 
         filteredResults = counterparties.filter((cp: any) => {
