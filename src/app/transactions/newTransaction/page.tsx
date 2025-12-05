@@ -307,6 +307,7 @@ export default function NewTransaction() {
   const handleSubmit = () => {
     const data = form.getValues();
     console.log("transactiop  data:", data);
+    console.log("transactiop  data: 1", counterpartyData);
 
     if (data.transactionType.toLowerCase() == "transfer") {
       setIsSubmitting(true);
@@ -477,6 +478,8 @@ export default function NewTransaction() {
         counterpartyId: result.id,
         counterpartyType: result.type,
         paymentInstrumentType: (result as any).wire.type,
+        contactEmail: (result as any).email,
+        contactPhone: (result as any).phone,
       });
       setCounterpartyLookedUp(true);
       setIsCounterpartyLoading(false);
