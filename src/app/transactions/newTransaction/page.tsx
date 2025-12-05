@@ -3,7 +3,7 @@
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import MyText from "@/core/components/Text/Text";
 import TransferTransaction from "./components/transfer_transaction";
 import AdjustmentTransaction from "./components/adjustment_transaction";
@@ -26,6 +26,8 @@ import {
   adjustmentTransaction,
   transferTransaction,
 } from "@/redux/slices/new_transaction_slice";
+import { fetchCounterpartiesPaginated } from "@/redux/slices/CounterpartySlice";
+import { SearchCounterparty } from "@/core/api/ApiTypes";
 
 enum TransactionTypes {
   ADJUSTMENT = "Adjustment",
@@ -45,6 +47,8 @@ const mapSubTypeStringToEnum = (value: string) => {
 };
 
 export default function NewTransaction() {
+  const router = useRouter();
+
   const dispatch = useAppDispatch();
 
   const [accountLookedUp, setAccountLookedUp] = useState(false);
@@ -90,7 +94,7 @@ export default function NewTransaction() {
       amount: "",
       description: "",
       certifyInformation: false,
-      adjustmentDirection: "",
+      adjustmentDirection: "debit",
       adjustmentType: "",
       receiverAccountNumber: "",
     },
@@ -116,38 +120,48 @@ export default function NewTransaction() {
         }
 
         setIsCounterpartySearching(true);
-        try {
-          // Simulate API call delay
-          await new Promise((resolve) => setTimeout(resolve, 350));
 
-          // Filter by name and compatibility with current transaction type
-          let results: any = [];
-          // mockSearchResults.filter((cp: any) =>
-          //   cp.name.toLowerCase().includes(query.toLowerCase())
-          // )
+        const searchCriteria: SearchCounterparty = {
+          name: query,
+        };
+        const pageSize = 100;
+        const result = await dispatch(
+          fetchCounterpartiesPaginated({
+            searchCriteria,
+            pageSize,
+            pageNumber: 0,
+          })
+        );
 
-          // Filter by instrument type for ACH/Wire
-          if (txType === "ach") {
-            results = results.filter(
-              (cp: any) =>
-                cp.paymentInstrumentType === "ach" ||
-                cp.paymentInstrumentType === "both"
-            );
-          } else if (txType === "wire") {
-            results = results.filter(
-              (cp: any) =>
-                cp.paymentInstrumentType === "wire" ||
-                cp.paymentInstrumentType === "both"
-            );
-          }
-
-          setCounterpartySearchResults(results);
-          setShowCounterpartyDropdown(true);
-        } finally {
-          setIsCounterpartySearching(false);
+        if (typeof result.payload === "string") {
+          enqueueSnackbar(result.payload, { variant: "error" });
+          return;
         }
+
+        let results = (result.payload as any)?.content || [];
+        const totalElements = (result.payload as any)?.totalElements || 0;
+        const totalPages = Math.ceil(totalElements / pageSize);
+
+        // // Filter by instrument type for ACH/Wire
+        // if (txType === "ach") {
+        //   results = results.filter(
+        //     (cp: any) =>
+        //       cp.paymentInstrumentType === "ach" ||
+        //       cp.paymentInstrumentType === "both"
+        //   );
+        // } else if (txType === "wire") {
+        //   results = results.filter(
+        //     (cp: any) =>
+        //       cp.paymentInstrumentType === "wire" ||
+        //       cp.paymentInstrumentType === "both"
+        //   );
+        // }
+
+        setCounterpartySearchResults(results);
+        setShowCounterpartyDropdown(true);
+        setIsCounterpartySearching(false);
       }, 350),
-    []
+    [dispatch]
   );
 
   useEffect(() => {
@@ -279,11 +293,12 @@ export default function NewTransaction() {
         console.log("res:", res);
         setIsSubmitting(false);
         if (typeof res.payload != "string") {
-          enqueueSnackbar("Transfer successful", { variant: "success" });
           setSubmissionStatus("success");
+          setConfirmationOpen(true);
+          setTransactionId(res.payload.paymentId);
         } else {
-          enqueueSnackbar(res.payload, { variant: "error" });
           setSubmissionStatus("error");
+          setErrorMessage(res.payload);
         }
       });
     }
@@ -294,7 +309,7 @@ export default function NewTransaction() {
         adjustmentTransaction({
           accountNumber: data.accountNumber,
           amount: parseFloat(data.amount),
-          direction: data.adjustmentDirection ?? "",
+          direction: data.adjustmentDirection ?? "abc",
           subType: mapSubTypeStringToEnum(data.adjustmentType ?? ""),
           description: data.description ?? "",
         })
@@ -302,12 +317,13 @@ export default function NewTransaction() {
         console.log("res:", res);
         setIsSubmitting(false);
         if (typeof res.payload != "string") {
-          enqueueSnackbar("Adjustment successful", { variant: "success" });
           setSubmissionStatus("success");
+          setTransactionId(res.payload.paymentId);
         } else {
-          enqueueSnackbar(res.payload, { variant: "error" });
           setSubmissionStatus("error");
+          setErrorMessage(res.payload);
         }
+        setConfirmationOpen(true);
       });
     }
   };
@@ -315,7 +331,9 @@ export default function NewTransaction() {
   const handleConfirmationClose = () => {
     setConfirmationOpen(false);
     if (submissionStatus === "success") {
-      // navigate("/transactions/history")
+      router.push(
+        `/transactions/transactionHistory?paymentId=${transactionId}`
+      );
     }
   };
 
@@ -334,63 +352,30 @@ export default function NewTransaction() {
     setIsReceiverAccountLoading(true);
     dispatch(searchAccount(receiverNum)).then((result: any) => {
       if (typeof result.payload === "string") {
-        enqueueSnackbar(result.payload, { variant: "error" });
+        setReceiverAccountData({
+          accountNumber: receiverNum ?? "",
+          accountName: "",
+          accountType: "",
+          customerName: "",
+          customerId: "",
+          customerType: "",
+        });
         setIsReceiverAccountLoading(false);
+        setReceiverAccountLookedUp(true);
         return;
       }
       const acc = result.payload.accounts[0];
-
-      if (acc.customerType == "BUSINESS") {
-        dispatch(
-          fetchBusinessAccountBalance({
-            businessId: acc.customerId,
-            accountNumber: acc.accountNumber,
-          })
-        ).then((result: any) => {
-          if (typeof result.payload === "string") {
-            enqueueSnackbar(result.payload, { variant: "error" });
-            setIsReceiverAccountLoading(false);
-            return;
-          }
-          setReceiverAccountData({
-            accountNumber: acc.accountNumber ?? "",
-            accountName: acc.accountName ?? "",
-            accountType: acc.accountType ?? "",
-            balance: result.payload.balance ?? "",
-            customerName: acc.customerName ?? "",
-            customerId: acc.customerId ?? "",
-            customerType: acc.customerType ?? "",
-          });
-          setReceiverAccountLookedUp(true);
-          enqueueSnackbar("Account found", { variant: "success" });
-          setIsReceiverAccountLoading(false);
-        });
-      } else {
-        dispatch(
-          fetchIndividualAccountBalance({
-            individualId: acc.customerId,
-            accountNumber: acc.accountNumber,
-          })
-        ).then((result: any) => {
-          if (typeof result.payload === "string") {
-            enqueueSnackbar(result.payload, { variant: "error" });
-            setIsReceiverAccountLoading(false);
-            return;
-          }
-          setReceiverAccountData({
-            accountNumber: acc.accountNumber ?? "",
-            accountName: acc.accountName ?? "",
-            accountType: acc.accountType ?? "",
-            balance: result.payload.balance ?? "",
-            customerName: acc.customerName ?? "",
-            customerId: acc.customerId ?? "",
-            customerType: acc.customerType ?? "",
-          });
-          setReceiverAccountLookedUp(true);
-          enqueueSnackbar("Account found", { variant: "success" });
-          setIsReceiverAccountLoading(false);
-        });
-      }
+      setReceiverAccountData({
+        accountNumber: acc.accountNumber ?? "",
+        accountName: acc.accountName ?? "",
+        accountType: acc.accountType ?? "",
+        customerName: acc.customerName ?? "",
+        customerId: acc.customerId ?? "",
+        customerType: acc.customerType ?? "",
+      });
+      setReceiverAccountLookedUp(true);
+      enqueueSnackbar("Receiver account found", { variant: "success" });
+      setIsReceiverAccountLoading(false);
     });
   };
 
@@ -531,9 +516,39 @@ export default function NewTransaction() {
     resetForm();
   };
 
+  // Direction-based adjustment type options
+  const adjustmentDirection = form.watch("adjustmentDirection");
+
+  const adjustmentTypeOptions = useMemo(() => {
+    if (adjustmentDirection?.toLowerCase() === "credit") {
+      return [
+        {
+          value: "NEGATIVE_BALANCE_CLEARING",
+          label: "Negative Balance Clearing",
+        },
+        { value: "PROVISIONAL_CREDIT", label: "Provisional Credit" },
+        { value: "FEE_REFUND", label: "Fee Refund" },
+        { value: "TRANSACTION_REVERSAL", label: "Transaction Reversal" },
+        { value: "TRANSACTION_ADJUSTMENT", label: "Transaction Adjustment" },
+      ];
+    }
+    // Default: debit options
+    return [
+      { value: "collection", label: "Collection" },
+      { value: "transaction_reversal", label: "Transaction Reversal" },
+      { value: "transaction_adjustment", label: "Transaction Adjustment" },
+    ];
+  }, [adjustmentDirection]);
+
+  // Clear adjustment type when direction changes
+  useEffect(() => {
+    form.setValue("adjustmentType", "");
+  }, [adjustmentDirection, form]);
+
   return (
     <div className="-mx-6">
       <NewTransactionView
+        adjustmentTypeOptions={adjustmentTypeOptions}
         form={form}
         accountLookedUp={accountLookedUp}
         accountData={accountData}
