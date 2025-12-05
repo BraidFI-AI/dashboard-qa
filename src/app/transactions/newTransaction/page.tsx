@@ -172,10 +172,45 @@ export default function NewTransaction() {
         const counterparties = (result.payload as any)?.content || [];
         const totalElements = (result.payload as any)?.totalElements || 0;
         const hasMore = (result.payload as any).nextPage;
-        const totalResults = (result.payload as any).totalElements;
 
         // Filter by compatibility with current transaction type
-        let filteredResults = counterparties;
+        let filteredResults = [];
+        console.log("Account data for filtering:", accountData);
+
+        filteredResults = counterparties.filter((cp: any) => {
+          let matchesProductId = false;
+          let matchesCustomerId = false;
+
+          // Check productId match
+          if (accountData.productId && cp.productId === accountData.productId) {
+            matchesProductId = true;
+            console.log("Counterparty matches productId:", cp.id, cp.name);
+          }
+
+          // Check customerId match
+          if (accountData.customerId) {
+            if (accountData.customerType === "BUSINESS") {
+              // Match by businessId
+              if (cp.businessId === accountData.customerId) {
+                matchesCustomerId = true;
+                console.log("Counterparty matches businessId:", cp.id, cp.name);
+              }
+            } else {
+              // Match by individualId (when customerType is not BUSINESS)
+              if (cp.individualId === accountData.customerId) {
+                matchesCustomerId = true;
+                console.log(
+                  "Counterparty matches individualId:",
+                  cp.id,
+                  cp.name
+                );
+              }
+            }
+          }
+
+          // Return true if matches EITHER productId OR customerId
+          return matchesProductId || matchesCustomerId;
+        });
         filteredResults = filterByTransactionType(filteredResults, txType);
 
         if (page === 0) {
@@ -184,7 +219,7 @@ export default function NewTransaction() {
           setCounterpartySearchResults((prev) => [...prev, ...filteredResults]);
         }
 
-        setCounterpartyTotalResults(totalResults);
+        setCounterpartyTotalResults(totalElements);
         setCounterpartyHasMore(hasMore);
         setCounterpartySearchPage(page);
         setShowCounterpartyDropdown(true);
@@ -201,89 +236,70 @@ export default function NewTransaction() {
   // Callbacks
   const handleAccountLookup = () => {
     setIsAccountLoading(true);
-    dispatch(searchAccount(form.getValues("accountNumber"))).then(
-      (result: any) => {
-        if (typeof result.payload === "string") {
-          enqueueSnackbar(result.payload, { variant: "error" });
-          setIsAccountLoading(false);
-          return;
-        }
-        const acc = result.payload.accounts[0];
-
-        if (acc.customerType == "BUSINESS") {
-          dispatch(
-            fetchBusinessAccountBalance({
-              businessId: acc.customerId,
-              accountNumber: acc.accountNumber,
-            })
-          ).then((result: any) => {
-            if (typeof result.payload === "string") {
-              enqueueSnackbar(result.payload, { variant: "error" });
-              setIsAccountLoading(false);
-              return;
-            }
-            setAccountData({
-              accountNumber: acc.accountNumber ?? "",
-              accountName: acc.accountName ?? "",
-              accountType: acc.accountType ?? "",
-              balance: result.payload.balance ?? "",
-              customerName: acc.customerName ?? "",
-              customerId: acc.customerId ?? "",
-              customerType: acc.customerType ?? "",
-            });
-            setAccountLookedUp(true);
-            enqueueSnackbar("Account found", { variant: "success" });
-            setIsAccountLoading(false);
-          });
-        } else {
-          dispatch(
-            fetchIndividualAccountBalance({
-              individualId: acc.customerId,
-              accountNumber: acc.accountNumber,
-            })
-          ).then((result: any) => {
-            if (typeof result.payload === "string") {
-              enqueueSnackbar(result.payload, { variant: "error" });
-              setIsAccountLoading(false);
-              return;
-            }
-            setAccountData({
-              accountNumber: acc.accountNumber ?? "",
-              accountName: acc.accountName ?? "",
-              accountType: acc.accountType ?? "",
-              balance: result.payload.balance ?? "",
-              customerName: acc.customerName ?? "",
-              customerId: acc.customerId ?? "",
-              customerType: acc.customerType ?? "",
-            });
-            setAccountLookedUp(true);
-            enqueueSnackbar("Account found", { variant: "success" });
-            setIsAccountLoading(false);
-          });
-        }
+    dispatch(searchAccount(form.getValues("accountNumber"))).then((r: any) => {
+      if (typeof r.payload === "string") {
+        enqueueSnackbar(r.payload, { variant: "error" });
+        setIsAccountLoading(false);
+        return;
       }
-    );
-  };
+      const acc = r.payload.accounts[0];
+      console.log("aaacac:", acc);
 
-  const handleCounterpartyLookup = () => {
-    const cpName = form.getValues("counterpartyName");
-    if (!cpName) {
-      enqueueSnackbar("Please enter a counterparty name", { variant: "error" });
-      return;
-    }
-    setCounterpartyData({
-      counterpartyName: "Global Tech Solutions Inc.",
-      counterpartyId: "CP-5678",
-      counterpartyType: "Business",
-      status: "Active",
-      taxId: "98-7654321",
-      primaryContact: "Sarah Johnson",
-      contactEmail: "sarah.johnson@globaltech.com",
-      contactPhone: "+1 (555) 987-6543",
-      address: "456 Innovation Drive, San Francisco, CA 94105",
+      if (acc.customerType == "BUSINESS") {
+        dispatch(
+          fetchBusinessAccountBalance({
+            businessId: acc.customerId,
+            accountNumber: acc.accountNumber,
+          })
+        ).then((result: any) => {
+          if (typeof result.payload === "string") {
+            enqueueSnackbar(result.payload, { variant: "error" });
+            setIsAccountLoading(false);
+            return;
+          }
+
+          setAccountData({
+            accountNumber: acc.accountNumber ?? "",
+            accountName: acc.accountName ?? "",
+            accountType: acc.accountType ?? "",
+            balance: result.payload.balance ?? "",
+            customerName: acc.customerName ?? "",
+            customerId: acc.customerId ?? "",
+            customerType: acc.customerType ?? "",
+            productId: acc.productId ?? "",
+          });
+          setAccountLookedUp(true);
+          enqueueSnackbar("Account found", { variant: "success" });
+          setIsAccountLoading(false);
+        });
+      } else {
+        dispatch(
+          fetchIndividualAccountBalance({
+            individualId: acc.customerId,
+            accountNumber: acc.accountNumber,
+          })
+        ).then((result: any) => {
+          if (typeof result.payload === "string") {
+            enqueueSnackbar(result.payload, { variant: "error" });
+            setIsAccountLoading(false);
+            return;
+          }
+          setAccountData({
+            accountNumber: acc.accountNumber ?? "",
+            accountName: acc.accountName ?? "",
+            accountType: acc.accountType ?? "",
+            balance: result.payload.balance ?? "",
+            customerName: acc.customerName ?? "",
+            customerId: acc.customerId ?? "",
+            customerType: acc.customerType ?? "",
+            productId: acc.productId ?? "",
+          });
+          setAccountLookedUp(true);
+          enqueueSnackbar("Account found", { variant: "success" });
+          setIsAccountLoading(false);
+        });
+      }
     });
-    setCounterpartyLookedUp(true);
-    enqueueSnackbar("Counterparty found", { variant: "success" });
   };
 
   const handleEditAccount = () => {
@@ -472,6 +488,7 @@ export default function NewTransaction() {
 
     // Fetch full counterparty details
     setIsCounterpartyLoading(true);
+    console.log("result cpppp:", result);
     setTimeout(() => {
       setCounterpartyData({
         counterpartyName: result.name,
