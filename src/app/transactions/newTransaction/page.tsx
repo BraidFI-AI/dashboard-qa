@@ -40,9 +40,9 @@ enum TransactionTypes {
 
 const mapSubTypeStringToEnum = (value: string) => {
   if (value.toLowerCase() == "collection") return "COLLECTION";
-  if (value.toLowerCase() == "transaction reversal")
+  if (value.toLowerCase() == "transaction_reversal")
     return "TRANSACTION_REVERSAL";
-  if (value.toLowerCase() == "transaction adjustment")
+  if (value.toLowerCase() == "transaction_adjustment")
     return "TRANSACTION_ADJUSTMENT";
 
   return value;
