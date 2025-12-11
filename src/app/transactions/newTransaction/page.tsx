@@ -124,10 +124,14 @@ export default function NewTransaction() {
 
   // Filter results based on transaction type
   const filterByTransactionType = (results: any, txType: string) => {
+    console.log("filtering counterparties:", txType);
     if (txType === "ach") {
       return results.filter((cp: any) => cp.ach != null);
     } else if (txType === "wire") {
-      return results.filter((cp: any) => cp.wire != null && cp.wire.id != null);
+      return results.filter((cp: any) => {
+        console.log("filtering counterparties:", cp.wire, cp.wire.id);
+        return cp.wire != null && cp.wire.id != null;
+      });
     }
     return results;
   };
@@ -135,95 +139,144 @@ export default function NewTransaction() {
   // Debounced search function with pagination
   const debouncedSearch = useMemo(
     () =>
-      debounce(async (query: string, txType: string, page: number = 0) => {
-        if (query.length < 2) {
-          setCounterpartySearchResults([]);
-          setShowCounterpartyDropdown(false);
-          setCounterpartyHasMore(false);
-          setCounterpartyTotalResults(0);
-          return;
-        }
-
-        if (page === 0) {
-          setIsCounterpartySearching(true);
-        }
-
-        const result = await dispatch(
-          fetchCounterpartiesPaginated({
-            searchCriteria: {
-              name: query,
-            },
-            pageSize: PAGE_SIZE,
-            pageNumber: page,
-          })
-        );
-
-        setIsCounterpartySearching(false);
-
-        if (typeof result.payload === "string") {
-          enqueueSnackbar(result.payload, { variant: "error" });
-          setCounterpartySearchResults([]);
-          setShowCounterpartyDropdown(false);
-          setCounterpartyHasMore(false);
-          setCounterpartyTotalResults(0);
-          return;
-        }
-
-        const counterparties = (result.payload as any)?.content || [];
-        const totalElements = (result.payload as any)?.totalElements || 0;
-        const hasMore = (result.payload as any).nextPage;
-
-        // Filter by compatibility with current transaction type
-        let filteredResults: any = [];
-        console.log("Account data for filtering:", accountData);
-
-        filteredResults = counterparties.filter((cp: any) => {
-          let matchesProductId = false;
-          let matchesCustomerId = false;
-
-          // Check productId match
-          if (accountData.productId && cp.productId === accountData.productId) {
-            matchesProductId = true;
-            console.log("Counterparty matches productId:", cp.id, cp.name);
+      debounce(
+        async (
+          query: string,
+          txType: string,
+          page: number = 0,
+          currentAccountData: any
+        ) => {
+          if (query.length < 2) {
+            setCounterpartySearchResults([]);
+            setShowCounterpartyDropdown(false);
+            setCounterpartyHasMore(false);
+            setCounterpartyTotalResults(0);
+            return;
           }
 
-          // Check customerId match
-          if (accountData.customerId) {
-            if (accountData.customerType === "BUSINESS") {
-              // Match by businessId
-              if (cp.businessId === accountData.customerId) {
-                matchesCustomerId = true;
-                console.log("Counterparty matches businessId:", cp.id, cp.name);
-              }
-            } else {
-              // Match by individualId (when customerType is not BUSINESS)
-              if (cp.individualId === accountData.customerId) {
-                matchesCustomerId = true;
-                console.log(
-                  "Counterparty matches individualId:",
-                  cp.id,
-                  cp.name
-                );
+          if (page === 0) {
+            setIsCounterpartySearching(true);
+          }
+
+          const result = await dispatch(
+            fetchCounterpartiesPaginated({
+              searchCriteria: {
+                name: query,
+              },
+              pageSize: PAGE_SIZE,
+              pageNumber: page,
+            })
+          );
+
+          setIsCounterpartySearching(false);
+
+          if (typeof result.payload === "string") {
+            enqueueSnackbar(result.payload, { variant: "error" });
+            setCounterpartySearchResults([]);
+            setShowCounterpartyDropdown(false);
+            setCounterpartyHasMore(false);
+            setCounterpartyTotalResults(0);
+            return;
+          }
+
+          const counterparties = (result.payload as any)?.content || [];
+          const totalElements = (result.payload as any)?.totalElements || 0;
+          const hasMore = (result.payload as any).nextPage;
+
+          let filteredResults: any = [];
+          console.log(
+            "filtering counterparties Account data:",
+            currentAccountData
+          );
+
+          filteredResults = counterparties.filter((cp: any) => {
+            let matchesProductId = false;
+            let matchesCustomerId = false;
+
+            console.log(
+              "filtering counterparties productId check:",
+              cp.productId,
+              currentAccountData?.productId,
+              cp.productId === currentAccountData?.productId
+            );
+            console.log(
+              "filtering counterparties customerId check:",
+              cp.customerId,
+              currentAccountData?.customerId,
+              cp.customerId === currentAccountData?.customerId
+            );
+            console.log(
+              "filtering counterparties businessId check:",
+              cp.businessId,
+              currentAccountData?.customerId,
+              cp.businessId === currentAccountData?.customerId
+            );
+            console.log(
+              "filtering counterparties individualId check:",
+              cp.individualId,
+              currentAccountData?.customerId,
+              cp.individualId === currentAccountData?.customerId
+            );
+
+            // Check productId match
+            if (
+              currentAccountData?.productId &&
+              cp.productId === currentAccountData.productId
+            ) {
+              matchesProductId = true;
+              console.log(
+                "filtering counterparties matches productId:",
+                cp.id,
+                cp.name
+              );
+            }
+
+            // Check customerId match
+            if (currentAccountData?.customerId) {
+              if (currentAccountData.customerType === "BUSINESS") {
+                // Match by businessId
+                if (cp.businessId === currentAccountData.customerId) {
+                  matchesCustomerId = true;
+                  console.log(
+                    "Counterparty matches businessId:",
+                    cp.id,
+                    cp.name
+                  );
+                }
+              } else {
+                // Match by individualId (when customerType is not BUSINESS)
+                if (cp.individualId === currentAccountData.customerId) {
+                  matchesCustomerId = true;
+                  console.log(
+                    "Counterparty matches individualId:",
+                    cp.id,
+                    cp.name
+                  );
+                }
               }
             }
+
+            // Return true if matches EITHER productId OR customerId
+            return matchesProductId || matchesCustomerId;
+          });
+          filteredResults = filterByTransactionType(filteredResults, txType);
+
+          if (page === 0) {
+            setCounterpartySearchResults(filteredResults);
+          } else {
+            setCounterpartySearchResults((prev) => [
+              ...prev,
+              ...filteredResults,
+            ]);
           }
 
-          // Return true if matches EITHER productId OR customerId
-          return matchesProductId || matchesCustomerId;
-        });
-        filteredResults = filterByTransactionType(filteredResults, txType);
-
-        if (page === 0) {
-          setCounterpartySearchResults(filteredResults);
-        } else {
-          setCounterpartySearchResults((prev) => [...prev, ...filteredResults]);
-        }
-
-        setCounterpartyTotalResults(totalElements);
-        setCounterpartyHasMore(hasMore);
-        setCounterpartySearchPage(page);
-        setShowCounterpartyDropdown(true);
-      }, 350),
+          setCounterpartyTotalResults(totalElements);
+          setCounterpartyHasMore(hasMore);
+          setCounterpartySearchPage(page);
+          setShowCounterpartyDropdown(true);
+        },
+        350
+      ),
     [dispatch]
   );
 
@@ -258,6 +311,8 @@ export default function NewTransaction() {
             return;
           }
 
+          console.log("handleAccountLookup account data:", acc, result.payload);
+
           setAccountData({
             accountNumber: acc.accountNumber ?? "",
             accountName: acc.accountName ?? "",
@@ -284,6 +339,8 @@ export default function NewTransaction() {
             setIsAccountLoading(false);
             return;
           }
+          console.log("handleAccountLookup account data:", acc, result.payload);
+
           setAccountData({
             accountNumber: acc.accountNumber ?? "",
             accountName: acc.accountName ?? "",
@@ -339,12 +396,12 @@ export default function NewTransaction() {
         setIsSubmitting(false);
         if (typeof res.payload != "string") {
           setSubmissionStatus("success");
-          setConfirmationOpen(true);
           setTransactionId(res.payload.paymentId);
         } else {
           setSubmissionStatus("error");
           setErrorMessage(res.payload);
         }
+        setConfirmationOpen(true);
       });
     }
 
@@ -462,7 +519,7 @@ export default function NewTransaction() {
       setCounterpartyLookedUp(false);
       setCounterpartyData(null);
     }
-    debouncedSearch(value, form.getValues("transactionType"), 0);
+    debouncedSearch(value, form.getValues("transactionType"), 0, accountData);
   };
 
   const handleLoadMoreCounterparties = async () => {
@@ -471,7 +528,8 @@ export default function NewTransaction() {
     await debouncedSearch(
       currentSearchQuery,
       txType,
-      counterpartySearchPage + 1
+      counterpartySearchPage + 1,
+      accountData
     );
     setIsLoadingMoreCounterparties(false);
   };
