@@ -745,6 +745,8 @@ export default function NewTransaction() {
         counterpartyTotalResults={counterpartyTotalResults}
         isLoadingMoreCounterparties={isLoadingMoreCounterparties}
         onLoadMoreCounterparties={handleLoadMoreCounterparties}
+        showSuccessInfoBox
+        successInfoMessage="The transaction is being manually reviewed"
       />
     </div>
   );
