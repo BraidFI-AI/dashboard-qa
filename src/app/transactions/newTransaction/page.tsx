@@ -64,6 +64,8 @@ export default function NewTransaction() {
   const [errorMessage, setErrorMessage] = useState("");
   const [transactionId, setTransactionId] = useState("");
 
+  const [transactionStatus, setTransactionStatus] = useState("");
+
   const [isAccountLoading, setIsAccountLoading] = useState(false);
   const [isCounterpartyLoading, setIsCounterpartyLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -397,6 +399,7 @@ export default function NewTransaction() {
         if (typeof res.payload != "string") {
           setSubmissionStatus("success");
           setTransactionId(res.payload.paymentId);
+          setTransactionStatus(res.payload.transactionProcessingStatus);
         } else {
           setSubmissionStatus("error");
           setErrorMessage(res.payload);
@@ -421,6 +424,7 @@ export default function NewTransaction() {
         if (typeof res.payload != "string") {
           setSubmissionStatus("success");
           setTransactionId(res.payload.paymentId);
+          setTransactionStatus(res.payload.transactionProcessingStatus);
         } else {
           setSubmissionStatus("error");
           setErrorMessage(res.payload);
@@ -445,6 +449,7 @@ export default function NewTransaction() {
         if (typeof res.payload != "string") {
           setSubmissionStatus("success");
           setTransactionId(res.payload.paymentId);
+          setTransactionStatus(res.payload.transactionProcessingStatus);
         } else {
           setSubmissionStatus("error");
           setErrorMessage(res.payload);
@@ -745,7 +750,7 @@ export default function NewTransaction() {
         counterpartyTotalResults={counterpartyTotalResults}
         isLoadingMoreCounterparties={isLoadingMoreCounterparties}
         onLoadMoreCounterparties={handleLoadMoreCounterparties}
-        showSuccessInfoBox
+        showSuccessInfoBox={transactionStatus.toLowerCase().includes("manual")}
         successInfoMessage="The transaction is being manually reviewed"
       />
     </div>
