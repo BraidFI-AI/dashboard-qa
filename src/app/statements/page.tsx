@@ -28,494 +28,455 @@ import { enqueueSnackbar } from "notistack";
 import { ADMIN_OPS_ROLE, ADMIN_ROLE, StatementType } from "@/core/constants";
 import toDollarFormat from "@/core/utils/toDollarFormat";
 import { useSelector } from "react-redux";
+import {
+  StatementView,
+  toast,
+  generateStatementCSV,
+  downloadCSV,
+} from "braid-ui";
+// import { setShowAppBar } from "@/redux/slices/AppSlice";
+import GenerateStatement from "./components/generate_monthly_statement";
+
+import "braid-ui/styles";
 
 const StatementsPage = () => {
   const dispatch = useAppDispatch();
 
-  const userType = useSelector((state: any) => state.app.userType);
+  // useEffect(() => {
+  //   dispatch(setShowAppBar(false));
+  // }, [dispatch]);
+
+  const [programsLoading, setProgramsLoading] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
-  const [statementType, setStatementType] = useState(StatementType.root);
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
-  const [statement, setStatement] = useState<
-    "initial" | "loading" | string | Statement
-  >("initial");
+  const [statementType, setStatementType] = useState<string>("root");
+  const [selectedProgram, setSelectedProgram] = useState<string>("");
+  const [selectedProduct, setSelectedProduct] = useState<string>("");
+  const [accountNumber, setAccountNumber] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date>(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [statementGenerated, setStatementGenerated] = useState(false);
 
-  const [productId, setProductId] = useState<string | null>(null);
-  const [productIds, setProductIds] = useState<
-    "loading" | string | { id: string; name: string }[]
-  >("loading");
-
-  const [programId, setProgramId] = useState<string | null>(null);
-  const [programIds, setProgramIds] = useState<
-    "loading" | string | { id: string; name: string }[]
-  >("loading");
-
-  const [accountId, setAccountId] = useState<string | null>(null);
-
-  const [statementTypes, setStatementTypes] = useState<StatementType[]>([]);
+  const [programs, setPrograms] = useState<{ value: string; label: string }[]>(
+    []
+  );
+  const [products, setProducts] = useState<{ value: string; label: string }[]>(
+    []
+  );
 
   useEffect(() => {
+    setProgramsLoading(true);
+    setProductsLoading(true);
     dispatch(fetchProgramIdsListWithNames()).then((programs: any) => {
-      setProgramIds(programs.payload);
+      setProgramsLoading(false);
+      if (typeof programs.payload == "string") {
+        enqueueSnackbar(programs.payload, { variant: "error" });
+        setPrograms(programs.payload);
+        return;
+      }
+      const pgs = programs.payload.map((program: Program) => {
+        return {
+          value: program.id.toString(),
+          label: `${program.id ?? ""} - ${program.name ?? ""}`,
+        };
+      });
+      setPrograms(pgs);
       if (typeof programs.payload != "string") {
-        setProgramId(programs.payload?.[0]?.id ?? null);
+        setSelectedProgram(programs.payload?.[0]?.id?.toString() ?? "");
       }
     });
 
     dispatch(fetchProductIdsList()).then((products: any) => {
-      setProductIds(products.payload);
+      setProductsLoading(false);
+      if (typeof products.payload == "string") {
+        enqueueSnackbar(products.payload, { variant: "error" });
+        setProducts(products.payload);
+        return;
+      }
+      const prds = products.payload.map((product: any) => {
+        return {
+          value: product.id.toString(),
+          label: `${product.id ?? ""} - ${product.name ?? ""}`,
+        };
+      });
+      setProducts(prds);
       if (typeof products.payload != "string") {
-        setProductId(products.payload?.[0]?.id ?? null);
+        setSelectedProduct(products.payload?.[0]?.id?.toString() ?? "");
       }
     });
   }, [dispatch]);
 
-  const {
-    formState: { errors },
-    getValues,
-    control,
-    setValue,
-    handleSubmit,
-  } = useForm<{ type: string; start: string; end: string }>({
-    defaultValues: {
-      type: statementType,
-      start: "",
-      end: "",
-    },
-  });
-  const onSubmit: SubmitHandler<{
-    type: string;
-    start: string;
-    end: string;
-  }> = (data: { type: string; start: string; end: string }) => {
-    console.log("data:", data);
+  // todo export the type from braid-ui
+  interface StatementHeader {
+    account: string;
+    productId: string;
+    programId: string;
+    startDate: string;
+    endDate: string;
+    startingBalance: string;
+    endingBalance: string;
+  }
 
-    setStatement("loading");
+  interface StatementTransaction {
+    transactionType: string;
+    direction: "CREDIT" | "DEBIT";
+    amount: number;
+    count: number;
+  }
 
-    if (data.type == StatementType.root) {
-      dispatch(fetchRootStatement({ start: data.start, end: data.end })).then(
-        (statement: any) => {
-          setStatement(statement.payload);
+  const [statementHeader, setStatementHeader] =
+    useState<StatementHeader | null>(null);
+  const [statementTransactions, setStatementTransactions] = useState<
+    StatementTransaction[]
+  >([]);
+
+  // Handlers
+  const handleStatementTypeChange = (value: string) => {
+    console.log("changing statement type:", value);
+    setStatementType(value);
+    // Reset secondary selection when type changes
+    setSelectedProgram("");
+    setSelectedProduct("");
+    setAccountNumber("");
+  };
+
+  const handleGenerateStatement = () => {
+    if (!statementType || !startDate || !endDate) return;
+
+    // Validate secondary selection based on type
+    if (statementType === "program" && !selectedProgram) return;
+    if (statementType === "product" && !selectedProduct) return;
+    if (statementType === "account" && !accountNumber) return;
+
+    if (statementType == "root") {
+      setSubmitting(true);
+
+      dispatch(
+        fetchRootStatement({
+          start: moment(startDate).toString(),
+          end: moment(endDate).toString(),
+        })
+      ).then((statement: any) => {
+        setSubmitting(false);
+
+        if (typeof statement.payload == "string") {
+          enqueueSnackbar(statement.payload, { variant: "error" });
+          return;
         }
-      );
-    } else if (data.type == StatementType.program) {
-      if (programId == null) {
-        enqueueSnackbar("Program ID is required", { variant: "error" });
-        return;
-      }
+        setStatementHeader({
+          account: statement.payload.accountName?.toString() ?? "",
+          productId: statement.payload.productId?.toString() ?? "",
+          programId: statement.payload.programId?.toString() ?? "",
+          startDate: statement.payload.starting?.toString() ?? "",
+          endDate: statement.payload.ending?.toString() ?? "",
+          startingBalance: toDollarFormat(
+            statement.payload.startingBalance ?? 0
+          ).toString(),
+          endingBalance: toDollarFormat(
+            statement.payload.endingBalance ?? 0
+          ).toString(),
+        });
+
+        const transactions = statement.payload.transactionSummary.map(
+          (transaction: any) => {
+            return {
+              transactionType: transaction.type ?? "",
+              direction: transaction.polarity ?? "",
+              amount: transaction.amount,
+              count: transaction.count ?? 0,
+            };
+          }
+        );
+        setStatementTransactions(transactions);
+        setStatementGenerated(true);
+      });
+    } else if (statementType == "program") {
+      setSubmitting(true);
       dispatch(
         fetchProgramStatement({
-          start: data.start,
-          end: data.end,
-          programId: programId,
+          start: moment(startDate).toString(),
+          end: moment(endDate).toString(),
+          programId: selectedProgram,
         })
       ).then((statement: any) => {
-        setStatement(statement.payload);
+        setSubmitting(false);
+
+        if (typeof statement.payload == "string") {
+          enqueueSnackbar(statement.payload, { variant: "error" });
+          return;
+        }
+        setStatementHeader({
+          account: statement.payload.accountName?.toString() ?? "",
+          productId: statement.payload.productId?.toString() ?? "",
+          programId: statement.payload.programId?.toString() ?? "",
+          startDate: statement.payload.starting?.toString() ?? "",
+          endDate: statement.payload.ending?.toString() ?? "",
+          startingBalance: toDollarFormat(
+            statement.payload.startingBalance ?? 0
+          ).toString(),
+          endingBalance: toDollarFormat(
+            statement.payload.endingBalance ?? 0
+          ).toString(),
+        });
+
+        const transactions = statement.payload.transactionSummary.map(
+          (transaction: any) => {
+            return {
+              transactionType: transaction.type ?? "",
+              direction: transaction.polarity ?? "",
+              amount: transaction.amount,
+              count: transaction.count ?? 0,
+            };
+          }
+        );
+        setStatementTransactions(transactions);
+        setStatementGenerated(true);
       });
-    } else if (data.type == StatementType.product) {
-      if (productId == null) {
-        enqueueSnackbar("Product ID is required", { variant: "error" });
-        return;
-      }
+    } else if (statementType == "product") {
+      setSubmitting(true);
       dispatch(
         fetchProductStatement({
-          start: data.start,
-          end: data.end,
-          productId: productId,
+          start: moment(startDate).toString(),
+          end: moment(endDate).toString(),
+          productId: selectedProduct,
         })
       ).then((statement: any) => {
-        setStatement(statement.payload);
+        setSubmitting(false);
+
+        if (typeof statement.payload == "string") {
+          enqueueSnackbar(statement.payload, { variant: "error" });
+          return;
+        }
+        setStatementHeader({
+          account: statement.payload.accountName?.toString() ?? "",
+          productId: statement.payload.productId?.toString() ?? "",
+          programId: statement.payload.programId?.toString() ?? "",
+          startDate: statement.payload.starting?.toString() ?? "",
+          endDate: statement.payload.ending?.toString() ?? "",
+          startingBalance: toDollarFormat(
+            statement.payload.startingBalance ?? 0
+          ).toString(),
+          endingBalance: toDollarFormat(
+            statement.payload.endingBalance ?? 0
+          ).toString(),
+        });
+
+        const transactions = statement.payload.transactionSummary.map(
+          (transaction: any) => {
+            return {
+              transactionType: transaction.type ?? "",
+              direction: transaction.polarity ?? "",
+              amount: transaction.amount,
+              count: transaction.count ?? 0,
+            };
+          }
+        );
+        setStatementTransactions(transactions);
+        setStatementGenerated(true);
       });
-    } else if (data.type == StatementType.accountNumber) {
-      if (accountId == null) {
-        enqueueSnackbar("Account ID is required", { variant: "error" });
-        return;
-      }
+    } else if (statementType == "account") {
+      setSubmitting(true);
       dispatch(
         fetchAccountStatement({
-          start: data.start,
-          end: data.end,
-          accountId: accountId,
+          start: moment(startDate).toString(),
+          end: moment(endDate).toString(),
+          accountId: accountNumber,
         })
       ).then((statement: any) => {
+        setSubmitting(false);
         if (typeof statement.payload == "string") {
-          setStatement(statement.payload);
-        } else {
-          setStatement(statement.payload.statement);
+          enqueueSnackbar(statement.payload, { variant: "error" });
+          return;
         }
+        setStatementHeader({
+          account: statement.payload.accountName?.toString() ?? "",
+          productId: statement.payload.productId?.toString() ?? "",
+          programId: statement.payload.programId?.toString() ?? "",
+          startDate: statement.payload.starting?.toString() ?? "",
+          endDate: statement.payload.ending?.toString() ?? "",
+          startingBalance: toDollarFormat(
+            statement.payload.startingBalance ?? 0
+          ).toString(),
+          endingBalance: toDollarFormat(
+            statement.payload.endingBalance ?? 0
+          ).toString(),
+        });
+
+        const transactions = statement.payload.transactionSummary.map(
+          (transaction: any) => {
+            return {
+              transactionType: transaction.type ?? "",
+              direction: transaction.polarity ?? "",
+              amount: transaction.amount,
+              count: transaction.count ?? 0,
+            };
+          }
+        );
+        setStatementTransactions(transactions);
+        setStatementGenerated(true);
       });
     } else {
       enqueueSnackbar("Invalid statement type", { variant: "error" });
     }
   };
 
-  useEffect(() => {
-    if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
-      setStatementTypes([
-        StatementType.root,
-        StatementType.program,
-        StatementType.product,
-        StatementType.accountNumber,
-      ]);
-    } else {
-      setStatementTypes([StatementType.product, StatementType.accountNumber]);
-      setValue("type", StatementType.product);
-      setStatementType(StatementType.product);
+  const isGenerateDisabled = () => {
+    if (!statementType || !startDate || !endDate) return true;
+    if (statementType === "program" && !selectedProgram) return true;
+    if (statementType === "product" && !selectedProduct) return true;
+    if (statementType === "account" && !accountNumber) return true;
+    return false;
+  };
+
+  const handleDownloadCSV = () => {
+    if (!statementHeader || !statementTransactions.length) {
+      toast({
+        title: "No statement data",
+        description: "Please generate a statement before downloading",
+        variant: "destructive",
+      });
+      return;
     }
-  }, [userType, setValue]);
+
+    try {
+      const csvContent = generateStatementCSV(
+        statementHeader,
+        statementTransactions
+      );
+
+      // Generate filename based on statement type and date
+      const dateStr = new Date().toISOString().split("T")[0];
+      let filenamePart = statementType;
+      if (statementType === "program" && selectedProgram) {
+        filenamePart = `program_${selectedProgram}`;
+      } else if (statementType === "product" && selectedProduct) {
+        filenamePart = `product_${selectedProduct}`;
+      } else if (statementType === "account" && accountNumber) {
+        filenamePart = `account_${accountNumber}`;
+      }
+
+      const filename = `statement_${filenamePart}_${dateStr}.csv`;
+      downloadCSV(csvContent, filename);
+
+      toast({
+        title: "Download started",
+        description: "Your statement CSV is being downloaded",
+      });
+    } catch (error) {
+      toast({
+        title: "Download failed",
+        description:
+          error instanceof Error ? error.message : "Failed to download CSV",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePrintPDF = () => {
+    setShowPrintModal(true);
+  };
+
+  const handleEdit = () => {
+    setStatementGenerated(false);
+  };
+
+  const handleRetryFetch = () => {
+    if (statementType === "program" && typeof programs == "string") {
+      setProgramsLoading(true);
+      dispatch(fetchProgramIdsListWithNames()).then((programs: any) => {
+        setProgramsLoading(false);
+        if (typeof programs.payload == "string") {
+          enqueueSnackbar(programs.payload, { variant: "error" });
+          setPrograms(programs.payload);
+          return;
+        }
+        const pgs = programs.payload.map((program: Program) => {
+          return {
+            value: program.id.toString(),
+            label: `${program.id ?? ""} - ${program.name ?? ""}`,
+          };
+        });
+        setPrograms(pgs);
+        if (typeof programs.payload != "string") {
+          setSelectedProgram(programs.payload?.[0]?.id?.toString() ?? "");
+        }
+      });
+    } else if (statementType === "product" && typeof products == "string") {
+      setProductsLoading(true);
+      dispatch(fetchProductIdsList()).then((products: any) => {
+        setProductsLoading(false);
+        if (typeof products.payload == "string") {
+          enqueueSnackbar(products.payload, { variant: "error" });
+          setProducts(products.payload);
+          return;
+        }
+        const prds = products.payload.map((product: any) => {
+          return {
+            value: product.id.toString(),
+            label: `${product.id ?? ""} - ${product.name ?? ""}`,
+          };
+        });
+        setProducts(prds);
+        if (typeof products.payload != "string") {
+          setSelectedProduct(products.payload?.[0]?.id?.toString() ?? "");
+        }
+      });
+    }
+  };
 
   return (
-    <div>
-      <div className="flex flex-row pb-4">
-        <div className="w-[300px] pr-2">
-          <MyText>Statement Type</MyText>
-          <MyControlledAutocomplete
-            name="type"
-            displayName="Statement Type"
-            control={control}
-            clearable={false}
-            errors={errors}
-            rules={
-              submitting
-                ? { required: false }
-                : {
-                    required: true,
-                  }
-            }
-            value={getValues("type")}
-            customOnChange={(val: any) => {
-              setStatementType(val);
-            }}
-            options={statementTypes.map((type) => {
-              return type;
-            })}
-          />
-        </div>
-        {statementType == StatementType.program && (
-          <div className="w-[300px]">
-            <MyText>{statementType}</MyText>
-            {programIds == "loading" ? (
-              <MyCircularProgressIndicator />
-            ) : typeof programIds == "string" ? (
-              <ErrorPage
-                error={programIds}
-                recoveryButtonOnClick={() => {
-                  dispatch(fetchProgramIdsListWithNames()).then(
-                    (programs: any) => {
-                      setProgramIds(programs.payload);
-                      if (typeof programs.payload != "string") {
-                        setProgramId(programs.payload?.[0]?.id ?? null);
-                      }
-                    }
-                  );
-                }}
-                recoveryButtonTitle="Retry"
-              />
-            ) : (
-              <MyControlledAutocomplete
-                name="programId"
-                displayName="Program"
-                control={control}
-                clearable={false}
-                errors={errors}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                customOnChange={(val: any) => {
-                  const id = val?.split(" - ")[0];
-                  if (id) {
-                    setProgramId(id);
-                  }
-                }}
-                value={`${programIds?.[0]?.id} - ${programIds?.[0]?.name}`}
-                options={programIds.map((prg) => {
-                  return `${prg.id} - ${prg.name}`;
-                })}
-              />
-            )}
-          </div>
-        )}
-        {statementType == StatementType.product && (
-          <div className="w-[300px]">
-            <MyText>{statementType}</MyText>
-            {productIds == "loading" ? (
-              <MyCircularProgressIndicator />
-            ) : typeof productIds == "string" ? (
-              <ErrorPage
-                error={productIds}
-                recoveryButtonOnClick={() => {
-                  dispatch(fetchProductIdsList()).then((products: any) => {
-                    setProductIds(products.payload);
-                    if (typeof products.payload != "string") {
-                      setProductId(products.payload?.[0]?.id ?? null);
-                    }
-                  });
-                }}
-                recoveryButtonTitle="Retry"
-              />
-            ) : (
-              <MyControlledAutocomplete
-                name="productId"
-                displayName="Product"
-                control={control}
-                errors={errors}
-                clearable={false}
-                rules={
-                  submitting
-                    ? { required: false }
-                    : {
-                        required: true,
-                      }
-                }
-                customOnChange={(val: any) => {
-                  const id = val?.split(" - ")[0];
-                  if (id) {
-                    setProductId(id);
-                  }
-                }}
-                value={`${productIds?.[0]?.id} - ${productIds?.[0]?.name}`}
-                options={productIds.map((prg) => {
-                  return `${prg.id} - ${prg.name}`;
-                })}
-              />
-            )}
-          </div>
-        )}
-        {statementType == StatementType.accountNumber && (
-          <div className="w-[300px]">
-            <MyText>{statementType}</MyText>
-            <MyControlledTextField
-              name="accountNumber"
-              displayName="Account Number"
-              control={control}
-              errors={errors}
-              rules={
-                submitting
-                  ? { required: false }
-                  : {
-                      required: true,
-                    }
-              }
-              customOnChange={(val: any) => {
-                setAccountId(val);
-              }}
-              value=""
-            />
-          </div>
-        )}
-      </div>
-      <div className="flex flex-row items-center pb-4">
-        <div className="pr-2">
-          <MyText size="sm">Start Date</MyText>
-          <MyControlledDatePicker
-            name="start"
-            displayName="Start Date"
-            control={control}
-            errors={errors}
-            rules={{
-              required: true,
-              validate: (value: any) => {
-                const dateObject = moment(value.toString());
-                if (dateObject.toString() === "Invalid Date") {
-                  return "Invalid Date";
-                } else {
-                }
-                return true;
-              },
-            }}
-            value={""}
-          />
-        </div>
-        {/* <div className="pr-2">
-          <MyText size="sm">Start Time</MyText>
-          <MyControlledTimePicker
-            name="startTime"
-            displayName="Start Time"
-            control={control}
-            errors={errors}
-            rules={{
-              required: true,
-              validate: (value: any) => {
-                const timeObject = moment(value.toString());
-                if (timeObject.toString() === "Invalid date") {
-                  return "Invalid Time";
-                }
-                return true;
-              },
-            }}
-            value={"00:00"}
-          />
-        </div> */}
-        <div className="pr-6">
-          <div className="invisible">
-            <MyText size="sm">{moment().format("z")}</MyText>
-          </div>
-          <MyText size="sm">{moment().format("z")}</MyText>
-        </div>
-        <div className="pr-2">
-          <MyText size="sm">End Date</MyText>
-          <MyControlledDatePicker
-            name="end"
-            displayName="End Date"
-            control={control}
-            errors={errors}
-            rules={{
-              required: true,
-              validate: (value: any) => {
-                const dateObject = moment(value.toString());
-                if (dateObject.toString() === "Invalid Date") {
-                  return "Invalid Date";
-                } else {
-                  const startDate = moment(getValues("start").toString());
-                  if (dateObject < startDate && dateObject != startDate) {
-                    return "End date cannot be before start date";
-                  }
-                }
-                return true;
-              },
-            }}
-            value={""}
-          />
-        </div>
-        {/* <div className="pr-2">
-          <MyText size="sm">End Time</MyText>
-          <MyControlledTimePicker
-            name="endTime"
-            displayName="End Time"
-            control={control}
-            errors={errors}
-            rules={{
-              required: true,
-              validate: (value: any) => {
-                const timeObject = moment(value.toString());
-                if (timeObject.toString() === "Invalid date") {
-                  return "Invalid Time";
-                }
-                return true;
-              },
-            }}
-            value={""}
-          />
-        </div> */}
-        <div>
-          <div className="invisible">
-            <MyText size="sm">{moment().format("z")}</MyText>
-          </div>
-          <MyText size="sm">{moment().format("z")}</MyText>
-        </div>
-      </div>
-      <div className="w-fit">
-        <MyBlueButton
-          submitting={submitting}
-          onClick={() => {
-            handleSubmit(onSubmit)();
-          }}
-        >
-          Get Statement
-        </MyBlueButton>
-      </div>
-      {statement == "loading" ? (
-        <MyCircularProgressIndicator />
-      ) : statement == "initial" ? (
-        <></>
-      ) : typeof statement == "string" ? (
-        <ErrorPage
-          error={statement}
-          recoveryButtonOnClick={() => {
-            setStatement("initial");
-          }}
-          recoveryButtonTitle="Retry"
+    <div className="">
+      {showPrintModal && (
+        <GenerateStatement
+          showPrintModal={showPrintModal}
+          setShowPrintModal={setShowPrintModal}
         />
-      ) : (
-        <>
-          <div className="mt-4">
-            <MyText size="lg">{`${statementType} Statement`}</MyText>
-          </div>
-          <div className="mt-4 flex flex-row w-[900px]">
-            <ItemRowHorizontal
-              title="Account"
-              value={statement.accountName ?? ""}
-            />
-            <div className="pr-2" />
-            <ItemRowHorizontal
-              title="Product ID"
-              value={statement.productId ?? ""}
-            />
-            <div className="pr-2" />
-            <ItemRowHorizontal
-              title="Program ID"
-              value={statement.programId ?? ""}
-            />
-          </div>
-          <div className="mt-4 flex flex-row w-[500px]">
-            <ItemRowHorizontal
-              title="Starting"
-              value={statement.starting?.replace("T", " ") ?? ""}
-            />
-            <div className="pr-2" />
-            <ItemRowHorizontal
-              title="Ending"
-              value={statement.ending?.replace("T", " ") ?? ""}
-            />
-          </div>
-          <div className="mt-4 flex flex-row w-[500px]">
-            <ItemRowHorizontal
-              title="Starting Balance"
-              value={toDollarFormat(statement.startingBalance?.toString() ?? 0)}
-            />
-            <div className="pr-2" />
-            <ItemRowHorizontal
-              title="Ending Balance"
-              value={toDollarFormat(statement.endingBalance?.toString() ?? 0)}
-            />
-          </div>
-          <div className="mt-4" />
-          <div style={{ height: "calc(100vh - 470px)" }}>
-            <MyTable
-              handleRowClick={() => {}}
-              customId={(row: any) => uuidv4()}
-              columns={[
-                {
-                  field: "type",
-                  headerName: "Transaction Type",
-                  flex: 2,
-                  minWidth: 220,
-                },
-                {
-                  field: "polarity",
-                  headerName: "Direction",
-                  flex: 1,
-                  minWidth: 120,
-                },
-                {
-                  field: "amount",
-                  headerName: "Amount",
-                  flex: 1,
-                  minWidth: 120,
-                  align: "right",
-                  display: "flex",
-                  renderCell: (params: any) => (
-                    <div>{toDollarFormat(params.row.amount)}</div>
-                  ),
-                  valueGetter: (value: any, row: any) => row.amount,
-                },
-                {
-                  field: "count",
-                  headerName: "Count",
-                  flex: 1,
-                  minWidth: 120,
-                },
-              ]}
-              rows={statement.transactionSummary}
-            />
-          </div>
-        </>
       )}
+      <StatementView
+        statementType={statementType}
+        selectedProgram={selectedProgram}
+        selectedProduct={selectedProduct}
+        accountNumber={accountNumber}
+        startDate={startDate}
+        endDate={endDate}
+        statementGenerated={statementGenerated}
+        programs={typeof programs == "string" ? [] : programs}
+        products={typeof products == "string" ? [] : products}
+        statementHeader={statementHeader}
+        statementTransactions={statementTransactions}
+        onStatementTypeChange={handleStatementTypeChange}
+        onProgramChange={setSelectedProgram}
+        onProductChange={setSelectedProduct}
+        onAccountNumberChange={setAccountNumber}
+        onStartDateChange={(date: Date | undefined) => {
+          if (date) {
+            setStartDate(date);
+          }
+        }}
+        onEndDateChange={(date: Date | undefined) => {
+          if (date) {
+            setEndDate(date);
+          }
+        }}
+        onGenerateStatement={handleGenerateStatement}
+        onEdit={handleEdit}
+        onDownloadCSV={handleDownloadCSV}
+        onPrintPDF={handlePrintPDF}
+        isGenerateDisabled={isGenerateDisabled()}
+        isLoading={submitting}
+        programsLoading={programsLoading}
+        productsLoading={productsLoading}
+        programsError={typeof programs == "string" ? programs : null}
+        productsError={typeof products == "string" ? products : null}
+        onRetryFetch={handleRetryFetch}
+        shouldShowRetry={false}
+      />
     </div>
   );
 };

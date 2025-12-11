@@ -125,11 +125,6 @@ const DrawerHeaderButtons = () => {
         entityId={params.id as string}
       />
     )) ||
-    (pathname == "/statements" &&
-      typeof statementData != "string" &&
-      (userType == ADMIN_ROLE ||
-        userType == ADMIN_OPS_ROLE ||
-        userType == ADMIN_READONLY_ROLE) && <GenerateStatement />) ||
     (pathname.includes("/fees") && pathname.includes("account") && (
       <CreateFeeView level="ACCOUNT" ids={[params.id as string]} />
     )) ||

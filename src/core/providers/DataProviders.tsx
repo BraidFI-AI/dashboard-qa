@@ -6,6 +6,7 @@ import {
   fetchAchReturnCodes,
   fetchTransactionTypes,
   setTenantId,
+  setShowAppBar,
   setUsername,
   setUserType,
 } from "@/redux/slices/AppSlice";
@@ -25,9 +26,22 @@ import {
   DEVELOPER_ROLE,
 } from "../constants";
 import { fetchClearSightData } from "@/redux/slices/clear_sight_slice";
+import { usePathname } from "next/navigation";
 
 const DataProviders = (props: any) => {
   const dispatch = useAppDispatch();
+
+  const showAppBar = useSelector((state: any) => state.app.showAppBar);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname.includes("statements") && showAppBar) {
+      dispatch(setShowAppBar(false));
+    }
+    if (!pathname.includes("statements") && !showAppBar) {
+      dispatch(setShowAppBar(true));
+    }
+  }, [pathname, dispatch, showAppBar]);
 
   useEffect(() => {
     const setUser = async () => {
