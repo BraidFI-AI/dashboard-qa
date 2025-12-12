@@ -171,6 +171,8 @@ export default function PersistentDrawerLeft(props: any) {
 
   const openAlerts = useSelector((state: any) => state.alerts.openAlerts);
 
+  const showAppBar = useSelector((state: any) => state.app.showAppBar);
+
   const [open, setOpen] = React.useState(true);
   const title: string = useSelector((state: any) => state.app.title);
   const [selected, setSelcted] = React.useState<string>("Dashboard");
@@ -482,25 +484,27 @@ export default function PersistentDrawerLeft(props: any) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        open={open}
-        // color="inherit"
-        style={{ backgroundColor: "#FFFFFF" }}
-        className="h-[80px] shadow-none flex flex-row items-center"
-      >
-        <Toolbar className="flex flex-row justify-between items-center w-full">
-          <div className="flex flex-row items-center">
-            <div className="w-[5px] h-[40px] bg-[#12A7FF] mr-[10px]" />
-            <MyText variant="title" size="smd">
-              {title}
-            </MyText>
-          </div>
-          <div className="">
-            <DrawerHeaderButtons />
-          </div>
-        </Toolbar>
-      </AppBar>
+      {showAppBar && (
+        <AppBar
+          position="fixed"
+          open={open}
+          // color="inherit"
+          style={{ backgroundColor: "#FFFFFF" }}
+          className="h-[80px] shadow-none flex flex-row items-center"
+        >
+          <Toolbar className="flex flex-row justify-between items-center w-full">
+            <div className="flex flex-row items-center">
+              <div className="w-[5px] h-[40px] bg-[#12A7FF] mr-[10px]" />
+              <MyText variant="title" size="smd">
+                {title}
+              </MyText>
+            </div>
+            <div className="">
+              <DrawerHeaderButtons />
+            </div>
+          </Toolbar>
+        </AppBar>
+      )}
       <Drawer variant="permanent" open={open}>
         <div
           className={`h-full flex flex-col justify-between overflow-y-auto overflow-hidden scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#F4F5F7]`}
@@ -736,14 +740,14 @@ export default function PersistentDrawerLeft(props: any) {
         }
         sx={{
           flexGrow: 1,
-          p: 3,
-          height: "calc(100vh - 50px)",
+          p: showAppBar ? 3 : 0,
+          height: showAppBar ? "calc(100vh - 50px)" : "",
           width: open
             ? `calc(100vw - ${drawerWidth}px)`
             : `calc(100vw - ${closedDrawerWidth}px)`,
         }}
       >
-        <DrawerHeader />
+        {showAppBar && <DrawerHeader />}
         {props.children}
       </Box>
     </Box>
