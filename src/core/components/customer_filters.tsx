@@ -46,7 +46,7 @@ const CustomerFilters: React.FC<CustomerFilterProps> = ({ type }) => {
 
     data.productName = productId;
 
-    if (data.id == null) {
+    if (data.id == null || data.id == "") {
       data.id = undefined;
     }
 
@@ -99,7 +99,7 @@ const CustomerFilters: React.FC<CustomerFilterProps> = ({ type }) => {
 
   useEffect(() => {
     reset({
-      id: qParams.get("id") ? Number(qParams.get("id")) : "",
+      id: qParams.get("id") ?? "",
       name: qParams.get("name") ?? "",
       productName: qParams.get("productName") ?? "",
       createdAtStart: qParams.get("createdAtStart") ?? "",

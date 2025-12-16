@@ -760,7 +760,7 @@ export interface OFACSearch {
 }
 
 export interface CustomerSearch {
-  id?: number | string;
+  id?: string;
   name?: string;
   productName?: string;
   createdAtStart?: string;

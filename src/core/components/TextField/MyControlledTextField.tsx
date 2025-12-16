@@ -11,7 +11,7 @@ export type MyControlledTextFieldProps = {
   errors: any;
   rules: any | null;
   customOnChange?: any;
-  value: string | number | undefined;
+  value: string | undefined;
   disabled?: boolean;
   multiline?: boolean;
 };
