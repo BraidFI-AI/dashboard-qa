@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-// import url from "../../url.json";
+import url from "../../url.json";
 
 type CDNContextType = {
   clientLogo: string | null;
@@ -20,11 +20,9 @@ export const CDNProvider: React.FC<CDNProviderProps> = ({ children }) => {
   useEffect(() => {
     const checkCDN = async () => {
       try {
-        const response = await axios.head(
-          `https://d277v8yyiaq0hm.cloudfront.net/logo.png`
-        );
+        const response = await axios.head(`https://${url.url_cdn}/logo.png`);
         if (response.status === 200) {
-          setClientLogo(`https://d277v8yyiaq0hm.cloudfront.net/logo.png`);
+          setClientLogo(`https://${url.url_cdn}/logo.png`);
         } else {
           setClientLogo(null);
         }
