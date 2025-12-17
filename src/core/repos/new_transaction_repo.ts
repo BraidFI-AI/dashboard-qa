@@ -29,7 +29,7 @@ class NewTransactionRepo {
   }) {
     return await this.apiClient.http<any>(
       Method.POST,
-      data.direction == "CREDIT"
+      data.direction.toLowerCase() == "credit"
         ? `/transaction/adjustment/credit`
         : `/transaction/adjustment/debit`,
       {

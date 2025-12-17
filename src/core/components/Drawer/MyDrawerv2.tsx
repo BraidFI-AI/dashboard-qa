@@ -482,7 +482,7 @@ export default function PersistentDrawerLeft(props: any) {
   }
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <CssBaseline />
       {showAppBar && (
         <AppBar
@@ -741,7 +741,8 @@ export default function PersistentDrawerLeft(props: any) {
         sx={{
           flexGrow: 1,
           p: showAppBar ? 3 : 0,
-          height: showAppBar ? "calc(100vh - 50px)" : "",
+          height: showAppBar ? "calc(100vh - 1px)" : "100vh",
+          overflowY: "auto",
           width: open
             ? `calc(100vw - ${drawerWidth}px)`
             : `calc(100vw - ${closedDrawerWidth}px)`,

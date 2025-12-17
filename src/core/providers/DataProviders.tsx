@@ -35,10 +35,19 @@ const DataProviders = (props: any) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname.includes("statements") && showAppBar) {
+    if (
+      (pathname.includes("statements") ||
+        pathname.includes("newTransaction")) &&
+      showAppBar
+    ) {
       dispatch(setShowAppBar(false));
     }
-    if (!pathname.includes("statements") && !showAppBar) {
+
+    if (
+      !pathname.includes("statements") &&
+      !pathname.includes("newTransaction") &&
+      !showAppBar
+    ) {
       dispatch(setShowAppBar(true));
     }
   }, [pathname, dispatch, showAppBar]);
