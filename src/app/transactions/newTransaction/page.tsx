@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { NewTransactionFormValues, NewTransactionView } from "braid-ui";
 import { enqueueSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
@@ -30,8 +30,12 @@ const mapSubTypeStringToEnum = (value: string) => {
 
 export default function NewTransaction() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const dispatch = useAppDispatch();
+
+  // Track if we've already processed the URL param to avoid duplicate lookups
+  const hasProcessedUrlParam = useRef(false);
 
   const [accountLookedUp, setAccountLookedUp] = useState(false);
   const [accountData, setAccountData] = useState<any | null>(null);
@@ -267,6 +271,81 @@ export default function NewTransaction() {
       debouncedSearch.cancel();
     };
   }, [debouncedSearch]);
+
+  // Process accountNumber from URL params
+  useEffect(() => {
+    const accountNumberParam = searchParams.get("accountNumber");
+    if (accountNumberParam && !hasProcessedUrlParam.current) {
+      hasProcessedUrlParam.current = true;
+      form.setValue("accountNumber", accountNumberParam);
+      // Trigger account lookup after setting the value
+      setIsAccountLoading(true);
+      dispatch(searchAccount(accountNumberParam)).then((r: any) => {
+        if (typeof r.payload === "string") {
+          enqueueSnackbar(r.payload, { variant: "error" });
+          setIsAccountLoading(false);
+          return;
+        }
+        const acc = r.payload.accounts[0];
+
+        if (acc.customerType == "BUSINESS") {
+          dispatch(
+            fetchBusinessAccountBalance({
+              businessId: acc.customerId,
+              accountNumber: acc.accountNumber,
+            })
+          ).then((result: any) => {
+            if (typeof result.payload === "string") {
+              enqueueSnackbar(result.payload, { variant: "error" });
+              setIsAccountLoading(false);
+              return;
+            }
+
+            setAccountData({
+              accountNumber: acc.accountNumber ?? "",
+              accountName: acc.accountName ?? "",
+              accountType: acc.accountType ?? "",
+              balance: result.payload.balance ?? "",
+              customerName: acc.customerName ?? "",
+              customerId: acc.customerId ?? "",
+              customerType: acc.customerType ?? "",
+              productId: acc.productId ?? "",
+            });
+            setAccountLookedUp(true);
+            enqueueSnackbar("Account found", { variant: "success" });
+            setIsAccountLoading(false);
+          });
+        } else {
+          dispatch(
+            fetchIndividualAccountBalance({
+              individualId: acc.customerId,
+              accountNumber: acc.accountNumber,
+            })
+          ).then((result: any) => {
+            if (typeof result.payload === "string") {
+              enqueueSnackbar(result.payload, { variant: "error" });
+              setIsAccountLoading(false);
+              return;
+            }
+
+            setAccountData({
+              accountNumber: acc.accountNumber ?? "",
+              accountName: acc.accountName ?? "",
+              accountType: acc.accountType ?? "",
+              balance: result.payload.balance ?? "",
+              customerName: acc.customerName ?? "",
+              customerId: acc.customerId ?? "",
+              customerType: acc.customerType ?? "",
+              productId: acc.productId ?? "",
+            });
+            setAccountLookedUp(true);
+            enqueueSnackbar("Account found", { variant: "success" });
+            setIsAccountLoading(false);
+          });
+        }
+      });
+    }
+  }, [searchParams, dispatch, form]);
 
   // Callbacks
   const handleAccountLookup = () => {
@@ -577,7 +656,12 @@ export default function NewTransaction() {
     const data = form.watch();
     const requiresCounterparty = ["ach", "wire"].includes(data.transactionType);
 
-    if (!data.transactionType || !data.accountNumber || !data.amount)
+    if (
+      !data.transactionType ||
+      !data.accountNumber ||
+      !data.amount ||
+      !data.description
+    )
       return false;
     if (
       requiresCounterparty &&

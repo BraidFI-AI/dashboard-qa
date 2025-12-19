@@ -295,20 +295,20 @@ const StatementsPage = () => {
           return;
         }
         setStatementHeader({
-          account: statement.payload.accountName?.toString() ?? "",
-          productId: statement.payload.productId?.toString() ?? "",
-          programId: statement.payload.programId?.toString() ?? "",
-          startDate: statement.payload.starting?.toString() ?? "",
-          endDate: statement.payload.ending?.toString() ?? "",
+          account: statement.payload.statement.accountName?.toString() ?? "",
+          productId: statement.payload.statement.productId?.toString() ?? "",
+          programId: statement.payload.statement.programId?.toString() ?? "",
+          startDate: statement.payload.statement.starting?.toString() ?? "",
+          endDate: statement.payload.statement.ending?.toString() ?? "",
           startingBalance: toDollarFormat(
-            statement.payload.startingBalance ?? 0
+            statement.payload.statement.startingBalance ?? 0
           ).toString(),
           endingBalance: toDollarFormat(
-            statement.payload.endingBalance ?? 0
+            statement.payload.statement.endingBalance ?? 0
           ).toString(),
         });
 
-        const transactions = statement.payload.transactionSummary.map(
+        const transactions = statement.payload.statement.transactionSummary.map(
           (transaction: any) => {
             return {
               transactionType: transaction.type ?? "",
