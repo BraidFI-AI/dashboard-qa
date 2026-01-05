@@ -60,3 +60,4 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 **.log
+docs/ARCHITECTURE.md

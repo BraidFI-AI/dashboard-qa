@@ -37,7 +37,8 @@ const DataProviders = (props: any) => {
   useEffect(() => {
     if (
       (pathname.includes("statements") ||
-        pathname.includes("newTransaction")) &&
+        pathname.includes("newTransaction") ||
+        pathname.includes("transactionHistory")) &&
       showAppBar
     ) {
       dispatch(setShowAppBar(false));
@@ -46,6 +47,7 @@ const DataProviders = (props: any) => {
     if (
       !pathname.includes("statements") &&
       !pathname.includes("newTransaction") &&
+      !pathname.includes("transactionHistory") &&
       !showAppBar
     ) {
       dispatch(setShowAppBar(true));

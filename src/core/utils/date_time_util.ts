@@ -85,10 +85,31 @@ const timestampToDate = (
   }
 };
 
+/**
+ * Creates a Date object from a string, handling timezone correctly
+ */
+const createDate = (dateString: string): Date | null => {
+  if (!dateString) return null;
+  const date = moment(dateString);
+  return date.isValid() ? date.toDate() : null;
+};
+
+/**
+ * Converts a Date to ISO string format for URL/API use
+ */
+const toISOString = (date: Date): string | null => {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    return null;
+  }
+  return date.toISOString();
+};
+
 export {
   momentToTimeZoneString,
   formatUnixTimestamp,
   timestampToDate,
   momentToUTCString,
   momentToDateString,
+  createDate,
+  toISOString,
 };
