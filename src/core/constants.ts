@@ -43,7 +43,7 @@ export const SCROLLBAR_STYLE =
 
 export const paginationPageSize = 100;
 export const pageSizeOptionsType = 100 | 200 | 500;
-export const pageSizeOptions = [100, 200, 500];
+export const pageSizeOptions = [10, 50, 100, 200, 500];
 
 export const ADMIN_SPECIFIC_FEATURE_MESSAGE =
   "This feature is only available for Bank";

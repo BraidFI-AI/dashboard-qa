@@ -12,9 +12,10 @@ import { Amplify } from "aws-amplify";
 import { Authenticator, View } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
-import amplifyConfiguration from "../../amplifyconfiguration.json";
+// import amplifyConfiguration from "../../amplifyconfiguration.json";
 import AuthProvider from "./AuthProvider";
 import DataProviders from "./DataProviders";
+import QueryProvider from "./QueryProvider";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
@@ -38,7 +39,31 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  Amplify.configure(amplifyConfiguration);
+  const amplifyConfiguration = {
+    aws_project_region: "us-east-1",
+    aws_cognito_region: "us-east-1",
+    aws_user_pools_id: "us-east-1_B7qrHUVxQ",
+    aws_user_pools_web_client_id: "6tm3lbipups2qlbvk7asucg5af",
+    oauth: {},
+    aws_cognito_username_attributes: [],
+    aws_cognito_social_providers: [],
+    aws_cognito_signup_attributes: [],
+    aws_cognito_mfa_configuration: "OFF",
+    aws_cognito_mfa_types: [],
+    aws_cognito_password_protection_settings: {
+      passwordPolicyMinLength: 8,
+      passwordPolicyCharacters: [
+        "REQUIRES_LOWERCASE",
+        "REQUIRES_UPPERCASE",
+        "REQUIRES_NUMBERS",
+        "REQUIRES_SYMBOLS",
+      ],
+    },
+    aws_cognito_verification_mechanisms: ["EMAIL"],
+    aws_cognito_readable_attributes: ["EMAIL_VERIFIED"],
+  };
+
+  Amplify.configure(amplifyConfiguration as any);
   cognitoUserPoolsTokenProvider.setKeyValueStorage(sessionStorage);
 
   useEffect(() => {
@@ -77,35 +102,39 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
               // },
             }}
           >
-            <Provider store={store}>
-              <TimezoneProvider>
-                <DataProviders>
-                  <AuthProvider>
-                    <SnackbarProvider
-                      hideIconVariant
-                      maxSnack={7}
-                      autoHideDuration={2000}
-                      action={(snackbarId) => (
-                        <IconButton
-                          className="text-white"
-                          onClick={() => closeSnackbar(snackbarId)}
-                        >
-                          <CloseRoundedIcon />
-                        </IconButton>
-                      )}
-                    >
-                      {/* <AuthProvider> */}
-                      {pathname === "/login" ? (
-                        children
-                      ) : (
-                        <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
-                      )}
-                      {/* </AuthProvider> */}
-                    </SnackbarProvider>
-                  </AuthProvider>
-                </DataProviders>
-              </TimezoneProvider>
-            </Provider>
+            <QueryProvider>
+              <Provider store={store}>
+                <TimezoneProvider>
+                  <DataProviders>
+                    <AuthProvider>
+                      <SnackbarProvider
+                        hideIconVariant
+                        maxSnack={7}
+                        autoHideDuration={2000}
+                        action={(snackbarId) => (
+                          <IconButton
+                            className="text-white"
+                            onClick={() => closeSnackbar(snackbarId)}
+                          >
+                            <CloseRoundedIcon />
+                          </IconButton>
+                        )}
+                      >
+                        {/* <AuthProvider> */}
+                        {pathname === "/login" ? (
+                          children
+                        ) : (
+                          <PersistentDrawerLeft>
+                            {children}
+                          </PersistentDrawerLeft>
+                        )}
+                        {/* </AuthProvider> */}
+                      </SnackbarProvider>
+                    </AuthProvider>
+                  </DataProviders>
+                </TimezoneProvider>
+              </Provider>
+            </QueryProvider>
           </Authenticator>
         </div>
       </CDNProvider>

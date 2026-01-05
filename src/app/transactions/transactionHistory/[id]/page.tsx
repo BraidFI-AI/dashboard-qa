@@ -1,125 +1,228 @@
 "use client";
 
-import { Transaction } from "@/core/api/ApiTypes";
-import { setTitle } from "@/redux/slices/AppSlice";
-import { fetchTransactions } from "@/redux/slices/TransactionSlice";
-import { useAppDispatch } from "@/redux/store/store";
-import { useParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import TransactionDetails from "./components/transaction_details";
+import { useCallback, useMemo, useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+
+// braid-ui components
+import { TransactionDetailView } from "braid-ui";
+
+// Feature hooks & utils
+import {
+  useTransaction,
+  useBreachedLimits,
+  useCancelTransaction,
+  useReturnTransaction,
+  toUITransaction,
+  buildTimelineEvents,
+  canCancel,
+  canReturn,
+} from "@/features/transaction_history";
+
+// Core components
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
-import { SCROLLBAR_STYLE } from "@/core/constants";
-import { TransactionTimeline } from "./components/transaction_timeline";
-import AchDetails from "./components/ach_details";
-import WireDetails from "./components/wire_details";
-import { useSelector } from "react-redux";
-import TransferDetails from "./components/transfer_details";
-import { TransactionDetailView } from "braid-ui";
+
+// Redux - still needed for title (will be migrated later)
+import { setTitle } from "@/redux/slices/AppSlice";
+import { useAppDispatch } from "@/redux/store/store";
+
+// Core types & utils
+import type { Transaction } from "@/core/types";
+import { isAchTransaction, isWireTransaction } from "@/core/types";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Component
+// ═══════════════════════════════════════════════════════════════════════════
 
 export default function TransactionHistoryPage() {
   const params = useParams();
-
+  const router = useRouter();
   const dispatch = useAppDispatch();
+  const paymentId = params.id as string;
 
-  const columnRef = useRef<HTMLDivElement>(null);
-  const [columnHeight, setColumnHeight] = useState<number | null>(null);
+  // Dialog state
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
 
-  const [refresh, setRefresh] = useState(true);
+  // React Query hooks
+  const {
+    data: transaction,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useTransaction(paymentId);
 
-  const transactions: "loading" | string | Transaction[] = useSelector(
-    (state: any) => state.transaction.transactions
+  const { data: breachedLimits } = useBreachedLimits(
+    transaction?.paymentId ?? null
   );
 
-  useEffect(() => {
-    if (refresh) {
-      dispatch(setTitle("Transaction Details"));
+  // Mutations
+  const cancelMutation = useCancelTransaction();
+  const returnMutation = useReturnTransaction();
 
-      dispatch(
-        fetchTransactions({
-          criteria: {
-            paymentId: (params.id as string) || "0",
-          },
-        })
+  // Set page title
+  useEffect(() => {
+    dispatch(setTitle("Transaction Details"));
+  }, [dispatch]);
+
+  // Computed values - map API data to UI format
+  const uiTransaction = useMemo(
+    () => (transaction ? toUITransaction(transaction) : null),
+    [transaction]
+  );
+
+  const timelineEvents = useMemo(
+    () => (transaction ? buildTimelineEvents(transaction) : []),
+    [transaction]
+  );
+
+  const isWire = useMemo(
+    () => (transaction ? isWireTransaction(transaction) : false),
+    [transaction]
+  );
+
+  const isAch = useMemo(
+    () => (transaction ? isAchTransaction(transaction) : false),
+    [transaction]
+  );
+
+  const showCancelButton = useMemo(
+    () => (transaction ? canCancel(transaction) : false),
+    [transaction]
+  );
+
+  const showReturnButton = useMemo(
+    () => (transaction ? canReturn(transaction) : false),
+    [transaction]
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Callbacks
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const handleOpenReturnDialog = useCallback(() => {
+    setReturnDialogOpen(true);
+  }, []);
+
+  const handleOpenCancelDialog = useCallback(() => {
+    setCancelDialogOpen(true);
+  }, []);
+
+  const handleAccountClick = useCallback(
+    (accountNumber: string) => {
+      // Find account by number - for now navigate to accounts list with filter
+      router.push(`/accounts?accountNumber=${accountNumber}`);
+    },
+    [router]
+  );
+
+  const handleCustomerClick = useCallback(
+    (customer: string) => {
+      if (!transaction) return;
+      const path =
+        transaction.customerType === "BUSINESS"
+          ? `/businesses/${transaction.customerId}`
+          : `/individuals/${transaction.customerId}`;
+      router.push(path);
+    },
+    [router, transaction]
+  );
+
+  const handleCounterpartyClick = useCallback(
+    (counterparty: string) => {
+      if (
+        !transaction?.counterpartyId ||
+        !transaction?.counterpartyAssociatedEntityType ||
+        !transaction?.counterpartyAssociatedEntityId
+      ) {
+        return;
+      }
+
+      const association =
+        transaction.counterpartyAssociatedEntityType === "BUSINESS"
+          ? "businesses"
+          : transaction.counterpartyAssociatedEntityType === "INDIVIDUAL"
+          ? "individuals"
+          : transaction.counterpartyAssociatedEntityType === "ACCOUNT"
+          ? "accounts"
+          : "configuration/products";
+
+      router.push(
+        `/${association}/${transaction.counterpartyAssociatedEntityId}/counterparties/${transaction.counterpartyId}`
       );
-      setRefresh(false);
-    }
-  }, [dispatch, params, refresh]);
+    },
+    [router, transaction]
+  );
+
+  const handleOFACClick = useCallback(
+    (ofacId: string) => {
+      router.push(`/compliance/ofac/${ofacId}`);
+    },
+    [router]
+  );
+
+  const handleProductClick = useCallback(
+    (productId: string) => {
+      router.push(`/configuration/products/${productId}`);
+    },
+    [router]
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────────────────────────────────
+
+  if (isLoading) {
+    return <MyCircularProgressIndicator />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorPage
+        error={
+          error instanceof Error ? error.message : "Failed to load transaction"
+        }
+        recoveryButtonTitle="Retry"
+        recoveryButtonOnClick={() => refetch()}
+      />
+    );
+  }
+
+  if (!transaction || !uiTransaction) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Transaction Not Found</h2>
+          <p className="text-gray-500 mb-4">
+            The transaction with ID {paymentId} could not be found.
+          </p>
+          <button
+            onClick={() => router.push("/transactions/transactionHistory")}
+            className="text-blue-600 hover:underline"
+          >
+            Back to Transaction History
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {transactions == "loading" ? (
-        <MyCircularProgressIndicator />
-      ) : typeof transactions == "string" ? (
-        <ErrorPage
-          error={transactions}
-          recoveryButtonTitle="Retry"
-          recoveryButtonOnClick={() => {
-            dispatch(
-              fetchTransactions({
-                criteria: {
-                  paymentId: (params.id as string) || "0",
-                },
-              })
-            );
-          }}
-        />
-      ) : transactions?.length == 0 ? (
-        <div>Transaction not found</div>
-      ) : (
-        <>
-          <TransactionDetailView
-            transaction={transactions?.[0] as any}
-            timelineEvents={timelineEvents}
-            isWireTransfer={isWireTransfer}
-            isACHTransfer={isACHTransfer}
-            showCancelButton={showCancelButton}
-            showReturnButton={showReturnButton}
-            onReturnClick={handleOpenReturnDialog}
-            onCancelClick={handleOpenCancelDialog}
-            onAccountClick={handleAccountClick}
-            onCustomerClick={handleCustomerClick}
-            onCounterpartyClick={handleCounterpartyClick}
-            onOFACClick={handleOFACClick}
-            onProductClick={handleProductClick}
-          />
-        </>
-        //     <div className={`${SCROLLBAR_STYLE}`}>
-        //       <div className="min-w-[1026px] flex flex-row">
-        //         <div className="w-full">
-        //           <div>
-        //             <TransactionDetails transaction={transactions?.[0]} />
-        //           </div>
-        //           {(transactions?.[0] as any).transfer != null && (
-        //             <>
-        //               <div className="h-[10px]" />
-        //               <TransferDetails transaction={transactions?.[0]} />
-        //             </>
-        //           )}
-        //           {transactions?.[0]?.ach != null && (
-        //             <>
-        //               <div className="h-[10px]" />
-        //               <AchDetails transaction={transactions?.[0]} />
-        //             </>
-        //           )}
-        //           {transactions?.[0]?.wire != null && (
-        //             <>
-        //               <div className="h-[10px]" />
-        //               <WireDetails
-        //                 transaction={transactions?.[0]}
-        //                 setRefresh={setRefresh}
-        //               />
-        //             </>
-        //           )}
-        //         </div>
-        //         <div className="pr-[10px]" />
-        //         <div>
-        //           <TransactionTimeline transaction={transactions?.[0]} />
-        //         </div>
-        //       </div>
-        //       <div className="h-[20px]" />
-        //     </div>
-      )}
-    </div>
+    <TransactionDetailView
+      transaction={uiTransaction}
+      timelineEvents={timelineEvents}
+      isWireTransfer={isWire}
+      isACHTransfer={isAch}
+      showCancelButton={showCancelButton}
+      showReturnButton={showReturnButton}
+      onReturnClick={handleOpenReturnDialog}
+      onCancelClick={handleOpenCancelDialog}
+      onAccountClick={handleAccountClick}
+      onCustomerClick={handleCustomerClick}
+      onCounterpartyClick={handleCounterpartyClick}
+      onOFACClick={handleOFACClick}
+      onProductClick={handleProductClick}
+    />
   );
 }
