@@ -111,8 +111,8 @@ const Transactions = () => {
             onToggleExpand={() => setExpanded(!expanded)}
           />
         }
-        filters={filters}
-        onFilterChange={handleFilterChange}
+        filters={filters as any}
+        onFilterChange={handleFilterChange as any}
         onResetFilters={handleResetFilters}
         onApplyFilters={handleApplyFilters}
       />
