@@ -44,7 +44,8 @@ export const transactionKeys = {
 export function useTransactions(
   params: TransactionSearchParams,
   page: number = 0,
-  pageSize: number = 100
+  pageSize: number = 100,
+  options?: { enabled?: boolean }
 ) {
   return useQuery({
     queryKey: transactionKeys.list(params, page, pageSize),
@@ -53,6 +54,8 @@ export function useTransactions(
     placeholderData: keepPreviousData,
     // Cache for 30 seconds
     staleTime: 30_000,
+    // Allow disabling the query (e.g., during filter application)
+    enabled: options?.enabled !== false,
   });
 }
 

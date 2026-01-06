@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // braid-ui
 import { TransactionHistoryView } from "braid-ui";
@@ -41,11 +41,35 @@ const Transactions = () => {
   // Table expand state
   const [expanded, setExpanded] = useState(false);
 
+  // Track when we're applying filters to prevent multiple API calls
+  const [isApplyingFilters, setIsApplyingFilters] = useState(false);
+  const searchParams = useSearchParams();
+  const prevApiFiltersRef = useRef(apiFilters);
+
+  // Clear the flag when both pagination and filters have synced
+  useEffect(() => {
+    if (isApplyingFilters) {
+      // Wait until pagination has reset to 0 and filters have updated
+      // This ensures both hooks have synced before re-enabling the query
+      const filtersChanged =
+        JSON.stringify(apiFilters) !==
+        JSON.stringify(prevApiFiltersRef.current);
+      if (pagination.page === 0 && filtersChanged) {
+        prevApiFiltersRef.current = apiFilters;
+        setIsApplyingFilters(false);
+      }
+    } else {
+      // Update ref when not applying filters
+      prevApiFiltersRef.current = apiFilters;
+    }
+  }, [searchParams, isApplyingFilters, pagination.page, apiFilters]);
+
   // React Query hook for fetching transactions
   const { data, isLoading, isError, error, isFetching } = useTransactions(
     apiFilters as TransactionSearchParams,
     pagination.page,
-    pagination.pageSize
+    pagination.pageSize,
+    { enabled: !isApplyingFilters }
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -67,9 +91,13 @@ const Transactions = () => {
   }, [resetFilters]);
 
   const handleApplyFilters = useCallback(() => {
-    pagination.reset();
+    // Set flag to prevent query from running during filter application
+    // This prevents multiple API calls (one for page change, one for filter change)
+    setIsApplyingFilters(true);
+    // applyFilters now handles resetting pagination to page 0 in a single URL update
     applyFilters();
-  }, [pagination, applyFilters]);
+    // Flag will be cleared by useEffect when searchParams changes
+  }, [applyFilters]);
 
   const handleRowClick = useCallback(
     (transaction: Transaction) => {
@@ -87,20 +115,20 @@ const Transactions = () => {
   }
 
   if (isError) {
-  return (
-        <ErrorPage
+    return (
+      <ErrorPage
         error={
           error instanceof Error ? error.message : "Failed to load transactions"
         }
-          recoveryButtonTitle="Retry"
-          recoveryButtonOnClick={handleResetFilters}
-        />
+        recoveryButtonTitle="Retry"
+        recoveryButtonOnClick={handleResetFilters}
+      />
     );
   }
 
   return (
     <div>
-        <TransactionHistoryView
+      <TransactionHistoryView
         table={
           <TransactionTable
             transactions={data?.content ?? []}
@@ -116,9 +144,9 @@ const Transactions = () => {
         }
         filters={filters}
         onFilterChange={handleFilterChange}
-          onResetFilters={handleResetFilters}
-          onApplyFilters={handleApplyFilters}
-        />
+        onResetFilters={handleResetFilters}
+        onApplyFilters={handleApplyFilters}
+      />
     </div>
   );
 };
