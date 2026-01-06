@@ -4,7 +4,11 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 // braid-ui components
-import { TransactionDetailView } from "braid-ui";
+import {
+  CancelTransactionDialog,
+  ReturnTransactionDialog,
+  TransactionDetailView,
+} from "braid-ui";
 
 // Feature hooks & utils
 import {
@@ -25,6 +29,13 @@ import ErrorPage from "@/core/components/error_page";
 // Redux - still needed for title (will be migrated later)
 import { setTitle } from "@/redux/slices/AppSlice";
 import { useAppDispatch } from "@/redux/store/store";
+import { useSelector } from "react-redux";
+
+// Notifications
+import { enqueueSnackbar } from "notistack";
+
+// Constants
+import { wireReturnCodes } from "@/core/constants";
 
 // Core types & utils
 import type { Transaction } from "@/core/types";
@@ -41,8 +52,13 @@ export default function TransactionHistoryPage() {
   const paymentId = params.id as string;
 
   // Dialog state
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false);
+
+  // ACH return codes from Redux
+  const achReturnCodes: "loading" | string | string[] = useSelector(
+    (state: any) => state.app.achReturnCodes
+  );
 
   // React Query hooks
   const {
@@ -50,6 +66,7 @@ export default function TransactionHistoryPage() {
     isLoading,
     isError,
     error,
+    isFetching,
     refetch,
   } = useTransaction(paymentId);
 
@@ -63,7 +80,7 @@ export default function TransactionHistoryPage() {
 
   // Set page title
   useEffect(() => {
-      dispatch(setTitle("Transaction Details"));
+    dispatch(setTitle("Transaction Details"));
   }, [dispatch]);
 
   // Computed values - map API data to UI format
@@ -97,17 +114,127 @@ export default function TransactionHistoryPage() {
     [transaction]
   );
 
+  // Return reason codes based on transaction type
+  // Format: Convert string arrays to objects with label/value for braid-ui
+  const returnReasonCodes = useMemo(() => {
+    if (!transaction) return [];
+
+    let codes: string[] = [];
+
+    if (isAch) {
+      // Handle ACH return codes from Redux
+      if (achReturnCodes === "loading") return [];
+      if (typeof achReturnCodes === "string") return [];
+      if (Array.isArray(achReturnCodes)) {
+        codes = achReturnCodes;
+      }
+    } else if (isWire) {
+      codes = wireReturnCodes;
+    }
+
+    // Convert string array to objects with label and value
+    // braid-ui likely expects { label: string, value: string }[]
+    return codes.map((code) => ({
+      label: code,
+      value: code,
+    }));
+  }, [transaction, isAch, isWire, achReturnCodes]);
+
   // ─────────────────────────────────────────────────────────────────────────
   // Callbacks
   // ─────────────────────────────────────────────────────────────────────────
 
   const handleOpenReturnDialog = useCallback(() => {
-    setReturnDialogOpen(true);
+    setIsReturnDialogOpen(true);
   }, []);
 
   const handleOpenCancelDialog = useCallback(() => {
-    setCancelDialogOpen(true);
+    setIsCancelDialogOpen(true);
   }, []);
+
+  const handleReturnTransaction = useCallback(
+    async (data: {
+      reasonCode?: string | { label: string; value: string };
+    }) => {
+      if (!transaction || !uiTransaction) return;
+
+      if (!data.reasonCode) {
+        enqueueSnackbar("Return code is required", { variant: "error" });
+        return;
+      }
+
+      // Extract value if it's an object, otherwise use the string directly
+      const returnCode =
+        typeof data.reasonCode === "string"
+          ? data.reasonCode
+          : data.reasonCode.value || data.reasonCode.label;
+
+      if (!returnCode) {
+        enqueueSnackbar("Return code is required", { variant: "error" });
+        return;
+      }
+
+      const transactionType = isAch ? "ach" : isWire ? "wire" : null;
+      if (!transactionType) {
+        enqueueSnackbar("Unable to determine transaction type", {
+          variant: "error",
+        });
+        return;
+      }
+
+      try {
+        await returnMutation.mutateAsync({
+          paymentId: uiTransaction.id,
+          returnCode: returnCode,
+          type: transactionType,
+        });
+        setIsReturnDialogOpen(false);
+        enqueueSnackbar("Transaction returned successfully", {
+          variant: "success",
+        });
+        // Refetch transaction to get updated state
+        refetch();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to return transaction";
+        enqueueSnackbar(errorMessage, { variant: "error", persist: true });
+      }
+    },
+    [transaction, uiTransaction, isAch, isWire, returnMutation, refetch]
+  );
+
+  const handleCancelTransaction = useCallback(
+    async (data: { reason?: string }) => {
+      if (!uiTransaction) return;
+
+      if (!data.reason) {
+        enqueueSnackbar("Reason is required", { variant: "error" });
+        return;
+      }
+
+      try {
+        await cancelMutation.mutateAsync({
+          paymentId: uiTransaction.id,
+          reason: data.reason,
+        });
+        setIsCancelDialogOpen(false);
+        enqueueSnackbar("Transaction cancelled successfully", {
+          variant: "success",
+        });
+        // Refetch transaction to get updated state
+        refetch();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel transaction";
+        enqueueSnackbar(errorMessage, { variant: "error", persist: true });
+      }
+    },
+    [uiTransaction, cancelMutation, refetch]
+  );
 
   const handleAccountClick = useCallback(
     (accountNumber: string) => {
@@ -173,56 +300,51 @@ export default function TransactionHistoryPage() {
   // Render
   // ─────────────────────────────────────────────────────────────────────────
 
-  if (isLoading) {
-    return <MyCircularProgressIndicator />;
-  }
-
-  if (isError) {
-    return (
-      <ErrorPage
-        error={
-          error instanceof Error ? error.message : "Failed to load transaction"
-        }
-        recoveryButtonTitle="Retry"
-        recoveryButtonOnClick={() => refetch()}
-      />
-    );
-    }
-
-  if (!transaction || !uiTransaction) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Transaction Not Found</h2>
-          <p className="text-gray-500 mb-4">
-            The transaction with ID {paymentId} could not be found.
-          </p>
-          <button
-            onClick={() => router.push("/transactions/transactionHistory")}
-            className="text-blue-600 hover:underline"
-          >
-            Back to Transaction History
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-          <TransactionDetailView
-      transaction={uiTransaction}
-            timelineEvents={timelineEvents}
-      isWireTransfer={isWire}
-      isACHTransfer={isAch}
-            showCancelButton={showCancelButton}
-            showReturnButton={showReturnButton}
-            onReturnClick={handleOpenReturnDialog}
-            onCancelClick={handleOpenCancelDialog}
-            onAccountClick={handleAccountClick}
-            onCustomerClick={handleCustomerClick}
-            onCounterpartyClick={handleCounterpartyClick}
-            onOFACClick={handleOFACClick}
-            onProductClick={handleProductClick}
+    <>
+      <TransactionDetailView
+        transaction={uiTransaction}
+        timelineEvents={timelineEvents}
+        isWireTransfer={isWire}
+        isACHTransfer={isAch}
+        showCancelButton={showCancelButton}
+        showReturnButton={showReturnButton}
+        onReturnClick={handleOpenReturnDialog}
+        onCancelClick={handleOpenCancelDialog}
+        onAccountClick={handleAccountClick}
+        onCustomerClick={handleCustomerClick}
+        onCounterpartyClick={handleCounterpartyClick}
+        onOFACClick={handleOFACClick}
+        onProductClick={handleProductClick}
+        isLoading={isFetching}
+        error={
+          isError
+            ? error instanceof Error
+              ? error.message
+              : String(error)
+            : null
+        }
+        onRetry={refetch}
+      />
+
+      {uiTransaction && (
+        <>
+          <CancelTransactionDialog
+            transactionId={uiTransaction.id}
+            open={isCancelDialogOpen}
+            onOpenChange={setIsCancelDialogOpen}
+            onCancel={handleCancelTransaction}
           />
+
+          <ReturnTransactionDialog
+            transactionId={uiTransaction.id}
+            open={isReturnDialogOpen}
+            onOpenChange={setIsReturnDialogOpen}
+            onReturn={handleReturnTransaction}
+            reasonCodes={returnReasonCodes}
+          />
+        </>
+      )}
+    </>
   );
 }

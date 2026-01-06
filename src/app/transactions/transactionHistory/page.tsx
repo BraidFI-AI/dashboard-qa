@@ -65,12 +65,13 @@ const Transactions = () => {
   }, [searchParams, isApplyingFilters, pagination.page, apiFilters]);
 
   // React Query hook for fetching transactions
-  const { data, isLoading, isError, error, isFetching } = useTransactions(
-    apiFilters as TransactionSearchParams,
-    pagination.page,
-    pagination.pageSize,
-    { enabled: !isApplyingFilters }
-  );
+  const { data, isLoading, isError, error, isFetching, refetch } =
+    useTransactions(
+      apiFilters as TransactionSearchParams,
+      pagination.page,
+      pagination.pageSize,
+      { enabled: !isApplyingFilters }
+    );
 
   // ─────────────────────────────────────────────────────────────────────────
   // Filter handlers (adapted for braid-ui interface)
@@ -110,22 +111,6 @@ const Transactions = () => {
   // Render
   // ─────────────────────────────────────────────────────────────────────────
 
-  if (isLoading) {
-    return <MyCircularProgressIndicator />;
-  }
-
-  if (isError) {
-    return (
-      <ErrorPage
-        error={
-          error instanceof Error ? error.message : "Failed to load transactions"
-        }
-        recoveryButtonTitle="Retry"
-        recoveryButtonOnClick={handleResetFilters}
-      />
-    );
-  }
-
   return (
     <div>
       <TransactionHistoryView
@@ -146,6 +131,9 @@ const Transactions = () => {
         onFilterChange={handleFilterChange}
         onResetFilters={handleResetFilters}
         onApplyFilters={handleApplyFilters}
+        isLoading={isFetching}
+        error={isError ? error.message : null}
+        onRetry={refetch}
       />
     </div>
   );
