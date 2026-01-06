@@ -63,7 +63,7 @@ export default function TransactionHistoryPage() {
 
   // Set page title
   useEffect(() => {
-    dispatch(setTitle("Transaction Details"));
+      dispatch(setTitle("Transaction Details"));
   }, [dispatch]);
 
   // Computed values - map API data to UI format
@@ -187,7 +187,7 @@ export default function TransactionHistoryPage() {
         recoveryButtonOnClick={() => refetch()}
       />
     );
-  }
+    }
 
   if (!transaction || !uiTransaction) {
     return (
@@ -209,20 +209,20 @@ export default function TransactionHistoryPage() {
   }
 
   return (
-    <TransactionDetailView
+          <TransactionDetailView
       transaction={uiTransaction}
-      timelineEvents={timelineEvents}
+            timelineEvents={timelineEvents}
       isWireTransfer={isWire}
       isACHTransfer={isAch}
-      showCancelButton={showCancelButton}
-      showReturnButton={showReturnButton}
-      onReturnClick={handleOpenReturnDialog}
-      onCancelClick={handleOpenCancelDialog}
-      onAccountClick={handleAccountClick}
-      onCustomerClick={handleCustomerClick}
-      onCounterpartyClick={handleCounterpartyClick}
-      onOFACClick={handleOFACClick}
-      onProductClick={handleProductClick}
-    />
+            showCancelButton={showCancelButton}
+            showReturnButton={showReturnButton}
+            onReturnClick={handleOpenReturnDialog}
+            onCancelClick={handleOpenCancelDialog}
+            onAccountClick={handleAccountClick}
+            onCustomerClick={handleCustomerClick}
+            onCounterpartyClick={handleCounterpartyClick}
+            onOFACClick={handleOFACClick}
+            onProductClick={handleProductClick}
+          />
   );
 }

@@ -53,8 +53,11 @@ const Transactions = () => {
   // ─────────────────────────────────────────────────────────────────────────
 
   const handleFilterChange = useCallback(
-    (field: string, value: string | Date | undefined) => {
-      setFilter(field as keyof TransactionHistoryFilters, value as never);
+    (
+      field: keyof TransactionHistoryFilters,
+      value: string | string[] | boolean | undefined
+    ) => {
+      setFilter(field, value as never);
     },
     [setFilter]
   );
@@ -84,20 +87,20 @@ const Transactions = () => {
   }
 
   if (isError) {
-    return (
-      <ErrorPage
+  return (
+        <ErrorPage
         error={
           error instanceof Error ? error.message : "Failed to load transactions"
         }
-        recoveryButtonTitle="Retry"
-        recoveryButtonOnClick={handleResetFilters}
-      />
+          recoveryButtonTitle="Retry"
+          recoveryButtonOnClick={handleResetFilters}
+        />
     );
   }
 
   return (
     <div>
-      <TransactionHistoryView
+        <TransactionHistoryView
         table={
           <TransactionTable
             transactions={data?.content ?? []}
@@ -111,11 +114,11 @@ const Transactions = () => {
             onToggleExpand={() => setExpanded(!expanded)}
           />
         }
-        filters={filters as any}
-        onFilterChange={handleFilterChange as any}
-        onResetFilters={handleResetFilters}
-        onApplyFilters={handleApplyFilters}
-      />
+        filters={filters}
+        onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
+          onApplyFilters={handleApplyFilters}
+        />
     </div>
   );
 };
