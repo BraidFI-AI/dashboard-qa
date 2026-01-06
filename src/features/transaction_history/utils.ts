@@ -51,7 +51,7 @@ function formatDateTime(timestamp: number | undefined): string {
 function mapAchDetails(
   ach: any,
   transaction: Transaction
-): UITransactionData["achDetails"] {
+): NonNullable<UITransactionData>["achDetails"] {
   if (!ach) return undefined;
 
   const isInbound =
@@ -148,7 +148,7 @@ function mapAchDetails(
 function mapWireDetails(
   wire: any,
   transaction: Transaction
-): UITransactionData["wireDetails"] {
+): NonNullable<UITransactionData>["wireDetails"] {
   if (!wire) return undefined;
 
   const isInbound = transaction.operationType === "CREDIT";
