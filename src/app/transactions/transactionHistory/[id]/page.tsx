@@ -300,6 +300,18 @@ export default function TransactionHistoryPage() {
   // Render
   // ─────────────────────────────────────────────────────────────────────────
 
+  // Compute error message: check for query error or transaction not found
+  const errorMessage = useMemo(() => {
+    if (isError) {
+      return error instanceof Error ? error.message : String(error);
+    }
+    // If query succeeded but transaction is null, it means transaction was not found
+    if (!isLoading && !isFetching && !transaction) {
+      return `Transaction with ID ${paymentId} not found`;
+    }
+    return null;
+  }, [isError, error, isLoading, isFetching, transaction, paymentId]);
+
   return (
     <>
       <TransactionDetailView
@@ -317,13 +329,7 @@ export default function TransactionHistoryPage() {
         onOFACClick={handleOFACClick}
         onProductClick={handleProductClick}
         isLoading={isFetching}
-        error={
-          isError
-            ? error instanceof Error
-              ? error.message
-              : String(error)
-            : null
-        }
+        error={errorMessage}
         onRetry={refetch}
       />
 
