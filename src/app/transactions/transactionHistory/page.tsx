@@ -2,6 +2,7 @@
 
 import { useCallback, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
 
 // braid-ui
 import { TransactionHistoryView } from "braid-ui";
@@ -24,12 +25,21 @@ import { usePagination } from "@/core/hooks";
 // Core types
 import type { Transaction, TransactionSearchParams } from "@/core/types";
 
+// Redux
+import {
+  TransactionTypesType,
+  fetchTransactionTypes,
+} from "@/redux/slices/AppSlice";
+import { fetchProductIdsList } from "@/redux/slices/ach_return_slice";
+import { useAppDispatch } from "@/redux/store/store";
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Component
 // ═══════════════════════════════════════════════════════════════════════════
 
 const Transactions = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   // Pagination (universal hook with URL sync)
   const pagination = usePagination({ syncToUrl: true });
@@ -45,6 +55,78 @@ const Transactions = () => {
   const [isApplyingFilters, setIsApplyingFilters] = useState(false);
   const searchParams = useSearchParams();
   const prevApiFiltersRef = useRef(apiFilters);
+
+  // Filter options from Redux
+  const transactionTypes: TransactionTypesType = useSelector(
+    (state: any) => state.app.transactionTypes
+  );
+  const [productIdsList, setProductIdsList] = useState<
+    "loading" | string | { id: string; name: string }[]
+  >("loading");
+
+  // Fetch filter options on mount
+  useEffect(() => {
+    dispatch(fetchTransactionTypes());
+    dispatch(fetchProductIdsList()).then((data: any) => {
+      setProductIdsList(data.payload);
+    });
+  }, [dispatch]);
+
+  // Prepare filter options
+  const filterOptions = {
+    transactionTypes:
+      transactionTypes === "loading" || typeof transactionTypes === "string"
+        ? []
+        : transactionTypes.map((type: string) => ({
+            value: type,
+            label: type,
+          })),
+    products:
+      productIdsList === "loading" || typeof productIdsList === "string"
+        ? []
+        : productIdsList?.map((prd: { id: string; name: string }) => ({
+            value: prd.id,
+            label: `${prd.id} - ${prd.name}`,
+          })) ?? [],
+    transactionStatuses: [
+      "REJECTED_PAYMENT_INSTRUMENT",
+      "REVERSED",
+      "REJECTED_VELOCITY_EXCEPTION",
+      "RETURNED",
+      "CANCELLED",
+      "REJECTED_INSUFFICIENT_FUNDS",
+      "REJECTED_INVALID_TRANSACTION_DATA",
+      "REJECTED_ACCESS_EXCEPTION",
+      "REJECTED_GENERIC",
+      "PENDING",
+      "FAILED",
+      "REJECTED_ACCOUNT_STATE",
+      "POSTED",
+      "REJECTED_CUSTOMER_STATE",
+      "APPROVED",
+      "REJECTED_CONTACT_STATE",
+    ].map((status) => ({
+      value: status,
+      label: status,
+    })),
+    processingStatuses: [
+      "INITIATED",
+      "MANUAL_REVIEW",
+      "CANCELED",
+      "SUBMITTED",
+      "SENT",
+      "RETURNED",
+      "REJECTED",
+      "CONFIRMED",
+    ].map((status) => ({
+      value: status,
+      label: status,
+    })),
+    directions: ["DEBIT", "CREDIT"].map((direction) => ({
+      value: direction,
+      label: direction,
+    })),
+  };
 
   // Clear the flag when both pagination and filters have synced
   useEffect(() => {
@@ -114,6 +196,7 @@ const Transactions = () => {
   return (
     <div>
       <TransactionHistoryView
+        filterOptions={filterOptions}
         table={
           <TransactionTable
             transactions={data?.content ?? []}

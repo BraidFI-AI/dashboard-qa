@@ -46,6 +46,33 @@ function formatDateTime(timestamp: number | undefined): string {
 }
 
 /**
+ * Format timestamp to "DD MMM, YYYY HH:mm" format (e.g., "21 Sept, 2025 14:30")
+ */
+function formatTimelineDateTime(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  const day = date.getDate();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${day} ${month}, ${year} ${hours}:${minutes}`;
+}
+
+/**
  * Map ACH details to braid-ui format
  */
 function mapAchDetails(
@@ -164,6 +191,9 @@ function mapWireDetails(
       (transaction.transactionType?.includes("Domestic")
         ? "Domestic Wire"
         : "International Wire"),
+    imad: wire.imad ?? "",
+    originatorToBeneficiaryInfo: wire.originatorToBeneficiaryInfo ?? [],
+    fileHandle: wire.fileHandle ?? "",
     originatorName: wire.originatorName ?? transaction.customerName ?? "",
     originatorAccountNumber:
       wire.originatorAccountNumber ?? transaction.accountNumber ?? "",
@@ -181,60 +211,17 @@ function mapWireDetails(
     intermediaryFIName: wire.intermediaryBankName ?? "",
     intermediaryFIRoutingNumber: intermediaryRoutingNumber,
     intermediaryFIAddress: wire.intermediaryBankAddress ?? "",
-    raw: wire.raw || {
-      messageType: "MT103",
-      sender: wire.sender ?? "",
-      receiver: wire.receiver ?? "",
-      transactionReference: transaction.paymentId ?? transaction.customUUID,
-      relatedReference: transaction.reference ?? "",
-      bankOperationCode: "CRED",
-      instructionCode: "CHQB",
-      valueDate: formatDateTime(transaction.created).split(" ")[0],
-      currency: transaction.currency ?? "USD",
-      amount: transaction.amount,
-      orderingCustomer: {
-        account:
-          wire.originatorAccountNumber ?? transaction.accountNumber ?? "",
-        name: wire.originatorName ?? transaction.customerName ?? "",
-        address: [
-          wire.originatorAddress ?? transaction.address ?? "",
-          "",
-          "United States",
-        ],
-      },
-      orderingInstitution: {
-        bic: wire.originatorBIC ?? "",
-        name: wire.originatorBankName ?? "",
-        address: [wire.originatorBankAddress ?? "", ""],
-      },
-      intermediaryInstitution: wire.intermediaryBankName
-        ? {
-            bic: wire.intermediaryBIC ?? "",
-            name: wire.intermediaryBankName ?? "",
-            clearingCode: intermediaryRoutingNumber,
-            address: [wire.intermediaryBankAddress ?? "", ""],
-          }
-        : undefined,
-      beneficiaryInstitution: {
-        bic: wire.beneficiaryBIC ?? "",
-        name: wire.beneficiaryBankName ?? "",
-        clearingCode: beneficiaryRoutingNumber,
-        address: [wire.beneficiaryBankAddress ?? "", ""],
-      },
-      beneficiaryCustomer: {
-        account:
-          wire.beneficiaryAccountNumber ?? transaction.counterAccountId ?? "",
-        name: wire.beneficiaryName ?? transaction.counterpartyName ?? "",
-        address: [wire.beneficiaryAddress ?? "", "", "United States"],
-      },
-      remittanceInformation:
-        transaction.description ?? transaction.senderNote ?? "",
-      regulatoryReporting: undefined,
-      senderToReceiverInformation: wire.originatorToBeneficiaryInfo
-        ? [wire.originatorToBeneficiaryInfo]
-        : [],
-      chargeDetails: "OUR",
-    },
+    raw: (() => {
+      if (wire.rawData == null) return undefined;
+      if (typeof wire.rawData === "string") {
+        try {
+          return JSON.parse(wire.rawData);
+        } catch {
+          return wire.rawData;
+        }
+      }
+      return wire.rawData;
+    })(),
   };
 }
 
@@ -248,11 +235,6 @@ function mapWireDetails(
 export function toUITransaction(
   apiTransaction: Transaction
 ): UITransactionData & { updated?: string } {
-  // Determine if inbound based on operationType or ACH direction
-  const isInbound =
-    apiTransaction.operationType === "CREDIT" ||
-    apiTransaction.ach?.direction === "INBOUND";
-
   // Get timestamps
   const createdTimestamp = apiTransaction.createdAt ?? apiTransaction.created;
   const updatedTimestamp = apiTransaction.updatedAt ?? createdTimestamp;
@@ -260,10 +242,13 @@ export function toUITransaction(
   // Cast to any to access dynamic fields from API
   const achData = (apiTransaction as any).ach;
   const wireData = (apiTransaction as any).wire;
+  const txAny = apiTransaction as any;
 
   return {
     id: apiTransaction.paymentId ?? apiTransaction.customUUID,
     created: formatDateTime(createdTimestamp),
+    ofacId: apiTransaction.ofacId ?? "",
+    productId: apiTransaction.productId ?? "",
     accountNumber: apiTransaction.accountNumber ?? "",
     amount: parseFloat(apiTransaction.amount) || 0,
     customer: apiTransaction.customerName ?? "",
@@ -277,12 +262,37 @@ export function toUITransaction(
       | "RETURNED",
     processingStatus: (apiTransaction.processingStatus ?? "UNKNOWN") as string,
     updated: formatDateTime(updatedTimestamp),
-    isInbound,
+    isInbound: apiTransaction.isInbound ?? false,
     achDetails: achData ? mapAchDetails(achData, apiTransaction) : undefined,
     wireDetails: wireData
       ? mapWireDetails(wireData, apiTransaction)
       : undefined,
+    originalFilename: txAny.originalFileName ?? undefined,
+    loadedFromFile: txAny.loadedFromFile ?? undefined,
+    linkedPaymentId: txAny.linkedPaymentId ?? undefined,
+    pendingUntilDate: txAny.pendingUntilDate
+      ? formatDateTime(txAny.pendingUntilDate)
+      : undefined,
+    furtherCreditTo: txAny.furtherCreditToCustomerName ?? undefined,
+    balanceAvailableDate: txAny.availableDate
+      ? formatDateTime(txAny.availableDate)
+      : undefined,
+    requesterUsername: txAny.requesterUsername ?? undefined,
+    requesterIpAddress: txAny.requesterIpAddress ?? undefined,
+    settlementFilename: txAny.settlementFileName ?? undefined,
+    duplicateOfPaymentId: txAny.duplicateOfPaymentId ?? undefined,
+    returnedInFile: txAny.returnedInFile ?? undefined,
   };
+}
+
+/**
+ * Format camelCase to Title Case (e.g., "initiatedAt" -> "Initiated At")
+ */
+function formatTitle(key: string): string {
+  return key
+    .split(/(?=[A-Z])/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /**
@@ -292,54 +302,83 @@ export function buildTimelineEvents(
   transaction: Transaction
 ): UITimelineEvent[] {
   const events: InternalTimelineEvent[] = [];
+  const txAny = transaction as any;
 
-  // Created event
-  if (transaction.created || transaction.createdAt) {
-    const timestamp = (transaction.createdAt ?? transaction.created) * 1000;
-    events.push({
-      id: "created",
-      timestamp: new Date(timestamp).toISOString(),
-      title: "Transaction Created",
+  // Map all timestamp fields to their event titles and statuses
+  const dateMapping: Record<
+    string,
+    {
+      timestamp: number | null | undefined;
+      status: "completed" | "pending" | "failed";
+    }
+  > = {
+    createdAt: {
+      timestamp: txAny.createdAt ?? transaction.created,
       status: "completed",
-    });
-  }
+    },
+    initiatedAt: {
+      timestamp: txAny.initiatedAt,
+      status: "completed",
+    },
+    submittedAt: {
+      timestamp: txAny.submittedAt,
+      status: "completed",
+    },
+    manuallyReviewedAt: {
+      timestamp: txAny.manuallyReviewedAt,
+      status: "completed",
+    },
+    sentAt: {
+      timestamp: txAny.sentAt,
+      status: "completed",
+    },
+    cancelledAt: {
+      timestamp: txAny.cancelledAt,
+      status: "failed",
+    },
+    returnedAt: {
+      timestamp: txAny.returnedAt,
+      status: "failed",
+    },
+  };
 
-  // Status-based events
-  if (transaction.status === "POSTED") {
+  // Build events from all available timestamps (with numeric timestamp for sorting)
+  const eventsWithNumericTimestamp: Array<{
+    id: string;
+    timestamp: number;
+    formattedTimestamp: string;
+    title: string;
+    status: "completed" | "pending" | "failed";
+  }> = [];
+
+  Object.entries(dateMapping).forEach(([key, { timestamp, status }]) => {
+    if (
+      timestamp != null &&
+      timestamp !== undefined &&
+      typeof timestamp === "number"
+    ) {
+      eventsWithNumericTimestamp.push({
+        id: key,
+        timestamp,
+        formattedTimestamp: formatTimelineDateTime(timestamp),
+        title: formatTitle(key),
+        status,
+      });
+    }
+  });
+
+  // Sort events by timestamp (oldest first)
+  eventsWithNumericTimestamp.sort((a, b) => a.timestamp - b.timestamp);
+
+  // Convert to InternalTimelineEvent format
+  eventsWithNumericTimestamp.forEach((event) => {
     events.push({
-      id: "posted",
-      timestamp: transaction.updatedAt
-        ? new Date(transaction.updatedAt * 1000).toISOString()
-        : new Date().toISOString(),
-      title: "Transaction Posted",
-      status: "completed",
+      id: event.id,
+      timestamp: event.formattedTimestamp,
+      title: event.title,
+      status: event.status,
     });
-  } else if (transaction.status === "PENDING") {
-    events.push({
-      id: "pending",
-      timestamp: new Date().toISOString(),
-      title: "Awaiting Processing",
-      status: "pending",
-    });
-  } else if (transaction.status === "CANCELLED") {
-    events.push({
-      id: "cancelled",
-      timestamp: transaction.updatedAt
-        ? new Date(transaction.updatedAt * 1000).toISOString()
-        : new Date().toISOString(),
-      title: "Transaction Cancelled",
-      status: "failed",
-    });
-  } else if (transaction.status === "RETURNED") {
-    events.push({
-      id: "returned",
-      timestamp: transaction.updatedAt
-        ? new Date(transaction.updatedAt * 1000).toISOString()
-        : new Date().toISOString(),
-      title: "Transaction Returned",
-      status: "failed",
-    });
-  }
+  });
 
   // Map internal events to braid-ui format
   return events.map((event) => ({

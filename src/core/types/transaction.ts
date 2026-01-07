@@ -6,19 +6,19 @@
 // Type Aliases (Unions)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type TransactionStatus = 'PENDING' | 'POSTED' | 'CANCELLED' | 'RETURNED';
+export type TransactionStatus = "PENDING" | "POSTED" | "CANCELLED" | "RETURNED";
 
-export type ProcessingStatus = 
-  | 'PENDING' 
-  | 'MANUAL_REVIEW' 
-  | 'APPROVED' 
-  | 'REJECTED'
-  | 'PROCESSING'
-  | 'COMPLETED';
+export type ProcessingStatus =
+  | "PENDING"
+  | "MANUAL_REVIEW"
+  | "APPROVED"
+  | "REJECTED"
+  | "PROCESSING"
+  | "COMPLETED";
 
-export type CustomerType = 'BUSINESS' | 'INDIVIDUAL';
+export type CustomerType = "BUSINESS" | "INDIVIDUAL";
 
-export type Direction = 'INBOUND' | 'OUTBOUND';
+export type Direction = "INBOUND" | "OUTBOUND";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Interfaces
@@ -34,41 +34,43 @@ export interface Transaction {
   accountId: string;
   accountNumber: string;
   txId: string;
-  
+  productId: string;
+
   // Amount and currency
   amount: string;
   currency: string;
   feeAmount: string | null;
-  
+
   // Status
   status?: TransactionStatus;
   transactionType: string;
   operationType: string | null;
   processingStatus?: ProcessingStatus;
-  
+  ofacId?: string | null;
+
   // Timestamps
   created: number;
   createdAt?: number;
   updatedAt?: number;
-  
+
   // Customer info
   customerId?: number | null;
   customerName: string | null;
   customerType?: CustomerType | string | null;
-  
+
   // Counterparty info
   counterpartyId?: string | null;
   counterpartyName?: string | null;
   counterpartyAssociatedEntityId?: string | null;
   counterpartyAssociatedEntityType?: string | null;
   counterAccountId: string | null;
-  
+
   // Notes and references
   reference: string;
   senderNote: string;
   recipientNote: string;
   description?: string;
-  
+
   // Additional fields
   transactionCode: string | null;
   attr: string | null;
@@ -76,10 +78,11 @@ export interface Transaction {
   location: string;
   anonymous: string | null;
   customUUID: string;
-  
+  isInbound?: boolean;
+
   // Market value
   marketValue: TransactionMarketValue;
-  
+
   // Type-specific details (populated based on transaction type)
   ach?: AchDetails | null;
   wire?: WireDetails | null;
@@ -131,38 +134,38 @@ export interface TransactionSearchParams {
   productId?: string;
   customerId?: string;
   counterpartyId?: string;
-  
+
   // File filters
   settlementFileName?: string;
   originalFileName?: string;
   wireFileHandle?: string;
-  
+
   // User filters
   requesterIpAddress?: string;
   requesterUsername?: string;
-  
+
   // Type filters
   transactionType?: string[];
   transactionStatus?: string[];
   processingStatus?: string[];
   direction?: Direction;
-  
+
   // Date filters
   beginDate?: string;
   endDate?: string;
   postDateStart?: string;
   postDateEnd?: string;
-  
+
   // Amount filters
   minAmount?: string;
   maxAmount?: string;
-  
+
   // Boolean filters
   showAchNoc?: boolean;
   excludeWire?: boolean;
   excludeAch?: boolean;
   isInbound?: boolean;
-  
+
   // Include raw data in response
   includeRawData?: boolean;
 }
@@ -172,7 +175,7 @@ export interface TransactionSearchParams {
  */
 export interface BreachedLimit {
   id: number;
-  result: 'PASS' | 'FLAGGED' | 'FAIL';
+  result: "PASS" | "FLAGGED" | "FAIL";
   velocityLimit?: {
     id: number;
     name: string;
@@ -189,19 +192,19 @@ export interface BreachedLimit {
  */
 export function formatAmount(tx: Transaction): string {
   const amount = parseFloat(tx.amount);
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: tx.currency || 'USD',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: tx.currency || "USD",
   }).format(amount);
 }
 
 /**
  * Format amount from string value
  */
-export function formatAmountValue(amount: string, currency = 'USD'): string {
+export function formatAmountValue(amount: string, currency = "USD"): string {
   const numAmount = parseFloat(amount);
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency,
   }).format(numAmount);
 }
@@ -210,42 +213,42 @@ export function formatAmountValue(amount: string, currency = 'USD'): string {
  * Check if transaction is posted
  */
 export function isPosted(tx: Transaction): boolean {
-  return tx.status === 'POSTED';
+  return tx.status === "POSTED";
 }
 
 /**
  * Check if transaction is pending
  */
 export function isPending(tx: Transaction): boolean {
-  return tx.status === 'PENDING';
+  return tx.status === "PENDING";
 }
 
 /**
  * Check if transaction needs manual review
  */
 export function needsReview(tx: Transaction): boolean {
-  return tx.processingStatus === 'MANUAL_REVIEW';
+  return tx.processingStatus === "MANUAL_REVIEW";
 }
 
 /**
  * Check if transaction is an ACH transaction
  */
 export function isAchTransaction(tx: Transaction): boolean {
-  return tx.ach != null || tx.transactionType?.includes('ACH');
+  return tx.ach != null || tx.transactionType?.includes("ACH");
 }
 
 /**
  * Check if transaction is a wire transaction
  */
 export function isWireTransaction(tx: Transaction): boolean {
-  return tx.wire != null || tx.transactionType?.includes('WIRE');
+  return tx.wire != null || tx.transactionType?.includes("WIRE");
 }
 
 /**
  * Check if transaction is an internal transfer
  */
 export function isTransferTransaction(tx: Transaction): boolean {
-  return tx.transfer != null || tx.transactionType?.includes('TRANSFER');
+  return tx.transfer != null || tx.transactionType?.includes("TRANSFER");
 }
 
 /**
@@ -253,7 +256,7 @@ export function isTransferTransaction(tx: Transaction): boolean {
  */
 export function getCustomerLink(tx: Transaction): string | null {
   if (!tx.customerId) return null;
-  return tx.customerType === 'BUSINESS'
+  return tx.customerType === "BUSINESS"
     ? `/businesses/${tx.customerId}`
     : `/individuals/${tx.customerId}`;
 }
@@ -262,56 +265,65 @@ export function getCustomerLink(tx: Transaction): string | null {
  * Get link to counterparty based on association type
  */
 export function getCounterpartyLink(tx: Transaction): string | null {
-  if (!tx.counterpartyId || !tx.counterpartyAssociatedEntityType || !tx.counterpartyAssociatedEntityId) {
+  if (
+    !tx.counterpartyId ||
+    !tx.counterpartyAssociatedEntityType ||
+    !tx.counterpartyAssociatedEntityId
+  ) {
     return null;
   }
-  
-  const association = tx.counterpartyAssociatedEntityType === 'BUSINESS'
-    ? 'businesses'
-    : tx.counterpartyAssociatedEntityType === 'INDIVIDUAL'
-    ? 'individuals'
-    : tx.counterpartyAssociatedEntityType === 'ACCOUNT'
-    ? 'accounts'
-    : 'configuration/products';
-    
+
+  const association =
+    tx.counterpartyAssociatedEntityType === "BUSINESS"
+      ? "businesses"
+      : tx.counterpartyAssociatedEntityType === "INDIVIDUAL"
+      ? "individuals"
+      : tx.counterpartyAssociatedEntityType === "ACCOUNT"
+      ? "accounts"
+      : "configuration/products";
+
   return `/${association}/${tx.counterpartyAssociatedEntityId}/counterparties/${tx.counterpartyId}`;
 }
 
 /**
  * Get status badge color
  */
-export function getStatusColor(tx: Transaction): 'green' | 'orange' | 'gray' | 'red' {
+export function getStatusColor(
+  tx: Transaction
+): "green" | "orange" | "gray" | "red" {
   switch (tx.status) {
-    case 'POSTED':
-      return 'green';
-    case 'PENDING':
-      return 'orange';
-    case 'CANCELLED':
-      return 'gray';
-    case 'RETURNED':
-      return 'red';
+    case "POSTED":
+      return "green";
+    case "PENDING":
+      return "orange";
+    case "CANCELLED":
+      return "gray";
+    case "RETURNED":
+      return "red";
     default:
-      return 'gray';
+      return "gray";
   }
 }
 
 /**
  * Get processing status badge color
  */
-export function getProcessingStatusColor(status?: ProcessingStatus): 'green' | 'orange' | 'gray' | 'red' | 'blue' {
+export function getProcessingStatusColor(
+  status?: ProcessingStatus
+): "green" | "orange" | "gray" | "red" | "blue" {
   switch (status) {
-    case 'COMPLETED':
-    case 'APPROVED':
-      return 'green';
-    case 'PENDING':
-    case 'PROCESSING':
-      return 'orange';
-    case 'MANUAL_REVIEW':
-      return 'blue';
-    case 'REJECTED':
-      return 'red';
+    case "COMPLETED":
+    case "APPROVED":
+      return "green";
+    case "PENDING":
+    case "PROCESSING":
+      return "orange";
+    case "MANUAL_REVIEW":
+      return "blue";
+    case "REJECTED":
+      return "red";
     default:
-      return 'gray';
+      return "gray";
   }
 }
 
@@ -320,7 +332,7 @@ export function getProcessingStatusColor(status?: ProcessingStatus): 'green' | '
  */
 export function formatTransactionType(type: string): string {
   return type
-    .replace(/_/g, ' ')
+    .replace(/_/g, " ")
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -331,4 +343,3 @@ export function formatTransactionType(type: string): string {
 export function getCreatedTimestamp(tx: Transaction): number {
   return tx.createdAt ?? tx.created;
 }
-

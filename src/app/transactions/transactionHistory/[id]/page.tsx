@@ -16,6 +16,7 @@ import {
   useBreachedLimits,
   useCancelTransaction,
   useReturnTransaction,
+  useUpdateImad,
   toUITransaction,
   buildTimelineEvents,
   canCancel,
@@ -40,6 +41,8 @@ import { wireReturnCodes } from "@/core/constants";
 // Core types & utils
 import type { Transaction } from "@/core/types";
 import { isAchTransaction, isWireTransaction } from "@/core/types";
+import { generateErrorMessage } from "@/core/utils/exception_utils";
+import { AxiosError } from "axios";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Component
@@ -77,6 +80,7 @@ export default function TransactionHistoryPage() {
   // Mutations
   const cancelMutation = useCancelTransaction();
   const returnMutation = useReturnTransaction();
+  const updateImadMutation = useUpdateImad();
 
   // Set page title
   useEffect(() => {
@@ -196,7 +200,9 @@ export default function TransactionHistoryPage() {
         refetch();
       } catch (error) {
         const errorMessage =
-          error instanceof Error
+          error instanceof AxiosError
+            ? generateErrorMessage(error)
+            : error instanceof Error
             ? error.message
             : "Failed to return transaction";
         enqueueSnackbar(errorMessage, { variant: "error", persist: true });
@@ -227,7 +233,9 @@ export default function TransactionHistoryPage() {
         refetch();
       } catch (error) {
         const errorMessage =
-          error instanceof Error
+          error instanceof AxiosError
+            ? generateErrorMessage(error)
+            : error instanceof Error
             ? error.message
             : "Failed to cancel transaction";
         enqueueSnackbar(errorMessage, { variant: "error", persist: true });
@@ -239,7 +247,7 @@ export default function TransactionHistoryPage() {
   const handleAccountClick = useCallback(
     (accountNumber: string) => {
       // Find account by number - for now navigate to accounts list with filter
-      router.push(`/accounts?accountNumber=${accountNumber}`);
+      router.push(`/accounts/${accountNumber}`);
     },
     [router]
   );
@@ -296,6 +304,38 @@ export default function TransactionHistoryPage() {
     [router]
   );
 
+  const handleIMADChange = useCallback(
+    async (imad: string) => {
+      if (!transaction || !uiTransaction) return;
+
+      if (!imad) {
+        enqueueSnackbar("IMAD is required", { variant: "error" });
+        return;
+      }
+
+      try {
+        await updateImadMutation.mutateAsync({
+          paymentId: uiTransaction.id,
+          imad: imad,
+        });
+        enqueueSnackbar("IMAD updated successfully", {
+          variant: "success",
+        });
+        // Refetch transaction to get updated state
+        refetch();
+      } catch (error) {
+        const errorMessage =
+          error instanceof AxiosError
+            ? generateErrorMessage(error)
+            : error instanceof Error
+            ? error.message
+            : "Failed to update IMAD";
+        enqueueSnackbar(errorMessage, { variant: "error", persist: true });
+      }
+    },
+    [transaction, uiTransaction, updateImadMutation, refetch]
+  );
+
   // ─────────────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────────────
@@ -331,6 +371,7 @@ export default function TransactionHistoryPage() {
         isLoading={isFetching}
         error={errorMessage}
         onRetry={refetch}
+        onIMADChange={handleIMADChange}
       />
 
       {uiTransaction && (
