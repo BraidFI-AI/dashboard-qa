@@ -56,6 +56,9 @@ const Transactions = () => {
   const searchParams = useSearchParams();
   const prevApiFiltersRef = useRef(apiFilters);
 
+  // Track if initial load has completed
+  const hasLoadedOnceRef = useRef(false);
+
   // Filter options from Redux
   const transactionTypes: TransactionTypesType = useSelector(
     (state: any) => state.app.transactionTypes
@@ -155,6 +158,16 @@ const Transactions = () => {
       { enabled: !isApplyingFilters }
     );
 
+  // Track when initial load completes
+  useEffect(() => {
+    if (data && !hasLoadedOnceRef.current) {
+      hasLoadedOnceRef.current = true;
+    }
+  }, [data]);
+
+  // Only show loading on initial load, not on filter/pagination changes
+  const showLoading = isLoading && !hasLoadedOnceRef.current;
+
   // ─────────────────────────────────────────────────────────────────────────
   // Filter handlers (adapted for braid-ui interface)
   // ─────────────────────────────────────────────────────────────────────────
@@ -214,7 +227,7 @@ const Transactions = () => {
         onFilterChange={handleFilterChange}
         onResetFilters={handleResetFilters}
         onApplyFilters={handleApplyFilters}
-        isLoading={isFetching}
+        isLoading={showLoading}
         error={isError ? error.message : null}
         onRetry={refetch}
       />
