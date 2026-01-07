@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import url from "../../url.json";
+// import url from "../../url.json";
 
 type CDNContextType = {
   clientLogo: string | null;
