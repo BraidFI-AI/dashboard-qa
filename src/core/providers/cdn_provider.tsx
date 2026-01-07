@@ -20,9 +20,11 @@ export const CDNProvider: React.FC<CDNProviderProps> = ({ children }) => {
   useEffect(() => {
     const checkCDN = async () => {
       try {
-        const response = await axios.head(`https://${url.url_cdn}/logo.png`);
+        const response = await axios.head(
+          `https://277v8yyiaq0hm.cloudfront.net/logo.png`
+        );
         if (response.status === 200) {
-          setClientLogo(`https://${url.url_cdn}/logo.png`);
+          setClientLogo(`https://277v8yyiaq0hm.cloudfront.net/logo.png`);
         } else {
           setClientLogo(null);
         }
