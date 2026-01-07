@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  DataGridPro,
+  DataGrid,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
   GridToolbarExport,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
-} from "@mui/x-data-grid-pro";
+} from "@mui/x-data-grid";
 import MyTableToolbar from "./MyTableToolbar";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -20,6 +20,8 @@ import {
 } from "@/core/constants";
 import { Box, Button } from "@mui/material";
 import AspectRatioRoundedIcon from "@mui/icons-material/AspectRatioRounded";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export type DataGridPaginationType = {
   rowCount: number;
@@ -52,6 +54,15 @@ type MyTableProps = {
   sizeOptions?: number[];
 };
 
+const UnsortedIcon = () => (
+  <Box sx={{ display: "flex", flexDirection: "column", marginLeft: "4px" }}>
+    <KeyboardArrowUpIcon
+      sx={{ fontSize: "16px", marginBottom: "-8px", color: "#838386" }}
+    />
+    <KeyboardArrowDownIcon sx={{ fontSize: "16px", color: "#838386" }} />
+  </Box>
+);
+
 const MyTable: React.FC<MyTableProps> = ({
   handleRowClick,
   handleCellClick,
@@ -72,7 +83,7 @@ const MyTable: React.FC<MyTableProps> = ({
   sizeOptions = [100],
 }) => {
   return (
-    <DataGridPro
+    <DataGrid
       /// need to enable pagination for pro (disabled in pro by default)
       pagination
       /// for pagination
@@ -90,16 +101,85 @@ const MyTable: React.FC<MyTableProps> = ({
       loading={pagination ? pagination.loading : undefined}
       /// ----------------
       getRowId={customId != null ? customId : null}
+      getRowHeight={() => 40}
+      disableColumnResize={false}
       onRowClick={handleRowClick}
       onCellClick={handleCellClick}
       disableRowSelectionOnClick
       disableColumnMenu={true}
       className="overflow-hidden"
       sx={{
+        height: "auto",
+        borderRadius: "6px",
+        overflow: "hidden",
+        boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+        "& .MuiDataGrid-columnHeaders": {
+          minHeight: "37px !important",
+          maxHeight: "37px !important",
+        },
+        "& .MuiDataGrid-footerContainer": {
+          minHeight: "37px !important",
+          maxHeight: "37px !important",
+          alignItems: "center !important",
+          overflow: "hidden !important",
+        },
+        "& .MuiTablePagination-toolbar": {
+          minHeight: "37px !important",
+          maxHeight: "37px !important",
+          padding: "0 8px !important",
+          overflow: "hidden !important",
+        },
+        "& .MuiTablePagination-displayedRows": {
+          fontSize: "0.875rem !important",
+          margin: "0 !important",
+        },
+        "& .MuiTablePagination-actions": {
+          marginLeft: "8px !important",
+        },
+        "& .MuiTablePagination-actions .MuiIconButton-root": {
+          padding: "4px !important",
+        },
+        "& .MuiDataGrid-columnHeader": {
+          backgroundColor: "#F5F5F6",
+          minHeight: "37px !important",
+          maxHeight: "37px !important",
+        },
+        "& .MuiDataGrid-columnSeparator": {
+          display: "none !important",
+        },
         "& .MuiDataGrid-columnHeaderTitle": {
+          fontSize: "14px",
+          fontWeight: 500,
+          color: "#121216",
           textOverflow: "clip",
           whiteSpace: "break-spaces",
           lineHeight: 1,
+        },
+        "& .MuiDataGrid-sortIcon": {
+          fontSize: "16px !important",
+          opacity: "1 !important",
+          color: "#121216",
+        },
+        "& .MuiDataGrid-columnHeader--sortable .MuiDataGrid-iconButtonContainer":
+          {
+            visibility: "visible !important",
+            width: "auto !important",
+          },
+        "& .MuiDataGrid-columnHeader--sortable .MuiDataGrid-sortButton": {
+          opacity: "1 !important",
+          visibility: "visible !important",
+        },
+        "& .MuiDataGrid-cell": {
+          padding: "8px 12px !important",
+          fontSize: "0.875rem !important",
+          minHeight: "40px !important",
+          maxHeight: "40px !important",
+          display: "flex !important",
+          alignItems: "center !important",
+        },
+        "& .MuiDataGrid-row": {
+          minHeight: "unset !important",
+          maxHeight: "unset !important",
         },
         "& .MuiDataGrid-cell:focus": {
           outline: "none",
@@ -122,53 +202,58 @@ const MyTable: React.FC<MyTableProps> = ({
         //   overflow: "hidden",
         // },
         cursor: "pointer",
-        overflow: "auto",
+        // overflow: "auto",
       }}
       slots={{
-        toolbar: () => (
-          <GridToolbarContainer className="flex flex-row justify-between bg-[#F4F5F7]">
-            <Box>
-              {hideColumnsButton == false && (
-                <GridToolbarColumnsButton
-                  slotProps={{ button: { className: "text-[#12A7FF]" } }}
-                />
-              )}
-              {hideFilterButton == false && (
-                <GridToolbarFilterButton
-                  slotProps={{ button: { className: "text-[#12A7FF]" } }}
-                />
-              )}
-              {hideDensityButton == false && (
-                <GridToolbarDensitySelector
-                  slotProps={{ button: { className: "text-[#12A7FF]" } }}
-                />
-              )}
-              {toggleExpand && (
-                <Button
-                  onClick={toggleExpand}
-                  className="text-[#12A7FF]"
-                  style={{ letterSpacing: 0 }}
-                >
-                  <AspectRatioRoundedIcon
-                    fontSize="small"
-                    sx={{ marginRight: "10px" }}
-                  />
-                  {expand ? "EXPAND" : "COLLAPSE"}
-                </Button>
-              )}
-            </Box>
-            <Box>
-              {hideSearch == false && <GridToolbarQuickFilter />}
-              {exp && (
-                <GridToolbarExport
-                  printOptions={{ disableToolbarButton: true }}
-                  slotProps={{ button: { className: "text-[#12A7FF]" } }}
-                />
-              )}
-            </Box>
-          </GridToolbarContainer>
-        ),
+        columnSortedAscendingIcon: KeyboardArrowUpIcon,
+        columnSortedDescendingIcon: KeyboardArrowDownIcon,
+        columnUnsortedIcon: UnsortedIcon,
       }}
+      // slots={{
+      //   toolbar: () => (
+      //     <GridToolbarContainer className="flex flex-row justify-between bg-[#F5F5F6]">
+      //       <Box>
+      //         {hideColumnsButton == false && (
+      //           <GridToolbarColumnsButton
+      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
+      //           />
+      //         )}
+      //         {hideFilterButton == false && (
+      //           <GridToolbarFilterButton
+      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
+      //           />
+      //         )}
+      //         {hideDensityButton == false && (
+      //           <GridToolbarDensitySelector
+      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
+      //           />
+      //         )}
+      //         {toggleExpand && (
+      //           <Button
+      //             onClick={toggleExpand}
+      //             className="text-[#12A7FF]"
+      //             style={{ letterSpacing: 0 }}
+      //           >
+      //             <AspectRatioRoundedIcon
+      //               fontSize="small"
+      //               sx={{ marginRight: "10px" }}
+      //             />
+      //             {expand ? "EXPAND" : "COLLAPSE"}
+      //           </Button>
+      //         )}
+      //       </Box>
+      //       <Box>
+      //         {hideSearch == false && <GridToolbarQuickFilter />}
+      //         {exp && (
+      //           <GridToolbarExport
+      //             printOptions={{ disableToolbarButton: true }}
+      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
+      //           />
+      //         )}
+      //       </Box>
+      //     </GridToolbarContainer>
+      //   ),
+      // }}
       // slotProps={{
       //   toolbar: {
       //     expand: expand,

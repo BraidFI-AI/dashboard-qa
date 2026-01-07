@@ -27,7 +27,7 @@ const CancelTransactionButton = () => {
     (state: any) => state.transaction.criteria
   );
 
-  const [showButton, setShowButton] = useState<boolean>(false);
+  const [showButton, setShowButton] = useState<boolean>(true);
 
   const [modalOpen, setModalOpen] = useState(false);
 
