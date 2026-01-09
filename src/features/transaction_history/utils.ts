@@ -282,6 +282,7 @@ export function toUITransaction(
     settlementFilename: txAny.settlementFileName ?? undefined,
     duplicateOfPaymentId: txAny.duplicateOfPaymentId ?? undefined,
     returnedInFile: txAny.returnedInFile ?? undefined,
+    alerts: txAny.alertIds ?? undefined,
   };
 }
 
