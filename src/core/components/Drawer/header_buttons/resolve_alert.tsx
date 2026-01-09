@@ -124,7 +124,7 @@ const ResolveAlertButton = () => {
       if (
         data.action == "DECLINE" &&
         (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
-          (alert.type == "TRANSACTION_MONITORING" &&
+          ((alert.type == "TRANSACTION_MONITORING" || alert.type == "OFAC") &&
             (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
               alert.description?.includes("ACH_RECEIVER_DEBIT"))))
       ) {
@@ -329,7 +329,8 @@ const ResolveAlertButton = () => {
             />
             {action == "DECLINE" &&
               (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
-                (alert.type == "TRANSACTION_MONITORING" &&
+                ((alert.type == "TRANSACTION_MONITORING" ||
+                  alert.type == "OFAC") &&
                   (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
                     alert.description?.includes("ACH_RECEIVER_DEBIT")))) && (
                 <>

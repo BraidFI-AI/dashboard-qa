@@ -336,6 +336,13 @@ export default function TransactionHistoryPage() {
     [transaction, uiTransaction, updateImadMutation, refetch]
   );
 
+  const handleAlertClick = useCallback(
+    (alertId: string) => {
+      router.push(`/alerts-and-cases/alerts/${alertId}`);
+    },
+    [router]
+  );
+
   // ─────────────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────────────
@@ -365,6 +372,7 @@ export default function TransactionHistoryPage() {
         onCancelClick={handleOpenCancelDialog}
         onAccountClick={handleAccountClick}
         onCustomerClick={handleCustomerClick}
+        onAlertClick={handleAlertClick}
         onCounterpartyClick={handleCounterpartyClick}
         onOFACClick={handleOFACClick}
         onProductClick={handleProductClick}
