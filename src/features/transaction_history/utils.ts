@@ -121,51 +121,6 @@ function mapAchDetails(
     individualIdNumber: ach.receiverId ?? "",
     individualName: receiverName,
     traceNumber: ach.traceNumber ?? "",
-    raw: ach.raw || {
-      recordType: "6",
-      transactionCode: isInbound ? "22" : "27",
-      receivingDFIIdentification: receiverRoutingNumber.slice(0, 8) || "",
-      checkDigit: receiverRoutingNumber.slice(8, 9) || "",
-      DFIAccountNumber: receiverAccountNumber || "",
-      amount: String(Math.round(parseFloat(transaction.amount) * 100)).padStart(
-        10,
-        "0"
-      ),
-      individualIdentificationNumber: ach.receiverId ?? "",
-      individualName: (receiverName ?? "").slice(0, 22).padEnd(22, " "),
-      discretionaryData: "  ",
-      addendaRecordIndicator: "0",
-      traceNumber: ach.traceNumber ?? "",
-      batchHeader: {
-        recordType: "5",
-        serviceClassCode: "200",
-        companyName: (originatorName ?? "")
-          .slice(0, 16)
-          .padEnd(16, " ")
-          .toUpperCase(),
-        companyDiscretionaryData: (ach.externalId ?? "")
-          .slice(0, 20)
-          .padEnd(20, " "),
-        companyIdentification: ach.originatorId ?? "",
-        standardEntryClassCode: ach.secCode ?? "CCD",
-        companyEntryDescription: ach.service ?? "PAYROLL",
-        companyDescriptiveDate: formatDateTime(
-          ach.effective_date?.[0] || transaction.created
-        )
-          .replace(/-/g, "")
-          .slice(2, 8),
-        effectiveEntryDate: formatDateTime(
-          ach.effective_date?.[0] || transaction.created
-        )
-          .replace(/-/g, "")
-          .slice(2, 8),
-        settlementDate: "   ",
-        originatorStatusCode: "1",
-        // ODFI is the bank of the originator (customer for outbound, counterparty for inbound)
-        originatingDFIIdentification: odfi.slice(0, 8) || "",
-        batchNumber: "0000001",
-      },
-    },
   };
 }
 

@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  DataGrid,
+  DataGridPro,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
   GridToolbarExport,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
-} from "@mui/x-data-grid";
+} from "@mui/x-data-grid-pro";
 import MyTableToolbar from "./MyTableToolbar";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -83,7 +83,7 @@ const MyTable: React.FC<MyTableProps> = ({
   sizeOptions = [100],
 }) => {
   return (
-    <DataGrid
+    <DataGridPro
       /// need to enable pagination for pro (disabled in pro by default)
       pagination
       /// for pagination
