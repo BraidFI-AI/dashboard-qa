@@ -93,7 +93,7 @@
     "react-pdf": "^9.1.0",
     "react-redux": "^8.1.2",
     "react-resizable-panels": "^2.0.0",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^6.30.3",
     "react-xml-viewer": "^2.0.4",
     "recharts": "^2.0.0",
     "server-only": "^0.0.1",
