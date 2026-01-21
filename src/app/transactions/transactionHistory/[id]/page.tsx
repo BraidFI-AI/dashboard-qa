@@ -343,6 +343,15 @@ export default function TransactionHistoryPage() {
     [router]
   );
 
+  const handleLinkedPaymentClick = useCallback(
+    (paymentId: string) => {
+      router.push(`/transactions/transactionHistory/${paymentId}`);
+    },
+    [router]
+  );
+
+  
+
   // ─────────────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────────────
@@ -380,6 +389,7 @@ export default function TransactionHistoryPage() {
         error={errorMessage}
         onRetry={refetch}
         onIMADChange={handleIMADChange}
+        onLinkedPaymentClick={handleLinkedPaymentClick}
       />
 
       {uiTransaction && (

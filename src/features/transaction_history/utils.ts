@@ -1,5 +1,7 @@
 import type { TransactionDetailViewProps } from "braid-ui";
 import type { Transaction } from "@/core/types";
+import { isArray } from "lodash";
+import { timestampToDate } from "@/core/utils/date_time_util";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types - Extract from braid-ui props for type safety
@@ -46,7 +48,7 @@ function formatDateTime(timestamp: number | undefined): string {
 }
 
 /**
- * Format timestamp to "DD MMM, YYYY HH:mm" format (e.g., "21 Sept, 2025 14:30")
+ * Format timestamp to "DD MMM, YYYY HH:mm:ss" format (e.g., "21 Sept, 2025 14:30:45")
  */
 function formatTimelineDateTime(timestamp: number): string {
   const date = new Date(timestamp * 1000);
@@ -69,7 +71,8 @@ function formatTimelineDateTime(timestamp: number): string {
   const year = date.getFullYear();
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${day} ${month}, ${year} ${hours}:${minutes}`;
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${day} ${month}, ${year} ${hours}:${minutes}:${seconds}`;
 }
 
 /**
@@ -81,46 +84,26 @@ function mapAchDetails(
 ): NonNullable<UITransactionData>["achDetails"] {
   if (!ach) return undefined;
 
-  const isInbound =
-    ach.direction === "INBOUND" || transaction.operationType === "CREDIT";
-
-  // Extract routing number from ODFI/RDFI (format: 021000021 -> 021000021)
-  const odfi = ach.odfi ?? "";
-  const rdfi = ach.rdfi ?? "";
-  const receivingAccount = ach.receivingAccount ?? "";
-
-  // Determine originator and receiver based on direction
-  // For INBOUND: originator is counterparty (sending), receiver is customer (receiving)
-  // For OUTBOUND: originator is customer (sending), receiver is counterparty (receiving)
-  const originatorName = isInbound
-    ? ach.originatorName ?? transaction.counterpartyName ?? ""
-    : ach.originatorName ?? transaction.customerName ?? "";
-  const originatorAccountNumber = isInbound
-    ? ach.originatorAccountNumber ?? transaction.counterAccountId ?? ""
-    : transaction.accountNumber ?? "";
-  const receiverName = isInbound
-    ? ach.receiverName ?? transaction.customerName ?? ""
-    : ach.receiverName ?? transaction.counterpartyName ?? "";
-  const receiverAccountNumber = isInbound
-    ? transaction.accountNumber ?? ""
-    : receivingAccount ?? transaction.counterAccountId ?? "";
-  // Receiver routing number is always RDFI (the bank receiving the transaction)
-  const receiverRoutingNumber = rdfi;
-
   return {
-    type: isInbound ? "ACH Credit" : "ACH Debit",
-    originatorName,
-    originatorAccountNumber,
-    receiverName,
-    receiverAccountNumber,
-    receiverRoutingNumber,
-    amount: parseFloat(transaction.amount) || 0,
+    originatorName: ach.originatorName ?? "",
+    originatorRtn: ach.odfi ?? "",
+    originatorId: ach.originatorId ?? "",
+    receiverName: ach.receiverName ?? "",
+    receiverRtn: ach.rdfi ?? "",
+    receiverAccount: ach.receivingAccount ?? "",
     secCode: ach.secCode ?? "",
-    companyEntryDescription: ach.service ?? "",
-    companyDiscretionaryData: ach.externalId ?? transaction.description ?? "",
-    individualIdNumber: ach.receiverId ?? "",
-    individualName: receiverName,
+    accountType: ach.accountType ?? "",
+    effectiveDate: ach.effectiveDate != null && isArray(ach.effectiveDate)? ach.effectiveDate.join("-") : "",
+    service: ach.service ?? "",
     traceNumber: ach.traceNumber ?? "",
+    addenda: ach.addenda != null && isArray(ach.addenda)? ach.addenda.join(", ") : "",
+    returnCode: ach.returnCode ?? "",
+    changeCode: ach.changeCode ?? "",
+    returnReason: ach.returnReason ?? "",
+    changeReason: ach.changeReason ?? "",
+    returnedAt: ach.returnedAt != null? timestampToDate(ach.returnedAt): "",
+    nocReceivedAt: ach.nocReceivedAt != null? timestampToDate(ach.nocReceivedAt): "",
+    iatAddenda: ach.iatAddenda?.toString() ?? "",
   };
 }
 
@@ -141,31 +124,20 @@ function mapWireDetails(
   const intermediaryRoutingNumber = wire.intermediaryRoutingNumber ?? "";
 
   return {
-    type:
-      wire.type ??
-      (transaction.transactionType?.includes("Domestic")
-        ? "Domestic Wire"
-        : "International Wire"),
+    type: wire.type ?? "",
     imad: wire.imad ?? "",
-    originatorToBeneficiaryInfo: wire.originatorToBeneficiaryInfo ?? [],
-    fileHandle: wire.fileHandle ?? "",
-    originatorName: wire.originatorName ?? transaction.customerName ?? "",
-    originatorAccountNumber:
-      wire.originatorAccountNumber ?? transaction.accountNumber ?? "",
-    originatorAddress: wire.originatorAddress ?? transaction.address ?? "",
-    beneficiaryName: wire.beneficiaryName ?? transaction.counterpartyName ?? "",
-    beneficiaryAccountNumber:
-      wire.beneficiaryAccountNumber ?? transaction.counterAccountId ?? "",
-    beneficiaryAddress: wire.beneficiaryAddress ?? "",
-    beneficiaryFIName: wire.beneficiaryBankName ?? "",
-    beneficiaryFIRoutingNumber: beneficiaryRoutingNumber,
-    beneficiaryFIAddress: wire.beneficiaryBankAddress ?? "",
+    omad: wire.omad ?? "",
+    originatorName: wire.originatorName ?? "",
+    originatorAccountNumber: wire.originatorAccountNumber ?? "",
     originatorFIName: wire.originatorBankName ?? "",
-    originatorFIRoutingNumber: originatorRoutingNumber,
-    originatorFIAddress: wire.originatorBankAddress ?? "",
-    intermediaryFIName: wire.intermediaryBankName ?? "",
-    intermediaryFIRoutingNumber: intermediaryRoutingNumber,
-    intermediaryFIAddress: wire.intermediaryBankAddress ?? "",
+    originatorFIId: wire.originatorRoutingNumber ?? "",
+    beneficiaryName: wire.beneficiaryName ?? "",
+    beneficiaryAccountNumber: wire.beneficiaryAccountNumber ?? "",
+    beneficiaryFIName: wire.beneficiaryBankName ?? "",
+    beneficiaryFIId: wire.beneficiaryRoutingNumber ?? "",
+    originatorToBeneficiaryInfo: wire.originatorToBeneficiaryInfo ?? "",
+    returnCode: wire.returnCode ?? "",
+    returnReason: wire.returnReason ?? "",
     raw: (() => {
       if (wire.rawData == null) return undefined;
       if (typeof wire.rawData === "string") {
@@ -235,8 +207,6 @@ export function toUITransaction(
     requesterUsername: txAny.requesterUsername ?? undefined,
     requesterIpAddress: txAny.requesterIpAddress ?? undefined,
     settlementFilename: txAny.settlementFileName ?? undefined,
-    duplicateOfPaymentId: txAny.duplicateOfPaymentId ?? undefined,
-    returnedInFile: txAny.returnedInFile ?? undefined,
     alerts: txAny.alertIds ?? undefined,
   };
 }
@@ -272,8 +242,8 @@ export function buildTimelineEvents(
       timestamp: txAny.createdAt ?? transaction.created,
       status: "completed",
     },
-    initiatedAt: {
-      timestamp: txAny.initiatedAt,
+    postedAt: {
+      timestamp: txAny.postDate,
       status: "completed",
     },
     submittedAt: {

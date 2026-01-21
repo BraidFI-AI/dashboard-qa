@@ -60,7 +60,7 @@
     "aws-amplify": "^6.6.5",
     "aws-crt": "^1.18.3",
     "axios": "^1.12.2",
-    "braid-ui": "^1.0.67",
+    "braid-ui": "^1.0.75",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
