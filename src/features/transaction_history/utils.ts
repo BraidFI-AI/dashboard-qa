@@ -1,6 +1,7 @@
 import type { TransactionDetailViewProps } from "braid-ui";
 import type { Transaction } from "@/core/types";
 import { isArray } from "lodash";
+import moment from "moment";
 import { timestampToDate } from "@/core/utils/date_time_util";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -33,46 +34,10 @@ interface InternalTimelineEvent {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Format timestamp to "YYYY-MM-DD HH:mm" format
- */
-function formatDateTime(timestamp: number | undefined): string {
-  if (!timestamp)
-    return new Date().toISOString().slice(0, 16).replace("T", " ");
-  const date = new Date(timestamp * 1000);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-}
-
-/**
  * Format timestamp to "DD MMM, YYYY HH:mm:ss" format (e.g., "21 Sept, 2025 14:30:45")
  */
 function formatTimelineDateTime(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  const day = date.getDate();
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const month = monthNames[date.getMonth()];
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  return `${day} ${month}, ${year} ${hours}:${minutes}:${seconds}`;
+  return moment.unix(timestamp).format("D MMM, YYYY HH:mm:ss");
 }
 
 /**
@@ -80,7 +45,7 @@ function formatTimelineDateTime(timestamp: number): string {
  */
 function mapAchDetails(
   ach: any,
-  transaction: Transaction
+  transaction: Transaction,
 ): NonNullable<UITransactionData>["achDetails"] {
   if (!ach) return undefined;
 
@@ -93,16 +58,21 @@ function mapAchDetails(
     receiverAccount: ach.receivingAccount ?? "",
     secCode: ach.secCode ?? "",
     accountType: ach.accountType ?? "",
-    effectiveDate: ach.effectiveDate != null && isArray(ach.effectiveDate)? ach.effectiveDate.join("-") : "",
+    effectiveDate:
+      ach.effectiveDate != null && isArray(ach.effectiveDate)
+        ? ach.effectiveDate.join("-")
+        : "",
     service: ach.service ?? "",
     traceNumber: ach.traceNumber ?? "",
-    addenda: ach.addenda != null && isArray(ach.addenda)? ach.addenda.join(", ") : "",
+    addenda:
+      ach.addenda != null && isArray(ach.addenda) ? ach.addenda.join(", ") : "",
     returnCode: ach.returnCode ?? "",
     changeCode: ach.changeCode ?? "",
     returnReason: ach.returnReason ?? "",
     changeReason: ach.changeReason ?? "",
-    returnedAt: ach.returnedAt != null? timestampToDate(ach.returnedAt): "",
-    nocReceivedAt: ach.nocReceivedAt != null? timestampToDate(ach.nocReceivedAt): "",
+    returnedAt: ach.returnedAt != null ? timestampToDate(ach.returnedAt) : "",
+    nocReceivedAt:
+      ach.nocReceivedAt != null ? timestampToDate(ach.nocReceivedAt) : "",
     iatAddenda: ach.iatAddenda?.toString() ?? "",
   };
 }
@@ -112,7 +82,7 @@ function mapAchDetails(
  */
 function mapWireDetails(
   wire: any,
-  transaction: Transaction
+  transaction: Transaction,
 ): NonNullable<UITransactionData>["wireDetails"] {
   if (!wire) return undefined;
 
@@ -160,7 +130,7 @@ function mapWireDetails(
  * Map API Transaction to braid-ui TransactionData format
  */
 export function toUITransaction(
-  apiTransaction: Transaction
+  apiTransaction: Transaction,
 ): UITransactionData & { updated?: string } {
   // Get timestamps
   const createdTimestamp = apiTransaction.createdAt ?? apiTransaction.created;
@@ -173,7 +143,7 @@ export function toUITransaction(
 
   return {
     id: apiTransaction.paymentId ?? apiTransaction.customUUID,
-    created: formatDateTime(createdTimestamp),
+    created: timestampToDate(createdTimestamp, false, true),
     ofacId: apiTransaction.ofacId ?? "",
     productId: apiTransaction.productId ?? "",
     accountNumber: apiTransaction.accountNumber ?? "",
@@ -188,7 +158,7 @@ export function toUITransaction(
       | "CANCELLED"
       | "RETURNED",
     processingStatus: (apiTransaction.processingStatus ?? "UNKNOWN") as string,
-    updated: formatDateTime(updatedTimestamp),
+    updated: timestampToDate(updatedTimestamp, false, true),
     isInbound: apiTransaction.isInbound ?? false,
     achDetails: achData ? mapAchDetails(achData, apiTransaction) : undefined,
     wireDetails: wireData
@@ -198,11 +168,11 @@ export function toUITransaction(
     loadedFromFile: txAny.loadedFromFile ?? undefined,
     linkedPaymentId: txAny.linkedPaymentId ?? undefined,
     pendingUntilDate: txAny.pendingUntilDate
-      ? formatDateTime(txAny.pendingUntilDate)
+      ? timestampToDate(txAny.pendingUntilDate, true)
       : undefined,
     furtherCreditTo: txAny.furtherCreditToCustomerName ?? undefined,
     balanceAvailableDate: txAny.availableDate
-      ? formatDateTime(txAny.availableDate)
+      ? timestampToDate(txAny.availableDate)
       : undefined,
     requesterUsername: txAny.requesterUsername ?? undefined,
     requesterIpAddress: txAny.requesterIpAddress ?? undefined,
@@ -225,7 +195,7 @@ function formatTitle(key: string): string {
  * Build timeline events from transaction data in braid-ui format
  */
 export function buildTimelineEvents(
-  transaction: Transaction
+  transaction: Transaction,
 ): UITimelineEvent[] {
   const events: InternalTimelineEvent[] = [];
   const txAny = transaction as any;

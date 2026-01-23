@@ -61,7 +61,7 @@ const Transactions = () => {
 
   // Filter options from Redux
   const transactionTypes: TransactionTypesType = useSelector(
-    (state: any) => state.app.transactionTypes
+    (state: any) => state.app.transactionTypes,
   );
   const [productIdsList, setProductIdsList] = useState<
     "loading" | string | { id: string; name: string }[]
@@ -87,10 +87,10 @@ const Transactions = () => {
     products:
       productIdsList === "loading" || typeof productIdsList === "string"
         ? []
-        : productIdsList?.map((prd: { id: string; name: string }) => ({
+        : (productIdsList?.map((prd: { id: string; name: string }) => ({
             value: prd.id,
             label: `${prd.id} - ${prd.name}`,
-          })) ?? [],
+          })) ?? []),
     transactionStatuses: [
       "REJECTED_PAYMENT_INSTRUMENT",
       "REVERSED",
@@ -102,11 +102,9 @@ const Transactions = () => {
       "REJECTED_ACCESS_EXCEPTION",
       "REJECTED_GENERIC",
       "PENDING",
-      "FAILED",
       "REJECTED_ACCOUNT_STATE",
       "POSTED",
       "REJECTED_CUSTOMER_STATE",
-      "APPROVED",
       "REJECTED_CONTACT_STATE",
     ].map((status) => ({
       value: status,
@@ -155,7 +153,7 @@ const Transactions = () => {
       apiFilters as TransactionSearchParams,
       pagination.page,
       pagination.pageSize,
-      { enabled: !isApplyingFilters }
+      { enabled: !isApplyingFilters },
     );
 
   // Track when initial load completes
@@ -175,11 +173,11 @@ const Transactions = () => {
   const handleFilterChange = useCallback(
     (
       field: keyof TransactionHistoryFilters,
-      value: string | string[] | boolean | undefined
+      value: string | string[] | boolean | undefined,
     ) => {
       setFilter(field, value as never);
     },
-    [setFilter]
+    [setFilter],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -199,7 +197,7 @@ const Transactions = () => {
     (transaction: Transaction) => {
       router.push(`/transactions/transactionHistory/${transaction.paymentId}`);
     },
-    [router]
+    [router],
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -215,7 +213,7 @@ const Transactions = () => {
             transactions={data?.content ?? []}
             pagination={pagination.getTablePaginationProps(
               data?.totalElements ?? 0,
-              isFetching
+              isFetching,
             )}
             onRowClick={handleRowClick}
             expandable
