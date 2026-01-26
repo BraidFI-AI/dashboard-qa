@@ -1,10 +1,7 @@
 "use client";
 
-import axios from "axios";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-// import url from "../../url.json";
-import { useSelector } from "react-redux";
+import { useState } from "react";
 import { useCDN } from "../providers/cdn_provider";
 
 type ClientLogoProps = {
@@ -13,6 +10,7 @@ type ClientLogoProps = {
 
 const ClientLogo: React.FC<ClientLogoProps> = ({ width }) => {
   const { clientLogo } = useCDN();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return clientLogo == null ? (
     <Image
@@ -20,16 +18,19 @@ const ClientLogo: React.FC<ClientLogoProps> = ({ width }) => {
       src={"/images/braid_logo_black.png"}
       height={width * 0.5625}
       width={width}
-    ></Image>
+    />
   ) : (
-    <>
-      <Image
-        alt="Braidfi"
-        src={clientLogo}
-        height={width * 0.5625}
-        width={width}
-      ></Image>
-    </>
+    <Image
+      alt="Braidfi"
+      src={clientLogo}
+      height={width * 0.5625}
+      width={width}
+      onLoad={() => setIsLoaded(true)}
+      style={{
+        opacity: isLoaded ? 1 : 0,
+        transition: "opacity 300ms ease-in-out",
+      }}
+    />
   );
 };
 
