@@ -145,7 +145,11 @@ const MyTable: React.FC<MyTableProps> = ({
           maxHeight: "37px !important",
         },
         "& .MuiDataGrid-columnSeparator": {
-          display: "none !important",
+          position: "absolute",
+          right: 0,
+          top: "50%",
+          transform: "translateY(-50%)",
+          cursor: "col-resize",
         },
         "& .MuiDataGrid-columnHeaderTitle": {
           fontSize: "14px",
