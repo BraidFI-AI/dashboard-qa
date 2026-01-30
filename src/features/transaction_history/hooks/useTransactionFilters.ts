@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { useUrlFilters } from "@/core/hooks";
+import { toBankTimezoneString } from "@/core/utils/date_time_util";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -77,9 +79,21 @@ export interface UseTransactionFiltersOptions {
   onReset?: () => void;
 }
 
+/** Date filter keys that represent start-of-day (bank timezone) */
+const START_OF_DAY_DATE_KEYS: (keyof TransactionHistoryFilters)[] = [
+  "beginDate",
+  "postDateStart",
+];
+/** Date filter keys that represent end-of-day (bank timezone) */
+const END_OF_DAY_DATE_KEYS: (keyof TransactionHistoryFilters)[] = [
+  "endDate",
+  "postDateEnd",
+];
+
 /**
  * Transaction history filters hook - thin wrapper around useUrlFilters
- * with transaction-specific configuration.
+ * with transaction-specific configuration. Date filters are converted to
+ * bank timezone (moment + start/end of day) before being sent to the API.
  *
  * @example
  * const { filters, apiFilters, setFilter, resetFilters, applyFilters } =
@@ -88,7 +102,7 @@ export interface UseTransactionFiltersOptions {
  * const { data } = useTransactions(apiFilters, pagination.page, pagination.pageSize);
  */
 export function useTransactionFilters(options?: UseTransactionFiltersOptions) {
-  return useUrlFilters<TransactionHistoryFilters>({
+  const result = useUrlFilters<TransactionHistoryFilters>({
     defaults: emptyTransactionFilters,
     // No field mappings needed - braid-ui uses API field names directly
     // Arrays are handled automatically by useUrlFilters
@@ -99,4 +113,36 @@ export function useTransactionFilters(options?: UseTransactionFiltersOptions) {
     // So we don't include dateFields - they'll be handled as strings
     onReset: options?.onReset,
   });
+
+  // Convert date filter strings to bank-timezone start/end of day for API
+  const apiFilters = useMemo(() => {
+    const base = result.apiFilters as Record<string, unknown>;
+    const out = { ...base };
+    for (const key of START_OF_DAY_DATE_KEYS) {
+      const value = base[key];
+      if (value != null && value !== "") {
+        const converted = toBankTimezoneString(
+          value as string | Date,
+          true /* startOfDay */
+        );
+        if (converted != null) out[key] = converted;
+      }
+    }
+    for (const key of END_OF_DAY_DATE_KEYS) {
+      const value = base[key];
+      if (value != null && value !== "") {
+        const converted = toBankTimezoneString(
+          value as string | Date,
+          false /* endOfDay */
+        );
+        if (converted != null) out[key] = converted;
+      }
+    }
+    return out;
+  }, [result.apiFilters]);
+
+  return useMemo(
+    () => ({ ...result, apiFilters }),
+    [result, apiFilters]
+  );
 }

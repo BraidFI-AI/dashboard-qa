@@ -8,7 +8,11 @@ import {
   startTransition,
 } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { createDate, toISOString } from "@/core/utils/date_time_util";
+import {
+  createDate,
+  toISOString,
+  toBankTimezoneString,
+} from "@/core/utils/date_time_util";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -21,6 +25,11 @@ export interface UseUrlFiltersOptions<T extends object> {
   fieldMappings?: Record<string, string>;
   /** Fields that should be parsed as dates */
   dateFields?: (keyof T)[];
+  /**
+   * For date fields: use bank timezone (moment + start/end of day) instead of UTC.
+   * Keys are date field names; value 'start' = start of day, 'end' = end of day.
+   */
+  dateFieldRole?: Partial<Record<keyof T, "start" | "end">>;
   /** Fields that should be parsed as arrays (comma-separated in URL) */
   arrayFields?: (keyof T)[];
   /** Fields that should be parsed as booleans (true/false strings in URL) */
@@ -66,6 +75,7 @@ export function useUrlFilters<T extends object>(
     defaults,
     fieldMappings = {},
     dateFields = [],
+    dateFieldRole = {} as Partial<Record<keyof T, "start" | "end">>,
     arrayFields = [],
     booleanFields = [],
     debounceMs = 300,
@@ -160,8 +170,13 @@ export function useUrlFilters<T extends object>(
 
         // Convert value based on type
         if (value instanceof Date) {
-          const iso = toISOString(value);
-          if (iso) params.set(urlKey, iso);
+          const startOfDay = dateFieldRole[uiKey as keyof T] === "start";
+          const endOfDay = dateFieldRole[uiKey as keyof T] === "end";
+          const str =
+            startOfDay || endOfDay
+              ? toBankTimezoneString(value, startOfDay)
+              : toISOString(value);
+          if (str) params.set(urlKey, str);
         } else if (Array.isArray(value)) {
           params.set(urlKey, value.join(","));
         } else if (typeof value === "boolean") {
@@ -173,7 +188,7 @@ export function useUrlFilters<T extends object>(
 
       return params.toString();
     },
-    [fieldMappings]
+    [fieldMappings, dateFieldRole]
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -194,10 +209,15 @@ export function useUrlFilters<T extends object>(
         // Map UI key to API key
         const apiKey = fieldMappings[uiKey] || uiKey;
 
-        // Convert dates to ISO strings for API
+        // Convert dates: bank timezone (start/end of day) when dateFieldRole set, else ISO
         if (value instanceof Date) {
-          const iso = toISOString(value);
-          if (iso) result[apiKey] = iso;
+          const startOfDay = dateFieldRole[uiKey as keyof T] === "start";
+          const endOfDay = dateFieldRole[uiKey as keyof T] === "end";
+          const str =
+            startOfDay || endOfDay
+              ? toBankTimezoneString(value, startOfDay)
+              : toISOString(value);
+          if (str) result[apiKey] = str;
         } else {
           result[apiKey] = value;
         }
@@ -205,7 +225,7 @@ export function useUrlFilters<T extends object>(
 
       return result;
     },
-    [fieldMappings]
+    [fieldMappings, dateFieldRole]
   );
 
   // ─────────────────────────────────────────────────────────────────────────

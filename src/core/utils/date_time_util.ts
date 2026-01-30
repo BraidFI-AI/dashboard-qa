@@ -95,13 +95,28 @@ const createDate = (dateString: string): Date | null => {
 };
 
 /**
- * Converts a Date to ISO string format for URL/API use
+ * Converts a Date to ISO string format for URL/API use (UTC)
  */
 const toISOString = (date: Date): string | null => {
   if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
     return null;
   }
   return date.toISOString();
+};
+
+/**
+ * Converts a filter date value to bank-timezone API string (start or end of day).
+ * Uses moment's default timezone (set by TimezoneProvider from bank config).
+ * Use for beginDate/postDateStart (startOfDay: true) and endDate/postDateEnd (startOfDay: false).
+ */
+const toBankTimezoneString = (
+  value: string | Date | null | undefined,
+  startOfDay: boolean
+): string | null => {
+  if (value === null || value === undefined || value === "") return null;
+  const m = moment(value);
+  if (!m.isValid()) return null;
+  return momentToTimeZoneString(m, startOfDay);
 };
 
 export {
@@ -112,4 +127,5 @@ export {
   momentToDateString,
   createDate,
   toISOString,
+  toBankTimezoneString,
 };
