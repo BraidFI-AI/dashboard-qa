@@ -219,6 +219,7 @@ const Transactions = () => {
             expandable
             expanded={expanded}
             onToggleExpand={() => setExpanded(!expanded)}
+            exportable
           />
         }
         filters={filters}
