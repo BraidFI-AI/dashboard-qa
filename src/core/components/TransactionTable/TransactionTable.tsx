@@ -36,6 +36,8 @@ export interface TransactionTableProps {
   expanded?: boolean;
   /** Toggle expand callback */
   onToggleExpand?: () => void;
+  /** Show export (CSV) button */
+  exportable?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -128,6 +130,7 @@ export function TransactionTable({
   expandable = false,
   expanded = false,
   onToggleExpand,
+  exportable = false,
 }: TransactionTableProps) {
   const router = useRouter();
 
@@ -294,7 +297,7 @@ export function TransactionTable({
     <MyTable
       sizeOptions={pageSizeOptions}
       pagination={pagination}
-      exp={expandable}
+      exp={exportable}
       expand={expanded}
       toggleExpand={onToggleExpand}
       customId={(row: Transaction) => row.paymentId}

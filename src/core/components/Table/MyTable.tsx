@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  DataGridPro,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridToolbarExport,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
-} from "@mui/x-data-grid-pro";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import MyTableToolbar from "./MyTableToolbar";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -18,8 +10,7 @@ import {
   pageSizeOptionsType,
   paginationPageSize,
 } from "@/core/constants";
-import { Box, Button } from "@mui/material";
-import AspectRatioRoundedIcon from "@mui/icons-material/AspectRatioRounded";
+import { Box } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
@@ -212,63 +203,18 @@ const MyTable: React.FC<MyTableProps> = ({
         columnSortedAscendingIcon: KeyboardArrowUpIcon,
         columnSortedDescendingIcon: KeyboardArrowDownIcon,
         columnUnsortedIcon: UnsortedIcon,
+        toolbar: () => (
+          <MyTableToolbar
+            expand={false}
+            // toggleExpand={toggleExpand}
+            exp={exp}
+            hideColumnsButton={true}
+            hideFilterButton={true}
+            hideDensityButton={true}
+            hideSearch={true}
+          />
+        ),
       }}
-      // slots={{
-      //   toolbar: () => (
-      //     <GridToolbarContainer className="flex flex-row justify-between bg-[#F5F5F6]">
-      //       <Box>
-      //         {hideColumnsButton == false && (
-      //           <GridToolbarColumnsButton
-      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
-      //           />
-      //         )}
-      //         {hideFilterButton == false && (
-      //           <GridToolbarFilterButton
-      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
-      //           />
-      //         )}
-      //         {hideDensityButton == false && (
-      //           <GridToolbarDensitySelector
-      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
-      //           />
-      //         )}
-      //         {toggleExpand && (
-      //           <Button
-      //             onClick={toggleExpand}
-      //             className="text-[#12A7FF]"
-      //             style={{ letterSpacing: 0 }}
-      //           >
-      //             <AspectRatioRoundedIcon
-      //               fontSize="small"
-      //               sx={{ marginRight: "10px" }}
-      //             />
-      //             {expand ? "EXPAND" : "COLLAPSE"}
-      //           </Button>
-      //         )}
-      //       </Box>
-      //       <Box>
-      //         {hideSearch == false && <GridToolbarQuickFilter />}
-      //         {exp && (
-      //           <GridToolbarExport
-      //             printOptions={{ disableToolbarButton: true }}
-      //             slotProps={{ button: { className: "text-[#12A7FF]" } }}
-      //           />
-      //         )}
-      //       </Box>
-      //     </GridToolbarContainer>
-      //   ),
-      // }}
-      // slotProps={{
-      //   toolbar: {
-      //     expand: expand,
-      //     toggleExpand: toggleExpand,
-      //     exp: exp,
-      //     hideColumnsButton: hideColumnsButton,
-      //     hideFilterButton: hideFilterButton,
-      //     hideDensityButton: hideDensityButton,
-      //     hideSearch: hideSearch,
-      //   },
-      // }}
       columns={columns.map((column: any) => ({
         ...column,
         resizable: true,
