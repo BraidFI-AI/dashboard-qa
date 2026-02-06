@@ -9,6 +9,7 @@ import {
   setShowAppBar,
   setUsername,
   setUserType,
+  setIsParentDev,
 } from "@/redux/slices/AppSlice";
 import { fetchUsers } from "@/redux/slices/UsermanagementSlice";
 import { useAppDispatch } from "@/redux/store/store";
@@ -27,6 +28,7 @@ import {
 } from "../constants";
 import { fetchClearSightData } from "@/redux/slices/clear_sight_slice";
 import { usePathname } from "next/navigation";
+import { fetchDeveloperNew } from "@/redux/slices/DeveloperSlice";
 
 const DataProviders = (props: any) => {
   const dispatch = useAppDispatch();
@@ -98,6 +100,18 @@ const DataProviders = (props: any) => {
       dispatch(setUserType(userType));
       dispatch(setUsername(username));
       dispatch(setTenantId(tenantId));
+
+      if (userType == DEVELOPER_ROLE) {
+        var devPayload: any = await dispatch(
+          fetchDeveloperNew(tenantId?.toString() ?? null),
+        );
+        if (
+          typeof devPayload != "string" &&
+          devPayload?.payload?.isParent == true
+        ) {
+          dispatch(setIsParentDev(true));
+        }
+      }
     };
 
     setUser();

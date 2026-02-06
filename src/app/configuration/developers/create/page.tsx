@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { CreateDeveloper } from "@/core/api/ApiTypes";
 import { createDeveloper } from "@/redux/slices/DeveloperSlice";
 import RequireRole from "@/core/components/RequireRole";
-import { ADMIN_ROUTE } from "@/core/constants";
+import { DEVELOPER_ROUTE } from "@/core/constants";
 
 const CreateDeveloperPage = () => {
   const router = useRouter();
@@ -109,4 +109,4 @@ const CreateDeveloperPage = () => {
   );
 };
 
-export default RequireRole(CreateDeveloperPage, ADMIN_ROUTE);
+export default RequireRole(CreateDeveloperPage, DEVELOPER_ROUTE);

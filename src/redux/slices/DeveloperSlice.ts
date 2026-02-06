@@ -78,7 +78,7 @@ export const fetchDevelopers = createAsyncThunk(
     }
 
     return null;
-  }
+  },
 );
 
 export const updateDeveloper = createAsyncThunk(
@@ -87,14 +87,14 @@ export const updateDeveloper = createAsyncThunk(
     try {
       const developer = await developerRepo.updateDeveloper(
         data.id,
-        data.enableIpRestriction
+        data.enableIpRestriction,
       );
       console.log("developer", developer);
       return developer;
     } catch (e: any) {
       return `Error updating developer ${generateErrorMessage(e)}`;
     }
-  }
+  },
 );
 
 export const fetchDevelopersNew = createAsyncThunk(
@@ -107,7 +107,7 @@ export const fetchDevelopersNew = createAsyncThunk(
     } catch (e: any) {
       return `Error fetching developers ${generateErrorMessage(e)}`;
     }
-  }
+  },
 );
 
 export const fetchDeveloper = createAsyncThunk(
@@ -127,7 +127,22 @@ export const fetchDeveloper = createAsyncThunk(
     }
 
     return null;
-  }
+  },
+);
+
+export const fetchDeveloperNew = createAsyncThunk(
+  "developer/fetchDeveloperNew",
+  async (id: string | null) => {
+    try {
+      if (id == null) {
+        return `Error fetching developer Invalid Id`;
+      }
+      const developer = await developerRepo.fetchDeveloper(id);
+      return developer;
+    } catch (e: any) {
+      return `Error fetching developer ${generateErrorMessage(e)}`;
+    }
+  },
 );
 
 export const fetchDeveloperWhitelistedIPs = createAsyncThunk(
@@ -140,7 +155,7 @@ export const fetchDeveloperWhitelistedIPs = createAsyncThunk(
         thunkApi.getState().developer.whitelistedIPsPagination.pageNumber ==
           -1 || data.refresh == true
           ? 0
-          : thunkApi.getState().developer.whitelistedIPsPagination.pageNumber
+          : thunkApi.getState().developer.whitelistedIPsPagination.pageNumber,
       );
       return {
         ips: ips.content,
@@ -150,7 +165,7 @@ export const fetchDeveloperWhitelistedIPs = createAsyncThunk(
     } catch (e: any) {
       return `Error fetching whitelisted IPs ${generateErrorMessage(e)}`;
     }
-  }
+  },
 );
 
 export const whitelistDeveloperIP = createAsyncThunk(
@@ -162,13 +177,13 @@ export const whitelistDeveloperIP = createAsyncThunk(
       }
       const developer = await developerRepo.whitelistDeveloperIP(
         data.id,
-        data.ip
+        data.ip,
       );
       return developer;
     } catch (e: any) {
       return `Error whitelisting IPs ${generateErrorMessage(e)}`;
     }
-  }
+  },
 );
 
 export const deleteWhitelistedDeveloperIP = createAsyncThunk(
@@ -180,7 +195,7 @@ export const deleteWhitelistedDeveloperIP = createAsyncThunk(
     } catch (e: any) {
       return `Error deleting whitelisted IP ${generateErrorMessage(e)}`;
     }
-  }
+  },
 );
 
 export const createDeveloper = createAsyncThunk(
@@ -196,7 +211,7 @@ export const createDeveloper = createAsyncThunk(
     }
 
     return null;
-  }
+  },
 );
 
 export const fetchTenetIdsListNew = createAsyncThunk(
@@ -208,7 +223,7 @@ export const fetchTenetIdsListNew = createAsyncThunk(
     } catch (e: any) {
       return `Error fetching developers ${generateErrorMessage(e)}`;
     }
-  }
+  },
 );
 
 export const fetchTenetIdsList = createAsyncThunk(
@@ -225,7 +240,7 @@ export const fetchTenetIdsList = createAsyncThunk(
     }
 
     return null;
-  }
+  },
 );
 
 export default DeveloperSlice;

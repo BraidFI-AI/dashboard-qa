@@ -50,12 +50,12 @@ export const ADMIN_SPECIFIC_FEATURE_MESSAGE =
 
 export const ADMIN_ROLE = "admin-admin";
 export const ADMIN_OPS_ROLE = "admin-ops";
-export const DEVELOPER_ROLE = "developer-developer";
-export const DEVELOPER_OPS_ROLE = "developer-ops";
-export const CUSTOMER_ROLE = "customers";
-export const ADMIN_READONLY_ROLE = "admin-readonly";
-export const DEVELOPER_READONLY_ROLE = "developer-readonly";
 export const ADMIN_COMPLIANCE_ROLE = "admin-compliance";
+export const ADMIN_READONLY_ROLE = "admin-readonly";
+export const CUSTOMER_ROLE = "customers";
+export const DEVELOPER_ROLE = "developer-admin";
+export const DEVELOPER_OPS_ROLE = "developer-ops";
+export const DEVELOPER_READONLY_ROLE = "developer-readonly";
 
 export const isDeveloper = (userType: string) => {
   return (
@@ -69,16 +69,22 @@ export const isAdmin = (userType: string) => {
   return (
     userType === ADMIN_ROLE ||
     userType === ADMIN_OPS_ROLE ||
-    userType === ADMIN_COMPLIANCE_ROLE
+    userType === ADMIN_COMPLIANCE_ROLE ||
+    ADMIN_READONLY_ROLE
   );
 };
 
-export const ADMIN_ROUTE = [ADMIN_ROLE, ADMIN_OPS_ROLE, ADMIN_COMPLIANCE_ROLE];
-export const DEVELOPER_ROUTE = [
-  DEVELOPER_ROLE,
-  DEVELOPER_OPS_ROLE,
+export const ADMIN_ROUTE = [
   ADMIN_ROLE,
   ADMIN_OPS_ROLE,
+  ADMIN_COMPLIANCE_ROLE,
+  ADMIN_READONLY_ROLE,
+];
+export const DEVELOPER_ROUTE = [
+  ...ADMIN_ROUTE,
+  DEVELOPER_ROLE,
+  DEVELOPER_OPS_ROLE,
+  DEVELOPER_READONLY_ROLE,
 ];
 export const CUSTOMER_ROUTE = [
   CUSTOMER_ROLE,
