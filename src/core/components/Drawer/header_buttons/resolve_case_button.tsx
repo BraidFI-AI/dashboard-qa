@@ -23,7 +23,7 @@ const ResolveCaseButton = () => {
   const dispatch = useAppDispatch();
 
   const c: "loading" | string | Case = useSelector(
-    (state: any) => state.cases.case
+    (state: any) => state.cases.case,
   );
 
   const [isResolved, setIsResolved] = useState(false);
@@ -74,8 +74,8 @@ const ResolveCaseButton = () => {
     setSubmitting(true);
 
     dispatch(resolveCase(data)).then((result) => {
-      if (typeof result === "string") {
-        enqueueSnackbar(result, { variant: "error", persist: true });
+      if (typeof result.payload === "string") {
+        enqueueSnackbar(result.payload, { variant: "error", persist: true });
       } else {
         enqueueSnackbar("Case resolved", { variant: "success" });
         handleModalClose();

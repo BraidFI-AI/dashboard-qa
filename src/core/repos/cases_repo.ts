@@ -12,7 +12,7 @@ class CasesRepo {
     const response = await this.apiClient.http<any>(
       Method.POST,
       `/cases/search?pageSize=${pageSize}&pageNumber=${pageNumber}`,
-      {}
+      {},
     );
     return response;
   }
@@ -20,7 +20,7 @@ class CasesRepo {
   public async fetchCase(id: string | number) {
     const response = await this.apiClient.http<Case>(
       Method.GET,
-      `/cases/${id}`
+      `/cases/${id}`,
     );
     return response;
   }
@@ -28,7 +28,7 @@ class CasesRepo {
   public async addCaseNote(id: string, note: string) {
     const response = await this.apiClient.http<any>(
       Method.PUT,
-      `/cases/${id}/add-note?note=${note}`
+      `/cases/${id}/add-note?note=${note}`,
     );
     return response;
   }
@@ -41,7 +41,11 @@ class CasesRepo {
   }) {
     const response = await this.apiClient.http<any>(
       Method.PUT,
-      `/cases/${data.caseId}/status?updateAttachedAlerts=${data.updateAttachedAlerts}&action=${data.action}&note=${data.note}`
+      `/cases/${data.caseId}/status?updateAttachedAlerts=${data.updateAttachedAlerts}`,
+      {
+        action: data.action,
+        note: data.note,
+      },
     );
     return response;
   }
@@ -55,7 +59,7 @@ class CasesRepo {
     const response = await this.apiClient.http<any>(
       Method.PUT,
       `/cases/${data.caseId}/create-document`,
-      { ...data, attributes: {} }
+      { ...data, attributes: {} },
     );
     return response;
   }
@@ -63,11 +67,11 @@ class CasesRepo {
   public async uploadCaseDocument(
     caseId: string,
     documentId: string,
-    file: any
+    file: any,
   ) {
     const data = await this.apiClient.uploadFile(
       `/cases/${caseId}/document/${documentId}/upload`,
-      file
+      file,
     );
 
     return data;
