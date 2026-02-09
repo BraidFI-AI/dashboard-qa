@@ -11,6 +11,7 @@ export interface Alert {
   alertDocuments: AlertDocument[] | null;
   assignedUsername?: string | null;
   additionalParam?: string | null;
+  monitoring?: boolean | null;
 }
 
 export interface Case {
@@ -759,6 +760,7 @@ export interface OFACSearch {
 }
 
 export interface CustomerSearch {
+  id?: string;
   name?: string;
   productName?: string;
   createdAtStart?: string;
@@ -899,28 +901,28 @@ export interface CreateForm {
 }
 
 export interface Counterparty {
-  id: number | null;
-  name: string | null;
-  type: string;
-  email: string | null;
-  phone: string | null;
-  createDate: number | null;
-  createdBy: string | null;
-  updateDate: number | null;
-  updatedBy: string | null;
-  createdAt: number | null;
-  updatedAt: number | null;
-  individualId: number | null;
-  businessId: number | null;
-  productId: number | null;
-  accountId: number | null;
-  accountNumber: string | null;
-  status: string | null;
+  id?: number | null;
+  name?: string | null;
+  type?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  createDate?: number | null;
+  createdBy?: string | null;
+  updateDate?: number | null;
+  updatedBy?: string | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+  individualId?: number | null;
+  businessId?: number | null;
+  productId?: number | null;
+  accountId?: number | null;
+  accountNumber?: string | null;
+  status?: string | null;
   blockedResults: CounterpartyBlockedResults[];
-  ach: CounterpartyACH;
-  wire: CounterpartyWire;
-  braid: CounterpartyBraid;
-  ofacId: number | null;
+  ach: CounterpartyACH | null;
+  wire: CounterpartyWire | null;
+  braid: CounterpartyBraid | null;
+  ofacId?: number | null;
   idNumber?: string | null;
   idType?: string | null;
   dateOfBirth?: number[] | null;
@@ -1152,6 +1154,7 @@ export interface SearchCounterparty {
   businessId?: string | null;
   individualId?: string | null;
   productId?: string | null;
+  name?: string | null;
 }
 
 export interface Developer {
@@ -1589,4 +1592,17 @@ export interface VelocityLimitFilters {
   action?: string;
   transactionType?: string;
   transactionGroup?: string;
+}
+
+export interface ReconAudit {
+  filename: "csv7201524062450840527.csv";
+  type: "FED_WIRE_CONFIRMATION_CSV";
+  status: "PROCESSED";
+  requesterUsername: "testadminadmin";
+  totalRecords: 0;
+  matchedRecords: 0;
+  exceptionRecords: 0;
+  skippedRecords: 0;
+  invalidRecords: 0;
+  uploadedAt: 1746326250.181582;
 }

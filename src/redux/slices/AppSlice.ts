@@ -32,6 +32,7 @@ export type TransactionTypesType = "loading" | string | string[];
 interface AppState {
   loading: boolean;
   title: string;
+  showAppBar: boolean;
   userType: string | null;
   username: string | null;
   tenantId?: string | null;
@@ -42,6 +43,7 @@ interface AppState {
 }
 
 const initialState: AppState = {
+  showAppBar: true,
   loading: true,
   title: "",
   userType: null,
@@ -77,6 +79,9 @@ const AppSlice = createSlice({
     },
     unsetLoading(state) {
       state.loading = false;
+    },
+    setShowAppBar(state, action) {
+      state.showAppBar = action.payload;
     },
     setDrawerOpen(state) {
       state.drawerOpen = true;
@@ -179,6 +184,7 @@ export const {
   setInitialState,
   setLoading,
   unsetLoading,
+  setShowAppBar,
   setDrawerOpen,
   setDrawerClosed,
 } = AppSlice.actions;

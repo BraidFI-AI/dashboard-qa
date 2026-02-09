@@ -72,7 +72,7 @@ const BusinessDetails = () => {
   };
 
   return (
-    <>
+    <div className="pt-6">
       {cipStatus == "loading" ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -205,7 +205,7 @@ const BusinessDetails = () => {
           })}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

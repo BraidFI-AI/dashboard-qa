@@ -1,7 +1,7 @@
 import ApiClient from "@/core/api/ApiClient";
 import { ACH, Statement } from "@/core/api/ApiTypes";
 import StatementRepo from "@/core/repos/statement_repo";
-import { momentToUTCString } from "@/core/utils/date_time_util";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
 import { generateErrorMessage } from "@/core/utils/exception_utils";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
@@ -61,8 +61,8 @@ export const fetchRootStatement = createAsyncThunk(
   async (data: { start: string; end: string }, thunkApi: any) => {
     try {
       const response = await statementRepo.fetchRootStatement(
-        momentToUTCString(moment(data.start), true),
-        momentToUTCString(moment(data.end), false)
+        momentToTimeZoneString(moment(data.start), true),
+        momentToTimeZoneString(moment(data.end), false)
       );
       return response;
     } catch (e: any) {
@@ -79,8 +79,8 @@ export const fetchProgramStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchProgramStatement(
-        momentToUTCString(moment(data.start), true),
-        momentToUTCString(moment(data.end), false),
+        momentToTimeZoneString(moment(data.start), true),
+        momentToTimeZoneString(moment(data.end), false),
         data.programId
       );
       return response;
@@ -98,8 +98,8 @@ export const fetchProductStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchProductStatement(
-        momentToUTCString(moment(data.start), true),
-        momentToUTCString(moment(data.end), false),
+        momentToTimeZoneString(moment(data.start), true),
+        momentToTimeZoneString(moment(data.end), false),
         data.productId
       );
       return response;
@@ -117,8 +117,8 @@ export const fetchAccountStatement = createAsyncThunk(
   ) => {
     try {
       const response = await statementRepo.fetchAccountStatement(
-        momentToUTCString(moment(data.start), true),
-        momentToUTCString(moment(data.end), false),
+        momentToTimeZoneString(moment(data.start), true),
+        momentToTimeZoneString(moment(data.end), false),
         data.accountId
       );
       return {

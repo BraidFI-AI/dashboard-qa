@@ -15,6 +15,7 @@ import "@aws-amplify/ui-react/styles.css";
 import amplifyConfiguration from "../../amplifyconfiguration.json";
 import AuthProvider from "./AuthProvider";
 import DataProviders from "./DataProviders";
+import QueryProvider from "./QueryProvider";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import PersistentDrawerLeft from "../components/Drawer/MyDrawerv2";
@@ -32,13 +33,13 @@ interface ProvidersProps {
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   LicenseInfo.setLicenseKey(
-    "79c6ff80a9eed9ffc5824ac6cfbd7f5eTz05NTY4NyxFPTE3NTQ1NzY1MTEwMDAsUz1wcm8sTE09c3Vic2NyaXB0aW9uLFBWPWluaXRpYWwsS1Y9Mg=="
+    "916c78b7a12abd957ef38151ef35a926Tz0xMjI3MTYsRT0xNzk2NDI4Nzk5MDAwLFM9cHJvLExNPXN1YnNjcmlwdGlvbixQVj1pbml0aWFsLEtWPTI="
   );
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  Amplify.configure(amplifyConfiguration);
+  Amplify.configure(amplifyConfiguration as any);
   cognitoUserPoolsTokenProvider.setKeyValueStorage(sessionStorage);
 
   useEffect(() => {
@@ -77,35 +78,39 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
               // },
             }}
           >
-            <Provider store={store}>
-              <TimezoneProvider>
-                <DataProviders>
-                  <AuthProvider>
-                    <SnackbarProvider
-                      hideIconVariant
-                      maxSnack={7}
-                      autoHideDuration={2000}
-                      action={(snackbarId) => (
-                        <IconButton
-                          className="text-white"
-                          onClick={() => closeSnackbar(snackbarId)}
-                        >
-                          <CloseRoundedIcon />
-                        </IconButton>
-                      )}
-                    >
-                      {/* <AuthProvider> */}
-                      {pathname === "/login" ? (
-                        children
-                      ) : (
-                        <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
-                      )}
-                      {/* </AuthProvider> */}
-                    </SnackbarProvider>
-                  </AuthProvider>
-                </DataProviders>
-              </TimezoneProvider>
-            </Provider>
+            <QueryProvider>
+              <Provider store={store}>
+                <TimezoneProvider>
+                  <DataProviders>
+                    <AuthProvider>
+                      <SnackbarProvider
+                        hideIconVariant
+                        maxSnack={7}
+                        autoHideDuration={2000}
+                        action={(snackbarId) => (
+                          <IconButton
+                            className="text-white"
+                            onClick={() => closeSnackbar(snackbarId)}
+                          >
+                            <CloseRoundedIcon />
+                          </IconButton>
+                        )}
+                      >
+                        {/* <AuthProvider> */}
+                        {pathname === "/login" ? (
+                          children
+                        ) : (
+                          <PersistentDrawerLeft>
+                            {children}
+                          </PersistentDrawerLeft>
+                        )}
+                        {/* </AuthProvider> */}
+                      </SnackbarProvider>
+                    </AuthProvider>
+                  </DataProviders>
+                </TimezoneProvider>
+              </Provider>
+            </QueryProvider>
           </Authenticator>
         </div>
       </CDNProvider>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import MyModal from "../../../../../core/components/my_modal";
 import MyText from "../../../../../core/components/Text/Text";
 import MyControlledTextField from "../../../../../core/components/TextField/MyControlledTextField";
+import MyControlledAutocomplete from "../../../../../core/components/Autocomplete/MyControlledAutocomplete";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { addAlertNote } from "@/redux/slices/alerts_slice";
 import { enqueueSnackbar } from "notistack";
@@ -32,16 +33,21 @@ const AddAlertNoteButton: React.FC<AddAlertNoteButtonProps> = ({ alert }) => {
     formState: { errors, submitCount, isSubmitted, isValid },
     control,
     handleSubmit,
-  } = useForm<{ note: string }>();
-  const onSubmit: SubmitHandler<{ note: string }> = (data: {
+  } = useForm<{ note: string; type: string }>();
+  const onSubmit: SubmitHandler<{ note: string; type: string }> = (data: {
     note: string;
+    type: string;
   }) => {
     if (typeof alert == "string") return;
     console.log("data:", data);
     setSubmitting(true);
 
     dispatch(
-      addAlertNote({ id: alert.id?.toString() ?? "", note: data.note })
+      addAlertNote({
+        id: alert.id?.toString() ?? "",
+        note: data.note,
+        type: data.type,
+      })
     ).then((result) => {
       if (typeof result.payload == "string") {
         enqueueSnackbar(result.payload, { variant: "error", persist: true });
@@ -67,12 +73,27 @@ const AddAlertNoteButton: React.FC<AddAlertNoteButtonProps> = ({ alert }) => {
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
-        height="270px"
+        height="450px"
       >
         <MyText size="lg">Add Note</MyText>
         <div className="pb-6" />
+        <MyText>Note Type</MyText>
+        <MyControlledAutocomplete
+          name={"type"}
+          displayName={"Note Type"}
+          control={control}
+          errors={errors}
+          options={["INTERNAL", "RFI"]}
+          rules={{
+            required: true,
+          }}
+          value="INTERNAL"
+          clearable={false}
+        />
+        <div className="pb-4" />
         <MyText>Note</MyText>
         <MyControlledTextField
+          multiline
           name={"note"}
           displayName={"Note"}
           control={control}

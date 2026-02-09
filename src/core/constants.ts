@@ -43,7 +43,7 @@ export const SCROLLBAR_STYLE =
 
 export const paginationPageSize = 100;
 export const pageSizeOptionsType = 100 | 200 | 500;
-export const pageSizeOptions = [100, 200, 500];
+export const pageSizeOptions = [10, 50, 100, 200, 500];
 
 export const ADMIN_SPECIFIC_FEATURE_MESSAGE =
   "This feature is only available for Bank";
@@ -66,7 +66,6 @@ export const isDeveloper = (userType: string) => {
 };
 
 export const isAdmin = (userType: string) => {
-
   return (
     userType === ADMIN_ROLE ||
     userType === ADMIN_OPS_ROLE ||
@@ -218,6 +217,9 @@ export function mapBusinessTypeToString(value: string) {
 }
 
 export const UnauthorisedReturnCodes = ["R05", "R07", "R10", "R11", "R29"];
+
+export const gridStyle =
+  "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full";
 
 export const boxStyle = "border-[#F4F5F7] border-[1px] shadow-sm";
 

@@ -5,7 +5,11 @@ import { useParams } from "next/navigation";
 
 const RulesPage = () => {
   const params = useParams();
-  return <RulesIdView id={(params.ruleId as string) || "0"} />;
+  return (
+    <div className="pt-6">
+      <RulesIdView id={(params.ruleId as string) || "0"} />
+    </div>
+  );
 };
 
 export default RulesPage;

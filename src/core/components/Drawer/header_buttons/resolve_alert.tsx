@@ -49,6 +49,18 @@ const ResolveAlertButton = () => {
     "DECLINE",
   ]);
 
+  // Update resolve options based on monitoring status
+  useEffect(() => {
+    if (typeof alert != "string") {
+      const baseOptions = ["APPROVE", "DECLINE"];
+      if (alert.monitoring) {
+        setResolveOptions([...baseOptions, "CLOSE"]);
+      } else {
+        setResolveOptions(baseOptions);
+      }
+    }
+  }, [alert]);
+
   const achReturnCodes: "loading" | string | string[] = useSelector(
     (state: any) => state.app.achReturnCodes
   );
@@ -112,7 +124,7 @@ const ResolveAlertButton = () => {
       if (
         data.action == "DECLINE" &&
         (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
-          (alert.type == "TRANSACTION_MONITORING" &&
+          ((alert.type == "TRANSACTION_MONITORING" || alert.type == "OFAC") &&
             (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
               alert.description?.includes("ACH_RECEIVER_DEBIT"))))
       ) {
@@ -123,7 +135,16 @@ const ResolveAlertButton = () => {
         data.action == "APPROVE" &&
         alert.contextType == "FILE_RECORD" &&
         (alert.additionalParam == "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
-          alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+          alert.additionalParam == "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
+          alert.additionalParam ==
+            "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE" ||
+          alert.additionalParam == "INBOUND_ACH_INCORRECT_ACCOUNT_NUMBER" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_ACCOUNT" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_CUSTOMER" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_PRODUCT" ||
+          alert.additionalParam == "INBOUND_ACH_INACTIVE_PROGRAM" ||
+          alert.additionalParam == "INBOUND_ACH_INSUFFICIENT_FUNDS" ||
+          alert.additionalParam == "INBOUND_ACH_GENERIC_ERROR")
       ) {
         dispatch(
           updateWireFileRecord({
@@ -177,23 +198,35 @@ const ResolveAlertButton = () => {
               setOfacHit(data.payload);
               if (typeof data.payload != "string") {
                 if (alert.additionalParam == "ENTITY") {
-                  setResolveOptions([
+                  const baseOptions = [
                     "APPROVE",
                     "APPROVE_AND_WHITELIST",
                     "DECLINE",
-                  ]);
+                  ];
+                  if (alert.monitoring) {
+                    setResolveOptions([...baseOptions, "CLOSE"]);
+                  } else {
+                    setResolveOptions(baseOptions);
+                  }
                 }
               }
             }
           );
         } else {
           setOfacHit(null);
+          // For non-OFAC alerts, ensure resolve options are set based on monitoring status
+          const baseOptions = ["APPROVE", "DECLINE"];
+          if (alert.monitoring) {
+            setResolveOptions([...baseOptions, "CLOSE"]);
+          } else {
+            setResolveOptions(baseOptions);
+          }
         }
       } else {
         setIsOpen(false);
       }
     }
-  }, [alert]);
+  }, [alert, dispatch]);
 
   return isOpen == false ? (
     <></>
@@ -213,7 +246,7 @@ const ResolveAlertButton = () => {
       <MyModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
-        height="430px"
+        height="380px"
       >
         {ofacHit == "loading" ? (
           <MyCircularProgressIndicator />
@@ -227,11 +260,16 @@ const ResolveAlertButton = () => {
                   setOfacHit(data.payload);
                   if (typeof data.payload != "string") {
                     if (alert.additionalParam == "ENTITY") {
-                      setResolveOptions([
+                      const baseOptions = [
                         "APPROVE",
                         "APPROVE_AND_WHITELIST",
                         "DECLINE",
-                      ]);
+                      ];
+                      if (alert.monitoring) {
+                        setResolveOptions([...baseOptions, "CLOSE"]);
+                      } else {
+                        setResolveOptions(baseOptions);
+                      }
                     }
                   }
                 }
@@ -265,7 +303,17 @@ const ResolveAlertButton = () => {
               (alert.additionalParam ==
                 "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
                 alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE")
+                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE" ||
+                alert.additionalParam ==
+                  "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER_IN_FINANCIAL_INSTITUTION_CREDIT_TRANSFER_MESSAGE" ||
+                alert.additionalParam ==
+                  "INBOUND_ACH_INCORRECT_ACCOUNT_NUMBER" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_ACCOUNT" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_CUSTOMER" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_PRODUCT" ||
+                alert.additionalParam == "INBOUND_ACH_INACTIVE_PROGRAM" ||
+                alert.additionalParam == "INBOUND_ACH_INSUFFICIENT_FUNDS" ||
+                alert.additionalParam == "INBOUND_ACH_GENERIC_ERROR")
                 ? "Correct Account Number"
                 : "Note"}
             </MyText>
@@ -281,7 +329,8 @@ const ResolveAlertButton = () => {
             />
             {action == "DECLINE" &&
               (alert.contextType == "ACH_INBOUND_TRANSACTION" ||
-                (alert.type == "TRANSACTION_MONITORING" &&
+                ((alert.type == "TRANSACTION_MONITORING" ||
+                  alert.type == "OFAC") &&
                   (alert.description?.includes("ACH_RECEIVER_CREDIT") ||
                     alert.description?.includes("ACH_RECEIVER_DEBIT")))) && (
                 <>
@@ -313,27 +362,7 @@ const ResolveAlertButton = () => {
                   )}
                 </>
               )}
-            {action != "DECLINE" &&
-              alert.contextType == "FILE_RECORD" &&
-              (alert.additionalParam ==
-                "INBOUND_WIRE_INCORRECT_ACCOUNT_NUMBER" ||
-                alert.additionalParam ==
-                  "INBOUND_WIRE_INCORRECT_BENEFICIARY_CODE") && (
-                <>
-                  <div className="h-4" />
-                  <MyText>Correct Beneficiary Code</MyText>
-                  <MyControlledTextField
-                    name={"note2"}
-                    displayName={"Note"}
-                    control={control}
-                    errors={errors}
-                    rules={{
-                      required: true,
-                    }}
-                    value={getValues("note2")}
-                  />
-                </>
-              )}
+
             <div className="pb-8" />
             <div className="w-fit">
               <MyBlueButton

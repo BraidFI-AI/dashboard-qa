@@ -51,13 +51,7 @@ const CounterpartyPage = () => {
   }, [dispatch, params.id]);
 
   return (
-    <Box className="flex flex-col h-full">
-      <Box className="w-fit">
-        <Link href={"counterparties/create"}>
-          <MyBlueButton>Create Counterparty</MyBlueButton>
-        </Link>
-      </Box>
-      <Box className="pb-4"></Box>
+    <Box className="pt-6">
       {counterparties == "loading" ? (
         <MyCircularProgressIndicator />
       ) : typeof counterparties == "string" ? (
@@ -87,16 +81,18 @@ const CounterpartyPage = () => {
           }}
         />
       ) : (
-        <CounterpartyTableView
-          counterparties={counterparties}
-          fetchData={fetchIndividualCounterparties({
-            id: (params.id as string) || "0",
-          })}
-          setPageNumber={(page: number) => {
-            dispatch(setIndividualCounterpartyPaginationPageNumber(page));
-          }}
-          pagination={pagination}
-        ></CounterpartyTableView>
+        <div style={{ height: "78vh" }}>
+          <CounterpartyTableView
+            counterparties={counterparties}
+            fetchData={fetchIndividualCounterparties({
+              id: (params.id as string) || "0",
+            })}
+            setPageNumber={(page: number) => {
+              dispatch(setIndividualCounterpartyPaginationPageNumber(page));
+            }}
+            pagination={pagination}
+          />
+        </div>
       )}
     </Box>
   );

@@ -16,7 +16,7 @@ interface MyControlledMultiAutocompleteProps {
   options: any;
   rules: any;
   customOnChange?: any;
-  value: string[];
+  value?: string[];
   clearable?: boolean;
   disabled?: boolean;
 }
@@ -50,23 +50,23 @@ const MyControlledMultiAutocomplete: React.FC<
 }) => {
   return (
     <Controller
-      name={name}
+      name={name as any}
       control={control}
       rules={rules}
-      defaultValue={val}
+      defaultValue={val || ([] as any)}
       render={({ field: { onChange, value } }) => (
         <Autocomplete
           multiple={true}
           sx={{ "& fieldset": { borderRadius: "5px" } }}
           onChange={(event: any, item) => {
-            onChange(item || null);
+            onChange(item || []);
             if (customOnChange) {
               customOnChange(item, event.target.dataset.optionIndex);
             }
           }}
           disabled={disabled}
           disableClearable={!clearable}
-          value={value || null}
+          value={Array.isArray(value) ? value : []}
           options={options}
           fullWidth
           autoHighlight

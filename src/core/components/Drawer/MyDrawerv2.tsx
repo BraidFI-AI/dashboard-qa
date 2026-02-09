@@ -75,6 +75,8 @@ import CallMergeIcon from "@mui/icons-material/CallMerge";
 import SmsFailedIcon from "@mui/icons-material/SmsFailed";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
+import { momentToTimeZoneString } from "@/core/utils/date_time_util";
+import moment from "moment";
 
 const drawerWidth = 310;
 const closedDrawerWidth = 80;
@@ -168,6 +170,8 @@ export default function PersistentDrawerLeft(props: any) {
   console.log("userType", userType);
 
   const openAlerts = useSelector((state: any) => state.alerts.openAlerts);
+
+  const showAppBar = useSelector((state: any) => state.app.showAppBar);
 
   const [open, setOpen] = React.useState(true);
   const title: string = useSelector((state: any) => state.app.title);
@@ -334,7 +338,10 @@ export default function PersistentDrawerLeft(props: any) {
       iconFocused: (
         <AccountBalanceOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
       ),
-      path: "/ach/settlement",
+      path: `/ach/settlement?startDate=${momentToTimeZoneString(
+        moment().subtract(1, "day"),
+        true
+      )}&endDate=${momentToTimeZoneString(moment(), false)}`,
     });
   }
 
@@ -475,27 +482,29 @@ export default function PersistentDrawerLeft(props: any) {
   }
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        open={open}
-        // color="inherit"
-        style={{ backgroundColor: "#FFFFFF" }}
-        className="h-[80px] shadow-none flex flex-row items-center"
-      >
-        <Toolbar className="flex flex-row justify-between items-center w-full">
-          <div className="flex flex-row items-center">
-            <div className="w-[5px] h-[40px] bg-[#12A7FF] mr-[10px]" />
-            <MyText variant="title" size="smd">
-              {title}
-            </MyText>
-          </div>
-          <div className="">
-            <DrawerHeaderButtons />
-          </div>
-        </Toolbar>
-      </AppBar>
+      {showAppBar && (
+        <AppBar
+          position="fixed"
+          open={open}
+          // color="inherit"
+          style={{ backgroundColor: "#FFFFFF" }}
+          className="h-[80px] shadow-none flex flex-row items-center"
+        >
+          <Toolbar className="flex flex-row justify-between items-center w-full">
+            <div className="flex flex-row items-center">
+              <div className="w-[5px] h-[40px] bg-[#12A7FF] mr-[10px]" />
+              <MyText variant="title" size="smd">
+                {title}
+              </MyText>
+            </div>
+            <div className="">
+              <DrawerHeaderButtons />
+            </div>
+          </Toolbar>
+        </AppBar>
+      )}
       <Drawer variant="permanent" open={open}>
         <div
           className={`h-full flex flex-col justify-between overflow-y-auto overflow-hidden scrollbar scrollbar-thumb-[#12A7FF] scrollbar-thumb-rounded-full scrollbar-track-[#F4F5F7]`}
@@ -731,14 +740,15 @@ export default function PersistentDrawerLeft(props: any) {
         }
         sx={{
           flexGrow: 1,
-          p: 3,
-          height: "calc(100vh - 50px)",
+          p: showAppBar ? 3 : 0,
+          height: showAppBar ? "calc(100vh - 1px)" : "100vh",
+          overflowY: "auto",
           width: open
             ? `calc(100vw - ${drawerWidth}px)`
             : `calc(100vw - ${closedDrawerWidth}px)`,
         }}
       >
-        <DrawerHeader />
+        {showAppBar && <DrawerHeader />}
         {props.children}
       </Box>
     </Box>

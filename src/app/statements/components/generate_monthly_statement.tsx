@@ -1,6 +1,5 @@
 import { Account, Product, Program, Statement } from "@/core/api/ApiTypes";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
-import MyTextButton from "@/core/components/Button/MyTextButton";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ClientLogo from "@/core/components/client_logo";
 import ErrorPage from "@/core/components/error_page";
@@ -12,6 +11,7 @@ import { fetchAccount } from "@/redux/slices/AccountSlice";
 import { fetchProductNew } from "@/redux/slices/ProductSlice";
 import { fetchProgramV2 } from "@/redux/slices/ProgramSlice";
 import { useAppDispatch } from "@/redux/store/store";
+import { Button } from "braid-ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -25,9 +25,14 @@ const formatDate = (dateString: string | undefined) => {
   });
 };
 
-export default function GenerateStatement() {
+export default function GenerateStatement({
+  showPrintModal,
+  setShowPrintModal,
+}: {
+  showPrintModal: boolean;
+  setShowPrintModal: (show: boolean) => void;
+}) {
   const dispatch = useAppDispatch();
-  const [showModal, setShowModal] = useState(false);
 
   const statementData: Statement = useSelector(
     (state: any) => state.statement.statement
@@ -345,11 +350,11 @@ export default function GenerateStatement() {
     };
   };
 
-  if (!showModal) {
+  if (!showPrintModal) {
     return (
       <div className="p-8">
         <div className="wi-fit">
-          <MyBlueButton onClick={() => setShowModal(true)}>
+          <MyBlueButton onClick={() => setShowPrintModal(true)}>
             Download Statement
           </MyBlueButton>
         </div>
@@ -359,8 +364,8 @@ export default function GenerateStatement() {
 
   return (
     <MyModal
-      modalOpen={showModal}
-      handleModalClose={() => setShowModal(false)}
+      modalOpen={showPrintModal}
+      handleModalClose={() => setShowPrintModal(false)}
       width="800px"
       height="700px"
     >
@@ -380,11 +385,16 @@ export default function GenerateStatement() {
         />
       ) : (
         <>
-          <div className="flex flex-row justify-end mb-6 no-print w-full">
-            <MyTextButton onClick={() => setShowModal(false)}>
-              Close
-            </MyTextButton>
-            <div className="w-32 pl-2">
+          <div className="flex flex-row justify-end mb-6 no-print w-full gap-2">
+            <div className="w-fit">
+              <MyBlueButton
+                // variant="outline"
+                onClick={() => setShowPrintModal(false)}
+              >
+                Close
+              </MyBlueButton>
+            </div>
+            <div className="w-fit">
               <MyBlueButton onClick={printContent}>Print</MyBlueButton>
             </div>
           </div>
@@ -432,8 +442,8 @@ export default function GenerateStatement() {
             </div>
             <div className="h-10" />
             <div
-              className="flex justify-between"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              className="flex"
+              style={{ maxWidth: "650px", margin: "0 auto", gap: "20px" }}
             >
               <div style={{ width: "250px" }}>
                 {statementType != "ROOT" && (
@@ -461,13 +471,16 @@ export default function GenerateStatement() {
                     <MyText>{(account as any)?.customerName ?? ""}</MyText>
                   )}
               </div>
-              <div style={{ width: "250px" }} className="text-right">
+              <div style={{ width: "200px" }} className="text-right">
                 {statementType == "ACCOUNT" && accountNumber && (
                   <>
                     <MyText weight="bold">Account Number</MyText>
                     <MyText>{accountNumber}</MyText>
                   </>
                 )}
+              </div>
+              <div style={{ width: "160px" }} className="text-center">
+                {/* Empty column for alignment */}
               </div>
             </div>
             {statementType != "ROOT" && <div className="h-6" />}
@@ -476,8 +489,8 @@ export default function GenerateStatement() {
             </div>
             <div className="w-full h-[1px] bg-gray-300 mt-1 mb-2"></div>
             <div
-              className="flex justify-between mb-6"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              className="flex mb-6"
+              style={{ maxWidth: "650px", margin: "0 auto", gap: "20px" }}
             >
               <div style={{ width: "250px" }}>
                 <MyText weight="bold">{`Balance on ${formatDate(
@@ -494,7 +507,7 @@ export default function GenerateStatement() {
                   )}
                 </div>
               </div>
-              <div style={{ width: "250px" }} className="text-right">
+              <div style={{ width: "200px" }} className="text-right">
                 <MyText weight="bold">
                   {toDollarFormat(statementData.startingBalance)}
                 </MyText>
@@ -509,20 +522,39 @@ export default function GenerateStatement() {
                   )
                 )}
               </div>
+              <div style={{ width: "160px" }} className="text-center">
+                <MyText weight="bold">Transaction Count</MyText>
+                <div className="h-1" />
+                {statementData.transactionSummary.map(
+                  (item: any, index: any) => (
+                    <div key={index}>
+                      <MyText>{item.count || 0}</MyText>
+                    </div>
+                  )
+                )}
+              </div>
             </div>
             <div className="w-full h-[1px] bg-gray-300 mt-1 mb-2"></div>
             <div
-              className="flex justify-between mb-6"
-              style={{ maxWidth: "600px", margin: "0 auto" }}
+              className="flex mb-6"
+              style={{ maxWidth: "650px", margin: "0 auto", gap: "20px" }}
             >
               <div style={{ width: "250px" }}>
                 <MyText weight="bold">{`Balance on ${formatDate(
                   statementData.ending
                 )}`}</MyText>
               </div>
-              <div style={{ width: "250px" }} className="text-right">
+              <div style={{ width: "200px" }} className="text-right">
                 <MyText weight="bold">
                   {toDollarFormat(statementData.endingBalance)}
+                </MyText>
+              </div>
+              <div style={{ width: "160px" }} className="text-center">
+                <MyText weight="bold">
+                  {statementData.transactionSummary.reduce(
+                    (total: number, item: any) => total + (item.count || 0),
+                    0
+                  )}
                 </MyText>
               </div>
             </div>

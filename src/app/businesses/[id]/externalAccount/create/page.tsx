@@ -47,7 +47,7 @@ const CreateExternalAccountPage = () => {
   };
 
   return (
-    <div className="w-[350px]">
+    <div className="pt-6 w-[350px]">
       <MyText size="lg">Add Payment Instrument</MyText>
       <div className="h-4"></div>
       <MyText>Account number</MyText>

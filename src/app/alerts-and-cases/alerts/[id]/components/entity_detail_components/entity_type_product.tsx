@@ -20,7 +20,9 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
 }) => {
   const userType = useSelector((state: any) => state.app.userType);
 
-  return (
+  return context == null ? (
+    <></>
+  ) : (
     <div
       className={`flex flex-col min-w-[700px] min-h-fit rounded-[10px] justify-center items-start ${boxStyle}`}
     >
@@ -88,8 +90,8 @@ const EntityTypeProductComponent: React.FC<EntityTypeProductComponentProps> = ({
                 <ItemRowHorizontal
                   title="Interest Rate"
                   value={`${
-                    ((context as any)?.interestRate as number)?.toFixed(4) ??
-                    "0.0000"
+                    ((context as any)?.interestRate as number)?.toFixed(6) ??
+                    "0.000000"
                   }%`}
                 />
                 <div className="h-3" />

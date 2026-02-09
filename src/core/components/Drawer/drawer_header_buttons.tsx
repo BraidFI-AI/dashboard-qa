@@ -31,6 +31,8 @@ import {
   ADMIN_ROLE,
 } from "@/core/constants";
 import CreateFeeView from "../views/fees/CreateFeeView";
+import CreateCounterparty from "./header_buttons/create_counterparty";
+import CreateWirePayment from "./header_buttons/create_wire_payment";
 
 const DrawerHeaderButtons = () => {
   const pathname = usePathname();
@@ -123,11 +125,6 @@ const DrawerHeaderButtons = () => {
         entityId={params.id as string}
       />
     )) ||
-    (pathname == "/statements" &&
-      typeof statementData != "string" &&
-      (userType == ADMIN_ROLE ||
-        userType == ADMIN_OPS_ROLE ||
-        userType == ADMIN_READONLY_ROLE) && <GenerateStatement />) ||
     (pathname.includes("/fees") && pathname.includes("account") && (
       <CreateFeeView level="ACCOUNT" ids={[params.id as string]} />
     )) ||
@@ -150,7 +147,9 @@ const DrawerHeaderButtons = () => {
     )) ||
     (pathname.includes("/fees") && pathname.includes("business") && (
       <CreateFeeView level="ACCOUNT" ids={[]} disabled={false} />
-    ))
+    )) ||
+    (pathname.endsWith("/counterparties") && <CreateCounterparty />) ||
+    (pathname.includes("/accounts/") && <CreateWirePayment />)
   );
 };
 

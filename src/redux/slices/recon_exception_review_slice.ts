@@ -102,8 +102,8 @@ export const fetchTransactionsPaginated = createAsyncThunk(
   async (
     data: {
       refresh: boolean;
-      beginDate: Moment;
-      endDate: Moment;
+      beginDate: string;
+      endDate: string;
       transactionType: "ACH" | "WIRE";
     },
     thunkApi: any
@@ -120,8 +120,8 @@ export const fetchTransactionsPaginated = createAsyncThunk(
             ? 0
             : thunkApi.getState().reconExceptionReview.transactionsPagination
                 .pageNumber,
-          momentToTimeZoneString(data.beginDate, true),
-          momentToTimeZoneString(data.endDate, false),
+          momentToTimeZoneString(moment(data.beginDate), true),
+          momentToTimeZoneString(moment(data.endDate), false),
           data.transactionType
         );
       console.log("transactions", transactions);
@@ -142,8 +142,8 @@ export const fetchSettlementsPaginated = createAsyncThunk(
   async (
     data: {
       refresh: boolean;
-      beginDate: Moment;
-      endDate: Moment;
+      beginDate: string;
+      endDate: string;
       transactionType: "ACH" | "WIRE";
     },
     thunkApi: any
@@ -160,8 +160,8 @@ export const fetchSettlementsPaginated = createAsyncThunk(
             ? 0
             : thunkApi.getState().reconExceptionReview.settlementsPagination
                 .pageNumber,
-          momentToTimeZoneString(data.beginDate, true),
-          momentToTimeZoneString(data.endDate, false),
+          momentToTimeZoneString(moment(data.beginDate), true),
+          momentToTimeZoneString(moment(data.endDate), false),
           data.transactionType
         );
       console.log("settlements", transactions);

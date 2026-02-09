@@ -1,45 +1,40 @@
 "use client";
 
-import { WireTransactionStatus } from "@/core/api/ApiTypes";
 import MyCircularProgressIndicator from "@/core/components/circular_progress_indicator";
 import ErrorPage from "@/core/components/error_page";
 import MyTable from "@/core/components/Table/MyTable";
-import { paginationPageSize, PaginationStateType } from "@/core/constants";
+import { pageSizeOptions } from "@/core/constants";
 import { timestampToDate } from "@/core/utils/date_time_util";
 import { setTitle } from "@/redux/slices/AppSlice";
-import {
-  fetchWireTransactionStatus,
-  setFileStatusPageNumber,
-} from "@/redux/slices/wire_processing_slice";
 import { useAppDispatch } from "@/redux/store/store";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { usePagination } from "@/core/hooks";
+import { useWireTransactionStatus } from "@/features/wire_processing";
 
 const WireTransactionStatusPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const transactions: "loading" | string | WireTransactionStatus[] =
-    useSelector((state: any) => state.wireProcessing.transactionsStatus);
+  // Pagination (universal hook with URL sync)
+  const pagination = usePagination({ syncToUrl: true, defaultPageSize: 10 });
 
-  const pagination: PaginationStateType = useSelector(
-    (state: any) => state.wireProcessing.fileStatusPagination
-  );
+  // React Query hook for fetching wire transaction status
+  const { data, isLoading, isError, error, isFetching, refetch } =
+    useWireTransactionStatus(pagination.page, pagination.pageSize);
 
   useEffect(() => {
     dispatch(setTitle("Transactions Status"));
-    dispatch(fetchWireTransactionStatus({ refresh: true }));
-  }, []);
+  }, [dispatch]);
 
-  return transactions == "loading" ? (
+  return isLoading ? (
     <MyCircularProgressIndicator />
-  ) : typeof transactions == "string" ? (
+  ) : isError ? (
     <ErrorPage
-      error={transactions}
+      error={error?.message ?? "Error fetching transactions status"}
       recoveryButtonTitle="Retry"
       recoveryButtonOnClick={() => {
-        dispatch(fetchWireTransactionStatus({ refresh: true }));
+        refetch();
       }}
     />
   ) : (
@@ -51,18 +46,11 @@ const WireTransactionStatusPage = () => {
           );
         }}
         customId={(row: any) => row.id}
-        pagination={{
-          rowCount: pagination.rowCount,
-          loading: pagination.loadingPage,
-          paginationModel: {
-            page: pagination.pageNumber,
-            pageSize: paginationPageSize,
-          },
-          setPaginationModel: (page: number) => {
-            dispatch(setFileStatusPageNumber(page));
-            dispatch(fetchWireTransactionStatus({ refresh: false }));
-          },
-        }}
+        pagination={pagination.getTablePaginationProps(
+          data?.totalElements ?? 0,
+          isFetching
+        )}
+        sizeOptions={pageSizeOptions}
         columns={[
           {
             field: "baseFilename",
@@ -111,7 +99,7 @@ const WireTransactionStatusPage = () => {
             minWidth: 120,
           },
         ]}
-        rows={transactions}
+        rows={data?.content ?? []}
         sortModel={[{ field: "createdAt", sort: "desc" }]}
       />
     </div>

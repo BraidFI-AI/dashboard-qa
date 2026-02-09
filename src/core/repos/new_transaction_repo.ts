@@ -29,7 +29,7 @@ class NewTransactionRepo {
   }) {
     return await this.apiClient.http<any>(
       Method.POST,
-      data.direction == "CREDIT"
+      data.direction.toLowerCase() == "credit"
         ? `/transaction/adjustment/credit`
         : `/transaction/adjustment/debit`,
       {
@@ -37,6 +37,27 @@ class NewTransactionRepo {
         amount: data.amount,
         subType: data.subType,
         description: data.description,
+      }
+    );
+  }
+
+  public async createWireTransaction(data: {
+    amount: number;
+    description: string;
+    accountNumber: string;
+    counterpartyId: string;
+    counterpartyType: string;
+  }) {
+    return await this.apiClient.http<any>(
+      Method.POST,
+      data.counterpartyType == "INTERNATIONAL"
+        ? `/transaction/wire/international`
+        : `/transaction/wire/outbound`,
+      {
+        amount: data.amount,
+        description: data.description,
+        accountNumber: data.accountNumber,
+        counterpartyId: data.counterpartyId,
       }
     );
   }

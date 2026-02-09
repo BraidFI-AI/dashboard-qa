@@ -284,7 +284,6 @@ const ProgramDetails = () => {
             value={program.name != null ? program.name : ""}
             submitting={false}
           />
-          <ItemRow title="Customer ID" value={program.customerId}></ItemRow>
           <MyEditableTextField
             clearable={false}
             editing={isEditingType}
@@ -348,10 +347,6 @@ const ProgramDetails = () => {
             value={program.achOdfi ?? ""}
             submitting={false}
           />
-          <ItemRow
-            title="Nacha Issuer ID"
-            value={program.nachaIssuerId}
-          ></ItemRow>
           <MyEditableTextField
             editing={isEditingActive}
             setEditing={setIsEditingActive}

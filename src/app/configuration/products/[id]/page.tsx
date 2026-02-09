@@ -174,7 +174,7 @@ const ProductDetails = () => {
   }, [dispatch, params.id, refresh, reset, userType]);
 
   return (
-    <div className="pb-10">
+    <div className="pb-10 pt-6">
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-10">
           <CircularProgress></CircularProgress>
@@ -353,7 +353,7 @@ const ProductDetails = () => {
                             required: true,
                           }
                     }
-                    value={product?.interestRate?.toFixed(4) ?? "0.0000"}
+                    value={product?.interestRate?.toFixed(6) ?? "0.000000"}
                     submitting={false}
                   />
                   <MyEditableTextField

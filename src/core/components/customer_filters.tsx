@@ -46,6 +46,10 @@ const CustomerFilters: React.FC<CustomerFilterProps> = ({ type }) => {
 
     data.productName = productId;
 
+    if (data.id == null || data.id == "") {
+      data.id = undefined;
+    }
+
     if (data.name == null || data.name == "") {
       data.name = undefined;
     }
@@ -95,6 +99,7 @@ const CustomerFilters: React.FC<CustomerFilterProps> = ({ type }) => {
 
   useEffect(() => {
     reset({
+      id: qParams.get("id") ?? "",
       name: qParams.get("name") ?? "",
       productName: qParams.get("productName") ?? "",
       createdAtStart: qParams.get("createdAtStart") ?? "",
@@ -126,6 +131,17 @@ const CustomerFilters: React.FC<CustomerFilterProps> = ({ type }) => {
         <Box className="flex flex-col px-4 pt-10 max-w-full">
           <div className="h-[50px]" />
           <MyText size="lg">Business Filters</MyText>
+          <Box className="pb-4 w-full">
+            <MyText>ID</MyText>
+            <MyControlledTextField
+              name="id"
+              displayName="ID"
+              control={control}
+              errors={errors}
+              rules={{}}
+              value={getValues("id")}
+            />
+          </Box>
           <Box className="pb-4 w-full">
             <MyText>Name</MyText>
             <MyControlledTextField
@@ -245,6 +261,7 @@ const CustomerFilters: React.FC<CustomerFilterProps> = ({ type }) => {
             <MyTextButton
               onClick={() => {
                 reset({
+                  id: "",
                   name: "",
                   productName: "",
                   status: "",

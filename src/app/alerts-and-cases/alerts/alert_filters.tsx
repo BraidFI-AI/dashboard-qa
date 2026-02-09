@@ -178,6 +178,7 @@ const AlertFilters: React.FC<AlertFiltersrProps> = ({}) => {
                 "PRODUCT",
                 "FILE_NAME",
                 "FILE_RECORD",
+                "ACH_INBOUND_TRANSACTION",
               ]}
             />
           </div>
