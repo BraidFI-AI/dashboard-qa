@@ -5,7 +5,7 @@ import DevelopersTable from "./DevelopersTable";
 import MyBlueButton from "@/core/components/Button/MyBlueButton";
 import Link from "next/link";
 import RequireRole from "@/core/components/RequireRole";
-import { ADMIN_ROUTE } from "@/core/constants";
+import { DEVELOPER_ROUTE } from "@/core/constants";
 
 const Developers = () => {
   return (
@@ -21,4 +21,4 @@ const Developers = () => {
   );
 };
 
-export default RequireRole(Developers, ADMIN_ROUTE);
+export default RequireRole(Developers, DEVELOPER_ROUTE);

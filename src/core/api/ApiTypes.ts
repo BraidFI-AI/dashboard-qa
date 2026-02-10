@@ -947,7 +947,7 @@ export interface CounterpartyBlockedResults {
         vesselOwner: string | null;
         remarks: string | null;
         match: number;
-      }
+      },
     ];
     altNames: [];
     addresses: string | null;
@@ -1158,6 +1158,7 @@ export interface SearchCounterparty {
 }
 
 export interface Developer {
+  isParent: boolean | null;
   tenantId: string | null;
   name: string | null;
   enableIpRestriction?: string | null;
@@ -1299,7 +1300,7 @@ export interface OFAC {
         ukConsolidatedSanctionsList: [];
         ukSanctionsList: null;
         refreshedAt: "2023-10-29T18:05:01.474819666Z";
-      }
+      },
     ];
   };
   rawResults: string;

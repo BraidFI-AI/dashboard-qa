@@ -35,6 +35,7 @@ interface AppState {
   showAppBar: boolean;
   userType: string | null;
   username: string | null;
+  isParentDev: boolean;
   tenantId?: string | null;
   transactionTypes: TransactionTypesType;
   drawerOpen: boolean;
@@ -48,6 +49,7 @@ const initialState: AppState = {
   title: "",
   userType: null,
   username: null,
+  isParentDev: false,
   transactionTypes: "loading",
   achReturnCodes: "loading",
   tenantId: null,
@@ -67,6 +69,9 @@ const AppSlice = createSlice({
     },
     setTenantId(state, action) {
       state.tenantId = action.payload;
+    },
+    setIsParentDev(state, action) {
+      state.isParentDev = action.payload;
     },
     setInitialState(state) {
       Object.assign(state, initialState);
@@ -134,7 +139,7 @@ export const resetAppState = createAsyncThunk(
     thunkApi.dispatch(setInitialLimitsState());
     thunkApi.dispatch(setInitialTransactionState());
     thunkApi.dispatch(setInitialUsersState());
-  }
+  },
 );
 
 export const fetchTimezone = createAsyncThunk(
@@ -146,7 +151,7 @@ export const fetchTimezone = createAsyncThunk(
     } catch (err: any) {
       return `Error fetching timezone ${generateErrorMessage(err)}`;
     }
-  }
+  },
 );
 
 export const fetchTransactionTypes = createAsyncThunk(
@@ -159,7 +164,7 @@ export const fetchTransactionTypes = createAsyncThunk(
     } catch (err: any) {
       return `Error fetching transaction types ${generateErrorMessage(err)}`;
     }
-  }
+  },
 );
 
 export const fetchAchReturnCodes = createAsyncThunk(
@@ -172,7 +177,7 @@ export const fetchAchReturnCodes = createAsyncThunk(
     } catch (err: any) {
       return `Error fetching ach return codes ${generateErrorMessage(err)}`;
     }
-  }
+  },
 );
 
 export default AppSlice;
@@ -187,4 +192,5 @@ export const {
   setShowAppBar,
   setDrawerOpen,
   setDrawerClosed,
+  setIsParentDev,
 } = AppSlice.actions;

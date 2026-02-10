@@ -21,11 +21,12 @@ import { useSelector } from "react-redux";
 const CreateUserPage = () => {
   const router = useRouter();
 
+  const isParentDev = useSelector((state: any) => state.app.isParentDev);
+
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [tenants, setTenants] = useState<string[] | null>(null);
-  const [isDeveloper, setIsDeveloper] = useState(true);
   const userType = useSelector((state: any) => state.app.userType);
   const tenantId = useSelector((state: any) => state.app.tenantId);
 
@@ -45,9 +46,6 @@ const CreateUserPage = () => {
     handleSubmit,
   } = useForm<CreateUser>();
   const onSubmit: SubmitHandler<CreateUser> = (data: CreateUser) => {
-    if (!isDeveloper) {
-      data.tenantId = "";
-    }
     console.log(data);
 
     setSubmitting(true);
@@ -76,13 +74,13 @@ const CreateUserPage = () => {
   }, [userType]);
 
   useEffect(() => {
-    if (userType != DEVELOPER_ROLE) {
+    if (userType != DEVELOPER_ROLE || isParentDev) {
       dispatch(fetchTenetIdsList()).then((ts: any) => {
         setTenants(ts.payload);
         setLoading(false);
       });
     }
-  }, [dispatch, userType]);
+  }, [dispatch, userType, isParentDev]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-6">
@@ -157,40 +155,38 @@ const CreateUserPage = () => {
           value={""}
         />
         <Box className="pb-4"></Box> */}
-        {userType == DEVELOPER_ROLE ? (
+        {userType == DEVELOPER_ROLE && !isParentDev ? (
           <>
             <MyText>Tenant ID</MyText>
             <MyText size="md">{tenantId}</MyText>
             <Box className="pb-4"></Box>
           </>
         ) : (
-          isDeveloper && (
-            <>
-              <MyText>Tenant ID</MyText>
-              {loading ? (
-                <CircularProgress size="25px" />
-              ) : tenants == null || tenants.length == 0 ? (
-                <MyText>No Tenant found</MyText>
-              ) : (
-                <MyControlledAutocomplete
-                  value={tenants[0]}
-                  displayName="Tenant ID"
-                  name={"tenantId"}
-                  control={control}
-                  errors={errors}
-                  rules={
-                    submitting
-                      ? { required: false }
-                      : {
-                          required: true,
-                        }
-                  }
-                  options={tenants}
-                />
-              )}
-              <Box className="pb-4"></Box>
-            </>
-          )
+          <>
+            <MyText>Tenant ID</MyText>
+            {loading ? (
+              <CircularProgress size="25px" />
+            ) : tenants == null || tenants.length == 0 ? (
+              <MyText>No Tenant found</MyText>
+            ) : (
+              <MyControlledAutocomplete
+                value={tenants[0]}
+                displayName="Tenant ID"
+                name={"tenantId"}
+                control={control}
+                errors={errors}
+                rules={
+                  submitting
+                    ? { required: false }
+                    : {
+                        required: true,
+                      }
+                }
+                options={tenants}
+              />
+            )}
+            <Box className="pb-4"></Box>
+          </>
         )}
         <MyText>Group</MyText>
         <MyControlledAutocomplete

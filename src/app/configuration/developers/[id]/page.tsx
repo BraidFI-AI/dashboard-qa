@@ -18,7 +18,7 @@ import RequireRole from "@/core/components/RequireRole";
 import {
   ADMIN_OPS_ROLE,
   ADMIN_ROLE,
-  ADMIN_ROUTE,
+  DEVELOPER_ROUTE,
   paginationPageSize,
   PaginationStateType,
 } from "@/core/constants";
@@ -37,11 +37,11 @@ const DeveloperPage = () => {
   const [loading, setLoading] = useState(true);
   const [developer, setDeveloper] = useState<Developer | null>(null);
   const ips: "loading" | string | WhitelistedIP[] = useSelector(
-    (state: any) => state.developer.whitelistedIPs
+    (state: any) => state.developer.whitelistedIPs,
   );
   const params = useParams();
   const pagination: PaginationStateType = useSelector(
-    (state: any) => state.developer.whitelistedIPsPagination
+    (state: any) => state.developer.whitelistedIPsPagination,
   );
 
   const userType = useSelector((state: any) => state.app.userType);
@@ -64,13 +64,13 @@ const DeveloperPage = () => {
             dispatch(setTitle(data.payload.name));
           }
           setLoading(false);
-        }
+        },
       );
       dispatch(
         fetchDeveloperWhitelistedIPs({
           id: (params.id as string) || "0",
           refresh: true,
-        })
+        }),
       );
     }
   }, [dispatch, params.id, refresh]);
@@ -126,7 +126,7 @@ const DeveloperPage = () => {
                 updateDeveloper({
                   id: developer.tenantId ?? "",
                   enableIpRestriction: value,
-                })
+                }),
               ).then((data: any) => {
                 setSubmitting(false);
                 if (typeof data.payload != "string") {
@@ -180,7 +180,7 @@ const DeveloperPage = () => {
                   fetchDeveloperWhitelistedIPs({
                     id: (params.id as string) || "0",
                     refresh: false,
-                  })
+                  }),
                 );
               },
             }}
@@ -207,20 +207,20 @@ const DeveloperPage = () => {
                           setDeleting(arr);
 
                           dispatch(
-                            deleteWhitelistedDeveloperIP(rowParams.row.id)
+                            deleteWhitelistedDeveloperIP(rowParams.row.id),
                           ).then((data: any) => {
                             if (data.payload == null) {
                               enqueueSnackbar(
                                 "IP Address deleted successfully",
                                 {
                                   variant: "success",
-                                }
+                                },
                               );
                               dispatch(
                                 fetchDeveloperWhitelistedIPs({
                                   id: (params.id as string) || "0",
                                   refresh: true,
-                                })
+                                }),
                               );
                             } else {
                               enqueueSnackbar(data.payload, {
@@ -231,7 +231,7 @@ const DeveloperPage = () => {
 
                             const arr: string[] = [...deleting];
                             const uArr = arr.filter(
-                              (e) => e != rowParams.row.id
+                              (e) => e != rowParams.row.id,
                             );
                             setDeleting(uArr);
                           });
@@ -249,4 +249,4 @@ const DeveloperPage = () => {
   );
 };
 
-export default RequireRole(DeveloperPage, ADMIN_ROUTE);
+export default RequireRole(DeveloperPage, DEVELOPER_ROUTE);

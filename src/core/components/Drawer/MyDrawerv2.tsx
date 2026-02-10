@@ -167,6 +167,8 @@ export default function PersistentDrawerLeft(props: any) {
 
   const userType = useSelector((state: any) => state.app.userType);
 
+  const isParentDev = useSelector((state: any) => state.app.isParentDev);
+
   console.log("userType", userType);
 
   const openAlerts = useSelector((state: any) => state.alerts.openAlerts);
@@ -340,7 +342,7 @@ export default function PersistentDrawerLeft(props: any) {
       ),
       path: `/ach/settlement?startDate=${momentToTimeZoneString(
         moment().subtract(1, "day"),
-        true
+        true,
       )}&endDate=${momentToTimeZoneString(moment(), false)}`,
     });
   }
@@ -451,6 +453,17 @@ export default function PersistentDrawerLeft(props: any) {
     //   path: "/configuration/forms",
     // },
   ];
+
+  if (isParentDev) {
+    configurationOptions.splice(0, 0, {
+      name: "Developers",
+      icon: <BadgeOutlinedIcon className="text-[#6B788E] w-[20px] h-[20px]" />,
+      iconFocused: (
+        <BadgeOutlinedIcon className="text-[#12A7FF] w-[20px] h-[20px]" />
+      ),
+      path: "/configuration/developers",
+    });
+  }
 
   if (userType == ADMIN_ROLE || userType == ADMIN_OPS_ROLE) {
     configurationOptions.splice(0, 0, {
