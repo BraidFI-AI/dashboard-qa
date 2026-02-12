@@ -50,7 +50,7 @@ export default function IndividualPage() {
 
   const dispatch = useAppDispatch();
   const [individual, setIndividual] = useState<"loading" | string | Individual>(
-    "loading"
+    "loading",
   );
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -92,7 +92,7 @@ export default function IndividualPage() {
       updateIndividual({
         id: (params.id as string) || "0",
         individual: data,
-      })
+      }),
     ).then((d: any) => {
       if (typeof d.payload == "string") {
         enqueueSnackbar(d.payload, { variant: "error", persist: true });
@@ -144,19 +144,23 @@ export default function IndividualPage() {
               setValue("idNumber", data.payload.idNumber);
             }
 
-            dispatch(
-              setTitle(data.payload.firstName + " " + data.payload.lastName)
-            );
+            if (typeof data.payload != "string") {
+              dispatch(
+                setTitle(data.payload.firstName + " " + data.payload.lastName),
+              );
 
-            dispatch(fetchProduct(data.payload.productId)).then((prd: any) => {
-              setProduct(prd.payload);
-            });
+              dispatch(fetchProduct(data.payload.productId)).then(
+                (prd: any) => {
+                  setProduct(prd.payload);
+                },
+              );
 
-            dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
-              setOfac(o.payload);
-            });
+              dispatch(fetchOFACHitNew(data.payload.ofacId)).then((o: any) => {
+                setOfac(o.payload);
+              });
+            }
           }
-        }
+        },
       );
       setRefresh(false);
     }
@@ -363,7 +367,7 @@ export default function IndividualPage() {
                     value={
                       individual.dateOfBirth != null
                         ? moment(
-                            `${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`
+                            `${individual.dateOfBirth?.[0]}-${individual.dateOfBirth?.[1]}-${individual.dateOfBirth?.[2]}`,
                           ).toString()
                         : ""
                     }
@@ -671,7 +675,7 @@ export default function IndividualPage() {
                   if (individual.ofacId != null) {
                     setOfac("loading");
                     dispatch(
-                      fetchOFACHitNew(individual.ofacId.toString())
+                      fetchOFACHitNew(individual.ofacId.toString()),
                     ).then((o: any) => {
                       setOfac(o.payload);
                     });
@@ -718,7 +722,7 @@ export default function IndividualPage() {
                           setRefresh(true);
                         }
                         setSubmitting(false);
-                      }
+                      },
                     );
                   }}
                 >

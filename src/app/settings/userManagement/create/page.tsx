@@ -52,7 +52,7 @@ const CreateUserPage = () => {
 
     data.group = userGroupMapping[data.group];
 
-    if (userType == DEVELOPER_ROLE) {
+    if (userType == DEVELOPER_ROLE && !isParentDev) {
       data.tenantId = tenantId;
     }
 
@@ -71,7 +71,10 @@ const CreateUserPage = () => {
     if (userType == DEVELOPER_ROLE) {
       setUserGroups(["Fintech Ops", "Fintech readonly"]);
     }
-  }, [userType]);
+    if (isParentDev) {
+      setUserGroups(["Fintech Admin", "Fintech Ops", "Fintech readonly"]);
+    }
+  }, [userType, isParentDev]);
 
   useEffect(() => {
     if (userType != DEVELOPER_ROLE || isParentDev) {
