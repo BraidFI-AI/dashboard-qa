@@ -33,7 +33,7 @@ const TabsProvider = (props: any) => {
             label="Developer Details"
             style={{ textTransform: "none" }}
             onClick={() => {
-              router.replace(`/configuration/developers/${params.tenantId}`);
+              router.replace(`/configuration/developers/${params.id}`);
             }}
           />
         </Tabs>
