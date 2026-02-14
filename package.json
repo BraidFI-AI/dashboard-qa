@@ -6,7 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:ui": "vitest run --config vitest.ui.config.ts",
+    "test:ui:watch": "vitest --config vitest.ui.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "npm run test:unit && npm run test:ui && npm run test:e2e"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "6.5.3",
@@ -109,6 +117,10 @@
     "zod": "^3.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/d3": "^7.4.3",
     "@types/fscreen": "^1.0.1",
     "@types/js-cookie": "^3.0.3",
@@ -116,6 +128,11 @@
     "@types/nprogress": "^0.2.0",
     "@types/react-color": "^3.0.6",
     "@types/uuid": "^9.0.3",
-    "raw-loader": "^4.0.2"
+    "@vitest/ui": "^4.0.18",
+    "happy-dom": "^20.6.1",
+    "jsdom": "^28.0.0",
+    "msw": "^2.12.10",
+    "raw-loader": "^4.0.2",
+    "vitest": "^4.0.18"
   }
 }
