@@ -4,7 +4,26 @@
 
 Automated testing system with two independent workflows running daily during off-hours. AI agents analyze results, generate reports, and create Jira tickets for failures. **All analysis is read-only - agents never modify code.**
 
+**Testing Focus:** Developer role workflows using a simplified single-product tenant setup.
+
 **Note:** Unit testing is handled by developers as part of their development workflow and is excluded from this automated QA system.
+
+### Developer Tenant Approach
+
+Tests are organized around **typical developer testing scenarios**:
+- Single Product: `DEV_CHECKING` (simplifies testing, matches real dev workflow)
+- 5 Test Accounts: Various balance states (funded, zero, high, inactive, business)
+- 4 Test Customers: Individual and business test entities 
+- 4 Counterparties: ACH/Wire testing (domestic, international, blocked)
+
+### Workflow Coverage
+
+1. **Customer & Counterparty Management** - Create and manage test entities
+2. **Transaction Testing & Simulation** - ACH, Wire, Internal transfers
+3. **Account Viewing & Management** - Monitor accounts and balances
+4. **Compliance Monitoring** - Review alerts and OFAC results
+5. **ACH File Processing** - Upload and process test files
+6. **Webhook & Event Testing** - Verify event generation
 
 ---
 
@@ -93,111 +112,160 @@ Customer (Individual or Business) ────────┘
 
 ### Test Data Strategy
 
-**Approach: Dedicated Test Grouping** (based on OpenAPI spec entity requirements)
+**Approach: Developer Tenant - Simplified Single Product Setup**
 
-Maintain stable test entities that satisfy API foreign key dependencies:
+Focused on **Developer role workflows** with minimal but sufficient test entities:
 
 ```
-Test Program (id: 1001)
-  └→ programId referenced by Products
-
-Test Products (productId required for Accounts)
-  ├─→ CI_Checking (id: 2001, programId: 1001)
-  ├─→ CI_Savings (id: 2002, programId: 1001)
-  └─→ CI_Wire (id: 2003, programId: 1001)
-
-Test Customers (customerId required for Accounts)
-  Individuals:
-    ├─→ John TestUser (id: 3001, email: john.test@citest.braid.zone)
-    ├─→ Sarah HighVolume (id: 3002, email: sarah.highvolume@citest.braid.zone)
-    └─→ Jane ZeroBalance (id: 3003, email: jane.zero@citest.braid.zone)
-  Businesses:
-    ├─→ Test Corp LLC (id: 4001, ein: 99-9990001)
-    └─→ HighVolume Inc (id: 4002, ein: 99-9990002)
-
-Test Accounts (productId + customerId → creates Account)
-  ├─→ CITEST_CHK_001 (id: 5001, customerId: 3001, productId: 2001, balance: $10,000)
-  ├─→ CITEST_CHK_002 (id: 5002, customerId: 3002, productId: 2001, balance: $100,000)
-  ├─→ CITEST_CHK_003 (id: 5003, customerId: 3003, productId: 2001, balance: $0)
-  ├─→ CITEST_SAV_001 (id: 5004, customerId: 3001, productId: 2002, balance: $50,000)
-  ├─→ CITEST_BUS_001 (id: 5005, customerId: 4001, productId: 2001, balance: $25,000)
-  └─→ CITEST_WIRE_001 (id: 5006, customerId: 3002, productId: 2003, balance: $75,000)
-
-Test Counterparties (counterpartyId required for ACH/Wire transactions)
-  ├─→ ACH_VENDOR_001 (id: 6001, routingNumber: 121000248, accountNumber: 999111111)
-  ├─→ Wire_International (id: 6002, swiftCode: CHASUS33, iban: US12345...)
-  ├─→ Blocked_Counterparty (id: 6003, status: BLOCKED)
-  └─→ Standard_ACH (id: 6004, routingNumber: 026009593)
-    └── Fee Schedules: Standard test rates
+Developer Test Tenant
+│
+├─→ Program: DEV_TEST_PROGRAM (id: 1001)
+│   └─→ Single Product: DEV_CHECKING (id: 2001, type: CHECKING)
+│
+├─→ Test Customers (for different testing scenarios)
+│   Individuals:
+│   ├─→ Dev User Active (id: 3001, email: dev.active@devtest.braid.zone)
+│   ├─→ Dev User High Balance (id: 3002, email: dev.highbal@devtest.braid.zone)
+│   └─→ Dev User Zero Balance (id: 3003, email: dev.zero@devtest.braid.zone)
+│   Business:
+│   └─→ Dev Test Corp (id: 4001, ein: 99-8880001, email: devcorp@devtest.braid.zone)
+│
+├─→ Test Accounts (all use productId: 2001)
+│   ├─→ DEV_CHK_FUNDED (id: 5001, balance: $10,000) - Standard testing
+│   ├─→ DEV_CHK_HIGHBAL (id: 5002, balance: $100,000) - High value transactions
+│   ├─→ DEV_CHK_ZERO (id: 5003, balance: $0) - Insufficient funds scenarios
+│   ├─→ DEV_CHK_INACTIVE (id: 5004, balance: $5,000, status: INACTIVE) - Status testing
+│   └─→ DEV_BUS_FUNDED (id: 5005, balance: $50,000) - Business account testing
+│
+└─→ Test Counterparties (for ACH/Wire testing)
+    ├─→ DEV_ACH_VENDOR (id: 6001, routing: 121000248, acct: 999111111)
+    ├─→ DEV_WIRE_DOMESTIC (id: 6002, routing: 026009593, acct: 888222222)
+    ├─→ DEV_WIRE_INTL (id: 6003, swift: CHASUS33, iban: US64SVBKUS6S...)
+    └─→ DEV_ACH_BLOCKED (id: 6004, status: BLOCKED) - Error scenario testing
 ```
 
-**Test Manifest File:** `test-grouping-manifest.json` (API-compliant structure)
+**Test Manifest File:** `test-grouping-manifest.json` (Developer Tenant structure)
 ```json
 {
   "program": {
     "id": 1001,
-    "name": "CI_TEST_PROGRAM"
+    "name": "DEV_TEST_PROGRAM",
+    "description": "Developer testing program"
   },
-  "products": {
-    "checking": {"id": 2001, "programId": 1001, "name": "CI_Checking", "type": "CHECKING"},
-    "savings": {"id": 2002, "programId": 1001, "name": "CI_Savings", "type": "SAVINGS"},
-    "wire": {"id": 2003, "programId": 1001, "name": "CI_Wire", "type": "CHECKING"}
+  "product": {
+    "id": 2001,
+    "programId": 1001,
+    "name": "DEV_CHECKING",
+    "type": "CHECKING"
   },
   "customers": {
-    "john_testuser": {
+    "dev_active": {
       "id": 3001,
       "type": "INDIVIDUAL",
-      "firstName": "John",
-      "lastName": "TestUser",
-      "email": "john.test@citest.braid.zone"
+      "firstName": "Dev",
+      "lastName": "ActiveUser",
+      "email": "dev.active@devtest.braid.zone"
     },
-    "sarah_highvolume": {
+    "dev_highbalance": {
       "id": 3002,
-      "type": "INDIVIDUAL", 
-      "firstName": "Sarah",
-      "lastName": "HighVolume",
-      "email": "sarah.highvolume@citest.braid.zone"
+      "type": "INDIVIDUAL",
+      "firstName": "Dev",
+      "lastName": "HighBalance",
+      "email": "dev.highbal@devtest.braid.zone"
     },
-    "test_corp": {
+    "dev_zero": {
+      "id": 3003,
+      "type": "INDIVIDUAL",
+      "firstName": "Dev",
+      "lastName": "ZeroBalance",
+      "email": "dev.zero@devtest.braid.zone"
+    },
+    "dev_corp": {
       "id": 4001,
       "type": "BUSINESS",
-      "legalName": "Test Corp LLC",
-      "ein": "99-9990001",
-      "email": "corp@citest.braid.zone"
+      "legalName": "Dev Test Corp LLC",
+      "ein": "99-8880001",
+      "email": "devcorp@devtest.braid.zone"
     }
   },
   "accounts": {
-    "checking_funded": {
+    "funded": {
       "id": 5001,
-      "accountNumber": "CITEST_CHK_001",
+      "accountNumber": "DEV_CHK_FUNDED",
       "customerId": 3001,
       "productId": 2001,
       "accountType": "CHECKING",
       "status": "ACTIVE",
       "balance": 10000.00
     },
-    "checking_high_balance": {
+    "high_balance": {
       "id": 5002,
-      "accountNumber": "CITEST_CHK_002",
+      "accountNumber": "DEV_CHK_HIGHBAL",
       "customerId": 3002,
       "productId": 2001,
       "accountType": "CHECKING",
       "status": "ACTIVE",
       "balance": 100000.00
     },
-    "checking_zero": {
+    "zero_balance": {
       "id": 5003,
-      "accountNumber": "CITEST_CHK_003",
+      "accountNumber": "DEV_CHK_ZERO",
       "customerId": 3003,
       "productId": 2001,
       "accountType": "CHECKING",
       "status": "ACTIVE",
       "balance": 0.00
     },
-    "savings_funded": {
+    "inactive": {
       "id": 5004,
-      "accountNumber": "CITEST_SAV_001",
+      "accountNumber": "DEV_CHK_INACTIVE",
       "customerId": 3001,
+      "productId": 2001,
+      "accountType": "CHECKING",
+      "status": "INACTIVE",
+      "balance": 5000.00
+    },
+    "business": {
+      "id": 5005,
+      "accountNumber": "DEV_BUS_FUNDED",
+      "customerId": 4001,
+      "productId": 2001,
+      "accountType": "CHECKING",
+      "status": "ACTIVE",
+      "balance": 50000.00
+    }
+  },
+  "counterparties": {
+    "ach_vendor": {
+      "id": 6001,
+      "name": "Dev ACH Vendor",
+      "routingNumber": "121000248",
+      "accountNumber": "999111111",
+      "type": "BUSINESS"
+    },
+    "wire_domestic": {
+      "id": 6002,
+      "name": "Dev Wire Recipient",
+      "routingNumber": "026009593",
+      "accountNumber": "888222222",
+      "type": "BUSINESS"
+    },
+    "wire_international": {
+      "id": 6003,
+      "name": "Dev International Wire",
+      "swiftCode": "CHASUS33",
+      "iban": "US64SVBKUS6S3300400000"
+    },
+    "ach_blocked": {
+      "id": 6004,
+      "name": "Dev Blocked Counterparty",
+      "routingNumber": "121000248",
+      "accountNumber": "777333333",
+      "status": "BLOCKED"
+    }
+  }
+}
+```
       "productId": 2002,
       "accountType": "SAVINGS",
       "status": "ACTIVE",
@@ -233,14 +301,14 @@ Test Counterparties (counterpartyId required for ACH/Wire transactions)
 ```typescript
 import manifest from '../test-grouping-manifest.json'
 
-test('create ACH push transaction', async ({ page }) => {
-  const account = manifest.accounts.checking_funded
-  const counterparty = manifest.counterparties.ach_vendor
+test('Developer creates ACH push transaction', async ({ page }) => {
+  const account = manifest.accounts.funded  // DEV_CHK_FUNDED
+  const counterparty = manifest.counterparties.ach_vendor  // DEV_ACH_VENDOR
   
   // Dashboard makes POST /transaction/ach/push with:
-  // { accountNumber: "CITEST_CHK_001", counterpartyId: 6001, amount: 100.00, ... }
+  // { accountNumber: "DEV_CHK_FUNDED", counterpartyId: 6001, amount: 100.00, ... }
   await page.fill('[name="accountNumber"]', account.accountNumber)
-  await page.fill('[name="accountNumber"]', account.accountNumber)
+  await page.fill('[name="amount"]', '100.00')
   // Account already exists with $10,000 balance
 })
 ```
@@ -283,69 +351,167 @@ test('create ACH push transaction', async ({ page }) => {
 ---
 
 ### Workflow 2: Integration (E2E) Tests
-**What it tests:** Complete user journeys against real Braid test API  
+**What it tests:** Complete Developer role workflows against real Braid test API  
 **Technology:** Playwright with Chromium  
 **API Strategy:** Real HTTP calls to Braid test environment  
-**Speed:** Slower (~25-30 minutes)
+**Speed:** Slower (~25-30 minutes)  
+**Focus:** Developer testing scenarios using simplified single-product tenant
 
-**Coverage - Critical Dashboard Operations:** (mapped to API endpoints)
+---
 
-**Transaction Operations:**
-- ACH Push: `POST /transaction/ach/push` (requires: accountNumber, amount, counterpartyId, secCode)
-- ACH Pull: `POST /transaction/ach/pull` (requires: accountNumber, amount, counterpartyId, secCode)
-- Wire Domestic: `POST /transaction/wire/outbound` (requires: accountNumber, counterpartyId, amount)
-- Wire International: `POST /transaction/wire/international` (requires: accountNumber, counterpartyId, creditAmount OR debitAmount, currencies)
-- Internal Transfer: `POST /transaction/internal/transfer` (requires: fromAccountNumber, toAccountNumber, amount)
-- Transaction Search: `POST /transaction/search` (filter by status, dates, accountNumber)
+**Developer Workflow Coverage:** (organized by typical developer tasks)
 
-**ACH Processing:**
-- Load Outbound File: `POST /ach/load/outbound` (multipart file upload)
-- File Status: `GET /ach/file/status/v2` (track processing)
-- Simulate Inbound: `POST /simulation/ach/inbound` (test ACH receipts)
+#### 1. Customer & Counterparty Management
+**Scenario:** Developer creates test customers and counterparties for transaction testing
+
+**Individual Customer:**
+- Create: `POST /individual` (firstName, lastName, address, idNumber, productId)
+- View: `GET /individual/{id}`
+- Update: `PUT /individual/{id}` (update profile data)
+- Search: `POST /individual/search` (find by name, email, customer ID)
+
+**Business Customer:**
+- Create: `POST /business` (legalName, ein, address, productId)
+- View: `GET /business/{id}`
+- Update: `PUT /business/{id}` (update business data)
+- Search: `POST /business/search` (find by name, EIN)
+
+**Counterparty Management:**
+- Create: `POST /counterparty` (for ACH/Wire transactions)
+- View: `GET /counterparty/{id}`
+- Update: `PUT /v2/counterparty/{id}` (modify routing, account info)
+- Search: `POST /counterparty/search` (find by name, routing number)
+
+**Test Cases:**
+- ✅ Create individual customer with DEV_CHECKING product
+- ✅ Create business customer with valid EIN
+- ✅ Create ACH counterparty for testing
+- ⚠️ Attempt to create customer with invalid data (validation)
+- ❌ Create counterparty with blocked status (error handling)
+
+---
+
+#### 2. Transaction Testing & Simulation
+**Scenario:** Developer tests transaction flows using Developer tenant accounts
+
+**ACH Transactions:**
+- Push (Debit): `POST /transaction/ach/push` (send money from account to counterparty)
+- Pull (Credit): `POST /transaction/ach/pull` (pull money from counterparty to account)
+- Simulate Inbound: `POST /simulation/ach/inbound` (simulate receiving ACH)
 - Simulate NOC: `POST /simulation/ach/noc` (Notification of Change)
-- Simulate Return: `POST /simulation/ach/outbound/return` (ACH returns)
+- Simulate Return: `POST /simulation/ach/outbound/return` (simulate ACH rejection)
 
-**Customer Management:**
-- Create Individual: `POST /individual` (requires: firstName, lastName, address, idNumber, productId)
-- Update Individual: `PUT /individual/{id}` (update customer data)
-- Create Business: `POST /business` (requires: legalName, ein, address, productId)
-- Update Business: `PUT /business/{id}` (update business data)
-- Search: `POST /individual/search`, `POST /business/search`
+**Wire Transactions:**
+- Domestic Wire: `POST /transaction/wire/outbound` (domestic wire transfer)
+- International Wire: `POST /transaction/wire/international` (cross-border transfer)
+- Simulate Inbound: `POST /simulation/wire/inbound` (simulate receiving wire)
 
-**Account Management:**
-- Get Account: `GET /account/{accountNumber}` (view details)
+**Internal Transfers:**
+- Transfer: `POST /transaction/internal/transfer` (between DEV tenant accounts)
+
+**Transaction Monitoring:**
+- Search: `POST /transaction/search` (filter by status, dates, account)
+- View Details: `GET /transaction/{transactionId}`
+- Transaction History: View account transaction list
+
+**Test Cases:**
+- ✅ ACH push from DEV_CHK_FUNDED to DEV_ACH_VENDOR ($100)
+- ✅ ACH pull from counterparty to DEV_CHK_FUNDED ($50)
+- ✅ Wire domestic from DEV_CHK_HIGHBAL to DEV_WIRE_DOMESTIC ($5,000)
+- ✅ Internal transfer from DEV_CHK_HIGHBAL to DEV_CHK_ZERO ($500)
+- ⚠️ ACH push from DEV_CHK_ZERO (insufficient funds)
+- ⚠️ Transaction to DEV_ACH_BLOCKED counterparty (blocked error)
+- ❌ Wire with invalid routing number
+
+---
+
+#### 3. Account Viewing & Management
+**Scenario:** Developer monitors account state and balances
+
+**Account Operations:**
+- View Account: `GET /account/{accountNumber}` (account details)
 - Get Balance: `GET /account/{accountNumber}/balance` (current balance)
-- Update Status: `PUT /account/{accountNumber}/status` (ACTIVE, BLOCKED, INACTIVE, CLOSED)
-- List by Customer: `GET /account/individual/{id}`, `GET /account/business/{id}`
+- List by Customer: `GET /account/individual/{id}` or `GET /account/business/{id}`
+- Update Status: `PUT /account/{accountNumber}/status` (ACTIVE, INACTIVE, BLOCKED, CLOSED)
+- Account Statements: `GET /v2/statement/account/{accountNumber}`
 
-**Compliance:**
-- Search Alerts: `POST /alerts/search` (filter by status, type, dates)
-- Get Alert: `GET /alerts/{alertId}` (alert details)
-- Update Alert: `PUT /alerts/{alertId}` (resolve, escalate)
-- Add Note: `POST /alerts/{alertId}/add-note` (compliance notes)
+**Test Cases:**
+- ✅ View DEV_CHK_FUNDED account details
+- ✅ Check balance after transaction
+- ✅ List all accounts for dev_active customer
+- ✅ View account statement for last 30 days
+- ⚠️ Update account status to INACTIVE
+- ⚠️ Attempt transaction on INACTIVE account (should fail)
+
+---
+
+#### 4. Compliance Monitoring
+**Scenario:** Developer reviews alerts generated during testing
+
+**Alert Operations:**
+- Search: `POST /alerts/search` (filter by status, type, customer, dates)
+- View Alert: `GET /alerts/{alertId}` (alert details)
+- Add Note: `POST /alerts/{alertId}/add-note` (add compliance notes)
+- Update Status: `PUT /alerts/{alertId}` (resolve, escalate, investigate)
 - RFI Operations: `POST /alerts/rfi/{alertId}` (Request for Information)
 
-**Counterparty Operations:**
-- Create: `POST /counterparty` (for ACH/Wire transactions)
-- Search: `POST /counterparty/search`
-- Get Details: `GET /counterparty/{id}`
-- Update: `PUT /v2/counterparty/{id}`
+**OFAC Checks:**
+- Triggered automatically during customer/counterparty creation
+- View results in compliance tab
 
-**Statements:**
-- Product Statements: `GET /statement/product/{productId}`
-- Account Statements: `GET /v2/statement/account/{accountNumber}`
+**Test Cases:**
+- ✅ View alerts for DEV tenant
+- ✅ Filter alerts by type (OFAC, AML, suspicious activity)
+- ✅ Add note to alert
+- ✅ Resolve alert with disposition
+- ⚠️ Search for alerts by customer ID
+
+---
+
+#### 5. ACH File Processing (Developer Testing)
+**Scenario:** Developer uploads ACH files for processing simulation
+
+**ACH File Operations:**
+- Upload Outbound File: `POST /ach/load/outbound` (multipart file upload)
+- Check File Status: `GET /ach/file/status/v2` (processing status)
+- View ACH Settlement: Dashboard view of processed transactions
+
+**Test Cases:**
+- ✅ Upload valid NACHA file
+- ✅ Poll file status until complete
+- ⚠️ Upload invalid NACHA file (format error)
+- ❌ Upload file with blocked counterparty (rejection)
+
+---
+
+#### 6. Webhook & Event Testing
+**Scenario:** Developer verifies event notifications for integrations
+
+**Event Monitoring:**
+- View transaction events
+- View account status change events
+- View compliance alert events
+
+**Test Cases:**
+- ✅ Create transaction → Verify event generated
+- ✅ Update account status → Verify event in logs
+- ✅ Create customer → Verify creation event
+
+---
 
 **How It Works:**
 1. Playwright launches real Chromium browser
 2. Browser loads dashboard from localhost:3000
-3. Dashboard makes real HTTP calls to `api.test.braid.zone`
-4. Tests interact with UI (click, type, submit)
-5. Verify state changes via UI and API responses
+3. Developer user logs in (DEV role)
+4. Dashboard makes real HTTP calls to `api.test.braid.zone`
+5. Tests interact with UI using Developer tenant entities (click, type, submit)
+6. Verify state changes via UI and API responses
 
 **Test Data:**
-- References stable test accounts from `test-grouping-manifest.json`
-- Reset balances before each run via API
-- No dynamic account creation (unless testing creation flow itself)
+- References stable Developer tenant entities from `test-grouping-manifest.json`
+- All tests use single DEV_CHECKING product (id: 2001)
+- Reset account balances before each run via API
+- Creates/deletes test entities during test execution (customers, counterparties, transactions)
 
 **Configuration:**
 ```typescript
@@ -353,7 +519,7 @@ test('create ACH push transaction', async ({ page }) => {
 export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
-    // Dashboard will hit real Braid test API
+    // Dashboard hits real Braid test API (api.test.braid.zone)
   },
   webServer: {
     command: 'npm run dev',
@@ -362,7 +528,34 @@ export default defineConfig({
 })
 ```
 
-**Target:** 100% of critical dashboard paths
+**Test Execution Example:**
+```typescript
+import manifest from '../test-grouping-manifest.json'
+
+test('Developer creates ACH push transaction', async ({ page }) => {
+  const account = manifest.accounts.funded  // DEV_CHK_FUNDED
+  const counterparty = manifest.counterparties.ach_vendor  // DEV_ACH_VENDOR
+  
+  // Navigate to transaction page
+  await page.goto('/transactions/newTransaction')
+  
+  // Fill transaction form
+  await page.selectOption('[name="transactionType"]', 'ACH_PUSH')
+  await page.fill('[name="accountNumber"]', account.accountNumber)
+  await page.fill('[name="amount"]', '100.00')
+  await page.selectOption('[name="counterpartyId"]', counterparty.id.toString())
+  
+  // Submit and verify
+  await page.click('button[type="submit"]')
+  await expect(page.locator('.success-message')).toBeVisible()
+  
+  // Verify balance deducted
+  const newBalance = await getAccountBalance(account.accountNumber)
+  expect(newBalance).toBe(9900.00)  // $10,000 - $100
+})
+```
+
+**Target:** 100% coverage of Developer role workflows
 
 ---
 
@@ -480,10 +673,14 @@ SLACK_WEBHOOK_URL
 npm run test:ui             # Run UI tests with MSW
 npm run test:e2e            # Run E2E tests (requires url.json → test API)
 
-# Test data management
-npm run test:setup-grouping # One-time: Create test program/products in Braid
-npm run test:reset          # Reset test account balances before run
-npm run test:verify         # Verify test grouping health
+# Developer Tenant management
+npm run test:setup-dev-tenant    # One-time: Create Developer test tenant in Braid
+                                 # Creates DEV_TEST_PROGRAM, DEV_CHECKING product, 
+                                 # test customers, accounts, and counterparties
+npm run test:reset-dev-tenant    # Reset Developer tenant before test run
+                                 # Resets account balances, deletes test transactions
+npm run test:verify-dev-tenant   # Verify Developer tenant health
+                                 # Checks all entities exist and are in correct state
 ```
 
 **Note:** E2E tests require `url.json` configured to point to Braid test API:
@@ -492,6 +689,12 @@ npm run test:verify         # Verify test grouping health
   "url": "https://api.test.braid.zone"
 }
 ```
+
+**Developer Tenant Setup Process:**
+1. Run `npm run test:setup-dev-tenant` once to create all test entities
+2. Generates `test-grouping-manifest.json` with actual IDs from API
+3. Daily tests use these stable IDs for predictable testing
+4. Reset script runs before each test execution to ensure clean state
 
 ---
 
