@@ -2,17 +2,18 @@
 
 ## Overview
 
-Automated testing system with three independent workflows running daily during off-hours. AI agents analyze results, generate reports, and create Jira tickets for failures. **All analysis is read-only - agents never modify code.**
+Automated testing system with two independent workflows running daily during off-hours. AI agents analyze results, generate reports, and create Jira tickets for failures. **All analysis is read-only - agents never modify code.**
+
+**Note:** Unit testing is handled by developers as part of their development workflow and is excluded from this automated QA system.
 
 ---
 
 ## Rules of Engagement
 
 ### Testing Schedule
-- **Unit Tests**: Daily at 2:00 AM UTC (~3-5 min)
-- **UI Tests**: Daily at 2:30 AM UTC (~8-10 min)  
-- **Integration (E2E) Tests**: Daily at 3:00 AM UTC (~25-30 min)
-- **Daily Digest**: 4:00 AM UTC (after all tests complete)
+- **UI Tests**: Daily at 2:00 AM UTC (~8-10 min)  
+- **Integration (E2E) Tests**: Daily at 2:30 AM UTC (~25-30 min)
+- **Daily Digest**: 3:00 AM UTC (after all tests complete)
 
 ### AI Agent Boundaries
 ✅ **What AI Agents DO:**
@@ -258,26 +259,13 @@ test('create ACH push transaction', async ({ page }) => {
 
 ---
 
-## The Three Workflows
+## The Two Workflows
 
-### Workflow 1: Unit Tests
-**What it tests:** Pure logic - utilities, API clients, Redux slices  
-**Technology:** Vitest with JSDOM  
-**API Strategy:** Fully mocked (no real API calls)  
-**Speed:** Fast (~3-5 minutes)
-
-**Coverage:**
-- Utility functions ([src/core/utils/](src/core/utils/))
-- API client ([src/core/api/ApiClient.ts](src/core/api/ApiClient.ts))
-- Redux reducers/selectors ([src/redux/slices/](src/redux/slices/))
-- Form validation logic
-- Data transformations
-
-**Target:** 80% code coverage minimum
+**Note:** Unit testing is handled by developers as part of their development workflow and is not included in this automated QA system.
 
 ---
 
-### Workflow 2: UI Tests
+### Workflow 1: UI Tests
 **What it tests:** React components with mocked APIs  
 **Technology:** Vitest + React Testing Library + MSW  
 **API Strategy:** Mock Service Worker intercepts all HTTP requests  
@@ -294,7 +282,7 @@ test('create ACH push transaction', async ({ page }) => {
 
 ---
 
-### Workflow 3: Integration (E2E) Tests
+### Workflow 2: Integration (E2E) Tests
 **What it tests:** Complete user journeys against real Braid test API  
 **Technology:** Playwright with Chromium  
 **API Strategy:** Real HTTP calls to Braid test environment  
@@ -489,7 +477,6 @@ SLACK_WEBHOOK_URL
 ### Package Scripts (Added to Development)
 ```bash
 # Run tests locally
-npm run test:unit           # Run unit tests
 npm run test:ui             # Run UI tests with MSW
 npm run test:e2e            # Run E2E tests (requires url.json → test API)
 
@@ -514,7 +501,6 @@ npm run test:verify         # Verify test grouping health
 core_web_dashboard/
 ├── .github/
 │   └── workflows/
-│       ├── unit-tests-daily.yml
 │       ├── ui-tests-daily.yml
 │       ├── integration-tests-daily.yml
 │       ├── ai-test-analysis.yml
@@ -534,7 +520,6 @@ core_web_dashboard/
 ├── test-grouping-manifest.json # Stable test entity IDs (not in git)
 ├── url.json                    # API base URL (not in git)
 ├── reports/                    # Generated test reports
-├── vitest.config.ts            # Unit test config
 ├── vitest.ui.config.ts         # UI test config
 └── playwright.config.ts        # E2E test config
 ```
@@ -569,7 +554,7 @@ core_web_dashboard/
 ✅ **Early Detection** - Find issues before production  
 ✅ **Historical Trends** - Track test health over time  
 ✅ **Automated Triage** - AI classifies and assigns tickets  
-✅ **Comprehensive Coverage** - Unit → UI → E2E layered testing  
+✅ **Comprehensive Coverage** - UI → E2E layered testing  
 ✅ **Morning Readiness** - Results waiting when work day starts
 
 ---
@@ -597,10 +582,10 @@ core_web_dashboard/
 ## Getting Started
 
 ### For Developers Writing Tests
-1. Review existing tests in `src/core/utils/__tests__/` for patterns
+1. Review existing tests for patterns
 2. Follow Rule of Three (Happy/Edge/Ugly)
 3. Use test utilities in `src/test-utils/`
-4. Run locally before pushing: `npm run test:unit && npm run test:ui`
+4. Run locally before pushing: `npm run test:ui && npm run test:e2e`
 
 ### For Team Leads
 1. Subscribe to daily digest email
