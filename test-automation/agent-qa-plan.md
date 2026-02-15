@@ -144,6 +144,171 @@ Developer Test Tenant
     └─→ DEV_ACH_BLOCKED (id: 6004, status: BLOCKED) - Error scenario testing
 ```
 
+---
+
+### Dynamic Test Data Generation with Faker.js
+
+**Purpose:** Generate realistic customer and counterparty data during test execution
+
+**Faker.js Usage:**
+```typescript
+import { faker } from '@faker-js/faker';
+
+// Generate realistic individual customer
+const generateIndividual = () => ({
+  firstName: faker.person.firstName(),
+  lastName: faker.person.lastName(),
+  email: faker.internet.email({ provider: 'devtest.braid.zone' }),
+  phoneNumber: faker.phone.number('###-###-####'),
+  dateOfBirth: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
+  ssn: faker.string.numeric(9), // Format: 123456789
+  address: {
+    line1: faker.location.streetAddress(),
+    line2: faker.location.secondaryAddress(),
+    city: faker.location.city(),
+    state: faker.location.state({ abbreviated: true }),
+    zipCode: faker.location.zipCode('#####')
+  }
+});
+
+// Generate realistic business customer
+const generateBusiness = () => ({
+  legalName: faker.company.name() + ' LLC',
+  dba: faker.company.name(),
+  ein: `${faker.string.numeric(2)}-${faker.string.numeric(7)}`, // Format: 12-3456789
+  email: faker.internet.email({ provider: 'devtest.braid.zone' }),
+  phoneNumber: faker.phone.number('###-###-####'),
+  incorporationDate: faker.date.past({ years: 10 }),
+  businessType: faker.helpers.arrayElement(['LLC', 'CORPORATION', 'PARTNERSHIP']),
+  address: {
+    line1: faker.location.streetAddress(),
+    city: faker.location.city(),
+    state: faker.location.state({ abbreviated: true }),
+    zipCode: faker.location.zipCode('#####')
+  }
+});
+```
+
+---
+
+### Real Routing Numbers & Bank Details
+
+**ACH Counterparty Creation - Use Real Bank Routing Numbers:**
+
+```typescript
+// Real ACH Routing Numbers for Testing
+const REAL_ACH_ROUTING_NUMBERS = [
+  { routing: '121000248', bank: 'Wells Fargo Bank', type: 'ACH' },
+  { routing: '026009593', bank: 'Bank of America', type: 'ACH' },
+  { routing: '011401533', bank: 'Chase Bank', type: 'ACH' },
+  { routing: '021000021', bank: 'JPMorgan Chase', type: 'ACH' },
+  { routing: '111000025', bank: 'Bank of Hawaii', type: 'ACH' },
+  { routing: '122105155', bank: 'Wells Fargo Bank (West)', type: 'ACH' },
+  { routing: '063100277', bank: 'Fifth Third Bank', type: 'ACH' },
+  { routing: '091000019', bank: 'Wells Fargo Bank (East)', type: 'ACH' },
+  { routing: '041215663', bank: 'Wells Fargo Bank (South)', type: 'ACH' },
+  { routing: '031100209', bank: 'KeyBank', type: 'ACH' }
+];
+
+// Generate ACH counterparty with real routing number
+const generateACHCounterparty = () => {
+  const bank = faker.helpers.arrayElement(REAL_ACH_ROUTING_NUMBERS);
+  return {
+    name: faker.company.name() + ' Payments',
+    accountType: faker.helpers.arrayElement(['CHECKING', 'SAVINGS']),
+    accountNumber: faker.string.numeric(10), // 10-digit account number
+    routingNumber: bank.routing,
+    bankName: bank.bank,
+    type: 'BUSINESS',
+    address: {
+      line1: faker.location.streetAddress(),
+      city: faker.location.city(),
+      state: faker.location.state({ abbreviated: true }),
+      zipCode: faker.location.zipCode('#####')
+    }
+  };
+};
+```
+
+**Wire Counterparty Creation - Domestic & International:**
+
+```typescript
+// Real Wire Routing Numbers (Fedwire)
+const REAL_WIRE_ROUTING_NUMBERS = [
+  { routing: '026009593', bank: 'Bank of America', swift: 'BOFAUS3N' },
+  { routing: '021000021', bank: 'JPMorgan Chase', swift: 'CHASUS33' },
+  { routing: '121000248', bank: 'Wells Fargo', swift: 'WFBIUS6S' },
+  { routing: '011001234', bank: 'Citibank', swift: 'CITIUS33' },
+  { routing: '026007993', bank: 'Bank of America (Wire)', swift: 'BOFAUS6S' }
+];
+
+// Generate domestic wire counterparty
+const generateDomesticWireCounterparty = () => {
+  const bank = faker.helpers.arrayElement(REAL_WIRE_ROUTING_NUMBERS);
+  return {
+    name: faker.company.name() + ' Wire Recipient',
+    accountNumber: faker.string.numeric(12),
+    routingNumber: bank.routing,
+    bankName: bank.bank,
+    type: 'BUSINESS',
+    address: {
+      line1: faker.location.streetAddress(),
+      city: faker.location.city(),
+      state: faker.location.state({ abbreviated: true }),
+      zipCode: faker.location.zipCode('#####')
+    }
+  };
+};
+
+// Generate international wire counterparty
+const generateInternationalWireCounterparty = () => {
+  const bank = faker.helpers.arrayElement(REAL_WIRE_ROUTING_NUMBERS);
+  return {
+    name: faker.company.name() + ' International',
+    swiftCode: bank.swift,
+    iban: generateIBAN('US'), // US IBAN format
+    bankName: bank.bank,
+    bankAddress: {
+      line1: faker.location.streetAddress(),
+      city: faker.location.city(),
+      country: 'US'
+    },
+    beneficiaryAddress: {
+      line1: faker.location.streetAddress(),
+      city: faker.location.city(),
+      country: faker.location.countryCode('alpha-2')
+    },
+    type: 'BUSINESS'
+  };
+};
+
+// Generate valid US IBAN for testing
+const generateIBAN = (countryCode: string) => {
+  const bankCode = faker.string.numeric(4);
+  const accountNumber = faker.string.numeric(16).padStart(16, '0');
+  // Simplified IBAN generation (US format)
+  return `${countryCode}${faker.string.numeric(2)}${bankCode}${accountNumber}`;
+};
+```
+
+**Common International SWIFT Codes:**
+
+```typescript
+const INTERNATIONAL_BANKS = [
+  { swift: 'CHASUS33', bank: 'JPMorgan Chase (US)', country: 'US' },
+  { swift: 'CITIUS33', bank: 'Citibank (US)', country: 'US' },
+  { swift: 'BOFAUS3N', bank: 'Bank of America (US)', country: 'US' },
+  { swift: 'WFBIUS6S', bank: 'Wells Fargo (US)', country: 'US' },
+  { swift: 'DEUTDEFF', bank: 'Deutsche Bank (Germany)', country: 'DE' },
+  { swift: 'HSBCGB2L', bank: 'HSBC (UK)', country: 'GB' },
+  { swift: 'BNPAFRPP', bank: 'BNP Paribas (France)', country: 'FR' },
+  { swift: 'CHASAU2X', bank: 'JPMorgan Chase (Australia)', country: 'AU' },
+  { swift: 'RBOSCATT', bank: 'Royal Bank of Scotland (Canada)', country: 'CA' }
+];
+```
+
+---
+
 **Test Manifest File:** `test-grouping-manifest.json` (Developer Tenant structure)
 ```json
 {
@@ -382,11 +547,66 @@ test('Developer creates ACH push transaction', async ({ page }) => {
 - Update: `PUT /v2/counterparty/{id}` (modify routing, account info)
 - Search: `POST /counterparty/search` (find by name, routing number)
 
+**Using Faker.js for Realistic Data:**
+
+```typescript
+import { faker } from '@faker-js/faker';
+import { REAL_ACH_ROUTING_NUMBERS, REAL_WIRE_ROUTING_NUMBERS } from './test-data';
+
+test('Create individual customer with realistic data', async ({ page }) => {
+  const customer = generateIndividual(); // Uses faker.js
+  
+  await page.goto('/individuals/create');
+  await page.fill('[name="firstName"]', customer.firstName);
+  await page.fill('[name="lastName"]', customer.lastName);
+  await page.fill('[name="email"]', customer.email);
+  await page.fill('[name="ssn"]', customer.ssn);
+  await page.fill('[name="address.line1"]', customer.address.line1);
+  await page.fill('[name="address.city"]', customer.address.city);
+  await page.selectOption('[name="productId"]', '2001'); // DEV_CHECKING
+  
+  await page.click('button[type="submit"]');
+  await expect(page.locator('.success-message')).toBeVisible();
+});
+
+test('Create ACH counterparty with real routing number', async ({ page }) => {
+  const counterparty = generateACHCounterparty(); // Uses real routing number
+  
+  await page.goto('/businesses/counterparty/create');
+  await page.fill('[name="name"]', counterparty.name);
+  await page.fill('[name="routingNumber"]', counterparty.routingNumber); // Real Wells Fargo routing
+  await page.fill('[name="accountNumber"]', counterparty.accountNumber);
+  await page.selectOption('[name="accountType"]', counterparty.accountType);
+  
+  await page.click('button[type="submit"]');
+  await expect(page.locator('.success-message')).toContainText('Counterparty created');
+  
+  // Verify routing number validation passed
+  await expect(page.locator('.error-message')).not.toBeVisible();
+});
+
+test('Create international wire counterparty with SWIFT code', async ({ page }) => {
+  const counterparty = generateInternationalWireCounterparty();
+  
+  await page.goto('/businesses/counterparty/create');
+  await page.fill('[name="name"]', counterparty.name);
+  await page.fill('[name="swiftCode"]', counterparty.swiftCode); // Real SWIFT code
+  await page.fill('[name="iban"]', counterparty.iban);
+  await page.fill('[name="bankName"]', counterparty.bankName);
+  
+  await page.click('button[type="submit"]');
+  await expect(page.locator('.success-message')).toBeVisible();
+});
+```
+
 **Test Cases:**
-- ✅ Create individual customer with DEV_CHECKING product
-- ✅ Create business customer with valid EIN
-- ✅ Create ACH counterparty for testing
-- ⚠️ Attempt to create customer with invalid data (validation)
+- ✅ Create individual customer with DEV_CHECKING product (using faker.js)
+- ✅ Create business customer with valid EIN (faker-generated)
+- ✅ Create ACH counterparty with real Wells Fargo routing number (121000248)
+- ✅ Create wire counterparty with real Bank of America routing (026009593)
+- ✅ Create international wire counterparty with SWIFT code (CHASUS33)
+- ⚠️ Attempt to create customer with invalid SSN format (validation)
+- ⚠️ Create counterparty with invalid routing number (should fail validation)
 - ❌ Create counterparty with blocked status (error handling)
 
 ---
@@ -511,7 +731,11 @@ test('Developer creates ACH push transaction', async ({ page }) => {
 - References stable Developer tenant entities from `test-grouping-manifest.json`
 - All tests use single DEV_CHECKING product (id: 2001)
 - Reset account balances before each run via API
+- **Uses Faker.js to generate realistic customer/counterparty data** during test execution
+- **Uses real routing numbers** for ACH transactions (Wells Fargo, Bank of America, Chase, etc.)
+- **Uses real SWIFT codes** for wire transfers (CHASUS33, BOFAUS3N, WFBIUS6S, etc.)
 - Creates/deletes test entities during test execution (customers, counterparties, transactions)
+- Cleanup after each test to maintain tenant hygiene
 
 **Configuration:**
 ```typescript
@@ -640,8 +864,17 @@ Sent to engineering team at 4 AM UTC (before work day):
 - **Playwright**: Modern E2E testing with trace files and screenshots
 - **MSW (Mock Service Worker)**: API mocking for unit/UI tests
 
+### Test Data Generation
+- **@faker-js/faker**: Generate realistic customer, business, and counterparty data
+  - Personal information (names, emails, addresses, phone numbers, SSN)
+  - Business information (company names, EINs, incorporation dates)
+  - Banking details (account numbers, realistic test data)
+- **Real Routing Numbers**: ACH/Wire testing with actual bank routing numbers
+  - Wells Fargo (121000248), Bank of America (026009593), Chase (021000021)
+- **Real SWIFT Codes**: International wire testing with valid SWIFT codes
+  - CHASUS33 (Chase), BOFAUS3N (BofA), WFBIUS6S (Wells Fargo)
+
 ### Supporting Tools
-- **Faker.js**: Generate realistic test data
 - **tsx**: Execute TypeScript scripts for data seeding/cleanup
 - **OpenAI API**: Power AI test analysis
 - **Jira API**: Auto-create tickets
@@ -714,17 +947,41 @@ core_web_dashboard/
 │   └── [source code]
 ├── e2e/
 │   ├── critical-paths/         # E2E test specs
-│   └── fixtures/               # Auth, cleanup helpers
+│   ├── fixtures/               # Auth, cleanup helpers
+│   └── test-data/              # Test data generators
+│       ├── generators.ts       # Faker.js data generation functions
+│       ├── routing-numbers.ts  # Real ACH/Wire routing numbers
+│       ├── swift-codes.ts      # Real SWIFT codes for international wires
+│       └── test-entities.ts    # Helper functions for creating test entities
 ├── scripts/
-│   ├── setup-test-grouping.ts  # One-time: Create test program/products
-│   ├── reset-test-data.ts      # Reset account balances before tests
+│   ├── setup-dev-tenant.ts     # One-time: Create Developer tenant
+│   ├── reset-dev-tenant.ts     # Reset Developer tenant state
+│   ├── verify-dev-tenant.ts    # Verify tenant health
 │   ├── ai-analyze-tests.js     # AI analysis entry point
 │   └── generate-daily-digest.js
-├── test-grouping-manifest.json # Stable test entity IDs (not in git)
+├── test-grouping-manifest.json # Stable Developer tenant IDs (not in git)
 ├── url.json                    # API base URL (not in git)
 ├── reports/                    # Generated test reports
 ├── vitest.ui.config.ts         # UI test config
 └── playwright.config.ts        # E2E test config
+```
+
+**Test Data Files Organization:**
+
+```typescript
+// e2e/test-data/generators.ts
+export { generateIndividual, generateBusiness };
+export { generateACHCounterparty, generateDomesticWireCounterparty };
+export { generateInternationalWireCounterparty };
+
+// e2e/test-data/routing-numbers.ts
+export { REAL_ACH_ROUTING_NUMBERS, REAL_WIRE_ROUTING_NUMBERS };
+
+// e2e/test-data/swift-codes.ts
+export { INTERNATIONAL_BANKS, US_BANKS_WITH_SWIFT };
+
+// e2e/test-data/test-entities.ts
+export { createTestCustomer, createTestCounterparty, cleanupTestEntity };
 ```
 
 ---
