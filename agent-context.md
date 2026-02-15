@@ -34,3 +34,36 @@ npm run test:all          # Run all test suites
 - Test utilities: Redux/React Query wrappers
 - GitHub Actions workflows: `.github/workflows/*-tests-daily.yml`
 - AI analysis agents: Result parsing, Jira ticket creation, daily digest
+
+---
+
+## Test Infrastructure (Completed February 14, 2026)
+
+### Test Generator
+- Test generator script exists at `test-automation/scripts/generate-tests.js` and is production-ready
+- Generates test files with consistent role-tagged structure: [Shared], [Fintech Admin], [Bank Admin]
+- Accessible via `npm run generate-tests` command
+- Embedded TEST_SPECS array serves as version-controlled source of truth for test structure
+
+### Generated Test Files
+- All 6 test files generated with role-tagged architecture (Option A: Centralized with Role Tags)
+- Test count: 48 [Shared] + 17 [Fintech Admin] + 17 [Bank Admin] + 1 [setup] = 83 total tests
+- Files: 01-customer-management, 02-account-management, 03-transaction-creation, 04-transaction-history, 05-ach-processing, 06-compliance
+- 66 tests implemented and ready to run (49 Shared + 17 Fintech Admin)
+- 17 Bank Admin tests stubbed with test.skip() for future implementation
+
+### Documentation Standards
+- All documentation files use lowercase naming convention (except README.md which remains uppercase)
+- Complete documentation set: README.md, test-generator-guide.md, role-architecture-proposal.md, role-access-matrix.md, test-coverage-by-role.md, test-organization.md
+
+### Dashboard Configuration
+- Dashboard URL: `https://dashboard.development.braid.zone`
+- Test credentials: qagentuser1 with known password
+- Environment configured in `.env.local` (not committed to git)
+
+### Test Execution Blocker
+- Test user account `qagentuser1` has 2FA enabled, which blocks automated browser testing
+- Cognito user roles are managed by infrastructure team (cannot be created by developers)
+- Automated testing requires a dedicated test account without 2FA enabled
+- Infrastructure request documented in `test-automation/infra-request.md`
+- All test infrastructure is 100% ready and waiting for credentials

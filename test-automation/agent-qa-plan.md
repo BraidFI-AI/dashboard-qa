@@ -321,11 +321,11 @@ const INTERNATIONAL_BANKS = [
 ```json
 {
   "environment": "development",
-  "baseUrl": "https://development.braid.zone",
-  "apiKey": "MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088",
-  "username": "qagentuser1",
+  "baseUrl": "${BRAID_BASE_URL}",
+  "apiKey": "${BRAID_API_KEY}",
+  "username": "${BRAID_TEST_USERNAME}",
   "product": {
-    "id": 1069832,
+    "id": "${BRAID_PRODUCT_ID}",
     "type": "CHECKING",
     "description": "Existing product - DO NOT CREATE"
   },
@@ -337,21 +337,55 @@ const INTERNATIONAL_BANKS = [
 }
 ```
 
+⚠️ **Note:** This file should be generated from environment variables, not stored with actual values.
+
+**Better Approach - Use Test Helper:**
+```typescript
+// e2e/test-helpers/config.ts
+import { config } from 'dotenv';
+
+// Load environment variables
+config({ path: '.env.local' });
+
+export const testConfig = {
+  environment: process.env.BRAID_ENV!,
+  baseUrl: process.env.BRAID_BASE_URL!,
+  apiKey: process.env.BRAID_API_KEY!,
+  username: process.env.BRAID_TEST_USERNAME!,
+  product: {
+    id: parseInt(process.env.BRAID_PRODUCT_ID!),
+    type: 'CHECKING' as const
+  },
+  testDataGeneration: {
+    useRealRoutingNumbers: true,
+    useRealSwiftCodes: true,
+    emailDomain: 'devtest.braid.zone'
+  }
+};
+
+// Validate required config
+const required = ['baseUrl', 'apiKey', 'username'];
+required.forEach(key => {
+  if (!testConfig[key as keyof typeof testConfig]) {
+    throw new Error(`Missing required env var for: ${key}`);
+  }
+});
+```
+
 **Test Execution Pattern:**
 ```typescript
-import testConfig from './test-config.json';
+import { testConfig } from './test-helpers/config';
+import { apiClient } from './test-helpers/api-client';
 import { generateIndividual, generateACHCounterparty } from './test-data/generators';
 
-// All test entities use the configured product ID
-const PRODUCT_ID = testConfig.product.id; // 1069832
+// All test entities use the configured product ID from env var
+const PRODUCT_ID = testConfig.product.id; // Reads from BRAID_PRODUCT_ID env var
 
 test('Create individual customer for testing', async () => {
   const customer = generateIndividual();
-  customer.productId = PRODUCT_ID; // Always use 1069832
+  customer.productId = PRODUCT_ID; // Uses env var, not hardcoded
   
-  const response = await apiClient.post('/individual', customer, {
-    headers: { 'X-API-Key': testConfig.apiKey }
-  });
+  const response = await apiClient.post('/individual', customer);
   
   expect(response.status).toBe(201);
   // Store customer ID for cleanup
@@ -361,9 +395,7 @@ test('Create individual customer for testing', async () => {
 test('Create ACH counterparty with real routing', async () => {
   const counterparty = generateACHCounterparty(); // Real Wells Fargo routing
   
-  const response = await apiClient.post('/counterparty', counterparty, {
-    headers: { 'X-API-Key': testConfig.apiKey }
-  });
+  const response = await apiClient.post('/counterparty', counterparty);
   
   expect(response.status).toBe(201);
   expect(response.data.routingNumber).toBe('121000248'); // Real routing validated
@@ -385,7 +417,8 @@ test('Create ACH counterparty with real routing', async () => {
         "firstName": "John",
         "lastName": "Doe",
         "email": "john.doe.xyz123@devtest.braid.zone",
-        "productId": 1069832
+        "productId": 1069832,
+        "note": "Generated with Faker.js, cleanup scheduled"
       }
     ],
     "counterparties": [
@@ -394,7 +427,8 @@ test('Create ACH counterparty with real routing', async () => {
         "name": "Test Vendor Payments",
         "routingNumber": "121000248",
         "accountNumber": "9876543210",
-        "type": "BUSINESS"
+        "type": "BUSINESS",
+        "note": "Real Wells Fargo routing"
       }
     ],
     "accounts": [
@@ -403,12 +437,16 @@ test('Create ACH counterparty with real routing', async () => {
         "accountNumber": "ACC1234567890",
         "customerId": 123456,
         "productId": 1069832,
-        "balance": 10000.00
+        "balance": 10000.00,
+        "note": "Auto-created with customer"
       }
     ]
-  }
+  },
+  "note": "All entities will be deleted in cleanup phase"
 }
 ```
+
+⚠️ **Security Note:** This manifest file is auto-generated and does NOT contain secrets. Product ID comes from environment variable.
 
 **API Compliance Notes:**
 - All IDs match API integer format (not strings)
@@ -700,13 +738,30 @@ test('Create international wire counterparty with SWIFT code', async ({ page }) 
 
 **Test Data:**
 - Dynamic entity generation using Faker.js and real routing numbers
-- All tests use Product ID: **1069832** (existing product)
+- All tests use Product ID: **1069832** (from `BRAID_PRODUCT_ID` env var)
 - Reset account balances before each run via API
 - **Uses Faker.js to generate realistic customer/counterparty data** during test execution
 - **Uses real routing numbers** for ACH transactions (Wells Fargo, Bank of America, Chase, etc.)
 - **Uses real SWIFT codes** for wire transfers (CHASUS33, BOFAUS3N, WFBIUS6S, etc.)
 - Creates/deletes test entities during test execution (customers, counterparties, transactions)
 - Cleanup after each test to maintain tenant hygiene
+- **All credentials stored in environment variables**, never hardcoded
+
+**`.gitignore` Configuration:**
+```
+# Local environment variables (NEVER COMMIT)
+.env.local
+.env.*.local
+
+# Test runtime files
+test-run-manifest.json
+reports/
+
+# Node modules and build artifacts
+node_modules/
+.next/
+dist/
+```
 
 **Configuration:**
 ```typescript
@@ -860,76 +915,138 @@ Sent to engineering team at 4 AM UTC (before work day):
 **Environment:** Braid Development  
 **Product ID:** `1069832` (Existing product - no need to create)  
 **Test User:** `qagentuser1`  
-**API Key:** `MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088`  
-**Base URL:** `https://development.braid.zone`
 
-**Local Configuration File** (`url.json`):
-```json
-{
-  "url": "https://development.braid.zone"
-}
+⚠️ **Security Note:** Actual credentials are stored in environment variables and GitHub Secrets, NOT in code or documentation.
+
+**Required Environment Variables:**
+```bash
+# .env.local (for local development - DO NOT COMMIT)
+BRAID_ENV=development
+BRAID_BASE_URL=https://development.braid.zone
+BRAID_API_KEY=<your_api_key>
+BRAID_PRODUCT_ID=1069832
+BRAID_TEST_USERNAME=qagentuser1
+BRAID_TEST_PASSWORD=<stored_in_secrets>
 ```
 
-**Authentication Setup:**
-- Username: `qagentuser1`
-- API Key included in request headers: `X-API-Key: MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088`
-- Product ID: `1069832` (use this for all customer/account creation)
+**Test Helper Usage:**
+```typescript
+// e2e/test-helpers/config.ts
+export const testConfig = {
+  environment: process.env.BRAID_ENV || 'development',
+  baseUrl: process.env.BRAID_BASE_URL!,
+  apiKey: process.env.BRAID_API_KEY!,
+  username: process.env.BRAID_TEST_USERNAME!,
+  productId: parseInt(process.env.BRAID_PRODUCT_ID!),
+};
+
+// Validate configuration on import
+if (!testConfig.apiKey || !testConfig.baseUrl) {
+  throw new Error('Missing required environment variables. Check .env.local');
+}
+
+// e2e/test-helpers/api-client.ts
+import { testConfig } from './config';
+
+export const apiClient = axios.create({
+  baseURL: testConfig.baseUrl,
+  headers: {
+    'X-API-Key': testConfig.apiKey,
+    'Content-Type': 'application/json'
+  }
+});
+
+// Usage in tests
+import { testConfig } from '../test-helpers/config';
+
+test('Create customer with configured product', async () => {
+  const customer = generateIndividual();
+  customer.productId = testConfig.productId; // 1069832 from env var
+  
+  const response = await apiClient.post('/individual', customer);
+  expect(response.status).toBe(201);
+});
+```
 
 **Important Notes:**
-- ⚠️ **Do NOT create new products** - Use existing Product ID `1069832`
-- All test customers must be created with `productId: 1069832`
-- All test accounts will belong to this product
-- API authentication uses API key (not Cognito tokens for E2E tests)
+- ⚠️ **Never commit `.env.local`** - Add to `.gitignore`
+- ⚠️ **Never hardcode API keys** in test files
+- ✅ All credentials come from environment variables
+- ✅ Use existing Product ID `1069832` (stored in env var)
+- ✅ Tests read from `testConfig` helper
 
 ---
 
-### GitHub Secrets (Already Configured by DevOps)
+### GitHub Secrets (For CI/CD)
+
+**Configure these in GitHub Secrets for automated runs:**
 ```
-BRAID_DEV_API_URL=https://development.braid.zone
-BRAID_DEV_API_KEY=MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088
-BRAID_DEV_PRODUCT_ID=1069832
-TEST_USER_EMAIL=qagentuser1@braid.zone
-TEST_USER_PASSWORD=[stored in secrets]
-OPENAI_API_KEY
-JIRA_API_TOKEN
-JIRA_PROJECT_KEY
-SMTP_SERVER / SMTP_USERNAME / SMTP_PASSWORD
-ENGINEERING_TEAM_EMAIL
-SLACK_WEBHOOK_URL
+BRAID_ENV=development
+BRAID_BASE_URL=https://development.braid.zone
+BRAID_API_KEY=<actual_api_key_from_braid>
+BRAID_PRODUCT_ID=1069832
+BRAID_TEST_USERNAME=qagentuser1
+BRAID_TEST_PASSWORD=<actual_password>
+
+# Additional secrets for automation
+OPENAI_API_KEY=<for_ai_analysis>
+JIRA_API_TOKEN=<for_ticket_creation>
+JIRA_PROJECT_KEY=<project_key>
+SMTP_SERVER=<email_server>
+SMTP_USERNAME=<email_user>
+SMTP_PASSWORD=<email_password>
+ENGINEERING_TEAM_EMAIL=<team_email>
+SLACK_WEBHOOK_URL=<slack_webhook>
 ```
 
 ### Package Scripts (Added to Development)
 ```bash
 # Run tests locally
 npm run test:ui             # Run UI tests with MSW
-npm run test:e2e            # Run E2E tests (requires test-config.json)
+npm run test:e2e            # Run E2E tests (requires .env.local)
 
-# Test data management (using Product ID 1069832)
-npm run test:verify-config   # Verify test-config.json and API access
+# Test data management
+npm run test:verify-config   # Verify environment variables and API access
 npm run test:cleanup         # Clean up test entities created during test runs
 npm run test:generate-data   # Generate sample test data with Faker.js
 ```
 
-**Note:** E2E tests require `test-config.json` configured with actual credentials:
-```json
-{
-  "environment": "development",
-  "baseUrl": "https://development.braid.zone",
-  "apiKey": "MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088",
-  "username": "qagentuser1",
-  "product": {
-    "id": 1069832,
-    "type": "CHECKING"
-  }
-}
+**Setup for Local Development:**
+
+1. **Create `.env.local` file** (DO NOT COMMIT):
+```bash
+# .env.local
+BRAID_ENV=development
+BRAID_BASE_URL=https://development.braid.zone
+BRAID_API_KEY=<your_api_key_here>
+BRAID_PRODUCT_ID=1069832
+BRAID_TEST_USERNAME=qagentuser1
+BRAID_TEST_PASSWORD=<your_password_here>
 ```
 
-**Setup Process:**
-1. Create `test-config.json` with credentials (see above)
-2. **DO NOT create new products** - Use existing Product ID 1069832
-3. Tests dynamically create/delete customers and counterparties using Faker.js
-4. Cleanup script removes test entities after each run
-5. Product 1069832 remains stable, only test data is ephemeral
+2. **Add to `.gitignore`**:
+```
+.env.local
+.env.*.local
+test-run-manifest.json
+```
+
+3. **Run verification script**:
+```bash
+npm run test:verify-config
+```
+
+**What NOT to do:**
+- ❌ Don't hardcode API keys in test files
+- ❌ Don't commit `.env.local` to git
+- ❌ Don't store credentials in test-config.json
+- ❌ Don't create new products (use existing 1069832)
+
+**What TO do:**
+- ✅ Use environment variables for all secrets
+- ✅ Read config from test helpers
+- ✅ Keep `.env.local` in `.gitignore`
+- ✅ Use GitHub Secrets for CI/CD
 
 ---
 
@@ -937,6 +1054,8 @@ npm run test:generate-data   # Generate sample test data with Faker.js
 
 ```
 core_web_dashboard/
+├── .env.local                  # Local secrets (NOT IN GIT)
+├── .gitignore                  # Must include .env.local
 ├── .github/
 │   └── workflows/
 │       ├── ui-tests-daily.yml
@@ -950,47 +1069,73 @@ core_web_dashboard/
 ├── e2e/
 │   ├── critical-paths/         # E2E test specs
 │   ├── fixtures/               # Auth, cleanup helpers
+│   ├── test-helpers/           # Configuration and API helpers
+│   │   ├── config.ts           # Read environment variables
+│   │   ├── api-client.ts       # Axios client with API key
+│   │   └── cleanup.ts          # Test data cleanup utilities
 │   └── test-data/              # Test data generators
 │       ├── generators.ts       # Faker.js data generation functions
 │       ├── routing-numbers.ts  # Real ACH/Wire routing numbers
 │       ├── swift-codes.ts      # Real SWIFT codes for international wires
 │       └── test-entities.ts    # Helper functions for creating test entities
 ├── scripts/
-│   ├── verify-config.ts        # Verify test-config.json and API access
+│   ├── verify-config.ts        # Verify env vars and API access
 │   ├── cleanup-test-data.ts    # Clean up test entities after run
 │   ├── generate-sample-data.ts # Generate sample Faker.js data
 │   ├── ai-analyze-tests.js     # AI analysis entry point
 │   └── generate-daily-digest.js
-├── test-config.json            # Test credentials & configuration (not in git)
-├── test-run-manifest.json      # Generated during test run (not in git)
+├── test-run-manifest.json      # Generated during test run (NOT IN GIT)
 ├── reports/                    # Generated test reports
 ├── vitest.ui.config.ts         # UI test config
 └── playwright.config.ts        # E2E test config
 ```
 
-**Test Configuration Files:**
+**Test Helper Files:**
 
 ```typescript
-// test-config.json (create manually, not in git)
-{
-  "environment": "development",
-  "baseUrl": "https://development.braid.zone",
-  "apiKey": "MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088",
-  "username": "qagentuser1",
-  "product": { "id": 1069832, "type": "CHECKING" }
+// e2e/test-helpers/config.ts
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+
+export const testConfig = {
+  environment: process.env.BRAID_ENV!,
+  baseUrl: process.env.BRAID_BASE_URL!,
+  apiKey: process.env.BRAID_API_KEY!,
+  username: process.env.BRAID_TEST_USERNAME!,
+  productId: parseInt(process.env.BRAID_PRODUCT_ID!)
+};
+
+// e2e/test-helpers/api-client.ts
+import axios from 'axios';
+import { testConfig } from './config';
+
+export const apiClient = axios.create({
+  baseURL: testConfig.baseUrl,
+  headers: {
+    'X-API-Key': testConfig.apiKey,
+    'Content-Type': 'application/json'
+  }
+});
+
+// e2e/test-helpers/cleanup.ts
+import { apiClient } from './api-client';
+
+class TestCleanup {
+  private entities = { customers: [], counterparties: [], transactions: [] };
+  
+  addCustomer(id: number) { this.entities.customers.push(id); }
+  addCounterparty(id: number) { this.entities.counterparties.push(id); }
+  
+  async cleanupAll() {
+    // Delete all created entities
+    for (const id of this.entities.customers) {
+      await apiClient.delete(`/individual/${id}`);
+    }
+    // ... cleanup other entities
+  }
 }
 
-// test-run-manifest.json (auto-generated during test execution)
-{
-  "testRunId": "2026-02-14-02-00-00",
-  "productId": 1069832,
-  "entitiesCreated": {
-    "customers": ["customer_id_1", "customer_id_2"],
-    "counterparties": ["cp_id_1", "cp_id_2"],
-    "transactions": ["txn_id_1", "txn_id_2"]
-  },
-  "cleanup": "auto"
-}
+export const testCleanup = new TestCleanup();
 ```
 
 **Test Data Files Organization:**

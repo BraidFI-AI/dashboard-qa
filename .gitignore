@@ -7,6 +7,11 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
+/playwright/.cache/
+test-run-manifest.json
+/.auth/
 
 # next.js
 /.next/
