@@ -117,32 +117,40 @@ Customer (Individual or Business) ────────┘
 Focused on **Developer role workflows** with minimal but sufficient test entities:
 
 ```
-Developer Test Tenant
+Developer Test Tenant (development.braid.zone)
 │
-├─→ Program: DEV_TEST_PROGRAM (id: 1001)
-│   └─→ Single Product: DEV_CHECKING (id: 2001, type: CHECKING)
+├─→ Product: ID 1069832 (Existing - DO NOT CREATE)
+│   └─→ Type: CHECKING (pre-configured product)
 │
-├─→ Test Customers (for different testing scenarios)
+├─→ Test Customers (created dynamically using Faker.js)
 │   Individuals:
-│   ├─→ Dev User Active (id: 3001, email: dev.active@devtest.braid.zone)
-│   ├─→ Dev User High Balance (id: 3002, email: dev.highbal@devtest.braid.zone)
-│   └─→ Dev User Zero Balance (id: 3003, email: dev.zero@devtest.braid.zone)
+│   ├─→ Generated via generateIndividual() - productId: 1069832
+│   ├─→ Realistic names, SSN, addresses, DOB
+│   └─→ Email: faker-generated @devtest.braid.zone
 │   Business:
-│   └─→ Dev Test Corp (id: 4001, ein: 99-8880001, email: devcorp@devtest.braid.zone)
+│   └─→ Generated via generateBusiness() - productId: 1069832
+│       └─→ Company names, EINs, business addresses
 │
-├─→ Test Accounts (all use productId: 2001)
-│   ├─→ DEV_CHK_FUNDED (id: 5001, balance: $10,000) - Standard testing
-│   ├─→ DEV_CHK_HIGHBAL (id: 5002, balance: $100,000) - High value transactions
-│   ├─→ DEV_CHK_ZERO (id: 5003, balance: $0) - Insufficient funds scenarios
-│   ├─→ DEV_CHK_INACTIVE (id: 5004, balance: $5,000, status: INACTIVE) - Status testing
-│   └─→ DEV_BUS_FUNDED (id: 5005, balance: $50,000) - Business account testing
+├─→ Test Accounts (automatically created with customers)
+│   ├─→ Accounts created when customers onboarded
+│   ├─→ All belong to productId: 1069832
+│   └─→ Various balance states for testing scenarios
 │
-└─→ Test Counterparties (for ACH/Wire testing)
-    ├─→ DEV_ACH_VENDOR (id: 6001, routing: 121000248, acct: 999111111)
-    ├─→ DEV_WIRE_DOMESTIC (id: 6002, routing: 026009593, acct: 888222222)
-    ├─→ DEV_WIRE_INTL (id: 6003, swift: CHASUS33, iban: US64SVBKUS6S...)
-    └─→ DEV_ACH_BLOCKED (id: 6004, status: BLOCKED) - Error scenario testing
+└─→ Test Counterparties (generated with real routing numbers)
+    ├─→ ACH: Generated via generateACHCounterparty()
+    │   └─→ Real routing: 121000248, 026009593, 021000021, etc.
+    ├─→ Wire Domestic: Generated via generateDomesticWireCounterparty()
+    │   └─→ Real routing + SWIFT codes
+    └─→ Wire International: Generated via generateInternationalWireCounterparty()
+        └─→ SWIFT codes: CHASUS33, BOFAUS3N, WFBIUS6S, etc.
 ```
+
+**Key Configuration:**
+- **Product ID:** `1069832` (use for ALL customer/account creation)
+- **Environment:** `https://development.braid.zone`
+- **API Authentication:** API Key in request headers
+- **Data Generation:** Faker.js for all dynamic entities
+- **Routing Numbers:** Real bank routing numbers for validation
 
 ---
 
@@ -309,148 +317,95 @@ const INTERNATIONAL_BANKS = [
 
 ---
 
-**Test Manifest File:** `test-grouping-manifest.json` (Developer Tenant structure)
+**Test Configuration File:** `test-config.json` (Developer Tenant settings)
 ```json
 {
-  "program": {
-    "id": 1001,
-    "name": "DEV_TEST_PROGRAM",
-    "description": "Developer testing program"
-  },
+  "environment": "development",
+  "baseUrl": "https://development.braid.zone",
+  "apiKey": "MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088",
+  "username": "qagentuser1",
   "product": {
-    "id": 2001,
-    "programId": 1001,
-    "name": "DEV_CHECKING",
-    "type": "CHECKING"
+    "id": 1069832,
+    "type": "CHECKING",
+    "description": "Existing product - DO NOT CREATE"
   },
-  "customers": {
-    "dev_active": {
-      "id": 3001,
-      "type": "INDIVIDUAL",
-      "firstName": "Dev",
-      "lastName": "ActiveUser",
-      "email": "dev.active@devtest.braid.zone"
-    },
-    "dev_highbalance": {
-      "id": 3002,
-      "type": "INDIVIDUAL",
-      "firstName": "Dev",
-      "lastName": "HighBalance",
-      "email": "dev.highbal@devtest.braid.zone"
-    },
-    "dev_zero": {
-      "id": 3003,
-      "type": "INDIVIDUAL",
-      "firstName": "Dev",
-      "lastName": "ZeroBalance",
-      "email": "dev.zero@devtest.braid.zone"
-    },
-    "dev_corp": {
-      "id": 4001,
-      "type": "BUSINESS",
-      "legalName": "Dev Test Corp LLC",
-      "ein": "99-8880001",
-      "email": "devcorp@devtest.braid.zone"
-    }
-  },
-  "accounts": {
-    "funded": {
-      "id": 5001,
-      "accountNumber": "DEV_CHK_FUNDED",
-      "customerId": 3001,
-      "productId": 2001,
-      "accountType": "CHECKING",
-      "status": "ACTIVE",
-      "balance": 10000.00
-    },
-    "high_balance": {
-      "id": 5002,
-      "accountNumber": "DEV_CHK_HIGHBAL",
-      "customerId": 3002,
-      "productId": 2001,
-      "accountType": "CHECKING",
-      "status": "ACTIVE",
-      "balance": 100000.00
-    },
-    "zero_balance": {
-      "id": 5003,
-      "accountNumber": "DEV_CHK_ZERO",
-      "customerId": 3003,
-      "productId": 2001,
-      "accountType": "CHECKING",
-      "status": "ACTIVE",
-      "balance": 0.00
-    },
-    "inactive": {
-      "id": 5004,
-      "accountNumber": "DEV_CHK_INACTIVE",
-      "customerId": 3001,
-      "productId": 2001,
-      "accountType": "CHECKING",
-      "status": "INACTIVE",
-      "balance": 5000.00
-    },
-    "business": {
-      "id": 5005,
-      "accountNumber": "DEV_BUS_FUNDED",
-      "customerId": 4001,
-      "productId": 2001,
-      "accountType": "CHECKING",
-      "status": "ACTIVE",
-      "balance": 50000.00
-    }
-  },
-  "counterparties": {
-    "ach_vendor": {
-      "id": 6001,
-      "name": "Dev ACH Vendor",
-      "routingNumber": "121000248",
-      "accountNumber": "999111111",
-      "type": "BUSINESS"
-    },
-    "wire_domestic": {
-      "id": 6002,
-      "name": "Dev Wire Recipient",
-      "routingNumber": "026009593",
-      "accountNumber": "888222222",
-      "type": "BUSINESS"
-    },
-    "wire_international": {
-      "id": 6003,
-      "name": "Dev International Wire",
-      "swiftCode": "CHASUS33",
-      "iban": "US64SVBKUS6S3300400000"
-    },
-    "ach_blocked": {
-      "id": 6004,
-      "name": "Dev Blocked Counterparty",
-      "routingNumber": "121000248",
-      "accountNumber": "777333333",
-      "status": "BLOCKED"
-    }
+  "testDataGeneration": {
+    "useRealRoutingNumbers": true,
+    "useRealSwiftCodes": true,
+    "emailDomain": "devtest.braid.zone"
   }
 }
 ```
-      "productId": 2002,
-      "accountType": "SAVINGS",
-      "status": "ACTIVE",
-      "balance": 50000.00
-    }
-  },
-  "counterparties": {
-    "ach_vendor": {
-      "id": 6001,
-      "name": "Test Vendor ACH",
-      "routingNumber": "121000248",
-      "accountNumber": "999111111",
-      "type": "BUSINESS"
-    },
-    "wire_international": {
-      "id": 6002,
-      "name": "International Wire Recipient",
-      "swiftCode": "CHASUS33",
-      "iban": "US64SVBKUS6S3300400000"
-    }
+
+**Test Execution Pattern:**
+```typescript
+import testConfig from './test-config.json';
+import { generateIndividual, generateACHCounterparty } from './test-data/generators';
+
+// All test entities use the configured product ID
+const PRODUCT_ID = testConfig.product.id; // 1069832
+
+test('Create individual customer for testing', async () => {
+  const customer = generateIndividual();
+  customer.productId = PRODUCT_ID; // Always use 1069832
+  
+  const response = await apiClient.post('/individual', customer, {
+    headers: { 'X-API-Key': testConfig.apiKey }
+  });
+  
+  expect(response.status).toBe(201);
+  // Store customer ID for cleanup
+  testCleanup.addCustomer(response.data.id);
+});
+
+test('Create ACH counterparty with real routing', async () => {
+  const counterparty = generateACHCounterparty(); // Real Wells Fargo routing
+  
+  const response = await apiClient.post('/counterparty', counterparty, {
+    headers: { 'X-API-Key': testConfig.apiKey }
+  });
+  
+  expect(response.status).toBe(201);
+  expect(response.data.routingNumber).toBe('121000248'); // Real routing validated
+  testCleanup.addCounterparty(response.data.id);
+});
+```
+
+**Dynamic Test Manifest** - Generated during test execution:
+```json
+{
+  "environment": "development",
+  "productId": 1069832,
+  "createdAt": "2026-02-14T02:00:00Z",
+  "testRun": {
+    "customers": [
+      {
+        "id": 123456,
+        "type": "INDIVIDUAL",
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe.xyz123@devtest.braid.zone",
+        "productId": 1069832
+      }
+    ],
+    "counterparties": [
+      {
+        "id": 234567,
+        "name": "Test Vendor Payments",
+        "routingNumber": "121000248",
+        "accountNumber": "9876543210",
+        "type": "BUSINESS"
+      }
+    ],
+    "accounts": [
+      {
+        "id": 345678,
+        "accountNumber": "ACC1234567890",
+        "customerId": 123456,
+        "productId": 1069832,
+        "balance": 10000.00
+      }
+    ]
   }
 }
 ```
@@ -461,20 +416,36 @@ const INTERNATIONAL_BANKS = [
 - Account statuses: `ACTIVE`, `BLOCKED`, `INACTIVE`, `CLOSED` (per OpenAPI enum)
 - Customer types: `INDIVIDUAL` or `BUSINESS`
 - Counterparty fields match API requirements for ACH/Wire transactions
+- **Product ID:** Always use `1069832` for all test entities
 
-**Tests reference stable entities:**
+**Tests reference generated entities:**
 ```typescript
-import manifest from '../test-grouping-manifest.json'
+import testConfig from '../test-config.json'
+import { generateIndividual, generateACHCounterparty } from '../test-data/generators';
 
 test('Developer creates ACH push transaction', async ({ page }) => {
-  const account = manifest.accounts.funded  // DEV_CHK_FUNDED
-  const counterparty = manifest.counterparties.ach_vendor  // DEV_ACH_VENDOR
+  // Generate customer and counterparty for test
+  const customer = generateIndividual();
+  customer.productId = testConfig.product.id; // 1069832
   
-  // Dashboard makes POST /transaction/ach/push with:
-  // { accountNumber: "DEV_CHK_FUNDED", counterpartyId: 6001, amount: 100.00, ... }
-  await page.fill('[name="accountNumber"]', account.accountNumber)
-  await page.fill('[name="amount"]', '100.00')
-  // Account already exists with $10,000 balance
+  const counterparty = generateACHCounterparty(); // Real routing number
+  
+  // Create entities via API
+  const customerRes = await createCustomer(customer);
+  const counterpartyRes = await createCounterparty(counterparty);
+  
+  // Get generated account number from customer creation
+  const account = await getCustomerAccount(customerRes.id);
+  
+  // Dashboard makes POST /transaction/ach/push
+  await page.goto('/transactions/newTransaction');
+  await page.fill('[name="accountNumber"]', account.accountNumber);
+  await page.fill('[name="amount"]', '100.00');
+  await page.selectOption('[name="counterpartyId"]', counterpartyRes.id.toString());
+  
+  // Cleanup after test
+  await cleanup.deleteCustomer(customerRes.id);
+  await cleanup.deleteCounterparty(counterpartyRes.id);
 })
 ```
 
@@ -563,7 +534,7 @@ test('Create individual customer with realistic data', async ({ page }) => {
   await page.fill('[name="ssn"]', customer.ssn);
   await page.fill('[name="address.line1"]', customer.address.line1);
   await page.fill('[name="address.city"]', customer.address.city);
-  await page.selectOption('[name="productId"]', '2001'); // DEV_CHECKING
+  await page.selectOption('[name="productId"]', '1069832'); // Existing product
   
   await page.click('button[type="submit"]');
   await expect(page.locator('.success-message')).toBeVisible();
@@ -728,8 +699,8 @@ test('Create international wire counterparty with SWIFT code', async ({ page }) 
 6. Verify state changes via UI and API responses
 
 **Test Data:**
-- References stable Developer tenant entities from `test-grouping-manifest.json`
-- All tests use single DEV_CHECKING product (id: 2001)
+- Dynamic entity generation using Faker.js and real routing numbers
+- All tests use Product ID: **1069832** (existing product)
 - Reset account balances before each run via API
 - **Uses Faker.js to generate realistic customer/counterparty data** during test execution
 - **Uses real routing numbers** for ACH transactions (Wells Fargo, Bank of America, Chase, etc.)
@@ -884,14 +855,41 @@ Sent to engineering team at 4 AM UTC (before work day):
 
 ## Required Setup
 
+### Developer Tenant Configuration
+
+**Environment:** Braid Development  
+**Product ID:** `1069832` (Existing product - no need to create)  
+**Test User:** `qagentuser1`  
+**API Key:** `MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088`  
+**Base URL:** `https://development.braid.zone`
+
+**Local Configuration File** (`url.json`):
+```json
+{
+  "url": "https://development.braid.zone"
+}
+```
+
+**Authentication Setup:**
+- Username: `qagentuser1`
+- API Key included in request headers: `X-API-Key: MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088`
+- Product ID: `1069832` (use this for all customer/account creation)
+
+**Important Notes:**
+- ⚠️ **Do NOT create new products** - Use existing Product ID `1069832`
+- All test customers must be created with `productId: 1069832`
+- All test accounts will belong to this product
+- API authentication uses API key (not Cognito tokens for E2E tests)
+
+---
+
 ### GitHub Secrets (Already Configured by DevOps)
 ```
-BRAID_TEST_API_URL
-BRAID_TEST_API_TOKEN
-TEST_USER_POOLS_ID
-TEST_USER_POOLS_CLIENT_ID
-TEST_USER_EMAIL
-TEST_USER_PASSWORD
+BRAID_DEV_API_URL=https://development.braid.zone
+BRAID_DEV_API_KEY=MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088
+BRAID_DEV_PRODUCT_ID=1069832
+TEST_USER_EMAIL=qagentuser1@braid.zone
+TEST_USER_PASSWORD=[stored in secrets]
 OPENAI_API_KEY
 JIRA_API_TOKEN
 JIRA_PROJECT_KEY
@@ -904,30 +902,34 @@ SLACK_WEBHOOK_URL
 ```bash
 # Run tests locally
 npm run test:ui             # Run UI tests with MSW
-npm run test:e2e            # Run E2E tests (requires url.json → test API)
+npm run test:e2e            # Run E2E tests (requires test-config.json)
 
-# Developer Tenant management
-npm run test:setup-dev-tenant    # One-time: Create Developer test tenant in Braid
-                                 # Creates DEV_TEST_PROGRAM, DEV_CHECKING product, 
-                                 # test customers, accounts, and counterparties
-npm run test:reset-dev-tenant    # Reset Developer tenant before test run
-                                 # Resets account balances, deletes test transactions
-npm run test:verify-dev-tenant   # Verify Developer tenant health
-                                 # Checks all entities exist and are in correct state
+# Test data management (using Product ID 1069832)
+npm run test:verify-config   # Verify test-config.json and API access
+npm run test:cleanup         # Clean up test entities created during test runs
+npm run test:generate-data   # Generate sample test data with Faker.js
 ```
 
-**Note:** E2E tests require `url.json` configured to point to Braid test API:
+**Note:** E2E tests require `test-config.json` configured with actual credentials:
 ```json
 {
-  "url": "https://api.test.braid.zone"
+  "environment": "development",
+  "baseUrl": "https://development.braid.zone",
+  "apiKey": "MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088",
+  "username": "qagentuser1",
+  "product": {
+    "id": 1069832,
+    "type": "CHECKING"
+  }
 }
 ```
 
-**Developer Tenant Setup Process:**
-1. Run `npm run test:setup-dev-tenant` once to create all test entities
-2. Generates `test-grouping-manifest.json` with actual IDs from API
-3. Daily tests use these stable IDs for predictable testing
-4. Reset script runs before each test execution to ensure clean state
+**Setup Process:**
+1. Create `test-config.json` with credentials (see above)
+2. **DO NOT create new products** - Use existing Product ID 1069832
+3. Tests dynamically create/delete customers and counterparties using Faker.js
+4. Cleanup script removes test entities after each run
+5. Product 1069832 remains stable, only test data is ephemeral
 
 ---
 
@@ -954,16 +956,41 @@ core_web_dashboard/
 │       ├── swift-codes.ts      # Real SWIFT codes for international wires
 │       └── test-entities.ts    # Helper functions for creating test entities
 ├── scripts/
-│   ├── setup-dev-tenant.ts     # One-time: Create Developer tenant
-│   ├── reset-dev-tenant.ts     # Reset Developer tenant state
-│   ├── verify-dev-tenant.ts    # Verify tenant health
+│   ├── verify-config.ts        # Verify test-config.json and API access
+│   ├── cleanup-test-data.ts    # Clean up test entities after run
+│   ├── generate-sample-data.ts # Generate sample Faker.js data
 │   ├── ai-analyze-tests.js     # AI analysis entry point
 │   └── generate-daily-digest.js
-├── test-grouping-manifest.json # Stable Developer tenant IDs (not in git)
-├── url.json                    # API base URL (not in git)
+├── test-config.json            # Test credentials & configuration (not in git)
+├── test-run-manifest.json      # Generated during test run (not in git)
 ├── reports/                    # Generated test reports
 ├── vitest.ui.config.ts         # UI test config
 └── playwright.config.ts        # E2E test config
+```
+
+**Test Configuration Files:**
+
+```typescript
+// test-config.json (create manually, not in git)
+{
+  "environment": "development",
+  "baseUrl": "https://development.braid.zone",
+  "apiKey": "MM2rWoKgkLfDEJoOTWV57q9QAcXOxbV2kqQoQ088",
+  "username": "qagentuser1",
+  "product": { "id": 1069832, "type": "CHECKING" }
+}
+
+// test-run-manifest.json (auto-generated during test execution)
+{
+  "testRunId": "2026-02-14-02-00-00",
+  "productId": 1069832,
+  "entitiesCreated": {
+    "customers": ["customer_id_1", "customer_id_2"],
+    "counterparties": ["cp_id_1", "cp_id_2"],
+    "transactions": ["txn_id_1", "txn_id_2"]
+  },
+  "cleanup": "auto"
+}
 ```
 
 **Test Data Files Organization:**
