@@ -58,11 +58,7 @@ export default defineConfig({
     // Action timeout (15 seconds for clicks, fills, etc.)
     actionTimeout: 15000,
 
-    // Extra HTTP headers
-    extraHTTPHeaders: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
+    // Removed extraHTTPHeaders - was interfering with Cognito auth requests
   },
 
   // Test projects (browser configurations)

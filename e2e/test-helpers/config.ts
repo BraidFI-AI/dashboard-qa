@@ -20,7 +20,9 @@ config({ path: path.resolve(process.cwd(), '.env.local') });
 
 export interface TestConfig {
   environment: string;
-  baseUrl: string;
+  baseUrl: string; // Backward compatibility - same as dashboardUrl
+  dashboardUrl: string;
+  apiUrl: string;
   apiKey: string;
   username: string;
   password: string;
@@ -32,9 +34,18 @@ export interface TestConfig {
   };
 }
 
+// For backward compatibility during migration
+export const testConfig_legacy = {
+  get baseUrl() {
+    return testConfig.dashboardUrl;
+  }
+};
+
 export const testConfig: TestConfig = {
   environment: process.env.BRAID_ENV || 'development',
-  baseUrl: process.env.BRAID_BASE_URL!,
+  dashboardUrl: process.env.BRAID_DASHBOARD_URL || process.env.BRAID_BASE_URL!,
+  baseUrl: process.env.BRAID_DASHBOARD_URL || process.env.BRAID_BASE_URL!, // Backward compatibility
+  apiUrl: process.env.BRAID_API_URL || 'https://api.development.braid.zone',
   apiKey: process.env.BRAID_API_KEY!,
   username: process.env.BRAID_TEST_USERNAME || 'qagentuser1',
   password: process.env.BRAID_TEST_PASSWORD!,
@@ -45,6 +56,9 @@ export const testConfig: TestConfig = {
     emailDomain: 'devtest.braid.zone'
   }
 };
+
+// Backward compatibility alias
+export const baseUrl = testConfig.dashboardUrl;
 
 // Validate required configuration
 const requiredEnvVars = [
@@ -69,7 +83,8 @@ if (missingVars.length > 0) {
 // Log configuration (without secrets)
 console.log('Test Configuration Loaded:');
 console.log(`  Environment: ${testConfig.environment}`);
-console.log(`  Base URL: ${testConfig.baseUrl}`);
+console.log(`  Dashboard URL: ${testConfig.dashboardUrl}`);
+console.log(`  API URL: ${testConfig.apiUrl}`);
 console.log(`  Product ID: ${testConfig.productId}`);
 console.log(`  Username: ${testConfig.username}`);
 console.log(`  API Key: ${testConfig.apiKey ? '✓ Loaded' : '✗ Missing'}`);

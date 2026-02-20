@@ -24,12 +24,26 @@ function generateSSN(): string {
 }
 
 /**
+ * Generate SSN as digits only (no hyphens) for API validation
+ */
+function generateSSNDigitsOnly(): string {
+  return faker.string.numeric(9); // 9 digits for SSN
+}
+
+/**
  * Generate random EIN in format XX-XXXXXXX
  */
 function generateEIN(): string {
   const prefix = faker.string.numeric(2);
   const suffix = faker.string.numeric(7);
   return `${prefix}-${suffix}`;
+}
+
+/**
+ * Generate EIN as digits only (no hyphens) for API validation
+ */
+function generateEINDigitsOnly(): string {
+  return faker.string.numeric(9); // 9 digits for EIN
 }
 
 /**
@@ -51,7 +65,7 @@ export function generateIndividual() {
     phone: faker.phone.number('##########'), // 10 digits
     ssn: generateSSN(),
     dateOfBirth: generateDateOfBirth(),
-    idNumber: generateSSN(), // Same as SSN for individuals
+    idNumber: generateSSNDigitsOnly(), // API requires digits only, no hyphens
     idType: 'SSN',
     address: {
       line1: faker.location.streetAddress(),
@@ -79,8 +93,9 @@ export function generateBusiness() {
     businessEntityType: faker.helpers.arrayElement([
       'CORPORATION',
       'LIMITED_LIABILITY_COMPANY',
-      'PARTNERSHIP',
-      'SOLE_PROPRIETOR'
+      'GENERAL_PARTNERSHIP',
+      'SOLE_PROPRIETOR',
+      'LIMITED_LIABILITY_PARTNERSHIP'
     ]),
     incorporationState: faker.location.state({ abbreviated: true }),
     formationDate: faker.date.past({ years: 10 }).toISOString().split('T')[0],
@@ -98,7 +113,7 @@ export function generateBusiness() {
       type: 'MAILING'
     },
     businessIdType: 'EIN',
-    idNumber: generateEIN(),
+    idNumber: generateEINDigitsOnly(), // API requires digits only, no hyphens
     mcc: faker.helpers.arrayElement(['5411', '5812', '5999', '7372', '8011']),
     naics: faker.helpers.arrayElement(['511210', '541511', '541512', '621111', '722511'])
   };

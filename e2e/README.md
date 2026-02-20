@@ -30,12 +30,29 @@ cp .env.local.template .env.local
 Edit `.env.local` with credentials from infra team:
 ```bash
 BRAID_ENV=development
+
+# Dashboard URL (for UI testing)
 BRAID_BASE_URL=https://dashboard.development.braid.zone
+
+# API URL (for data operations) - optional, defaults to https://api.development.braid.zone
+BRAID_API_URL=https://api.development.braid.zone
+
+# API Key (fallback auth, not typically used)
 BRAID_API_KEY=your_actual_api_key_here
-BRAID_TEST_USERNAME=qagentuser-test
+
+# Test credentials (2FA must be disabled)
+BRAID_TEST_USERNAME=qagentuser1
 BRAID_TEST_PASSWORD=password_from_infra_team
+
+# Test product ID
 BRAID_PRODUCT_ID=1069832
 ```
+
+**Important Notes:**
+- **Dashboard vs API URLs**: Tests use `BRAID_BASE_URL` for UI navigation and `BRAID_API_URL` for API calls
+- **Authentication**: API calls use Bearer token (extracted from Cognito session), not API key
+- **Token Storage**: Auth setup extracts Cognito access token and saves to `.auth/token.json`
+- **2FA Must Be Disabled**: Automated tests cannot handle 2FA codes
 
 ### 4. Install Dependencies
 ```bash
@@ -90,6 +107,70 @@ e2e/
     ├── generators.ts           # Faker.js data generators
     └── routing-numbers.ts      # Real banking data
 ```
+
+## Authentication Architecture
+
+### Two-Phase Authentication
+
+E2E tests use a two-phase authentication approach to mirror production behavior:
+
+**Phase 1: Dashboard Authentication (Setup)**
+- Auth setup logs into dashboard UI via Cognito
+- User credentials authenticate against Amplify/Cognito
+- Authenticated session state saved to `.auth/user.json`
+- All subsequent tests reuse this session state
+
+**Phase 2: API Authentication (Test Execution)**
+- During auth setup, Cognito access token is extracted from sessionStorage
+- Token saved to `.auth/token.json` for API operations
+- API client automatically loads token and adds `Authorization: Bearer {token}` header
+- Mirrors production: Dashboard's ApiClient uses `fetchAuthSession()` → Bearer token
+
+### Authentication Flow
+
+```
+1. Auth Setup (e2e/auth.setup.ts)
+   ├─ Navigate to dashboard
+   ├─ Fill login form with credentials
+   ├─ Cognito authenticates user
+   ├─ Extract access token from sessionStorage
+   ├─ Save to .auth/token.json
+   └─ Save session state to .auth/user.json
+
+2. Test Execution
+   ├─ Browser loads session from .auth/user.json (UI navigation)
+   └─ API client loads token from .auth/token.json (API calls)
+```
+
+### Key Files
+- `e2e/auth.setup.ts` - Handles login and token extraction
+- `e2e/test-helpers/api-client.ts` - API client with Bearer token auth
+- `e2e/test-helpers/config.ts` - Separates dashboard URL from API URL
+- `.auth/user.json` - Playwright session storage (cookies, localStorage)
+- `.auth/token.json` - Cognito access token for API calls
+
+### Why Separate Dashboard and API URLs?
+
+- **Dashboard URL** (`https://dashboard.development.braid.zone`) - Next.js frontend
+  - Used for: Page navigation, UI interactions, screenshots
+  - Auth: Cognito session via Amplify Authenticator
+  
+- **API URL** (`https://api.development.braid.zone`) - Backend API
+  - Used for: Creating test data, cleanup operations
+  - Auth: Bearer token extracted from Cognito session
+
+### Troubleshooting Auth
+
+**Issue**: API returns 401 Unauthorized
+- Check `.auth/token.json` exists
+- Token expires after ~1 hour - re-run auth setup
+
+**Issue**: Dashboard login fails
+- Verify 2FA is disabled on test account
+- Check credentials in `.env.local`
+
+**Issue**: "undefined challengeName" error
+- Ensure Playwright config has no global HTTP headers interfering with Cognito
 
 ## Role-Tagged Test Architecture
 

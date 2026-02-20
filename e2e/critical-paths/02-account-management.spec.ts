@@ -19,7 +19,7 @@
  * Current Credentials: Fintech Admin (developer-admin)
  * Authentication: Saved in .auth/user.json
  */
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 import { testConfig } from '../test-helpers/config';
 import apiClient from '../test-helpers/api-client';
 import testCleanup from '../test-helpers/cleanup';

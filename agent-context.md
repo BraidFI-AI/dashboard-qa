@@ -58,12 +58,61 @@ npm run test:all          # Run all test suites
 
 ### Dashboard Configuration
 - Dashboard URL: `https://dashboard.development.braid.zone`
-- Test credentials: qagentuser1 with known password
-- Environment configured in `.env.local` (not committed to git)
+- Test credentials: Configured in `.env.local` (not committed to git)
 
-### Test Execution Blocker
-- Test user account `qagentuser1` has 2FA enabled, which blocks automated browser testing
-- Cognito user roles are managed by infrastructure team (cannot be created by developers)
-- Automated testing requires a dedicated test account without 2FA enabled
-- Infrastructure request documented in `test-automation/infra-request.md`
-- All test infrastructure is 100% ready and waiting for credentials
+### Test Execution Status (Resolved February 19, 2026)
+- **Status**: ✅ Authentication working - tests running successfully
+- **Root Cause**: Playwright's `extraHTTPHeaders` config was interfering with Cognito API authentication
+- **Symptoms**: "undefined challengeName" error during login, Cognito returned `UnknownOperationException`
+- **Fix Applied**: Removed `extraHTTPHeaders` from `playwright.config.ts` (lines 62-65)
+  - Headers `Content-Type: application/json` and `Accept: application/json` were forcing wrong content type on Cognito requests
+  - Cognito auth flow requires specific headers that were being overridden
+- **Verification**: User confirmed manual login works in incognito browser (ruled out cache/session issues)
+- **Test Results**: 58/66 tests passing, auth setup working correctly
+- **Note**: 2FA was disabled by infrastructure team, but that alone didn't fix the issue - Playwright config was the blocker
+
+### API Authentication Configuration (Fixed February 19, 2026)
+- **Status**: ✅ API calls working with Bearer token authentication
+- **Issue**: Tests were hitting dashboard URL instead of API URL, using wrong auth method
+- **Root Cause**: `BRAID_BASE_URL` used for both dashboard and API, test config didn't separate concerns
+- **Fix Applied**:
+  - Separated `dashboardUrl` and `apiUrl` in test config (`e2e/test-helpers/config.ts`)
+  - Dashboard URL: `https://dashboard.development.braid.zone` (for UI navigation)
+  - API URL: `https://api.development.braid.zone` (for data operations)
+  - API client uses Bearer token authentication (extracted from Cognito session)
+  - Tokens saved to `.auth/token.json` during auth setup, auto-loaded by API client
+- **Auth Flow**:
+  1. Auth setup extracts Cognito access token from sessionStorage
+  2. Token saved to `.auth/token.json` for test specs to use
+  3. API client interceptor loads token and adds `Authorization: Bearer {token}` header
+  4. Falls back to `X-API-Key` if token not available
+- **Test Results**: Individual and business creation 200 OK, validation working
+- **Known Issue**: User lacks DELETE permissions (403), cleanup fails but doesn't block tests
+
+### E2E Test Authentication (Fixed February 19, 2026)
+- **Status**: ✅ All tests passing - 66 passed, 17 skipped, 0 failed
+- **Critical Discovery**: Playwright's `storageState()` does not persist sessionStorage (only localStorage and cookies)
+- **Problem**: AWS Amplify stores authentication tokens in sessionStorage, causing tests to redirect to login page despite saved authentication state
+- **Solution Implemented**:
+  1. **Manual SessionStorage Extraction** (`e2e/auth.setup.ts`):
+     - Extracts sessionStorage via `page.evaluate()` after successful login
+     - Saves custom structure to `.auth/user.json` extending Playwright's standard format
+     - Includes `origins[].sessionStorage` array with all Cognito session data
+  2. **Global Fixture for Injection** (`e2e/fixtures.ts`):
+     - Provides custom `page` fixture that injects sessionStorage before every test
+     - Uses `page.addInitScript()` to restore sessionStorage before page loads
+     - All test files import `{ test, expect }` from `'../fixtures'` instead of `'@playwright/test'`
+- **Result**: Tests now maintain authenticated state across all specs without requiring re-login
+
+### Dashboard Table Rendering
+- **UI Component**: Dashboard uses MUI DataGrid which renders with `role="grid"` attribute (not standard HTML `<table>` tags)
+- **Test Selectors**: Tests use flexible selector `[role="grid"], table` to support both DataGrid and standard tables
+- **Backend Indexing**: Requires ~10 seconds after entity creation before data appears in dashboard tables
+- **Wait Strategy**: Tests include 10-second wait in `beforeAll` hooks after API entity creation, plus conditional checks for table data vs empty states
+
+### Test Coverage Status (February 19, 2026)
+- **Passing**: 66 tests (all Fintech Admin and Shared workflows)
+- **Skipped**: 17 tests (all Bank Admin tests requiring multi-tenant permissions)
+- **Failing**: 0 tests
+- **Test User**: `qagentuser1` has Fintech Admin role (single-tenant access only)
+- **Bank Admin Tests**: Intentionally skipped with `test.skip()` until credentials with multi-tenant access are available

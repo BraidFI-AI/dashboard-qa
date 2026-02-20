@@ -9,21 +9,58 @@
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { testConfig } from './config';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Token storage for authenticated requests
+let accessToken: string | null = null;
+
+// Load token from saved file (if exists)
+function loadToken() {
+  if (!accessToken) {
+    try {
+      const tokenFile = path.join(process.cwd(), '.auth', 'token.json');
+      if (fs.existsSync(tokenFile)) {
+        const tokenData = JSON.parse(fs.readFileSync(tokenFile, 'utf-8'));
+        accessToken = tokenData.accessToken;
+        console.log('🔑 API client loaded access token');
+      }
+    } catch (error) {
+      console.warn('⚠️  Could not load access token:', error);
+    }
+  }
+  return accessToken;
+}
+
+export function setApiToken(token: string) {
+  accessToken = token;
+}
 
 // Create axios instance with base configuration
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: testConfig.baseUrl,
+  baseURL: testConfig.apiUrl,
   headers: {
-    'X-API-Key': testConfig.apiKey,
     'Content-Type': 'application/json'
   },
   timeout: 30000 // 30 second timeout
 });
 
-// Request interceptor for logging
+// Request interceptor for logging and auth
 apiClient.interceptors.request.use(
   (config) => {
     console.log(`→ ${config.method?.toUpperCase()} ${config.url}`);
+    
+    // Load token if not already loaded
+    loadToken();
+    
+    // Add Bearer token if available (from authenticated session)
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    } else if (testConfig.apiKey) {
+      // Fallback to API key if no token
+      config.headers['X-API-Key'] = testConfig.apiKey;
+    }
+    
     return config;
   },
   (error) => {
